@@ -23,5 +23,5 @@ public class ItemTableManager: SingleTon<ItemTableManager>
         }
 
     }
-    
+    //시험입니다.
 }
