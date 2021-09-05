@@ -1,0 +1,2 @@
+All the models are set in the prefabs. A prefix in their names shows the purpose (animated, static, ungrouped LODs). 
+All you need to do is just to draw the needed prefab to the scene. For animated prefabs you need to set transitions between animations
