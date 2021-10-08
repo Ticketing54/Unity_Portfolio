@@ -9,50 +9,13 @@ using TMPro;
 public class Character : MonoBehaviour
 {
     public static Character Player;
-    public string C_Name;
-    public int Lev, Str, Dex, Int, Luk;// 스탯
-    public int Cri = 20;
-    public float Hp_E,Mp_E,Atk_E; // 장비
-    public float Hp_C,Mp_C,Exp_C = -1; // 현재
-    public float Hp,Mp,Atk,Exp;   // 기본
-    public int Gold;
-    public float Atk_Range = 1.5f;
-    public int SkillPoint = 0;
-
-    public bool isburn = false;
-    public bool isIce = false; 
-    
-    
-    public float returnAtk()
+    public Status Stat = null;
+    public Character(string _Name, int _Gold, int _Level, float _Hp_C, float _Mp_C, float _Exp_C, int _SkillPoint)
     {
-        float tmp = Atk + Atk_E;
-        float critical;
-        critical = Random.Range(0, 100);
-        if(critical <= Cri)
-        {
-            return (int)(Random.Range((float)(tmp * 0.8), (float)(tmp * 1.2)) *2);
-        }
-        else
-        {
-            return (int)Random.Range((float)(tmp * 0.8), (float)(tmp * 1.2) * 2);
-        }
-
-
-        
+        Stat = new Status(_Name, _Gold, _Level, _Hp_C, _Mp_C, _Exp_C, _SkillPoint);
     }
-    public float returnHp()
-    {
-        return Hp_E + Hp;
-    }
-    public float returnMp()
-    {
-        return Mp_E + Mp;
-    }  
-    
-
     public List<SkinnedMeshRenderer> Weapon = new List<SkinnedMeshRenderer>();
     public SkinnedMeshRenderer Character_bounds;
-
     public List<Monster> MobList = new List<Monster>();
     public List<Npc> npcList = new List<Npc>();
     public List<Item> myIven = new List<Item>();
@@ -136,20 +99,11 @@ public class Character : MonoBehaviour
     {        
         if (UIManager.uimanager.FadeUi.alpha == 0)
             return;
-        Click();
-        LevelUp();        
+        Click();             
         Interation();
-        Move();
-        recoveryHpMp();        
-    }
-   
-    public void recoveryHpMp()
-    {
-        if (Hp_C < returnHp())
-            Hp_C += Time.deltaTime ;
-        if(Mp_C<returnMp())
-            Mp_C += Time.deltaTime ;
-    }
+        Move();        
+    }   
+    
     public void SetDestination(Vector3 dest)
     {
         if (DontMove == true)
@@ -221,21 +175,11 @@ public class Character : MonoBehaviour
     }
     void LevelUp()
     {
-        if(Exp_C >= Exp)
-        {
-            Exp_C -= Exp;
-            Lev++;
-            SkillPoint++;
-            LevelTableManager.instance.GetLevelTable(Lev, ref Hp, ref Mp, ref Exp,ref Str, ref Dex,ref Int, ref Luk);
-            GameObject LvEffect = ObjectPoolManager.objManager.EffectPooling("LevUp");
-            TextMeshProUGUI LvString = ObjectPoolManager.objManager.stringEffect();
-
-            
-            StartCoroutine(LevUpMove(LvEffect,LvString));
-            StartCoroutine(WaitForItLev(LvEffect, LvString.gameObject));
-            Hp_C = Hp;
-            Mp_C = Mp;
-        }
+        Stat.LevelUp();
+        GameObject LvEffect = ObjectPoolManager.objManager.EffectPooling("LevUp");
+        TextMeshProUGUI LvString = ObjectPoolManager.objManager.stringEffect();
+        StartCoroutine(LevUpMove(LvEffect, LvString));
+        StartCoroutine(WaitForItLev(LvEffect, LvString.gameObject));
     }
     IEnumerator LevUpMove(GameObject obj, TextMeshProUGUI _string)  //레벨업 
     {
