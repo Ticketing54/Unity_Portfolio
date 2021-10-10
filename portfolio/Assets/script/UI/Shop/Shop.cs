@@ -71,10 +71,10 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
             
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].isInRect(data.position) && list[i].itemImage.gameObject.activeSelf == true)
+                if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == true)
                 {
                     Clickitem = list[i].item;
-                    ClickitemImage = list[i].itemImage;
+                    ClickitemImage = list[i].image;
                     ItemInfo = true;
                     Begin_DragSlot(i);
                     MoveIcon.transform.position = data.position;
@@ -105,10 +105,10 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
         {
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].isInRect(data.position) && list[i].itemImage.gameObject.activeSelf == true)
+                if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == true)
                 {
                     Clickitem = list[i].item;
-                    ClickitemImage = list[i].itemImage;
+                    ClickitemImage = list[i].image;
                     issell = true;
                     OldClickPos = data.position;
                     WorkingSlot = i;
@@ -193,7 +193,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].isInRect(data.position) && list[i].itemImage.gameObject.activeSelf == false)
+                if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == false)
                 {
                     End_Drag_Empty(i);
                     return;
@@ -203,7 +203,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
                     End_Drag_Same(i);
                     return;
                 }
-                else if (list[i].isInRect(data.position) && list[i].itemImage.gameObject.activeSelf == true)
+                else if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == true)
                 {
                     End_Drag_Different(i);
                     return;
@@ -286,7 +286,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
         sellMessage.gameObject.SetActive(false);
         Character.Player.Stat.GOLD += Price;
         Price = 0;
-        list[sellItem_num].SlotClear();
+        list[sellItem_num].Clear();
         sellItem_num = -1;
         
     }  //물건을 판매
@@ -326,9 +326,9 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
             Character.Player.Stat.GOLD-= Price;
             for(int i = 0; i < list.Count; i++)
             {
-                if (list[i].itemImage.gameObject.activeSelf == false)
+                if (list[i].image.gameObject.activeSelf == false)
                 {
-                    list[i].AddItem(shop_list[buyItem_num].item);
+                    list[i].Add(shop_list[buyItem_num].item);
                     break;
                 }
                     
@@ -357,9 +357,9 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
     public void Begin_DragSlot(int _num)  // 드래그 시작
     {       
         MoveIcon.gameObject.SetActive(true);
-        MoveIcon.sprite = list[_num].itemImage.sprite;
+        MoveIcon.sprite = list[_num].image.sprite;
         Moveitem = list[_num].item;
-        list[_num].SlotClear();        
+        list[_num].Clear();        
         WorkingSlot = _num;
         isdrag = true;
     }
@@ -386,14 +386,14 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
     {     
         list[WorkingSlot].item = list[_num].item;
         list[WorkingSlot].item.SlotNum = WorkingSlot;
-        list[WorkingSlot].itemImage.gameObject.SetActive(true);
-        list[WorkingSlot].itemImage.sprite = list[_num].itemImage.sprite;
+        list[WorkingSlot].image.gameObject.SetActive(true);
+        list[WorkingSlot].image.sprite = list[_num].image.sprite;
         list[WorkingSlot].SetSlotCount();
 
 
         list[_num].item = Moveitem;
         list[_num].item.SlotNum = _num;
-        list[_num].itemImage.sprite = MoveIcon.sprite;
+        list[_num].image.sprite = MoveIcon.sprite;
         list[_num].SetSlotCount();
         Moveitem = null;
         MoveIcon.gameObject.SetActive(false);
@@ -406,8 +406,8 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
 
         list[_num].item = Moveitem;
         list[_num].item.SlotNum = _num;
-        list[_num].itemImage.gameObject.SetActive(true);
-        list[_num].itemImage.sprite = MoveIcon.sprite;
+        list[_num].image.gameObject.SetActive(true);
+        list[_num].image.sprite = MoveIcon.sprite;
 
         list[_num].SetSlotCount();
         Moveitem = null;

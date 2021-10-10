@@ -52,12 +52,12 @@ public class DropBox : MonoBehaviour, IPointerDownHandler,IDragHandler, IPointer
             }
             for (int i = 0; i < DropSlotlist.Count; i++)
             {
-                if (DropSlotlist[i].isInRect(data.position)&& DropSlotlist[i].itemImage.gameObject.activeSelf == true)
+                if (DropSlotlist[i].isInRect(data.position)&& DropSlotlist[i].image.gameObject.activeSelf == true)
                 {
                     Pos = new Vector3(data.position.x + 75f, data.position.y - 100f, 0);
                     miniinfo.gameObject.SetActive(true);
                     miniinfo.gameObject.transform.position = Pos;
-                    miniinfo.ItemImage.sprite = DropSlotlist[i].itemImage.sprite;
+                    miniinfo.ItemImage.sprite = DropSlotlist[i].image.sprite;
                     miniinfo.ItemName.text = DropSlotlist[i].item.ItemName;
                     miniinfo.ItemType.text = DropSlotlist[i].item.itemType.ToString();
                     miniinfo.ExPlain.text = DropSlotlist[i].item.ItemExplain;
@@ -86,7 +86,7 @@ public class DropBox : MonoBehaviour, IPointerDownHandler,IDragHandler, IPointer
         {
             for (int i = 0; i < DropSlotlist.Count; i++)
             {
-                if (DropSlotlist[i].isInRect(data.position) && DropSlotlist[i].itemImage.gameObject.activeSelf == true)
+                if (DropSlotlist[i].isInRect(data.position) && DropSlotlist[i].image.gameObject.activeSelf == true)
                 {
                     
                     for(int j = 0; j < Inven.list.Count; j++)
@@ -95,7 +95,7 @@ public class DropBox : MonoBehaviour, IPointerDownHandler,IDragHandler, IPointer
                         {
                             Inven.list[j].item.ItemCount += DropSlotlist[i].item.ItemCount;
                             Inven.list[j].SetSlotCount();
-                            DropSlotlist[i].SlotClear();
+                            DropSlotlist[i].Clear();
                             return;
                         }
 
@@ -103,13 +103,13 @@ public class DropBox : MonoBehaviour, IPointerDownHandler,IDragHandler, IPointer
 
                     for (int k = 0; k < Inven.list.Count; k++)
                     {
-                        if (Inven.list[k].itemImage.gameObject.activeSelf == false)
+                        if (Inven.list[k].image.gameObject.activeSelf == false)
                         {
                             Inven.list[k].item = DropSlotlist[i].item;
                             Inven.list[k].item.SlotNum = k;
-                            Inven.list[k].itemImage.gameObject.SetActive(true);
-                            Inven.list[k].itemImage.sprite = DropSlotlist[i].itemImage.sprite;
-                            DropSlotlist[i].SlotClear();
+                            Inven.list[k].image.gameObject.SetActive(true);
+                            Inven.list[k].image.sprite = DropSlotlist[i].image.sprite;
+                            DropSlotlist[i].Clear();
                             Inven.list[k].SetSlotCount();
                             return;
                         }
@@ -139,7 +139,7 @@ public class DropBox : MonoBehaviour, IPointerDownHandler,IDragHandler, IPointer
                 {
                     Inven.list[i].item.ItemCount += one.item.ItemCount;
                     Inven.list[i].SetSlotCount();
-                    one.SlotClear();
+                    one.Clear();
                     itemExist = true;
                     break;
                 }               
@@ -148,13 +148,13 @@ public class DropBox : MonoBehaviour, IPointerDownHandler,IDragHandler, IPointer
                 continue;
             for (int j = 0; j < Inven.list.Count; j++)
             {
-                if (Inven.list[j].itemImage.gameObject.activeSelf == false)
+                if (Inven.list[j].image.gameObject.activeSelf == false)
                 {
                     Inven.list[j].item = one.item;
                     Inven.list[j].item.SlotNum = j;
-                    Inven.list[j].itemImage.gameObject.SetActive(true);
-                    Inven.list[j].itemImage.sprite = one.itemImage.sprite;
-                    one.SlotClear();
+                    Inven.list[j].image.gameObject.SetActive(true);
+                    Inven.list[j].image.sprite = one.image.sprite;
+                    one.Clear();
                     Inven.list[j].SetSlotCount();
                     break;
 
@@ -169,7 +169,7 @@ public class DropBox : MonoBehaviour, IPointerDownHandler,IDragHandler, IPointer
     {
         for(int i = 0; i < DropSlotlist.Count; i++)
         {
-            DropSlotlist[i].SlotClear();
+            DropSlotlist[i].Clear();
         }
 
         if (miniinfo.gameObject.activeSelf == true)
@@ -209,13 +209,13 @@ public class DropBox : MonoBehaviour, IPointerDownHandler,IDragHandler, IPointer
                     }
                     for(int b = 0; b < DropSlotlist.Count; b++)
                     {
-                        if(DropSlotlist[b].itemImage.gameObject.activeSelf == false)
+                        if(DropSlotlist[b].image.gameObject.activeSelf == false)
                         {
 
                             List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(dropitem[0]));
-                            Item tmp = new Item(int.Parse(iteminfo[0]), iteminfo[1], iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                            Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                             tmp.ItemCount = int.Parse(dropitem[1]);
-                            DropSlotlist[b].AddItem(tmp);
+                            DropSlotlist[b].Add(tmp);
                             break;
 
                         }                       

@@ -164,7 +164,7 @@ public class GameManager : MonoBehaviour
 
         string []info = DATA[0].Split(',');
         character.name = info[0];
-        Status NewStat = new Status(info[0], int.Parse(info[10]), int.Parse(info[5]), float.Parse(info[6]), float.Parse(info[7]), float.Parse(info[8]), int.Parse(info[9]));
+        Status NewStat = new Status(info[0], int.Parse(info[10]), int.Parse(info[5]), float.Parse(info[6]), float.Parse(info[7]), int.Parse(info[8]), int.Parse(info[9]));
         character.Stat = NewStat;
         ChangeLayerObj(character.gameObject.transform, 8);
         MapName = info[1];
@@ -178,7 +178,7 @@ public class GameManager : MonoBehaviour
             {
                 string[] sInven = one.Split(',');
                 List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
-                Item tmp = new Item(int.Parse(iteminfo[0]), iteminfo[1], iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);
                 character.myIven.Add(tmp);
@@ -191,7 +191,7 @@ public class GameManager : MonoBehaviour
             {
                 string[] sInven = one.Split(',');
                 List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
-                Item tmp = new Item(int.Parse(iteminfo[0]), iteminfo[1], iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = 1;
                 character.myEquip.Add(tmp);
@@ -204,7 +204,7 @@ public class GameManager : MonoBehaviour
             {
                 string[] sInven = one.Split(',');
                 List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
-                Item tmp = new Item(int.Parse(iteminfo[0]), iteminfo[1], iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);
                 character.myQuick.Add(tmp);
@@ -334,7 +334,7 @@ public class GameManager : MonoBehaviour
                     for (int k = 0; k < shop.Length - 1; k++)
                     {
                         List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(shop[k]));
-                        Item tmp = new Item(int.Parse(iteminfo[0]), iteminfo[1], iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                        Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                         tmp.ItemCount = 1;
                         npc.item_list.Add(tmp);
 

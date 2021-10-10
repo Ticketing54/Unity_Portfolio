@@ -69,10 +69,10 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
 
                 for (int i = 0; i < Q_list.Count; i++)
                 {
-                    if (Q_list[i].isInRect(data.position) && Q_list[i].itemImage.gameObject.activeSelf == true)
+                    if (Q_list[i].isInRect(data.position) && Q_list[i].image.gameObject.activeSelf == true)
                     {
                         Clickitem = Q_list[i].item;
-                        ClickitemImage = Q_list[i].itemImage;
+                        ClickitemImage = Q_list[i].image;
                         ItemInfo = true;
                         Begin_DragSlot(Q_list, i);
                         MoveIcon.transform.position = data.position;
@@ -91,10 +91,10 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
                 }
                 for (int j = 0; j < Q_list.Count; j++)
                 {
-                    if (Q_list[j].isInRect(data.position) && Q_list[j].itemImage.gameObject.activeSelf == true)
+                    if (Q_list[j].isInRect(data.position) && Q_list[j].image.gameObject.activeSelf == true)
                     {
                         Clickitem = Q_list[j].item;
-                        ClickitemImage = Q_list[j].itemImage;
+                        ClickitemImage = Q_list[j].image;
                         ItemInfo = true;
                         Begin_DragSlot(Q_list, j);
                         MoveIcon.transform.position = data.position;
@@ -104,10 +104,10 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
                 }
                 for (int k = 0; k < E_list.Count; k++)
                 {
-                    if (E_list[k].isInRect(data.position) && E_list[k].itemImage.gameObject.activeSelf == true)
+                    if (E_list[k].isInRect(data.position) && E_list[k].image.gameObject.activeSelf == true)
                     {
                         Clickitem = E_list[k].item;
-                        ClickitemImage = E_list[k].itemImage;
+                        ClickitemImage = E_list[k].image;
                         ItemInfo = true;
                         Begin_DragSlot(E_list, k);
                         MoveIcon.transform.position = data.position;
@@ -117,10 +117,10 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
                 }
                 for (int i = 0; i < list.Count; i++)
                 {
-                    if (list[i].isInRect(data.position) && list[i].itemImage.gameObject.activeSelf == true)
+                    if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == true)
                     {
                         Clickitem = list[i].item;
-                        ClickitemImage = list[i].itemImage;
+                        ClickitemImage = list[i].image;
                         ItemInfo = true;
                         Begin_DragSlot(list, i);
                         MoveIcon.transform.position = data.position;
@@ -140,7 +140,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
             {
                 for (int i = 0; i < Q_list.Count; i++)
                 {
-                    if (Q_list[i].isInRect(data.position) && Q_list[i].itemImage.gameObject.activeSelf == true)
+                    if (Q_list[i].isInRect(data.position) && Q_list[i].image.gameObject.activeSelf == true)
                     {
                         Begin_Click_R(Q_list, i);
                         return;
@@ -152,7 +152,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
             {
                 for (int j = 0; j < Q_list.Count; j++)
                 {
-                    if (Q_list[j].isInRect(data.position) && Q_list[j].itemImage.gameObject.activeSelf == true)
+                    if (Q_list[j].isInRect(data.position) && Q_list[j].image.gameObject.activeSelf == true)
                     {
                         Begin_Click_R(Q_list, j);
                         return;
@@ -161,7 +161,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
                 }
                 for (int k = 0; k < E_list.Count; k++)
                 {
-                    if (E_list[k].isInRect(data.position) && E_list[k].itemImage.gameObject.activeSelf == true)
+                    if (E_list[k].isInRect(data.position) && E_list[k].image.gameObject.activeSelf == true)
                     {
                         Begin_Click_R(E_list, k);
                         return;
@@ -170,7 +170,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
                 }
                 for (int i = 0; i < list.Count; i++)
                 {
-                    if (list[i].isInRect(data.position) && list[i].itemImage.gameObject.activeSelf == true)
+                    if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == true)
                     {
                         Begin_Click_R(list, i);
                         return;
@@ -228,7 +228,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
             {
                 for (int i = 0; i < Q_list.Count; i++)
                 {
-                    if (Q_list[i].isInRect(data.position) && Q_list[i].itemImage.gameObject.activeSelf == false)
+                    if (Q_list[i].isInRect(data.position) && Q_list[i].image.gameObject.activeSelf == false)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
                         End_Drag_Empty(Q_list, i);
@@ -240,7 +240,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
                         End_Drag_Same(Q_list, i);
                         return;
                     }
-                    else if (Q_list[i].isInRect(data.position) && Q_list[i].itemImage.gameObject.activeSelf == true)
+                    else if (Q_list[i].isInRect(data.position) && Q_list[i].image.gameObject.activeSelf == true)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
                         End_Drag_Different(Q_list, i);
@@ -260,7 +260,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
 
                 for (int i = 0; i < list.Count; i++)
                 {
-                    if (list[i].isInRect(data.position) && list[i].itemImage.gameObject.activeSelf == false)
+                    if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == false)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
                         End_Drag_Empty(list, i);
@@ -272,7 +272,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
                         End_Drag_Same(list, i);
                         return;
                     }
-                    else if (list[i].isInRect(data.position) && list[i].itemImage.gameObject.activeSelf == true)
+                    else if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == true)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
                         End_Drag_Different(list, i);
@@ -283,7 +283,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
 
                 for (int j = 0; j < Q_list.Count; j++)
                 {
-                    if (Q_list[j].isInRect(data.position) && Q_list[j].itemImage.gameObject.activeSelf == false)
+                    if (Q_list[j].isInRect(data.position) && Q_list[j].image.gameObject.activeSelf == false)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
                         End_Drag_Empty(Q_list, j);
@@ -295,7 +295,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
                         End_Drag_Same(Q_list, j);
                         return;
                     }
-                    else if (Q_list[j].isInRect(data.position) && Q_list[j].itemImage.gameObject.activeSelf == true)
+                    else if (Q_list[j].isInRect(data.position) && Q_list[j].image.gameObject.activeSelf == true)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
                         End_Drag_Different(Q_list, j);
@@ -305,13 +305,13 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
                 }
                 for (int k = 0; k < E_list.Count; k++)
                 {
-                    if (E_list[k].isInRect(data.position) && E_list[k].itemImage.gameObject.activeSelf == false)
+                    if (E_list[k].isInRect(data.position) && E_list[k].image.gameObject.activeSelf == false)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
                         End_Drag_Empty(E_list, k);
                         return;
                     }
-                    else if (E_list[k].isInRect(data.position) && E_list[k].itemImage.gameObject.activeSelf == true)
+                    else if (E_list[k].isInRect(data.position) && E_list[k].image.gameObject.activeSelf == true)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
                         End_Drag_Different(E_list, k);
@@ -367,7 +367,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
     public void Begin_Click_R(List<Slot> _list, int _num)
     {
         Clickitem = _list[_num].item;
-        ClickitemImage = _list[_num].itemImage;
+        ClickitemImage = _list[_num].image;
         isClick = true;
         OldSlotList = _list;
         WorkingSlot = _num;
@@ -386,7 +386,7 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
                 ClickitemImage = null;
                 for (int i = 0; i < list.Count; i++)
                 {
-                    if (list[i].itemImage.gameObject.activeSelf == false)
+                    if (list[i].image.gameObject.activeSelf == false)
                     {
 
                         End_Drag_Empty(list, i);
@@ -397,17 +397,17 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
             }
             else
             {
-                if (E_list[Clickitem.E_Index].itemImage.gameObject.activeSelf == false)
+                if (E_list[(int)Clickitem.EquipType].image.gameObject.activeSelf == false)
                 {
-                    End_Drag_Empty(E_list, Clickitem.E_Index);
+                    End_Drag_Empty(E_list, (int)Clickitem.EquipType);
                     Clickitem = null;
                     ClickitemImage = null;
                     return;
 
                 }
-                else if (E_list[Clickitem.E_Index].itemImage.gameObject.activeSelf == true)
+                else if (E_list[(int)Clickitem.EquipType].image.gameObject.activeSelf == true)
                 {
-                    End_Drag_Different(E_list, Clickitem.E_Index);
+                    End_Drag_Different(E_list, (int)Clickitem.EquipType);
                     Clickitem = null;
                     ClickitemImage = null;
                     return;
@@ -449,9 +449,9 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
         }
 
         MoveIcon.gameObject.SetActive(true);
-        MoveIcon.sprite = _list[_num].itemImage.sprite;
+        MoveIcon.sprite = _list[_num].image.sprite;
         Moveitem = _list[_num].item;        
-        _list[_num].SlotClear();
+        _list[_num].Clear();
         OldSlotList = _list;
         WorkingSlot = _num;
     }
@@ -476,23 +476,23 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
     {
         if (_list == E_list)
         {
-            if (Moveitem.itemType == Item.ItemType.Equipment && Moveitem.E_Index == _num)
+            if (Moveitem.itemType == Item.ItemType.Equipment && (int)Moveitem.EquipType == _num)
             {
-                if (Moveitem.E_Index == _num)
+                if ((int)Moveitem.EquipType == _num)
                 {
                     SoundManager.soundmanager.soundsPlay("Equip");
                     ApplyStatus(Moveitem);
                     CancleItem(_list[_num].item);
                     OldSlotList[WorkingSlot].item = _list[_num].item;
                     OldSlotList[WorkingSlot].item.SlotNum = WorkingSlot;
-                    OldSlotList[WorkingSlot].itemImage.gameObject.SetActive(true);
-                    OldSlotList[WorkingSlot].itemImage.sprite = _list[_num].itemImage.sprite;
+                    OldSlotList[WorkingSlot].image.gameObject.SetActive(true);
+                    OldSlotList[WorkingSlot].image.sprite = _list[_num].image.sprite;
                     OldSlotList[WorkingSlot].SetSlotCount();
 
 
                     _list[_num].item = Moveitem;
                     _list[_num].item.SlotNum = _num;
-                    _list[_num].itemImage.sprite = MoveIcon.sprite;
+                    _list[_num].image.sprite = MoveIcon.sprite;
                     _list[_num].SetSlotCount();
                     Moveitem = null;
                     MoveIcon.gameObject.SetActive(false);
@@ -534,14 +534,14 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
 
         OldSlotList[WorkingSlot].item = _list[_num].item;
         OldSlotList[WorkingSlot].item.SlotNum = WorkingSlot;
-        OldSlotList[WorkingSlot].itemImage.gameObject.SetActive(true);
-        OldSlotList[WorkingSlot].itemImage.sprite = _list[_num].itemImage.sprite;
+        OldSlotList[WorkingSlot].image.gameObject.SetActive(true);
+        OldSlotList[WorkingSlot].image.sprite = _list[_num].image.sprite;
         OldSlotList[WorkingSlot].SetSlotCount();
 
 
         _list[_num].item = Moveitem;
         _list[_num].item.SlotNum = _num;
-        _list[_num].itemImage.sprite = MoveIcon.sprite;
+        _list[_num].image.sprite = MoveIcon.sprite;
         _list[_num].SetSlotCount();
         Moveitem = null;
         MoveIcon.gameObject.SetActive(false);
@@ -554,16 +554,16 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
 
         if (_list == E_list)
         {
-            if (Moveitem.itemType == Item.ItemType.Equipment && Moveitem.E_Index == _num)
+            if (Moveitem.itemType == Item.ItemType.Equipment && (int)Moveitem.EquipType == _num)
             {
-                if(Moveitem.E_Index == _num)
+                if((int)Moveitem.EquipType == _num)
                 {
                     SoundManager.soundmanager.soundsPlay("Equip");
                     ApplyStatus(Moveitem);
                     _list[_num].item = Moveitem;
                     _list[_num].item.SlotNum = _num;
-                    _list[_num].itemImage.gameObject.SetActive(true);
-                    _list[_num].itemImage.sprite = MoveIcon.sprite;
+                    _list[_num].image.gameObject.SetActive(true);
+                    _list[_num].image.sprite = MoveIcon.sprite;
 
                     _list[_num].SetSlotCount();
                     Moveitem = null;
@@ -601,8 +601,8 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
 
         _list[_num].item = Moveitem;
         _list[_num].item.SlotNum = _num;
-        _list[_num].itemImage.gameObject.SetActive(true);
-        _list[_num].itemImage.sprite = MoveIcon.sprite;
+        _list[_num].image.gameObject.SetActive(true);
+        _list[_num].image.sprite = MoveIcon.sprite;
         
         _list[_num].SetSlotCount();
         Moveitem = null;
@@ -617,14 +617,14 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
     {
         for (int i = 0; i < Character.Player.myIven.Count; i++)
         {
-            list[Character.Player.myIven[i].SlotNum].AddItem(Character.Player.myIven[i]);
+            list[Character.Player.myIven[i].SlotNum].Add(Character.Player.myIven[i]);
             list[Character.Player.myIven[i].SlotNum].SetSlotCount();
         }
 
         for(int j = 0; j < Character.Player.myEquip.Count; j++)
         {
             ApplyStatus(Character.Player.myEquip[j]);
-            E_list[Character.Player.myEquip[j].SlotNum].AddItem(Character.Player.myEquip[j]);
+            E_list[Character.Player.myEquip[j].SlotNum].Add(Character.Player.myEquip[j]);
             E_list[Character.Player.myEquip[j].SlotNum].SetSlotCount();
             
         }
@@ -635,15 +635,15 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
     {
         foreach(Slot one in list)
         {
-            one.SlotClear();
+            one.Clear();
         }
         foreach (Slot one in Q_list)
         {
-            one.SlotClear();
+            one.Clear();
         }
         foreach (Slot one in E_list)
         {
-            one.SlotClear();
+            one.Clear();
         }
     }
     public void ApplyStatus(Item _item)
@@ -711,9 +711,9 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
     {
         for(int i = 0; i < list.Count; i++)
         {
-            if(list[i].itemImage.gameObject.activeSelf == false)
+            if(list[i].image.gameObject.activeSelf == false)
             {
-                list[i].AddItem(_item);
+                list[i].Add(_item);
                 return;
             }
         }

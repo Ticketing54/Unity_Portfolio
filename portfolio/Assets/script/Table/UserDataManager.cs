@@ -35,7 +35,7 @@ public class UserDataManager : SingleTon<UserDataManager>
         string Equip = string.Empty;        //장비
         for (int i = 0; i < Character.Player.myEquip.Count; i++)
         {
-            Equip += Character.Player.myEquip[i].Index + "," + Character.Player.myEquip[i].E_Index + "/";
+            Equip += Character.Player.myEquip[i].Index + "," + Character.Player.myEquip[i].EquipType + "/";
         }        
         if(Equip.Length > 0)
         {

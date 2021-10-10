@@ -10,7 +10,10 @@ public class Character : MonoBehaviour
 {
     public static Character Player;
     public Status Stat = null;
-    
+    public Equipment Equip = null;
+    public CharacterSkill Skill = null;
+    public CharacterQuest Quest = null;
+
     public List<SkinnedMeshRenderer> Weapon = new List<SkinnedMeshRenderer>();
     public SkinnedMeshRenderer Character_bounds;
     public List<Monster> MobList = new List<Monster>();

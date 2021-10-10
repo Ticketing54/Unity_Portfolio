@@ -5,11 +5,12 @@ using UnityEngine;
 public class Status
 {
     List<string> Table;
-    public Status(string _Name, int _Gold, int _Level,float _Hp_c, float _Mp_C, float _Exp_C, int _SkillPoint)
+    
+    public Status(string _Name, int _Gold, int _Level,float _Hp_c, float _Mp_C, int _Exp_C, int _SkillPoint)
     {
         NAME = _Name;
         GOLD = _Gold;
-        Player_Level = _Level;
+        Level = _Level;
         Cur_Hp = _Hp_c;
         Cur_Mp = _Mp_C;
         Cur_Exp = _Exp_C;
@@ -17,7 +18,7 @@ public class Status
     }
 
     public string NAME { get; set; }
-    public int LEVEL { get { return Player_Level; } }
+    public int LEVEL { get { return Level; } }
     public int GOLD { get; set; }
     public int CRI { get; set; }
     public float ATK_RANGE { get { return Attack_Range; } set{ Attack_Range = value; } }
@@ -27,7 +28,7 @@ public class Status
     {
         get
         {
-            return Character_Hp + Equip_Hp;
+            return Hp + Equip_Hp;
         }
         set
         {
@@ -38,7 +39,7 @@ public class Status
     {
         get
         {
-            return Character_Mp + Equip_Mp;
+            return Mp + Equip_Mp;
         }
         set
         {
@@ -49,24 +50,24 @@ public class Status
     {
         get
         {
-            return Character_Atk + Equip_Atk;
+            return Atk + Equip_Atk;
         }
         set
         {
             Equip_Atk = value;
         }
     }
-    public float MAXEXP { get { return Need_Exp; } }
-    public float EXP { get { return Cur_Exp; } set { Cur_Exp = value; } }
+    public int MAXEXP { get { return Need_Exp; } }
+    public int EXP { get { return Cur_Exp; } set { Cur_Exp = value; } }
     //public float returnAtk()
     //{
-    //    float tmp = Character_Atk + Equip_Atk;
+    //    float tmp = Atk + Equip_Atk;
     //    if (tmp == 1)
     //        return 1;
 
     //    float critical;
     //    critical = Random.Range(0, 101);
-    //    if (critical <= Cri)
+    //    if (critical <= CRI)
     //    {
     //        return (int)(Random.Range((float)(tmp * 0.8), (float)(tmp * 1.2)) * 2);
     //    }
@@ -75,32 +76,70 @@ public class Status
     //        return (int)Random.Range((float)(tmp * 0.8), (float)(tmp * 1.2) * 2);
     //    }
     //}
+    public void GetExp(int Exp)
+    {
+        Cur_Exp += Exp;
+        if (Cur_Exp >= Need_Exp)
+            LevelUp();
+    }
     public void LevelUp()
     {
         Cur_Exp -= Need_Exp;
-        Player_Level++;
+        Level++;
         SkillPoint++;
-        LevelSetting(Player_Level);
+        LevelSetting(Level);
     }
     public void LevelSetting(int _Level)
-    {
+    {        
+        Table = LevelTableManager.instance.Level_Table.GetData(_Level);     
         
-        Table = LevelTableManager.instance.Level_Table.GetData(_Level);        
-        Player_Level = int.Parse(Table[0]);
-        Character_Hp = float.Parse(Table[1]);
-        Character_Mp = float.Parse(Table[2]);
-        Need_Exp = float.Parse(Table[3]);        
-        Cur_Hp = Character_Hp;
-        Cur_Mp = Character_Mp;
+        Level = int.Parse(Table[0]);
+        Hp = float.Parse(Table[1]);
+        Mp = float.Parse(Table[2]);
+        Need_Exp = int.Parse(Table[3]);        
+        Cur_Hp = Hp;
+        Cur_Mp = Mp;
     }  
+    public void EquipStatus(Item _item)
+    {
+        string[] tmp = _item.ItemProperty.Split('/');
+        switch (tmp[0])
+        {
+            case "Defend":
+                Equip_Hp += float.Parse(tmp[1]);
+                break;
+            case "Atk":
+                Equip_Atk += float.Parse(tmp[1]);
+                break;
+            default:
+                break;
+        }
+    }
+    public void TakeOffStatus(Item _item)
+    {
+        string[] tmp = _item.ItemProperty.Split('/');
+        switch (tmp[0])
+        {
+            case "Defend":
+                Equip_Hp -= float.Parse(tmp[1]);
+                break;
+            case "Atk":
+                Equip_Atk -= float.Parse(tmp[1]);
+                break;
+            default:
+                break;
+        }
+    }
     // 캐릭터 레벨
-    int Player_Level;
+    int Level;
     // 캐릭터 능력치
-    float Character_Hp, Character_Mp, Character_Atk, Need_Exp;
+    float Hp, Mp, Atk;
+    int Need_Exp;
     // 장비 능력치
-    float Equip_Hp, Equip_Mp, Equip_Atk=0; 
+    float Equip_Hp, Equip_Mp, Equip_Atk=0;
     // 현재 능력치
-    float Cur_Hp, Cur_Mp, Cur_Exp = -1;        
+    float Cur_Hp, Cur_Mp=0;
+    int Cur_Exp = 0;        
     // 스킬 포인트
     
     // 공격 범위
