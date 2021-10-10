@@ -10,17 +10,17 @@ public class UserDataManager : SingleTon<UserDataManager>
     {
 
         string Data = string.Empty;
-        Data += Character.Player.C_Name + ",";
+        Data += Character.Player.Stat.NAME + ",";
         Data += GameManager.gameManager.MapName + ",";
         Data += Character.Player.transform.position.x + ",";        
         Data += Character.Player.transform.position.y + ",";        
         Data += Character.Player.transform.position.z + ",";        
-        Data += Character.Player.Lev + ",";        
-        Data += Character.Player.Hp_C + ",";        
-        Data += Character.Player.Mp_C + ",";        
-        Data += Character.Player.Exp_C + ",";         
-        Data += Character.Player.SkillPoint + ",";         
-        Data += Character.Player.Gold + "\n";         
+        Data += Character.Player.Stat.LEVEL + ",";        
+        Data += Character.Player.Stat.HP + ",";        
+        Data += Character.Player.Stat.MP + ",";        
+        Data += Character.Player.Stat.EXP + ",";         
+        Data += Character.Player.Stat.SkillPoint + ",";         
+        Data += Character.Player.Stat.GOLD + "\n";         
         
         
         string Inven = string.Empty;        //인벤

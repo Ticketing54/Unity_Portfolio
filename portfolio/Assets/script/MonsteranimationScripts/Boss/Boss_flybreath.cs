@@ -64,7 +64,7 @@ public class Boss_flybreath : StateMachineBehaviour
                 mob.StartCoroutine(DamageOn());
                 SoundManager.soundmanager.soundsPlay("Icestate", Character.Player.gameObject);
                 Damage_count++;
-                Character.Player.Hp_C -= mob.Atk;
+                Character.Player.Stat.HP-= mob.Atk;
                 Character.Player.icestateOn();
                 ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, mob.Atk, Color.red, 1);
             }

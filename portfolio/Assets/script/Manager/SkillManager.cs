@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class SkillManager : MonoBehaviour , IPointerUpHandler,IPointerDownHandler,IDragHandler,IBeginDragHandler,IEndDragHandler
 {
+    
     public static SkillManager skillmanager;
     public TextMeshProUGUI SkillName;
     public TextMeshProUGUI SkillEx;
@@ -101,7 +102,7 @@ public class SkillManager : MonoBehaviour , IPointerUpHandler,IPointerDownHandle
         {
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].isInRect(data.position) && Character.Player.SkillPoint >= 1 && list[i].PosLev_Image.gameObject.activeSelf==true) 
+                if (list[i].isInRect(data.position) && Character.Player.Stat.SkillPoint >= 1 && list[i].PosLev_Image.gameObject.activeSelf==true) 
                 {
 
                     OldClickPos = data.position;
@@ -156,9 +157,9 @@ public class SkillManager : MonoBehaviour , IPointerUpHandler,IPointerDownHandle
             
 
         }
-        if (Input.GetMouseButtonUp(1) && OldClickPos == data.position && Character.Player.SkillPoint>=1 && RClick == true ) // 우 클릭 시 // 스킬습득
+        if (Input.GetMouseButtonUp(1) && OldClickPos == data.position && Character.Player.Stat.SkillPoint>=1 && RClick == true ) // 우 클릭 시 // 스킬습득
         {
-            Character.Player.SkillPoint--;
+            Character.Player.Stat.SkillPoint--;
             list[WorkingSlot].isactive = true;
             list[WorkingSlot].Possible_Image.gameObject.SetActive(false);
             WorkingSlot = -1;
@@ -287,11 +288,11 @@ public class SkillManager : MonoBehaviour , IPointerUpHandler,IPointerDownHandle
     {        
         for(int i = 0; i < list.Count; i++)
         {
-            if(list[i].skill.needLevel <= Character.Player.Lev && list[i].skill.needLevel != 0 &&list[i].isactive == false)
+            if(list[i].skill.needLevel <= Character.Player.Stat.LEVEL && list[i].skill.needLevel != 0 &&list[i].isactive == false)
             {
                 list[i].PosLev_Image.gameObject.SetActive(true);
             }
-            else if (list[i].skill.needLevel <= Character.Player.Lev && list[i].skill.needLevel != 0 && list[i].isactive == true)
+            else if (list[i].skill.needLevel <= Character.Player.Stat.LEVEL && list[i].skill.needLevel != 0 && list[i].isactive == true)
             {
                 list[i].PosLev_Image.gameObject.SetActive(false);
             }
@@ -300,7 +301,7 @@ public class SkillManager : MonoBehaviour , IPointerUpHandler,IPointerDownHandle
     public void Skill_Info(Skill skill)
     {        
         SkillName.text = skill.skillName;
-        if(Character.Player.Lev < skill.needLevel)
+        if(Character.Player.Stat.LEVEL < skill.needLevel)
         {
             NeedLev.text = "필요레벨 : "+skill.needLevel;
             NeedLev.color = Color.red;
@@ -317,7 +318,7 @@ public class SkillManager : MonoBehaviour , IPointerUpHandler,IPointerDownHandle
     {
         if(skillobj.activeSelf == true)
         {
-            SkillPoint.text = "스킬포인트 : " + Character.Player.SkillPoint.ToString();
+            SkillPoint.text = "스킬포인트 : " + Character.Player.Stat.SkillPoint.ToString();
             UpdateSkill();
         }
         

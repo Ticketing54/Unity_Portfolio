@@ -479,7 +479,7 @@ public class UIManager : MonoBehaviour
             {
                 if (NickName.gameObject.activeSelf == false)
                     NickName.gameObject.SetActive(true);
-                NickName.text = Character.Player.C_Name;
+                NickName.text = Character.Player.Stat.NAME;
                 NickName.transform.position = Camera.main.WorldToScreenPoint(Character.Player.transform.position + new Vector3(0f, 2f, 0f));
 
                 
@@ -516,15 +516,15 @@ public class UIManager : MonoBehaviour
     }
     void statusControl()
     {
-        Hp_bar.fillAmount = Character.Player.Hp_C / Character.Player.returnHp();
-        Hp_text.text = ((int)Character.Player.Hp_C).ToString() + " / " + ((int)Character.Player.returnHp()).ToString();
-        Mp_bar.fillAmount = Character.Player.Mp_C / Character.Player.returnMp();
-        Mp_text.text = ((int)Character.Player.Mp_C).ToString() + " / " + ((int)Character.Player.returnMp()).ToString();
+        Hp_bar.fillAmount = Character.Player.Stat.HP / Character.Player.Stat.MAXHP;
+        Hp_text.text = ((int)Character.Player.Stat.HP).ToString() + " / " + ((int)Character.Player.Stat.HP).ToString();
+        Mp_bar.fillAmount = Character.Player.Stat.MP / Character.Player.Stat.MAXMP;
+        Mp_text.text = ((int)Character.Player.Stat.MP).ToString() + " / " + ((int)Character.Player.Stat.MAXMP).ToString();
         //
 
-        Lev.text = "Level : " + Character.Player.Lev.ToString();
-        Exp_Text.text = Character.Player.Exp_C.ToString() + " / " + Character.Player.Exp.ToString();
-        Exp_bar.fillAmount = Character.Player.Exp_C / Character.Player.Exp;
+        Lev.text = "Level : " + Character.Player.Stat.LEVEL.ToString();
+        Exp_Text.text = Character.Player.Stat.EXP.ToString() + " / " + Character.Player.Stat.MAXEXP.ToString();
+        Exp_bar.fillAmount = Character.Player.Stat.EXP / Character.Player.Stat.MAXEXP;
 
 
     }   

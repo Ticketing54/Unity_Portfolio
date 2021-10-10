@@ -10,10 +10,7 @@ public class Character : MonoBehaviour
 {
     public static Character Player;
     public Status Stat = null;
-    public Character(string _Name, int _Gold, int _Level, float _Hp_C, float _Mp_C, float _Exp_C, int _SkillPoint)
-    {
-        Stat = new Status(_Name, _Gold, _Level, _Hp_C, _Mp_C, _Exp_C, _SkillPoint);
-    }
+    
     public List<SkinnedMeshRenderer> Weapon = new List<SkinnedMeshRenderer>();
     public SkinnedMeshRenderer Character_bounds;
     public List<Monster> MobList = new List<Monster>();
@@ -126,8 +123,7 @@ public class Character : MonoBehaviour
                     if (hitinfo.collider.gameObject.layer == 9)
                     {
                         SetDestination(hitinfo.point);
-                        ObjectPoolManager.objManager.ClickMove("Click", hitinfo.point);
-                        Atk_Range = 1.5f;
+                        ObjectPoolManager.objManager.ClickMove("Click", hitinfo.point);                        
                         Target = null;
                         return;
                     }
@@ -214,7 +210,7 @@ public class Character : MonoBehaviour
         {
             float dis = Vector3.Distance(transform.position, Target.transform.position);
 
-            if (Target.tag == "Monster" && dis < Atk_Range)
+            if (Target.tag == "Monster" && dis < Stat.ATK_RANGE)
             {
                 Interaction_B = true;
                 SetDestination(transform.position);
@@ -312,8 +308,8 @@ public class Character : MonoBehaviour
             if (Player.Weapon[_num].bounds.Intersects(MobList[j].MobBounds.bounds))
             {
                 MobList[j].isDamage = true;
-                float Dmg = returnAtk();
-                MobList[j].Hp -= returnAtk();
+                float Dmg = Stat.ATK;
+                MobList[j].Hp -= Stat.ATK;
                 ObjectPoolManager.objManager.LoadDamage(MobList[j].gameObject, Dmg, Color.yellow, 1);
                 
             }
@@ -326,7 +322,7 @@ public class Character : MonoBehaviour
             if (MobList[i].DiSTANCE <=2f)
             {
                 MobList[i].isDamage = true;
-                float Dmg = returnAtk() * 3f;
+                float Dmg = Stat.ATK * 3f;
                 MobList[i].Hp -= Dmg;                
                 ObjectPoolManager.objManager.LoadDamage(MobList[i].gameObject, Dmg, Color.yellow, 1);
             }
@@ -350,7 +346,7 @@ public class Character : MonoBehaviour
     }    
     public void burnStateOn()  // 화상
     {
-        if(isburn == false)
+        if(Stat.isburn == false)
         {
             StartCoroutine(BurnDamage());
         }
@@ -359,7 +355,7 @@ public class Character : MonoBehaviour
     }
     public void icestateOn()     // 빙결
     {
-        if(isIce == false)
+        if(Stat.isIce == false)
         {
             StartCoroutine(IceState());
         }
@@ -370,7 +366,7 @@ public class Character : MonoBehaviour
         Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Burn");
         float timer = 0;
         float holdTime = 5;
-        isburn = true;
+        Stat.isburn = true;
         while (true)
         {
             timer += Time.deltaTime;
@@ -378,7 +374,7 @@ public class Character : MonoBehaviour
             {
                 timer -= 1;
                 holdTime -= 1;
-                Hp_C -= 5;
+                Stat.HP -= 5;
                 ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, 10f, Color.red, 1);
             }
             Effect.transform.position = Character.Player.transform.position;
@@ -389,7 +385,7 @@ public class Character : MonoBehaviour
             {
                 Effect.SetActive(false);
                 Effect = null;
-                isburn = false;
+                Stat.isburn = false;
                 yield break;
             }
             yield return null;
@@ -400,7 +396,7 @@ public class Character : MonoBehaviour
         GameObject Effect;
         Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Ice");
         float timer = 0;
-        isIce = true;        
+        Stat.isIce = true;        
         Character.Player.nav.speed -= 4f;
         Character.Player.anim.speed = 0.5f;
         while (true)
@@ -410,7 +406,7 @@ public class Character : MonoBehaviour
             {
                 Effect.SetActive(false);
                 Effect = null;
-                isIce = false;
+                Stat.isIce = false;
                 Character.Player.nav.speed += 4f;
                 Character.Player.anim.speed = 1f;
 

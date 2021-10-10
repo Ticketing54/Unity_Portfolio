@@ -32,18 +32,14 @@ public class StatusInfo : MonoBehaviour
     {
         
         NickName.text = Character.Player.name;
-        Lv.text = Character.Player.Lev.ToString();
-        Exp.text = Character.Player.Exp_C.ToString() + " / " + Character.Player.Exp.ToString();
-        Str.text = Character.Player.Str.ToString();
-        Dex.text = Character.Player.Dex.ToString();
-        Int.text = Character.Player.Int.ToString();
-        Luk.text = Character.Player.Luk.ToString();
-        Hp.text = ((int)Character.Player.Hp_C).ToString() + " / " + Character.Player.returnHp().ToString();
-        Mp.text = ((int)Character.Player.Mp_C).ToString() + " / " + Character.Player.returnMp().ToString();
-        Atk.text = Character.Player.Atk.ToString() + "<color=#0000ffff> + " + Character.Player.Atk_E.ToString() + "</color>"
-            + " ( " + ((int)((Character.Player.Atk + Character.Player.Atk_E) * 0.8)).ToString() + " ~ " +
-            ((int)((Character.Player.Atk + Character.Player.Atk_E) * 1.2)).ToString()+" ) ";
-        Gold.text = Character.Player.Gold.ToString() + " G";
+        Lv.text = Character.Player.Stat.LEVEL.ToString();
+        Exp.text = Character.Player.Stat.EXP.ToString() + " / " + Character.Player.Stat.MAXEXP.ToString();        
+        Hp.text = ((int)Character.Player.Stat.HP).ToString() + " / " + Character.Player.Stat.MAXHP.ToString();
+        Mp.text = ((int)Character.Player.Stat.MP).ToString() + " / " + Character.Player.Stat.MAXMP.ToString();
+        Atk.text = Character.Player.Stat.ATK.ToString() + "<color=#0000ffff> + " + Character.Player.Stat.ATK.ToString() + "</color>"//장비 능력치 추가 할 것
+            + " ( " + ((int)((Character.Player.Stat.ATK + Character.Player.Stat.ATK) * 0.8)).ToString() + " ~ " +
+            ((int)((Character.Player.Stat.ATK + Character.Player.Stat.ATK) * 1.2)).ToString()+" ) ";
+        Gold.text = Character.Player.Stat.GOLD.ToString() + " G";
         
     }
 }

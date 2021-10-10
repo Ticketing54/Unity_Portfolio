@@ -88,7 +88,7 @@ public class Slot : MonoBehaviour
             string[] Data = item.ItemProperty.Split('/');
             if (Data[0] == "Hp")
             {
-                if (Character.Player.isrecovery_Hp == true || Character.Player.returnHp()<=Character.Player.Hp_C)
+                if (Character.Player.isrecovery_Hp == true || Character.Player.Stat.MAXHP<=Character.Player.Stat.HP)
                     return;
                 item.ItemCount -= 1;
                 
@@ -97,7 +97,7 @@ public class Slot : MonoBehaviour
             }
             else if (Data[0] == "Mp")
             {
-                if (Character.Player.isrecovery_Mp == true || Character.Player.returnMp() <= Character.Player.Mp_C)
+                if (Character.Player.isrecovery_Mp == true || Character.Player.Stat.MAXMP <= Character.Player.Stat.MP)
                     return;
                 item.ItemCount -= 1;
                 SetSlotCount();
@@ -152,9 +152,9 @@ public class Slot : MonoBehaviour
 
 
                     Maxbuf -= _buf_num;
-                    Character.Player.Hp_C += _buf_num;
-                    if (Character.Player.Hp_C >= Character.Player.returnHp())
-                        Character.Player.Hp_C = Character.Player.returnHp();
+                    Character.Player.Stat.HP += _buf_num;
+                    if (Character.Player.Stat.HP >= Character.Player.Stat.MAXHP)
+                        Character.Player.Stat.HP = Character.Player.Stat.MAXHP;
 
 
 
@@ -199,9 +199,9 @@ public class Slot : MonoBehaviour
 
 
                     Maxbuf -= _buf_num;
-                    Character.Player.Mp_C += _buf_num;
-                    if (Character.Player.Mp_C >= Character.Player.returnMp())
-                        Character.Player.Mp_C = Character.Player.returnMp();
+                    Character.Player.Stat.MP += _buf_num;
+                    if (Character.Player.Stat.MP >= Character.Player.Stat.MAXMP)
+                        Character.Player.Stat.MP = Character.Player.Stat.MAXMP;
 
 
 

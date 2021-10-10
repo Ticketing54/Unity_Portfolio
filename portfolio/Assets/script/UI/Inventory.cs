@@ -655,11 +655,11 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
         {
             if (tmp[0] == "Defend")
             {
-                Character.Player.Hp_E += float.Parse(tmp[1]);
+                Character.Player.Stat.ATK += float.Parse(tmp[1]);
             }
             else if (tmp[0] == "Atk")
             {
-                Character.Player.Atk_E += float.Parse(tmp[1]);
+                Character.Player.Stat.ATK += float.Parse(tmp[1]);
             }
 
         }
@@ -667,19 +667,19 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
         {
             if (tmp[0] == "Hp")
             {
-                Character.Player.Hp_C += float.Parse(tmp[1]);
+                Character.Player.Stat.HP += float.Parse(tmp[1]);
             }
             else if (tmp[0] == "Mp")
             {
-                Character.Player.Mp_C += float.Parse(tmp[1]);
+                Character.Player.Stat.HP += float.Parse(tmp[1]);
             }
 
         }
 
-        if (Character.Player.Hp_C >= Character.Player.returnHp())
-            Character.Player.Hp_C = Character.Player.returnHp();
-        if (Character.Player.Mp_C >= Character.Player.returnMp())
-            Character.Player.Mp_C = Character.Player.returnMp();
+        if (Character.Player.Stat.HP >= Character.Player.Stat.MAXHP)
+            Character.Player.Stat.HP = Character.Player.Stat.MAXHP;
+        if (Character.Player.Stat.MP >= Character.Player.Stat.MAXMP)
+            Character.Player.Stat.MP = Character.Player.Stat.MAXMP;
 
     }   //장비템 효과 적용
     public void CancleItem(Item _item)
@@ -691,18 +691,18 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
         {
             if (tmp[0] == "Defend")
             {
-                Character.Player.Hp_E -= float.Parse(tmp[1]);
+                Character.Player.Stat.MAXHP -= float.Parse(tmp[1]);
             }
             else if (tmp[0] == "Atk")
             {
-                Character.Player.Atk_E -= float.Parse(tmp[1]);
+                Character.Player.Stat.ATK -= float.Parse(tmp[1]);
             }
         }
 
-        if (Character.Player.Hp_C >= Character.Player.returnHp())
-            Character.Player.Hp_C = Character.Player.returnHp();
-        if (Character.Player.Mp_C >= Character.Player.returnMp())
-            Character.Player.Mp_C = Character.Player.returnMp();
+        if (Character.Player.Stat.HP >= Character.Player.Stat.MAXHP)
+            Character.Player.Stat.HP= Character.Player.Stat.MAXHP;
+        if (Character.Player.Stat.MP >= Character.Player.Stat.MAXMP)
+            Character.Player.Stat.MP = Character.Player.Stat.MAXMP;
     }   // 장비템 효과 적용
 
 

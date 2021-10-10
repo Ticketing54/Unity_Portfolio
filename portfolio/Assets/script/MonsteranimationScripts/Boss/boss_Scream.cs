@@ -54,7 +54,7 @@ public class boss_Scream : StateMachineBehaviour
                 Damage = true;
                 mob.StartCoroutine(DamageOn());
                 SoundManager.soundmanager.soundsPlay("Icestate", Character.Player.gameObject);                
-                Character.Player.Hp_C -= mob.Atk;
+                Character.Player.Stat.HP -= mob.Atk;
                 Character.Player.icestateOn();
                 ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, mob.Atk, Color.red, 1);
 

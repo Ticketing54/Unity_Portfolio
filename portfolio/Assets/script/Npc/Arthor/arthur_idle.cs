@@ -24,7 +24,7 @@ public class arthur_idle : StateMachineBehaviour
         }
         for (int I = 0; I < npc.quest_list.Count; I++)
         {            
-            if (npc.quest_list[I].Index == 2 && npc.quest_list[I].QuestComplete == 1 && Character.Player.Hp_C==Character.Player.returnHp())
+            if (npc.quest_list[I].Index == 2 && npc.quest_list[I].QuestComplete == 1 && Character.Player.Stat.HP==Character.Player.Stat.MAXHP)
             {
                 npc.quest_list[I].QuestComplete = 2;
                 npc.QuestMarkerNum = 2;

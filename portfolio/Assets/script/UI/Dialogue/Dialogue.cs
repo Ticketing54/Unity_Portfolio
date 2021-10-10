@@ -133,12 +133,12 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
                     Rewards.gameObject.SetActive(true);
                     string[] tmp = _rewards.Split('/');
                     Rewards_Exp.text = tmp[0] +"EXP"; //경험치
-                    Character.Player.Exp_C += int.Parse(tmp[0]);
+                    Character.Player.Stat.EXP += int.Parse(tmp[0]);
                     if(tmp[1] != "" ) //골드
                     {
                         Rewards_Gold.gameObject.SetActive(true);
                         Rewards_Gold.text =tmp[1] +"GOLD";
-                        Character.Player.Gold += int.Parse(tmp[1]);
+                        Character.Player.Stat.GOLD += int.Parse(tmp[1]);
                     }
                     else
                     {

@@ -62,7 +62,7 @@ public class SkillSlot : MonoBehaviour
 
 
 
-        if (Character.Player.Mp_C < int.Parse(skill.Mana) || Character.Player.isMove == true)
+        if (Character.Player.Stat.MP < int.Parse(skill.Mana) || Character.Player.isMove == true)
             return;
       
         if (skill.skillType == Skill.SkillType.Active)
@@ -70,19 +70,19 @@ public class SkillSlot : MonoBehaviour
             Monster mob = Character.Player.FindNearEnermy();
             if(mob.DiSTANCE >= 6f && mob.DiSTANCE <= 12f)
             {
-                Character.Player.Atk_Range = 6f;
+                Character.Player.Stat.ATK_RANGE = 6f;
                 Character.Player.Target = mob.gameObject;                
                 return;
 
             }
             if(mob.DiSTANCE < 6f)
             {
-                Character.Player.Mp_C -= int.Parse(skill.Mana);
+                Character.Player.Stat.MP -= int.Parse(skill.Mana);
                 Character.Player.Target = mob.gameObject;
                 Character.Player.SetDestination(Character.Player.transform.position);
                 Vector3 dir = mob.transform.position - Character.Player.transform.position;                
                 Character.Player.gameObject.transform.rotation = Quaternion.LookRotation(dir.normalized);
-                Character.Player.Mp_C -= int.Parse(skill.Mana);
+                Character.Player.Stat.MP -= int.Parse(skill.Mana);
                 Character.Player.anim.SetFloat("SkillNum", skill.Index);
                 Character.Player.anim.SetTrigger("Skill");
                 StartCoroutine(ActiveCoolTimel(skill));
@@ -90,14 +90,14 @@ public class SkillSlot : MonoBehaviour
                 
             }
 
-            Character.Player.Mp_C -= int.Parse(skill.Mana);
+            Character.Player.Stat.MP -= int.Parse(skill.Mana);
             Character.Player.anim.SetFloat("SkillNum", skill.Index);
             Character.Player.anim.SetTrigger("Skill");            
             StartCoroutine(ActiveCoolTimel(skill));
         }
         else if(skill.skillType == Skill.SkillType.Buff)
         {
-            Character.Player.Mp_C -= int.Parse(skill.Mana);
+            Character.Player.Stat.MP -= int.Parse(skill.Mana);
             Character.Player.anim.SetFloat("SkillNum", skill.Index);
             Character.Player.anim.SetTrigger("Skill");
             StartCoroutine(UseBuffSkill(skill));
@@ -139,7 +139,7 @@ public class SkillSlot : MonoBehaviour
                 string[] buf = info[i].Split('/');
                 if (buf[0] == "Atk")
                 {
-                    Character.Player.Atk += int.Parse(buf[1]);
+                    Character.Player.Stat.ATK += int.Parse(buf[1]);
 
                 }
                 else if (buf[0] == "Spd")
@@ -148,7 +148,7 @@ public class SkillSlot : MonoBehaviour
                 }
                 else if (buf[0] == "Cri")
                 {
-                    Character.Player.Cri += int.Parse(buf[1]);
+                    Character.Player.Stat.CRI += int.Parse(buf[1]);
 
                 }
 
@@ -163,7 +163,7 @@ public class SkillSlot : MonoBehaviour
                 string[] buf = info[i].Split('/');
                 if (buf[0] == "Atk")
                 {
-                    Character.Player.Atk -= int.Parse(buf[1]);
+                    Character.Player.Stat.ATK -= int.Parse(buf[1]);
 
                 }
                 else if (buf[0] == "Spd")
@@ -173,7 +173,7 @@ public class SkillSlot : MonoBehaviour
                 }
                 else if (buf[0] == "Cri")
                 {
-                    Character.Player.Cri -= int.Parse(buf[1]);
+                    Character.Player.Stat.CRI -= int.Parse(buf[1]);
 
                 }
 

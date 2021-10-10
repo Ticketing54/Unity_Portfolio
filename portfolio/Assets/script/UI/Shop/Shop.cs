@@ -284,7 +284,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
     public void sell_item()
     {        
         sellMessage.gameObject.SetActive(false);
-        Character.Player.Gold += Price;
+        Character.Player.Stat.GOLD += Price;
         Price = 0;
         list[sellItem_num].SlotClear();
         sellItem_num = -1;
@@ -321,9 +321,9 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
     public void buy_item()
     {
         buyMessage.gameObject.SetActive(false);
-        if(Character.Player.Gold >= Price) // 돈이 있다면
+        if(Character.Player.Stat.GOLD >= Price) // 돈이 있다면
         {
-            Character.Player.Gold -= Price;
+            Character.Player.Stat.GOLD-= Price;
             for(int i = 0; i < list.Count; i++)
             {
                 if (list[i].itemImage.gameObject.activeSelf == false)

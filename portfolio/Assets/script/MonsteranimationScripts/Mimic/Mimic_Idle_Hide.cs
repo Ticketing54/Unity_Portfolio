@@ -37,7 +37,7 @@ public class Mimic_Idle_Hide : StateMachineBehaviour
         {
             TouchMob = true;
             SoundManager.soundmanager.soundsPlay("Character");
-            Character.Player.Hp_C -= 10f;
+            Character.Player.Stat.HP -= 10f;
             ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, 10f,Color.red,1);
             animator.SetBool("FindMob", true);
             Character.Player.anim.SetTrigger("Damage");

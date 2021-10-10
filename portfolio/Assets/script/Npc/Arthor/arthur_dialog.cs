@@ -63,7 +63,7 @@ public class arthur_dialog : StateMachineBehaviour
                 {
                     npc.quest_list[I].QuestComplete = 3;
                     npc.QuestMarkerNum = -1;
-                    Character.Player.Hp_C -= 50;
+                    Character.Player.Stat.HP -= 50;
                     dialog.Npc_Texting(7);                    
                     QuestManager.questManager.DestroyQuestSLot(1);
                     QuestManager.questManager.QuestComplete_QuestList(1);

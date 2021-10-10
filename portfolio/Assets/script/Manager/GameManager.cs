@@ -135,21 +135,17 @@ public class GameManager : MonoBehaviour
     public void New_C_Data()
     {
         character = null;
-        GameObject obj = Instantiate(GetResource("Character", "Character"));
+        GameObject obj = Instantiate(GetResource("Character", "Character"));        
         character = obj.AddComponent<Character>();
+        Status NewStat = new Status("New", 0, 1, 0, 0, 0, 0);
+        NewStat.LevelSetting(1);
+        character.Stat = NewStat;
         character.tag = "Player";
         character.gameObject.layer = 8;        
-        character.name = "Player";
-        character.C_Name = Character_Name;
+        character.name = "Player";        
         Character_Name = string.Empty;
         MapName = "Village";
-        character.StartPos = new Vector3(31f,0f,17f);
-        character.Lev = 1;
-        LevelTableManager.instance.GetLevelTable(1, ref character.Hp, ref character.Mp, ref character.Exp, ref character.Str, ref character.Dex,ref character.Int, ref character.Luk);
-        character.Hp_C = character.Hp;
-        character.Mp_C = character.Mp;
-        character.Exp_C = 0;
-        character.Gold = 100;
+        character.StartPos = new Vector3(31f,0f,17f);        
     }
     public void Load_C_Data(int _num)
     {
@@ -162,24 +158,17 @@ public class GameManager : MonoBehaviour
         string temp = UserDataManager.instance.LoadData(_num);
         string[] DATA = temp.Split('\n');
         GameObject obj = Instantiate(GetResource("Character", "Character"));        
-        character = obj.AddComponent<Character>();
-        
+        character = obj.AddComponent<Character>();        
         character.tag = "Player";
         character.gameObject.layer = 8;
 
         string []info = DATA[0].Split(',');
         character.name = info[0];
-        character.C_Name = character.name;
+        Status NewStat = new Status(info[0], int.Parse(info[10]), int.Parse(info[5]), float.Parse(info[6]), float.Parse(info[7]), float.Parse(info[8]), int.Parse(info[9]));
+        character.Stat = NewStat;
         ChangeLayerObj(character.gameObject.transform, 8);
         MapName = info[1];
-        character.StartPos = new Vector3(float.Parse(info[2]), float.Parse(info[3]), float.Parse(info[4]));
-        character.Lev = int.Parse(info[5]);
-        LevelTableManager.instance.GetLevelTable(character.Lev, ref character.Hp, ref character.Mp, ref character.Exp, ref character.Str,ref character.Dex, ref character.Int, ref character.Luk);
-        character.Hp_C = float.Parse(info[6]);
-        character.Mp_C = float.Parse(info[7]);
-        character.Exp_C = float.Parse(info[8]);
-        character.SkillPoint = int.Parse(info[9]);
-        character.Gold = int.Parse(info[10]);
+        character.StartPos = new Vector3(float.Parse(info[2]), float.Parse(info[3]), float.Parse(info[4]));       
 
 
         if(DATA[1] != "")
