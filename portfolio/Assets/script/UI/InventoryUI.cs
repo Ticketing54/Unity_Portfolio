@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.IO;
 
-public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IBeginDragHandler,IDragHandler,IEndDragHandler
+public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IBeginDragHandler,IDragHandler,IEndDragHandler
 { 
     public List<Slot> list = new List<Slot>();      // 인벤토리
     public List<Slot> Q_list = new List<Slot>();    // 퀵 슬롯
@@ -613,23 +613,23 @@ public class Inventory : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IB
     }
    
    
-    public void SlotUpdate()  // 플레이어의 아이템정보를 불러온다.
-    {
-        for (int i = 0; i < Character.Player.myIven.Count; i++)
-        {
-            list[Character.Player.myIven[i].SlotNum].Add(Character.Player.myIven[i]);
-            list[Character.Player.myIven[i].SlotNum].SetSlotCount();
-        }
+    //public void SlotUpdate()  // 플레이어의 아이템정보를 불러온다.
+    //{
+    //    for (int i = 0; i < Character.Player.myIven.Count; i++)
+    //    {
+    //        list[Character.Player.myIven[i].SlotNum].Add(Character.Player.myIven[i]);
+    //        list[Character.Player.myIven[i].SlotNum].SetSlotCount();
+    //    }
 
-        for(int j = 0; j < Character.Player.myEquip.Count; j++)
-        {
-            ApplyStatus(Character.Player.myEquip[j]);
-            E_list[Character.Player.myEquip[j].SlotNum].Add(Character.Player.myEquip[j]);
-            E_list[Character.Player.myEquip[j].SlotNum].SetSlotCount();
+    //    for(int j = 0; j < Character.Player.myEquip.Count; j++)
+    //    {
+    //        ApplyStatus(Character.Player.myEquip[j]);
+    //        E_list[Character.Player.myEquip[j].SlotNum].Add(Character.Player.myEquip[j]);
+    //        E_list[Character.Player.myEquip[j].SlotNum].SetSlotCount();
             
-        }
+    //    }
         
-    }
+    //}
     
     public void SlotReset()
     {

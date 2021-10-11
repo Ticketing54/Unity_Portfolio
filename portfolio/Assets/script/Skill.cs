@@ -42,6 +42,7 @@ public class Skill
 
     public enum SkillType
     {
+        None,
         Passive,
         Active,
         Buff,

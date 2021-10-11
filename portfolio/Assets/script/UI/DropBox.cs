@@ -8,7 +8,7 @@ public class DropBox : MonoBehaviour, IPointerDownHandler,IDragHandler, IPointer
 {
     public List<Slot> DropSlotlist = new List<Slot>();   
     public MiniInfo miniinfo;    
-    public Inventory Inven;
+    public InventoryUI Inven;
 
 
     public MoveWindow moveWindow;

@@ -13,15 +13,16 @@ public class Character : MonoBehaviour
     public Equipment Equip = null;
     public CharacterSkill Skill = null;
     public CharacterQuest Quest = null;
+    public Inventory Inven = null;
+    public QuickSlot Quick = null;
 
     public List<SkinnedMeshRenderer> Weapon = new List<SkinnedMeshRenderer>();
     public SkinnedMeshRenderer Character_bounds;
     public List<Monster> MobList = new List<Monster>();
     public List<Npc> npcList = new List<Npc>();
-    public List<Item> myIven = new List<Item>();
-    public List<Item> myEquip = new List<Item>();
-    public List<Item> myQuick = new List<Item>();
-    public List<Quest> myQuest = new List<Quest>();
+    
+    
+    
     
 
     public GameObject Target;
@@ -79,16 +80,16 @@ public class Character : MonoBehaviour
     }
 
 
-    public void QuestUpdate(int _index,int _completenum)
-    {
-        foreach(Quest one in myQuest)
-        {
-            if(one.Index == _index)
-            {
-                one.QuestComplete = _completenum;
-            }
-        }
-    }
+    //public void QuestUpdate(int _index,int _completenum)
+    //{
+    //    foreach(Quest one in myQuest)
+    //    {
+    //        if(one.Index == _index)
+    //        {
+    //            one.QuestComplete = _completenum;
+    //        }
+    //    }
+    //}
     private void Start()
     {
         if (nav != null)

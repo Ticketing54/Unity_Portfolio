@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour
 
     //인벤토리
     public GameObject Inven;
-    public Inventory Inv;
+    public InventoryUI Inv;
     public bool InventoryActive    = false;
     public MiniInfo miniinfo;        
     // Exp
@@ -275,16 +275,16 @@ public class UIManager : MonoBehaviour
     public void InfoUpdate()
     {
         Inven.gameObject.SetActive(true);
-        Inv.SlotUpdate();
+        //Inv.SlotUpdate();
         Inven.gameObject.SetActive(false);
         skill.gameObject.SetActive(true);
         skillmanager.UpdateSkill();
         skill.gameObject.SetActive(false);
-        for (int i = 0; i < Character.Player.myQuick.Count; i++)
-        {
-            Inv.Q_list[Character.Player.myQuick[i].SlotNum].Add(Character.Player.myQuick[i]);
-            Inv.Q_list[Character.Player.myQuick[i].SlotNum].SetSlotCount();
-        }
+        //for (int i = 0; i < Character.Player.myQuick.Count; i++)
+        //{
+        //    Inv.Q_list[Character.Player.myQuick[i].SlotNum].Add(Character.Player.myQuick[i]);
+        //    Inv.Q_list[Character.Player.myQuick[i].SlotNum].SetSlotCount();
+        //}
     }
     public void InfoReset()
     {
@@ -431,14 +431,13 @@ public class UIManager : MonoBehaviour
 
 
 
-        Character.Player.myIven = new List<Item>();
-        Character.Player.myQuick = new List<Item>();
-        Character.Player.myEquip = new List<Item>();
+        //Character.Player.myIven = new List<Item>();
+        
         for (int i = 0; i < Inv.list.Count; i++)
         {
             if (Inv.list[i].image.gameObject.activeSelf == true)
             {
-                Character.Player.myIven.Add(Inv.list[i].item);
+                //Character.Player.myIven.Add(Inv.list[i].item);
 
             }
         }
@@ -448,7 +447,7 @@ public class UIManager : MonoBehaviour
             {
                 Item item = Inv.Q_list[i].item;
                 item.SlotNum = i;
-                Character.Player.myQuick.Add(item);
+                //Character.Player.myQuick.Add(item);
 
             }
         }
@@ -456,7 +455,7 @@ public class UIManager : MonoBehaviour
         {
             if (Inv.E_list[i].image.gameObject.activeSelf == true)
             {
-                Character.Player.myEquip.Add(Inv.E_list[i].item);
+                //Character.Player.myEquip.Add(Inv.E_list[i].item);
 
             }
         }

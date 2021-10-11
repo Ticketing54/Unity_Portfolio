@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
         ObjectPoolManager.objManager.PoolingReset_Load();
         SkillManager.skillmanager.ApplySkill();        
         UIManager.uimanager.minimap.MapSetting();   //미니맵 변경
-        QuestManager.questManager.applyQuest();
+        //QuestManager.questManager.applyQuest();
         CameraManager.cameraManager.IsCharacter = true;
 
     }
@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
         Load_Map_Data();
         Load_Mob_Data();
         Load_Npc_Data();
-        QuestManager.questManager.applyQuest();
+        //QuestManager.questManager.applyQuest();
         UIManager.uimanager.minimap.MapSetting();
         CameraManager.cameraManager.IsCharacter = true;
     }
@@ -181,7 +181,7 @@ public class GameManager : MonoBehaviour
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);
-                character.myIven.Add(tmp);
+                character.Inven.Add(int.Parse(sInven[1]), tmp);
             }
         }
         if (DATA[2] != "")
@@ -193,8 +193,8 @@ public class GameManager : MonoBehaviour
                 List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
-                tmp.ItemCount = 1;
-                character.myEquip.Add(tmp);
+                tmp.ItemCount = 1;                
+                character.Equip.Add((int)tmp.EquipType, tmp);
             }
         }
         if (DATA[3] != "")
@@ -206,8 +206,8 @@ public class GameManager : MonoBehaviour
                 List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
-                tmp.ItemCount = int.Parse(sInven[2]);
-                character.myQuick.Add(tmp);
+                tmp.ItemCount = int.Parse(sInven[2]);                
+                character.Quick.AddItem(0,tmp.SlotNum, tmp);
             }
         }
         if (DATA[4] != "")

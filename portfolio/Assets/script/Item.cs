@@ -10,6 +10,7 @@ public class Item
 {
     public enum ItemType
     {
+        None,
         Equipment,
         Used,
         Etc
@@ -35,6 +36,16 @@ public class Item
     public string ItemProperty { get; }
     public string itemSpriteName { get; }
     public int ItemPrice { get; }
+    public int SellPrice
+    {
+        get
+        {
+            int tmp = ItemPrice / 2;
+            if (tmp <= 0)
+                return 1;
+            return tmp;
+        }
+    }
     public int ItemCount { get; set; }    
     public Item(int _Index, int _ItemType,string _ItemName, string _ItemSpriteName,string _ItemExplain, string _ItemProperty, int _ItemPrice, int _E_Index=0,int _ItemCount=1)
     {
