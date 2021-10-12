@@ -7,26 +7,41 @@ using System.IO;
 
 public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IBeginDragHandler,IDragHandler,IEndDragHandler
 { 
-    public List<Slot> list = new List<Slot>();      // 인벤토리
-    public List<Slot> Q_list = new List<Slot>();    // 퀵 슬롯
-    public List<Slot> E_list = new List<Slot>();    // 장비창    
+    public List<ItemSlot> Inven = new List<ItemSlot>();     // 인벤토리
+    public List<ItemSlot> Quick = new List<ItemSlot>();    // 퀵 슬롯
+    public List<ItemSlot> Equip = new List<ItemSlot>();    // 장비창    
     
+    public enum ListType
+    {
+        INVEN,
+        QUICK,
+        EQUIP
+    }
+    [SerializeField]
+    ListType MoveListType;
+    [SerializeField]
+    int MoveItemIndex;
+    [SerializeField]
+    int MoveSlotNumber;
+    public int WorkingSlot = -1;
 
+
+    public Image MoveIcon = null;
     public MoveWindow movewindow;                   //윈도우창 움직이기
     public RectTransform Window;                    //움직이는 대상
     public bool WindowDrag = false;                 //윈도우 바를 클릭했을때
     public Vector2 Window_Preset = Vector2.zero;
+
+    public int ClickItemIndex;
+    public int ClickSlot;
+
+    public List<ItemSlot> OldSlotList;
+    public Vector2 OldClickPos;
+    
     
     
 
-    public List<Slot> OldSlotList;
-    public Vector2 OldClickPos;
-    public Image MoveIcon = null;
-    public Item Moveitem = null;
-    public Item Clickitem = null;
-    public Image ClickitemImage = null;
-    public int WorkingSlot = -1;
-    public Character Player;
+
     public MiniInfo miniinfo;
     public Shop shop;
 
@@ -37,21 +52,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
 
     public bool isClick = false;
     public bool ItemInfo = false;
-    
-    
-
-
-    private void Update()
-    {
-        if(Player == null)
-        {
-            Player = Character.Player;
-        }
-      
         
-    }
-
-    
     public void OnPointerDown(PointerEventData data)
     {
         if (shop.gameObject.activeSelf == true)
@@ -65,16 +66,15 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
         {            
             if (InventoryMax.activeSelf == false)
             {
-              
-
-                for (int i = 0; i < Q_list.Count; i++)
+                for (int i = 0; i < Quick.Count; i++)
                 {
-                    if (Q_list[i].isInRect(data.position) && Q_list[i].image.gameObject.activeSelf == true)
+                    if (Quick[i].isInRect(data.position) && Quick[i].ActiveIcon())
                     {
-                        Clickitem = Q_list[i].item;
-                        ClickitemImage = Q_list[i].image;
+                        MoveItemIndex = Character.Player.Quick.GetItem.
+                        Clickitem = Quick[i].item;
+                        ClickitemImage = Quick[i].Icon;
                         ItemInfo = true;
-                        Begin_DragSlot(Q_list, i);
+                        Begin_DragSlot(Quick, i);
                         MoveIcon.transform.position = data.position;
                         return;
                     }
@@ -89,40 +89,40 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                     Window_Preset = data.position - (Vector2)Window.position;
 
                 }
-                for (int j = 0; j < Q_list.Count; j++)
+                for (int j = 0; j < Quick.Count; j++)
                 {
-                    if (Q_list[j].isInRect(data.position) && Q_list[j].image.gameObject.activeSelf == true)
+                    if (Quick[j].isInRect(data.position) && Quick[j].ActiveIcon())
                     {
-                        Clickitem = Q_list[j].item;
-                        ClickitemImage = Q_list[j].image;
+                        Clickitem = Quick[j].item;
+                        ClickitemImage = Quick[j].Icon;
                         ItemInfo = true;
-                        Begin_DragSlot(Q_list, j);
+                        Begin_DragSlot(Quick, j);
                         MoveIcon.transform.position = data.position;
                         return;
                     }
 
                 }
-                for (int k = 0; k < E_list.Count; k++)
+                for (int k = 0; k < Equip.Count; k++)
                 {
-                    if (E_list[k].isInRect(data.position) && E_list[k].image.gameObject.activeSelf == true)
+                    if (Equip[k].isInRect(data.position) && Equip[k].ActiveIcon())
                     {
-                        Clickitem = E_list[k].item;
-                        ClickitemImage = E_list[k].image;
+                        Clickitem = Equip[k].item;
+                        ClickitemImage = Equip[k].Icon;
                         ItemInfo = true;
-                        Begin_DragSlot(E_list, k);
+                        Begin_DragSlot(Equip, k);
                         MoveIcon.transform.position = data.position;
                         return;
                     }
                    
                 }
-                for (int i = 0; i < list.Count; i++)
+                for (int i = 0; i < Inven.Count; i++)
                 {
-                    if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == true)
+                    if (Inven[i].isInRect(data.position) && Inven[i].ActiveIcon())
                     {
-                        Clickitem = list[i].item;
-                        ClickitemImage = list[i].image;
+                        Clickitem = Inven[i].item;
+                        ClickitemImage = Inven[i].Icon;
                         ItemInfo = true;
-                        Begin_DragSlot(list, i);
+                        Begin_DragSlot(Inven, i);
                         MoveIcon.transform.position = data.position;
                         return;
                     }
@@ -138,11 +138,11 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
             
             if (InventoryMax.activeSelf == false)
             {
-                for (int i = 0; i < Q_list.Count; i++)
+                for (int i = 0; i < Quick.Count; i++)
                 {
-                    if (Q_list[i].isInRect(data.position) && Q_list[i].image.gameObject.activeSelf == true)
+                    if (Quick[i].isInRect(data.position) && Quick[i].ActiveIcon())
                     {
-                        Begin_Click_R(Q_list, i);
+                        Begin_Click_R(Quick, i);
                         return;
                     }
 
@@ -150,29 +150,29 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
             }
             else if (InventoryMax.activeSelf == true)
             {
-                for (int j = 0; j < Q_list.Count; j++)
+                for (int j = 0; j < Quick.Count; j++)
                 {
-                    if (Q_list[j].isInRect(data.position) && Q_list[j].image.gameObject.activeSelf == true)
+                    if (Quick[j].isInRect(data.position) && Quick[j].ActiveIcon())
                     {
-                        Begin_Click_R(Q_list, j);
+                        Begin_Click_R(Quick, j);
                         return;
                     }
 
                 }
-                for (int k = 0; k < E_list.Count; k++)
+                for (int k = 0; k < Equip.Count; k++)
                 {
-                    if (E_list[k].isInRect(data.position) && E_list[k].image.gameObject.activeSelf == true)
+                    if (Equip[k].isInRect(data.position) && Equip[k].ActiveIcon())
                     {
-                        Begin_Click_R(E_list, k);
+                        Begin_Click_R(Equip, k);
                         return;
                     }
                     
                 }
-                for (int i = 0; i < list.Count; i++)
+                for (int i = 0; i < Inven.Count; i++)
                 {
-                    if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == true)
+                    if (Inven[i].isInRect(data.position) && Inven[i].ActiveIcon())
                     {
-                        Begin_Click_R(list, i);
+                        Begin_Click_R(Inven, i);
                         return;
                     }
 
@@ -195,7 +195,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
             if (WorkingSlot < 0)
                 return;
             Vector3 Pos;
-            if (OldSlotList == Q_list)
+            if (OldSlotList == Quick)
             {
                 Pos = new Vector3(data.position.x + 75f, data.position.y + 100f, 0);
             }
@@ -226,24 +226,24 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
         {
             if (InventoryMax.activeSelf == false)   // 인벤토리가 꺼져있을때
             {
-                for (int i = 0; i < Q_list.Count; i++)
+                for (int i = 0; i < Quick.Count; i++)
                 {
-                    if (Q_list[i].isInRect(data.position) && Q_list[i].image.gameObject.activeSelf == false)
+                    if (Quick[i].isInRect(data.position) && !Quick[i].ActiveIcon())
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Empty(Q_list, i);
+                        End_Drag_Empty(Quick, i);
                         return;
                     }
-                    else if (Q_list[i].isInRect(data.position) && Q_list[i].item.Index == Moveitem.Index)
+                    else if (Quick[i].isInRect(data.position) && Quick[i].item.Index == Moveitem.Index)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Same(Q_list, i);
+                        End_Drag_Same(Quick, i);
                         return;
                     }
-                    else if (Q_list[i].isInRect(data.position) && Q_list[i].image.gameObject.activeSelf == true)
+                    else if (Quick[i].isInRect(data.position) && Quick[i].Icon.gameObject.activeSelf == true)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Different(Q_list, i);
+                        End_Drag_Different(Quick, i);
                         return;
                     }
 
@@ -258,63 +258,63 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
             else if (InventoryMax.activeSelf == true)  // 인벤토리 켜져있을때
             {
 
-                for (int i = 0; i < list.Count; i++)
+                for (int i = 0; i < Inven.Count; i++)
                 {
-                    if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == false)
+                    if (Inven[i].isInRect(data.position) && Inven[i].Icon.gameObject.activeSelf == false)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Empty(list, i);
+                        End_Drag_Empty(Inven, i);
                         return;
                     }
-                    else if (list[i].isInRect(data.position) && list[i].item.Index == Moveitem.Index)
+                    else if (Inven[i].isInRect(data.position) && Inven[i].item.Index == Moveitem.Index)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Same(list, i);
+                        End_Drag_Same(Inven, i);
                         return;
                     }
-                    else if (list[i].isInRect(data.position) && list[i].image.gameObject.activeSelf == true)
+                    else if (Inven[i].isInRect(data.position) && Inven[i].Icon.gameObject.activeSelf == true)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Different(list, i);
+                        End_Drag_Different(Inven, i);
                         return;
                     }
 
                 }
 
-                for (int j = 0; j < Q_list.Count; j++)
+                for (int j = 0; j < Quick.Count; j++)
                 {
-                    if (Q_list[j].isInRect(data.position) && Q_list[j].image.gameObject.activeSelf == false)
+                    if (Quick[j].isInRect(data.position) && Quick[j].Icon.gameObject.activeSelf == false)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Empty(Q_list, j);
+                        End_Drag_Empty(Quick, j);
                         return;
                     }
-                    else if (Q_list[j].isInRect(data.position) && Q_list[j].item.Index == Moveitem.Index)
+                    else if (Quick[j].isInRect(data.position) && Quick[j].item.Index == Moveitem.Index)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Same(Q_list, j);
+                        End_Drag_Same(Quick, j);
                         return;
                     }
-                    else if (Q_list[j].isInRect(data.position) && Q_list[j].image.gameObject.activeSelf == true)
+                    else if (Quick[j].isInRect(data.position) && Quick[j].Icon.gameObject.activeSelf == true)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Different(Q_list, j);
+                        End_Drag_Different(Quick, j);
                         return;
                     }
 
                 }
-                for (int k = 0; k < E_list.Count; k++)
+                for (int k = 0; k < Equip.Count; k++)
                 {
-                    if (E_list[k].isInRect(data.position) && E_list[k].image.gameObject.activeSelf == false)
+                    if (Equip[k].isInRect(data.position) && Equip[k].Icon.gameObject.activeSelf == false)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Empty(E_list, k);
+                        End_Drag_Empty(Equip, k);
                         return;
                     }
-                    else if (E_list[k].isInRect(data.position) && E_list[k].image.gameObject.activeSelf == true)
+                    else if (Equip[k].isInRect(data.position) && Equip[k].Icon.gameObject.activeSelf == true)
                     {
                         SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Different(E_list, k);
+                        End_Drag_Different(Equip, k);
                         return;
                     }
 
@@ -367,7 +367,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     public void Begin_Click_R(List<Slot> _list, int _num)
     {
         Clickitem = _list[_num].item;
-        ClickitemImage = _list[_num].image;
+        ClickitemImage = _list[_num].Icon;
         isClick = true;
         OldSlotList = _list;
         WorkingSlot = _num;
@@ -380,16 +380,16 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
         {
             Begin_DragSlot(OldSlotList, WorkingSlot);
 
-            if (OldSlotList == E_list)
+            if (OldSlotList == Equip)
             {
                 Clickitem = null;
                 ClickitemImage = null;
-                for (int i = 0; i < list.Count; i++)
+                for (int i = 0; i < Inven.Count; i++)
                 {
-                    if (list[i].image.gameObject.activeSelf == false)
+                    if (Inven[i].Icon.gameObject.activeSelf == false)
                     {
 
-                        End_Drag_Empty(list, i);
+                        End_Drag_Empty(Inven, i);
                         return;
                     }
                 }
@@ -397,17 +397,17 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
             }
             else
             {
-                if (E_list[(int)Clickitem.EquipType].image.gameObject.activeSelf == false)
+                if (Equip[(int)Clickitem.EquipType].Icon.gameObject.activeSelf == false)
                 {
-                    End_Drag_Empty(E_list, (int)Clickitem.EquipType);
+                    End_Drag_Empty(Equip, (int)Clickitem.EquipType);
                     Clickitem = null;
                     ClickitemImage = null;
                     return;
 
                 }
-                else if (E_list[(int)Clickitem.EquipType].image.gameObject.activeSelf == true)
+                else if (Equip[(int)Clickitem.EquipType].Icon.gameObject.activeSelf == true)
                 {
-                    End_Drag_Different(E_list, (int)Clickitem.EquipType);
+                    End_Drag_Different(Equip, (int)Clickitem.EquipType);
                     Clickitem = null;
                     ClickitemImage = null;
                     return;
@@ -443,13 +443,13 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     }
     public void Begin_DragSlot(List<Slot> _list, int _num)  // 드래그 시작
     {
-        if(_list == E_list)
+        if(_list == Equip)
         {
             CancleItem(_list[_num].item);
         }
 
         MoveIcon.gameObject.SetActive(true);
-        MoveIcon.sprite = _list[_num].image.sprite;
+        MoveIcon.sprite = _list[_num].Icon.sprite;
         Moveitem = _list[_num].item;        
         _list[_num].Clear();
         OldSlotList = _list;
@@ -474,7 +474,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     }
     public void End_Drag_Different(List<Slot> _list, int _num) // 드래그 목표가 다를 때
     {
-        if (_list == E_list)
+        if (_list == Equip)
         {
             if (Moveitem.itemType == Item.ItemType.Equipment && (int)Moveitem.EquipType == _num)
             {
@@ -485,14 +485,14 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                     CancleItem(_list[_num].item);
                     OldSlotList[WorkingSlot].item = _list[_num].item;
                     OldSlotList[WorkingSlot].item.SlotNum = WorkingSlot;
-                    OldSlotList[WorkingSlot].image.gameObject.SetActive(true);
-                    OldSlotList[WorkingSlot].image.sprite = _list[_num].image.sprite;
+                    OldSlotList[WorkingSlot].Icon.gameObject.SetActive(true);
+                    OldSlotList[WorkingSlot].Icon.sprite = _list[_num].Icon.sprite;
                     OldSlotList[WorkingSlot].SetSlotCount();
 
 
                     _list[_num].item = Moveitem;
                     _list[_num].item.SlotNum = _num;
-                    _list[_num].image.sprite = MoveIcon.sprite;
+                    _list[_num].Icon.sprite = MoveIcon.sprite;
                     _list[_num].SetSlotCount();
                     Moveitem = null;
                     MoveIcon.gameObject.SetActive(false);
@@ -514,7 +514,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 return;
             }
         }
-        else if(_list == Q_list)
+        else if(_list == Quick)
         {
             if(Moveitem.itemType != Item.ItemType.Used)
             {
@@ -522,7 +522,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 return;
             }
         }
-        if (OldSlotList == Q_list && _list[_num].item.itemType != Item.ItemType.Used)
+        if (OldSlotList == Quick && _list[_num].item.itemType != Item.ItemType.Used)
         {
             End_Drag_Empty(OldSlotList, WorkingSlot);
             return;
@@ -534,14 +534,14 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
 
         OldSlotList[WorkingSlot].item = _list[_num].item;
         OldSlotList[WorkingSlot].item.SlotNum = WorkingSlot;
-        OldSlotList[WorkingSlot].image.gameObject.SetActive(true);
-        OldSlotList[WorkingSlot].image.sprite = _list[_num].image.sprite;
+        OldSlotList[WorkingSlot].Icon.gameObject.SetActive(true);
+        OldSlotList[WorkingSlot].Icon.sprite = _list[_num].Icon.sprite;
         OldSlotList[WorkingSlot].SetSlotCount();
 
 
         _list[_num].item = Moveitem;
         _list[_num].item.SlotNum = _num;
-        _list[_num].image.sprite = MoveIcon.sprite;
+        _list[_num].Icon.sprite = MoveIcon.sprite;
         _list[_num].SetSlotCount();
         Moveitem = null;
         MoveIcon.gameObject.SetActive(false);
@@ -552,7 +552,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     public void End_Drag_Empty(List<Slot> _list, int _num) // 빈곳에 드래그 했을때 
     {
 
-        if (_list == E_list)
+        if (_list == Equip)
         {
             if (Moveitem.itemType == Item.ItemType.Equipment && (int)Moveitem.EquipType == _num)
             {
@@ -562,8 +562,8 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                     ApplyStatus(Moveitem);
                     _list[_num].item = Moveitem;
                     _list[_num].item.SlotNum = _num;
-                    _list[_num].image.gameObject.SetActive(true);
-                    _list[_num].image.sprite = MoveIcon.sprite;
+                    _list[_num].Icon.gameObject.SetActive(true);
+                    _list[_num].Icon.sprite = MoveIcon.sprite;
 
                     _list[_num].SetSlotCount();
                     Moveitem = null;
@@ -588,7 +588,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
 
 
         }
-        else if (_list == Q_list)
+        else if (_list == Quick)
         {
             if (Moveitem.itemType != Item.ItemType.Used)
             {
@@ -601,8 +601,8 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
 
         _list[_num].item = Moveitem;
         _list[_num].item.SlotNum = _num;
-        _list[_num].image.gameObject.SetActive(true);
-        _list[_num].image.sprite = MoveIcon.sprite;
+        _list[_num].Icon.gameObject.SetActive(true);
+        _list[_num].Icon.sprite = MoveIcon.sprite;
         
         _list[_num].SetSlotCount();
         Moveitem = null;
@@ -633,15 +633,15 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     
     public void SlotReset()
     {
-        foreach(Slot one in list)
+        foreach(Slot one in Inven)
         {
             one.Clear();
         }
-        foreach (Slot one in Q_list)
+        foreach (Slot one in Quick)
         {
             one.Clear();
         }
-        foreach (Slot one in E_list)
+        foreach (Slot one in Equip)
         {
             one.Clear();
         }
@@ -709,11 +709,11 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
 
     public void getItem(Item _item)
     {
-        for(int i = 0; i < list.Count; i++)
+        for(int i = 0; i < Inven.Count; i++)
         {
-            if(list[i].image.gameObject.activeSelf == false)
+            if(Inven[i].Icon.gameObject.activeSelf == false)
             {
-                list[i].Add(_item);
+                Inven[i].Add(_item);
                 return;
             }
         }

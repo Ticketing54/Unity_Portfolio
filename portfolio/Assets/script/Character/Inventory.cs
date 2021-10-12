@@ -9,6 +9,7 @@ public class Inventory
     {
         Inven = new Item[18];
     }
+    public Item GetItem(int _Num) { return Inven[_Num]; }
     public void Add(int _Index, Item _NewItem)
     {
         Inven[_Index] = _NewItem;

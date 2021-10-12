@@ -5,130 +5,101 @@ using UnityEngine.UI;
 using TMPro;
 
 
-public class SkillSlot : MonoBehaviour
+public class SkillSlot : Slot
 {
-    public Skill skill = null;   
-    public Image skillImage;
-    public Image CoolTime_Image;
-    public TextMeshProUGUI CoolTime_Num;
-    public Image Possible_Image; // 습득한거
-    public Image PosLev_Image;      //습득가능한거
-    
+    [SerializeField]
+    int SlotNum;
+    [SerializeField]
+    Image CoolTime_Icon;
+    [SerializeField]
+    TextMeshProUGUI CoolTime_Count;        
+    [SerializeField]
+    Skill skill;
+    public void Add(string _Name)
+    {
+        skill = Character.Player.Skill.FindSKill(_Name);
+        if (skill == null)
+            return;
+
+        Icon.gameObject.SetActive(true);
+        Icon.sprite = GameManager.gameManager.GetSprite(skill.skillSpriteName);
+    }
+    public override void Clear()
+    {
+        skill = null;
+        Icon.sprite = null;
+        Icon.gameObject.SetActive(false);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     public bool isactive = false;
 
 
-    public RectTransform tr;
-    Rect rc;
-    GameObject Effect;
-    public Rect RC
-    {
-        get
-        {
-            rc.x = tr.position.x - tr.rect.width * 0.5f;
-            rc.y = tr.position.y + tr.rect.height * 0.5f;
-            return rc;
-        }
-    }
-
-
-    void Start()
-    {
-        rc.x = tr.transform.position.x - tr.rect.width / 2;
-        rc.y = tr.transform.position.y + tr.rect.height / 2;
-        rc.xMax = tr.rect.width;
-        rc.yMax = tr.rect.height;
-        rc.width = tr.rect.width;
-        rc.height = tr.rect.height;       
-    }
-
-
-
-
-
-
-
-    public bool isInRect(Vector2 pos)
-    {
-        if (pos.x >= RC.x &&pos.x <= RC.x + RC.width &&pos.y >= RC.y - RC.height &&pos.y <= RC.y)
-        {
-            
-            return true;
-        }
-        return false;
-    }
     
-    public void UseSkill()
-    {
+    
+    GameObject Effect;      
+    //public void UseSkill()
+    //{
 
 
 
-        if (Character.Player.Stat.MP < int.Parse(skill.Mana) || Character.Player.isMove == true)
-            return;
+    //    if (Character.Player.Stat.MP < int.Parse(skill.Mana) || Character.Player.isMove == true)
+    //        return;
       
-        if (skill.skillType == Skill.SkillType.Active)
-        {
-            Monster mob = Character.Player.FindNearEnermy();
-            if(mob.DiSTANCE >= 6f && mob.DiSTANCE <= 12f)
-            {
-                Character.Player.Stat.ATK_RANGE = 6f;
-                Character.Player.Target = mob.gameObject;                
-                return;
+    //    if (skill.skillType == Skill.SkillType.Active)
+    //    {
+    //        Monster mob = Character.Player.FindNearEnermy();
+    //        if(mob.DiSTANCE >= 6f && mob.DiSTANCE <= 12f)
+    //        {
+    //            Character.Player.Stat.ATK_RANGE = 6f;
+    //            Character.Player.Target = mob.gameObject;                
+    //            return;
 
-            }
-            if(mob.DiSTANCE < 6f)
-            {
-                Character.Player.Stat.MP -= int.Parse(skill.Mana);
-                Character.Player.Target = mob.gameObject;
-                Character.Player.SetDestination(Character.Player.transform.position);
-                Vector3 dir = mob.transform.position - Character.Player.transform.position;                
-                Character.Player.gameObject.transform.rotation = Quaternion.LookRotation(dir.normalized);
-                Character.Player.Stat.MP -= int.Parse(skill.Mana);
-                Character.Player.anim.SetFloat("SkillNum", skill.Index);
-                Character.Player.anim.SetTrigger("Skill");
-                StartCoroutine(ActiveCoolTimel(skill));
-                return;
+    //        }
+    //        if(mob.DiSTANCE < 6f)
+    //        {
+    //            Character.Player.Stat.MP -= int.Parse(skill.Mana);
+    //            Character.Player.Target = mob.gameObject;
+    //            Character.Player.SetDestination(Character.Player.transform.position);
+    //            Vector3 dir = mob.transform.position - Character.Player.transform.position;                
+    //            Character.Player.gameObject.transform.rotation = Quaternion.LookRotation(dir.normalized);
+    //            Character.Player.Stat.MP -= int.Parse(skill.Mana);
+    //            Character.Player.anim.SetFloat("SkillNum", skill.Index);
+    //            Character.Player.anim.SetTrigger("Skill");
+    //            StartCoroutine(ActiveCoolTimel(skill));
+    //            return;
                 
-            }
+    //        }
 
-            Character.Player.Stat.MP -= int.Parse(skill.Mana);
-            Character.Player.anim.SetFloat("SkillNum", skill.Index);
-            Character.Player.anim.SetTrigger("Skill");            
-            StartCoroutine(ActiveCoolTimel(skill));
-        }
-        else if(skill.skillType == Skill.SkillType.Buff)
-        {
-            Character.Player.Stat.MP -= int.Parse(skill.Mana);
-            Character.Player.anim.SetFloat("SkillNum", skill.Index);
-            Character.Player.anim.SetTrigger("Skill");
-            StartCoroutine(UseBuffSkill(skill));
-        }
+    //        Character.Player.Stat.MP -= int.Parse(skill.Mana);
+    //        Character.Player.anim.SetFloat("SkillNum", skill.Index);
+    //        Character.Player.anim.SetTrigger("Skill");            
+    //        StartCoroutine(ActiveCoolTimel(skill));
+    //    }
+    //    else if(skill.skillType == Skill.SkillType.Buff)
+    //    {
+    //        Character.Player.Stat.MP -= int.Parse(skill.Mana);
+    //        Character.Player.anim.SetFloat("SkillNum", skill.Index);
+    //        Character.Player.anim.SetTrigger("Skill");
+    //        StartCoroutine(UseBuffSkill(skill));
+    //    }
         
-    }
+    //}
   
     
 
-    
-    public void Addskill(Skill _skill)
-    {
-        skill = _skill;
-        skillImage.gameObject.SetActive(true);        
-        skillImage.sprite = GameManager.gameManager.GetSprite(_skill.skillSpriteName);                    
-        
-    }
-    public void SlotClear()
-    {
-        this.skill= null;
-        skillImage.sprite = null;        
-        skillImage.gameObject.SetActive(false);    
-        
-    }
-
    
-    public void PossibleSkill()
-    {
-        Possible_Image.gameObject.SetActive(false);
-
-    }
+   
     public void statusbuf (string _info, bool _Done)
     {
         if(_Done == false)
@@ -178,19 +149,7 @@ public class SkillSlot : MonoBehaviour
                 }
 
             }
-
         }
-
-
-
-
-
-
-
-
-
-
-
     }
  
     // 스킬 쿨타임
@@ -204,8 +163,8 @@ public class SkillSlot : MonoBehaviour
         buf_Image.cooltime_num.gameObject.SetActive(true);                                          //쿨타임 숫자
         float HoldTime = skill.HoldTime;
         float HoldTime_Max = HoldTime;
-        CoolTime_Image.gameObject.SetActive(true);
-        CoolTime_Num.gameObject.SetActive(true);
+        CoolTime_Icon.gameObject.SetActive(true);
+        CoolTime_Count.gameObject.SetActive(true);
         float CoolTimeMax = _coolTime;
 
         statusbuf(skill.skill_ability, false);
@@ -214,8 +173,8 @@ public class SkillSlot : MonoBehaviour
         {            
             //스킬창 쿨타임
             _coolTime -= Time.deltaTime;
-            CoolTime_Num.text = ((int)_coolTime).ToString();
-            CoolTime_Image.fillAmount = (_coolTime/CoolTimeMax);
+            CoolTime_Count.text = ((int)_coolTime).ToString();
+            CoolTime_Icon.fillAmount = (_coolTime/CoolTimeMax);
             if (buf_Image !=null&&Effect !=null)
             {
                 Effect.transform.position = Character.Player.transform.position;
@@ -242,8 +201,8 @@ public class SkillSlot : MonoBehaviour
             if (_coolTime <= 0)
             {
                 
-                CoolTime_Image.gameObject.SetActive(false);
-                CoolTime_Num.gameObject.SetActive(false);               
+                CoolTime_Icon.gameObject.SetActive(false);
+                CoolTime_Count.gameObject.SetActive(false);               
                 yield break;
             }
 
@@ -268,8 +227,8 @@ public class SkillSlot : MonoBehaviour
     {
         
         float _coolTime = _skill.cooltime;       
-        CoolTime_Image.gameObject.SetActive(true);
-        CoolTime_Num.gameObject.SetActive(true);
+        CoolTime_Icon.gameObject.SetActive(true);
+        CoolTime_Count.gameObject.SetActive(true);
         float CoolTimeMax = _coolTime;
 
 
@@ -278,15 +237,15 @@ public class SkillSlot : MonoBehaviour
         {
             //스킬창 쿨타임
             _coolTime -= Time.deltaTime;
-            CoolTime_Num.text = ((int)_coolTime).ToString();
-            CoolTime_Image.fillAmount = (_coolTime / CoolTimeMax);                       
+            CoolTime_Count.text = ((int)_coolTime).ToString();
+            CoolTime_Icon.fillAmount = (_coolTime / CoolTimeMax);                       
 
 
             if (_coolTime <= 0)
             {
 
-                CoolTime_Image.gameObject.SetActive(false);
-                CoolTime_Num.gameObject.SetActive(false);
+                CoolTime_Icon.gameObject.SetActive(false);
+                CoolTime_Count.gameObject.SetActive(false);
                 yield break;
             }
 

@@ -5,10 +5,8 @@ using UnityEngine.UI;
 
 
 public class Slot : MonoBehaviour
-{
-    public Item item = null;   
-    public Image image;    
-    public Text Count;
+{       
+    protected Image Icon;        
     public RectTransform tr;
     Rect rc;
     public Rect RC
@@ -20,8 +18,6 @@ public class Slot : MonoBehaviour
             return rc;
         }
     }
-
-
     void Start()
     {
         rc.x = tr.transform.position.x - tr.rect.width / 2;
@@ -31,46 +27,43 @@ public class Slot : MonoBehaviour
         rc.width = tr.rect.width;
         rc.height = tr.rect.height;       
     }
-
+    public bool ActiveIcon() { return Icon.gameObject.activeSelf; }
     public bool isInRect(Vector2 pos)
     {
         if (pos.x >= RC.x &&pos.x <= RC.x + RC.width &&pos.y >= RC.y - RC.height &&pos.y <= RC.y)
-        {
-            
+        {            
             return true;
         }
         return false;
-    }
-    
+    }    
+    public virtual void Add(){}
+    public virtual void Clear(){}
 
-  
+    //public void SetSlotCount()
+    //{
+    //    //if (item.ItemCount > 1)
+    //    //{
+    //    //    Count.gameObject.SetActive(true);
+    //    //    Count.text = item.ItemCount.ToString();
+    //    //}
+
+    //    //if (item.ItemCount == 1)
+    //    //{
+
+    //    //    Count.gameObject.SetActive(false);
+
+    //    //}
 
 
-    
-    public void Add(Item _item)
-    {
-        item = _item;
-        image.gameObject.SetActive(true);        
-        image.sprite = GameManager.gameManager.GetSprite(_item.itemSpriteName);            
-        SetSlotCount();
-        
-    }
-    public void Clear()
-    {
-        this.item= null;
-        image.sprite = null;
-        Count.text = string.Empty;
-        image.gameObject.SetActive(false);
-        Count.gameObject.SetActive(false);
-        
-    }
+    //    //if (item.ItemCount <= 0)
+    //    //    Clear();
+    //}
 
-    
- 
+
     // 아이템 쿨타임
-  
 
-    
+
+
     IEnumerator buf_character(string _bufimagename,float buf_num_max, float _buf_num, float Max_Time) //버프이미지 // 총 버프하는 양 // 초당 버프하는 양// 총 버프되는시간
     {
         
@@ -193,25 +186,7 @@ public class Slot : MonoBehaviour
     }
    
     // 아이템 개수 조정
-    public void SetSlotCount()
-    {
-        if (item.ItemCount > 1)
-        {
-            Count.gameObject.SetActive(true);
-            Count.text = item.ItemCount.ToString();
-        }
-
-        if(item.ItemCount == 1)
-        {
-            
-            Count.gameObject.SetActive(false);
-            
-        }
-            
-
-        if (item.ItemCount <= 0)
-            Clear();
-    }
+    
 
    
    

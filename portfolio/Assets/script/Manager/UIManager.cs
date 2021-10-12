@@ -296,19 +296,19 @@ public class UIManager : MonoBehaviour
     }
     public void UseQuickSlot()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1) && QuickSlot[0].image.gameObject.activeSelf == true)
+        if (Input.GetKeyDown(KeyCode.Alpha1) && QuickSlot[0].Icon.gameObject.activeSelf == true)
         {
             //QuickSlot[0].UseItem();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2)&&QuickSlot[1].image.gameObject.activeSelf == true)
+        if (Input.GetKeyDown(KeyCode.Alpha2)&&QuickSlot[1].Icon.gameObject.activeSelf == true)
         {
            // QuickSlot[1].UseItem();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3) && QuickSlot[2].image.gameObject.activeSelf == true)
+        if (Input.GetKeyDown(KeyCode.Alpha3) && QuickSlot[2].Icon.gameObject.activeSelf == true)
         {
             //QuickSlot[2].UseItem();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha4) && QuickSlot[3].image.gameObject.activeSelf == true)
+        if (Input.GetKeyDown(KeyCode.Alpha4) && QuickSlot[3].Icon.gameObject.activeSelf == true)
         {
             //QuickSlot[3].UseItem();
         } 
@@ -433,27 +433,27 @@ public class UIManager : MonoBehaviour
 
         //Character.Player.myIven = new List<Item>();
         
-        for (int i = 0; i < Inv.list.Count; i++)
+        for (int i = 0; i < Inv.Inven.Count; i++)
         {
-            if (Inv.list[i].image.gameObject.activeSelf == true)
+            if (Inv.Inven[i].Icon.gameObject.activeSelf == true)
             {
                 //Character.Player.myIven.Add(Inv.list[i].item);
 
             }
         }
-        for (int i = 0; i < Inv.Q_list.Count; i++)
+        for (int i = 0; i < Inv.Quick.Count; i++)
         {
-            if (Inv.Q_list[i].image.gameObject.activeSelf == true)
+            if (Inv.Quick[i].Icon.gameObject.activeSelf == true)
             {
-                Item item = Inv.Q_list[i].item;
+                Item item = Inv.Quick[i].item;
                 item.SlotNum = i;
                 //Character.Player.myQuick.Add(item);
 
             }
         }
-        for (int i = 0; i < Inv.E_list.Count; i++)
+        for (int i = 0; i < Inv.Equip.Count; i++)
         {
-            if (Inv.E_list[i].image.gameObject.activeSelf == true)
+            if (Inv.Equip[i].Icon.gameObject.activeSelf == true)
             {
                 //Character.Player.myEquip.Add(Inv.E_list[i].item);
 
