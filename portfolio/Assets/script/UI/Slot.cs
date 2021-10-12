@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class Slot : MonoBehaviour
 {       
-    protected Image Icon;        
+    protected Image Icon;   
+    public Sprite ICON { get { return Icon.sprite; } set { Icon.sprite = value; } }
     public RectTransform tr;
     Rect rc;
     public Rect RC

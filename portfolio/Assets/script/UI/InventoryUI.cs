@@ -10,12 +10,13 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     public List<ItemSlot> Inven = new List<ItemSlot>();     // 인벤토리
     public List<ItemSlot> Quick = new List<ItemSlot>();    // 퀵 슬롯
     public List<ItemSlot> Equip = new List<ItemSlot>();    // 장비창    
-    
+    List<ItemSlot> MoveList;
     public enum ListType
     {
         INVEN,
         QUICK,
-        EQUIP
+        EQUIP,
+        NONE
     }
     [SerializeField]
     ListType MoveListType;
@@ -23,7 +24,10 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     int MoveItemIndex;
     [SerializeField]
     int MoveSlotNumber;
+    [SerializeField]
+    int QuickSlotListNumber=0;
     public int WorkingSlot = -1;
+    
 
 
     public Image MoveIcon = null;
@@ -52,7 +56,37 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
 
     public bool isClick = false;
     public bool ItemInfo = false;
-        
+    
+    void MoveInfo(int _Num, ListType _Type, Vector2 Pos)
+    {
+        switch (MoveListType)
+        {
+            case ListType.EQUIP:
+                MoveList = Equip;
+                break;
+            case ListType.INVEN:
+                MoveList = Inven;
+                break;
+            case ListType.QUICK:
+                MoveList = Quick;
+                break;
+            default:
+                return;
+        }
+        MoveListType = _Type;
+        MoveItemIndex = Character.Player.Quick.GetItem(QuickSlotListNumber, _Num).Index;
+        MoveSlotNumber = _Num;
+        MoveIcon.gameObject.SetActive(true);
+        MoveIcon.sprite = MoveList[MoveSlotNumber].ICON;
+        MoveIcon.transform.position = Pos;
+        MoveList = null;
+    }
+    void MoveInfoReset()
+    {
+        MoveListType = ListType.NONE;
+        MoveItemIndex = -1;
+        MoveSlotNumber = -1;        
+    }
     public void OnPointerDown(PointerEventData data)
     {
         if (shop.gameObject.activeSelf == true)
@@ -70,12 +104,9 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Quick[i].isInRect(data.position) && Quick[i].ActiveIcon())
                     {
-                        MoveItemIndex = Character.Player.Quick.GetItem.
-                        Clickitem = Quick[i].item;
-                        ClickitemImage = Quick[i].Icon;
+                        MoveInfo(i, ListType.QUICK,data.position);                        
                         ItemInfo = true;
-                        Begin_DragSlot(Quick, i);
-                        MoveIcon.transform.position = data.position;
+                        Begin_DragSlot(Quick, i);                        
                         return;
                     }
 
@@ -93,11 +124,9 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Quick[j].isInRect(data.position) && Quick[j].ActiveIcon())
                     {
-                        Clickitem = Quick[j].item;
-                        ClickitemImage = Quick[j].Icon;
+                        MoveInfo(j, ListType.QUICK, data.position);                        
                         ItemInfo = true;
-                        Begin_DragSlot(Quick, j);
-                        MoveIcon.transform.position = data.position;
+                        Begin_DragSlot(Quick, j);                        
                         return;
                     }
 
@@ -106,11 +135,9 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Equip[k].isInRect(data.position) && Equip[k].ActiveIcon())
                     {
-                        Clickitem = Equip[k].item;
-                        ClickitemImage = Equip[k].Icon;
+                        MoveInfo(k, ListType.EQUIP, data.position);                        
                         ItemInfo = true;
-                        Begin_DragSlot(Equip, k);
-                        MoveIcon.transform.position = data.position;
+                        Begin_DragSlot(Equip, k);                        
                         return;
                     }
                    
@@ -119,11 +146,9 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Inven[i].isInRect(data.position) && Inven[i].ActiveIcon())
                     {
-                        Clickitem = Inven[i].item;
-                        ClickitemImage = Inven[i].Icon;
+                        MoveInfo(i, ListType.INVEN, data.position);
                         ItemInfo = true;
-                        Begin_DragSlot(Inven, i);
-                        MoveIcon.transform.position = data.position;
+                        Begin_DragSlot(Inven, i);                        
                         return;
                     }
 
@@ -228,25 +253,27 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
             {
                 for (int i = 0; i < Quick.Count; i++)
                 {
-                    if (Quick[i].isInRect(data.position) && !Quick[i].ActiveIcon())
+                    if (Quick[i].isInRect(data.position))
                     {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Empty(Quick, i);
-                        return;
-                    }
-                    else if (Quick[i].isInRect(data.position) && Quick[i].item.Index == Moveitem.Index)
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Same(Quick, i);
-                        return;
-                    }
-                    else if (Quick[i].isInRect(data.position) && Quick[i].Icon.gameObject.activeSelf == true)
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Different(Quick, i);
-                        return;
-                    }
-
+                        if (!Quick[i].ActiveIcon())
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Empty(Quick, i);
+                            return;
+                        }
+                        else if(Quick[i].item.Index == Moveitem.Index)
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Same(Quick, i);
+                            return;
+                        }
+                        else if (Quick[i].ActiveIcon())
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Different(Quick, i);
+                            return;
+                        }
+                    }                   
                 }
                 if (WorkingSlot >= 0 && MoveIcon.gameObject.activeSelf == true)
                 {
@@ -260,65 +287,73 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
 
                 for (int i = 0; i < Inven.Count; i++)
                 {
-                    if (Inven[i].isInRect(data.position) && Inven[i].Icon.gameObject.activeSelf == false)
+                    if (Inven[i].isInRect(data.position))
                     {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Empty(Inven, i);
-                        return;
+                        if (!Inven[i].ActiveIcon())
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Empty(Inven, i);
+                            return;
+                        }
+                        else if (Inven[i].item.Index == Moveitem.Index)
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Same(Inven, i);
+                            return;
+                        }
+                        else if (Inven[i].ActiveIcon())
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Different(Inven, i);
+                            return;
+                        }
                     }
-                    else if (Inven[i].isInRect(data.position) && Inven[i].item.Index == Moveitem.Index)
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Same(Inven, i);
-                        return;
-                    }
-                    else if (Inven[i].isInRect(data.position) && Inven[i].Icon.gameObject.activeSelf == true)
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Different(Inven, i);
-                        return;
-                    }
-
                 }
 
                 for (int j = 0; j < Quick.Count; j++)
                 {
-                    if (Quick[j].isInRect(data.position) && Quick[j].Icon.gameObject.activeSelf == false)
+                    if (Quick[j].isInRect(data.position))
                     {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Empty(Quick, j);
-                        return;
+                        if (!Quick[j].ActiveIcon())
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Empty(Quick, j);
+                            return;
+                        }
+                        else if (Quick[j].item.Index == Moveitem.Index)
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Same(Quick, j);
+                            return;
+                        }
+                        else if (Quick[j].ActiveIcon())
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Different(Quick, j);
+                            return;
+                        }
                     }
-                    else if (Quick[j].isInRect(data.position) && Quick[j].item.Index == Moveitem.Index)
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Same(Quick, j);
-                        return;
-                    }
-                    else if (Quick[j].isInRect(data.position) && Quick[j].Icon.gameObject.activeSelf == true)
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Different(Quick, j);
-                        return;
-                    }
-
                 }
+
                 for (int k = 0; k < Equip.Count; k++)
                 {
-                    if (Equip[k].isInRect(data.position) && Equip[k].Icon.gameObject.activeSelf == false)
+                    if (Equip[k].isInRect(data.position))
                     {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Empty(Equip, k);
-                        return;
+                        if (!Equip[k].ActiveIcon())
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Empty(Equip, k);
+                            return;
+                        }
+                        else if (Equip[k].ActiveIcon())
+                        {
+                            SoundManager.soundmanager.soundsPlay("Pick");
+                            End_Drag_Different(Equip, k);
+                            return;
+                        }
                     }
-                    else if (Equip[k].isInRect(data.position) && Equip[k].Icon.gameObject.activeSelf == true)
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        End_Drag_Different(Equip, k);
-                        return;
-                    }
-
                 }
+
                 if (WorkingSlot >= 0 && MoveIcon.gameObject.activeSelf == true)
                 {
                     SoundManager.soundmanager.soundsPlay("Pick");
@@ -362,8 +397,6 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
         DontClick.SetActive(false);            
 
     }
-
-
     public void Begin_Click_R(List<Slot> _list, int _num)
     {
         Clickitem = _list[_num].item;
@@ -374,8 +407,6 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     }
     public void End_Click_R()
     {
-
-
         if (Clickitem.itemType == Item.ItemType.Equipment)
         {
             Begin_DragSlot(OldSlotList, WorkingSlot);
