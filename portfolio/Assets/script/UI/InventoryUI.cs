@@ -7,9 +7,16 @@ using System.IO;
 
 public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IBeginDragHandler,IDragHandler,IEndDragHandler
 { 
-    public List<ItemSlot> Inven = new List<ItemSlot>();     // 인벤토리
-    public List<ItemSlot> Quick = new List<ItemSlot>();    // 퀵 슬롯
+    [SerializeField]
+    List<ItemSlot> Inven = new List<ItemSlot>();           // 인벤토리
+    [SerializeField]
+    List<ItemSlot> Quick = new List<ItemSlot>();           // 퀵 슬롯
+    [SerializeField]
     public List<ItemSlot> Equip = new List<ItemSlot>();    // 장비창    
+    public delegate void MouseClickDown();
+    public delegate void DragType();
+    
+
     List<ItemSlot> MoveList;
     public enum ListType
     {
@@ -23,9 +30,13 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     [SerializeField]
     int MoveItemIndex;
     [SerializeField]
-    int MoveSlotNumber;
+    int MoveSlotNum;
     [SerializeField]
-    int QuickSlotListNumber=0;
+    int LastSlotNum;
+    [SerializeField]
+    int QuickSlotListNumber = 0;
+    [SerializeField]
+    Vector2 ClickPos;
     public int WorkingSlot = -1;
     
 
@@ -36,11 +47,11 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     public bool WindowDrag = false;                 //윈도우 바를 클릭했을때
     public Vector2 Window_Preset = Vector2.zero;
 
-    public int ClickItemIndex;
-    public int ClickSlot;
+    
+    
 
     public List<ItemSlot> OldSlotList;
-    public Vector2 OldClickPos;
+    
     
     
     
@@ -57,7 +68,40 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     public bool isClick = false;
     public bool ItemInfo = false;
     
-    void MoveInfo(int _Num, ListType _Type, Vector2 Pos)
+    void ClickDown(int _Num, ListType _Type,MouseClickDown _Mouse)
+    {
+        MoveListType = _Type;       
+        MoveItemIndex = Character.Player.Quick.GetItem(QuickSlotListNumber, _Num).Index;
+        MoveSlotNum = _Num;
+        _Mouse();
+
+    }
+    void ClickUp(int _Num, ListType _Type, DragType _drag)
+    {
+        LastSlotNum = _Num;
+
+    }    
+    void DragFail()
+    {
+        LastSlotNum = -1;        
+        MoveList[MoveSlotNum].Add();
+        MoveInfoReset();
+    }
+    void DragSuccess()
+    {
+        //장비창일때
+        //퀵슬롯일때
+        //인벤일때
+        Character.Player.Inven.Swap(MoveSlotNum, LastSlotNum);
+
+    }
+    
+
+    void RightClick()
+    {
+        isClick = true;
+    }
+    void LeftClick()
     {
         switch (MoveListType)
         {
@@ -73,26 +117,24 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
             default:
                 return;
         }
-        MoveListType = _Type;
-        MoveItemIndex = Character.Player.Quick.GetItem(QuickSlotListNumber, _Num).Index;
-        MoveSlotNumber = _Num;
         MoveIcon.gameObject.SetActive(true);
-        MoveIcon.sprite = MoveList[MoveSlotNumber].ICON;
-        MoveIcon.transform.position = Pos;
-        MoveList = null;
-    }
+        MoveIcon.sprite = MoveList[MoveSlotNum].ICON;
+        MoveIcon.transform.position = ClickPos;
+        MoveList[MoveSlotNum].Clear();        
+    }   
     void MoveInfoReset()
     {
         MoveListType = ListType.NONE;
         MoveItemIndex = -1;
-        MoveSlotNumber = -1;        
+        MoveSlotNum = -1;        
     }
     public void OnPointerDown(PointerEventData data)
     {
         if (shop.gameObject.activeSelf == true)
             return;
 
-        OldClickPos = data.position; // 클릭 포인트        
+        ClickPos = data.position; // 클릭지점        
+
         if(miniinfo.gameObject.activeSelf==true)
             miniinfo.gameObject.SetActive(false);
 
@@ -104,9 +146,8 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Quick[i].isInRect(data.position) && Quick[i].ActiveIcon())
                     {
-                        MoveInfo(i, ListType.QUICK,data.position);                        
-                        ItemInfo = true;
-                        Begin_DragSlot(Quick, i);                        
+                        ClickDown(i, ListType.QUICK, LeftClick);                   
+                        ItemInfo = true;                        
                         return;
                     }
 
@@ -124,9 +165,8 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Quick[j].isInRect(data.position) && Quick[j].ActiveIcon())
                     {
-                        MoveInfo(j, ListType.QUICK, data.position);                        
-                        ItemInfo = true;
-                        Begin_DragSlot(Quick, j);                        
+                        ClickDown(j, ListType.QUICK, LeftClick);                        
+                        ItemInfo = true;                                          
                         return;
                     }
 
@@ -135,9 +175,8 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Equip[k].isInRect(data.position) && Equip[k].ActiveIcon())
                     {
-                        MoveInfo(k, ListType.EQUIP, data.position);                        
-                        ItemInfo = true;
-                        Begin_DragSlot(Equip, k);                        
+                        ClickDown(k, ListType.EQUIP,LeftClick);
+                        ItemInfo = true;                        
                         return;
                     }
                    
@@ -146,9 +185,8 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Inven[i].isInRect(data.position) && Inven[i].ActiveIcon())
                     {
-                        MoveInfo(i, ListType.INVEN, data.position);
-                        ItemInfo = true;
-                        Begin_DragSlot(Inven, i);                        
+                        ClickDown(i, ListType.INVEN, LeftClick);
+                        ItemInfo = true;                                     
                         return;
                     }
 
@@ -167,7 +205,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Quick[i].isInRect(data.position) && Quick[i].ActiveIcon())
                     {
-                        Begin_Click_R(Quick, i);
+                        ClickDown(i, ListType.QUICK, RightClick);                        
                         return;
                     }
 
@@ -179,7 +217,8 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Quick[j].isInRect(data.position) && Quick[j].ActiveIcon())
                     {
-                        Begin_Click_R(Quick, j);
+                        
+                        ClickDown(j, ListType.QUICK, RightClick);
                         return;
                     }
 
@@ -188,7 +227,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Equip[k].isInRect(data.position) && Equip[k].ActiveIcon())
                     {
-                        Begin_Click_R(Equip, k);
+                        ClickDown(k, ListType.EQUIP, RightClick);
                         return;
                     }
                     
@@ -197,7 +236,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Inven[i].isInRect(data.position) && Inven[i].ActiveIcon())
                     {
-                        Begin_Click_R(Inven, i);
+                        ClickDown(i, ListType.INVEN, RightClick);
                         return;
                     }
 
@@ -215,7 +254,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
             return;
         WindowDrag = false;
         
-        if(Input.GetMouseButtonUp(0) && OldClickPos == data.position && ItemInfo == true)   // 좌 클릭 시
+        if(Input.GetMouseButtonUp(0) && ClickPos == data.position && ItemInfo == true)   // 좌 클릭 시
         {
             if (WorkingSlot < 0)
                 return;
@@ -235,13 +274,11 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
             return;
             
         }
-        else if (Input.GetMouseButtonUp(1) && OldClickPos == data.position && isClick == true) // 우 클릭 시
+        else if (Input.GetMouseButtonUp(1) && ClickPos == data.position && isClick == true) // 우 클릭 시
         {
             isClick = false;
             End_Click_R();
-            return;
-
-                        
+            return;                    
             
         }
 
@@ -397,14 +434,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
         DontClick.SetActive(false);            
 
     }
-    public void Begin_Click_R(List<Slot> _list, int _num)
-    {
-        Clickitem = _list[_num].item;
-        ClickitemImage = _list[_num].Icon;
-        isClick = true;
-        OldSlotList = _list;
-        WorkingSlot = _num;
-    }
+   
     public void End_Click_R()
     {
         if (Clickitem.itemType == Item.ItemType.Equipment)
@@ -472,20 +502,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
         }
 
     }
-    public void Begin_DragSlot(List<Slot> _list, int _num)  // 드래그 시작
-    {
-        if(_list == Equip)
-        {
-            CancleItem(_list[_num].item);
-        }
-
-        MoveIcon.gameObject.SetActive(true);
-        MoveIcon.sprite = _list[_num].Icon.sprite;
-        Moveitem = _list[_num].item;        
-        _list[_num].Clear();
-        OldSlotList = _list;
-        WorkingSlot = _num;
-    }
+    
     public void End_Drag_Same(List<Slot> _list, int _num)  // 드래그 목표가 같을 때
     {
         if(_list[_num].item.itemType == Item.ItemType.Equipment)

@@ -14,7 +14,7 @@ public class ItemSlot : Slot
     public override void Add()
     {
         item = Character.Player.Inven.GetItem(SlotNum);
-        if (item == null || item.itemType == Item.ItemType.None)
+        if (item == null)
             return;
         Icon.gameObject.SetActive(true);
         Icon.sprite = GameManager.gameManager.GetSprite(item.itemSpriteName);
