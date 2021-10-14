@@ -36,9 +36,7 @@ public class Slot : MonoBehaviour
             return true;
         }
         return false;
-    }    
-    public virtual void Add(){}
-    public virtual void Clear(){}
+    }        
 
     //public void SetSlotCount()
     //{

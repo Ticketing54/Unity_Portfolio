@@ -5,16 +5,7 @@ using UnityEngine;
 public class Inventory
 {
     Item[] Inven;
-    enum ComPare
-    {
-        Same,
-        Different,
-    }
-
-    // 비어 있을때
-    // 아이템이 있을때
-        // 같을때
-        // 다를때
+    public delegate Item MoveItemCheck(Item _Item, int _Last);    
     public Inventory()
     {
         Inven = new Item[18];        
@@ -25,8 +16,7 @@ public class Inventory
             return null;
         else
             return Inven[_Num];
-    }
-        
+    }   
     public void Add(int _Index, Item _NewItem)
     {
         Inven[_Index] = _NewItem;
@@ -46,27 +36,31 @@ public class Inventory
     {
         return Inven[_First].Index == Inven[_Last].Index;
     }
-    public void Swap(int _First, int _Last)
+    public void StartItemMove(int _Start,int _LastType,int _Last,MoveItemCheck Check)  // 시작
+    {
+        if (_LastType == 1 && Inven[_Start].itemType != Item.ItemType.Used)
+            return;
+        else if (_LastType == 2 && Inven[_Start].itemType != Item.ItemType.Equipment)
+            return;
+        Inven[_Start] = Check(Inven[_Start], _Last);
+    }
+    public Item AriveItem(Item _Item, int _Last)      //끝
     {
         if (IsEmpty(_Last))
         {
-            Inven[_Last] = Inven[_First];
-            Inven[_First] = null;
+            Inven[_Last] = _Item;
+            return null;
+        }
+        else if ((_Item.itemType != Item.ItemType.Equipment) &&(_Item.Index == Inven[_Last].Index))
+        {
+            Inven[_Last].ItemCount += _Item.Index;
+            return null;
         }
         else
         {
-            if (IsSame(_First, _Last))
-            {
-                Inven[_Last].ItemCount += Inven[_First].ItemCount;
-                Inven[_First] = null;
-            }
-            else
-            {
-                Item tmp = Inven[_First];
-                Inven[_First] = Inven[_Last];
-                Inven[_Last] = tmp;
-            }
+            Item temp = Inven[_Last];
+            Inven[_Last] = _Item;
+            return temp;
         }
-        
     }
 }

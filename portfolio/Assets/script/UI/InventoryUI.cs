@@ -28,7 +28,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     [SerializeField]
     ListType MoveListType;
     [SerializeField]
-    int MoveItemIndex;
+    Item MoveItem;
     [SerializeField]
     int MoveSlotNum;
     [SerializeField]
@@ -37,7 +37,8 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     int QuickSlotListNumber = 0;
     [SerializeField]
     Vector2 ClickPos;
-    public int WorkingSlot = -1;
+    [SerializeField]
+    Vector3 InfoPreset;   
     
 
 
@@ -70,53 +71,101 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     
     void ClickDown(int _Num, ListType _Type,MouseClickDown _Mouse)
     {
-        MoveListType = _Type;       
-        MoveItemIndex = Character.Player.Quick.GetItem(QuickSlotListNumber, _Num).Index;
+        switch (_Type)
+        {
+            case ListType.EQUIP:
+                MoveList = Equip;
+                MoveItem = Character.Player.Equip.GetItem(_Num);
+                break;
+            case ListType.INVEN:
+                MoveList = Inven;
+                MoveItem = Character.Player.Inven.GetItem(_Num);
+                break;
+            case ListType.QUICK:
+                MoveList = Quick;
+                MoveItem = Character.Player.Quick.GetItem(_Num);
+                break;
+            default:
+                return;
+        }
+        MoveListType = _Type;               
         MoveSlotNum = _Num;
         _Mouse();
 
-    }
-    void ClickUp(int _Num, ListType _Type, DragType _drag)
-    {
-        LastSlotNum = _Num;
-
-    }    
-    void DragFail()
+    }   
+    void DragFail()                 //드래그 실패
     {
         LastSlotNum = -1;        
-        MoveList[MoveSlotNum].Add();
+        MoveList[MoveSlotNum].Add((int)MoveListType);
         MoveInfoReset();
     }
-    void DragSuccess()
+    void DragSuccess(List<ItemSlot> _ui,int _Num, ListType _Type)      //드래그 성공
     {
-        //장비창일때
-        //퀵슬롯일때
-        //인벤일때
-        Character.Player.Inven.Swap(MoveSlotNum, LastSlotNum);
-
+        LastSlotNum = _Num;
+        switch (MoveListType)
+        {
+            case ListType.EQUIP:
+                MoveEquipTo();
+                break;
+            case ListType.QUICK:
+                MoveQuickTo(_Type);
+                break;
+            case ListType.INVEN:
+                MoveInvenTo(_Type);
+                break;
+            default:
+                break;
+        }
+        UpdateItemSlot(_ui, _Num, (int)_Type);
+        LastSlotNum = -1;        
     }
-    
-
+    void MoveEquipTo()
+    {
+        Character.Player.Equip.StartItemMove(MoveSlotNum, (int)MoveListType,LastSlotNum,Character.Player.Inven.AriveItem);        
+    }
+    void MoveQuickTo(ListType _Type)
+    {
+        switch (_Type)
+        {
+            case ListType.INVEN:
+                Character.Player.Equip.StartItemMove(MoveSlotNum, (int)MoveListType, LastSlotNum, Character.Player.Inven.AriveItem);
+                break;
+            case ListType.QUICK:
+                Character.Player.Equip.StartItemMove(MoveSlotNum, (int)MoveListType, LastSlotNum, Character.Player.Quick.AriveItem);
+                break;
+            default:
+                return;
+        }        
+    }
+    void MoveInvenTo(ListType _Type)
+    {
+        switch (_Type)
+        {
+            case ListType.INVEN:
+                Character.Player.Inven.StartItemMove(MoveSlotNum, (int)MoveListType, LastSlotNum, Character.Player.Inven.AriveItem);
+                break;
+            case ListType.QUICK:
+                Character.Player.Inven.StartItemMove(MoveSlotNum, (int)MoveListType, LastSlotNum, Character.Player.Quick.AriveItem);
+                break;
+            case ListType.EQUIP:
+                Character.Player.Inven.StartItemMove(MoveSlotNum, (int)MoveListType, LastSlotNum, Character.Player.Equip.AriveItem);
+                break;
+            default:
+                return;
+        }
+    }
+    void UpdateItemSlot(List<ItemSlot> _List,int _Num,int _listType) // 화면 갱신
+    {        
+        _List[_Num].Add(_listType);
+        MoveList[MoveSlotNum].Add((int)MoveListType);
+        MoveInfoReset();
+    }
     void RightClick()
     {
         isClick = true;
     }
     void LeftClick()
-    {
-        switch (MoveListType)
-        {
-            case ListType.EQUIP:
-                MoveList = Equip;
-                break;
-            case ListType.INVEN:
-                MoveList = Inven;
-                break;
-            case ListType.QUICK:
-                MoveList = Quick;
-                break;
-            default:
-                return;
-        }
+    {       
         MoveIcon.gameObject.SetActive(true);
         MoveIcon.sprite = MoveList[MoveSlotNum].ICON;
         MoveIcon.transform.position = ClickPos;
@@ -125,7 +174,7 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     void MoveInfoReset()
     {
         MoveListType = ListType.NONE;
-        MoveItemIndex = -1;
+        MoveItem = null;
         MoveSlotNum = -1;        
     }
     public void OnPointerDown(PointerEventData data)
@@ -250,27 +299,26 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     }  
     public void OnPointerUp(PointerEventData data)
     {
+        if (MoveSlotNum < 0)
+            return;
         if (shop.gameObject.activeSelf == true)
             return;
         WindowDrag = false;
         
         if(Input.GetMouseButtonUp(0) && ClickPos == data.position && ItemInfo == true)   // 좌 클릭 시
-        {
-            if (WorkingSlot < 0)
-                return;
-            Vector3 Pos;
-            if (OldSlotList == Quick)
+        {            
+            if (MoveListType == ListType.QUICK)
             {
-                Pos = new Vector3(data.position.x + 75f, data.position.y + 100f, 0);
+                InfoPreset = new Vector3(data.position.x + 75f, data.position.y + 100f, 0);
             }
             else
             {
-                Pos = new Vector3(data.position.x + 75f, data.position.y - 100f, 0);
-            }
-            End_Drag_Empty(OldSlotList, WorkingSlot);
+                InfoPreset = new Vector3(data.position.x + 75f, data.position.y - 100f, 0);
+            }            
             ItemInfo = false;
             
-            End_Click_L(Pos);
+            End_Click_L(InfoPreset);
+            DragFail();
             return;
             
         }
@@ -281,9 +329,6 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
             return;                    
             
         }
-
-        if (WorkingSlot < 0)
-            return;
         if (Input.GetMouseButtonUp(0))
         {
             if (InventoryMax.activeSelf == false)   // 인벤토리가 꺼져있을때
@@ -292,31 +337,17 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Quick[i].isInRect(data.position))
                     {
-                        if (!Quick[i].ActiveIcon())
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Empty(Quick, i);
-                            return;
-                        }
-                        else if(Quick[i].item.Index == Moveitem.Index)
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Same(Quick, i);
-                            return;
-                        }
-                        else if (Quick[i].ActiveIcon())
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Different(Quick, i);
-                            return;
-                        }
+                        SoundManager.soundmanager.soundsPlay("Pick");
+                        DragSuccess(Quick,i, ListType.QUICK);
+                        return;
+
                     }                   
                 }
-                if (WorkingSlot >= 0 && MoveIcon.gameObject.activeSelf == true)
+                if (MoveSlotNum >= 0 && MoveIcon.gameObject.activeSelf == true)
                 {
                     SoundManager.soundmanager.soundsPlay("Pick");
-                    End_Drag_Empty(OldSlotList, WorkingSlot);
-
+                    DragFail();
+                    return;
                 }
             }
             else if (InventoryMax.activeSelf == true)  // 인벤토리 켜져있을때
@@ -326,24 +357,9 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Inven[i].isInRect(data.position))
                     {
-                        if (!Inven[i].ActiveIcon())
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Empty(Inven, i);
-                            return;
-                        }
-                        else if (Inven[i].item.Index == Moveitem.Index)
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Same(Inven, i);
-                            return;
-                        }
-                        else if (Inven[i].ActiveIcon())
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Different(Inven, i);
-                            return;
-                        }
+                        SoundManager.soundmanager.soundsPlay("Pick");
+                        DragSuccess(Inven, i, ListType.INVEN);
+                        return;
                     }
                 }
 
@@ -351,24 +367,9 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Quick[j].isInRect(data.position))
                     {
-                        if (!Quick[j].ActiveIcon())
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Empty(Quick, j);
-                            return;
-                        }
-                        else if (Quick[j].item.Index == Moveitem.Index)
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Same(Quick, j);
-                            return;
-                        }
-                        else if (Quick[j].ActiveIcon())
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Different(Quick, j);
-                            return;
-                        }
+                        SoundManager.soundmanager.soundsPlay("Pick");
+                        DragSuccess(Quick, j, ListType.QUICK);
+                        return;
                     }
                 }
 
@@ -376,25 +377,16 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 {
                     if (Equip[k].isInRect(data.position))
                     {
-                        if (!Equip[k].ActiveIcon())
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Empty(Equip, k);
-                            return;
-                        }
-                        else if (Equip[k].ActiveIcon())
-                        {
-                            SoundManager.soundmanager.soundsPlay("Pick");
-                            End_Drag_Different(Equip, k);
-                            return;
-                        }
+                        SoundManager.soundmanager.soundsPlay("Pick");
+                        DragSuccess(Equip, k, ListType.EQUIP);
+                        return;
                     }
                 }
 
-                if (WorkingSlot >= 0 && MoveIcon.gameObject.activeSelf == true)
+                if (MoveSlotNum>=0&& MoveIcon.gameObject.activeSelf == true)
                 {
                     SoundManager.soundmanager.soundsPlay("Pick");
-                    End_Drag_Empty(OldSlotList, WorkingSlot);
+                    DragFail();
                     return;
 
                 }
@@ -435,231 +427,36 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
 
     }
    
-    public void End_Click_R()
+    public void End_Click_R()       //자동 장착
     {
-        if (Clickitem.itemType == Item.ItemType.Equipment)
-        {
-            Begin_DragSlot(OldSlotList, WorkingSlot);
-
-            if (OldSlotList == Equip)
-            {
-                Clickitem = null;
-                ClickitemImage = null;
-                for (int i = 0; i < Inven.Count; i++)
-                {
-                    if (Inven[i].Icon.gameObject.activeSelf == false)
-                    {
-
-                        End_Drag_Empty(Inven, i);
-                        return;
-                    }
-                }
-                End_Drag_Empty(OldSlotList, WorkingSlot);
-            }
-            else
-            {
-                if (Equip[(int)Clickitem.EquipType].Icon.gameObject.activeSelf == false)
-                {
-                    End_Drag_Empty(Equip, (int)Clickitem.EquipType);
-                    Clickitem = null;
-                    ClickitemImage = null;
-                    return;
-
-                }
-                else if (Equip[(int)Clickitem.EquipType].Icon.gameObject.activeSelf == true)
-                {
-                    End_Drag_Different(Equip, (int)Clickitem.EquipType);
-                    Clickitem = null;
-                    ClickitemImage = null;
-                    return;
-                }
-
-
-            }
-
-        }
+        
     }
-    public void End_Click_L(Vector3 Pos)
+    public void End_Click_L(Vector3 Pos)    //정보 표시
     {
-        if(Clickitem != null && ClickitemImage != null)
-        {
-            miniinfo.gameObject.SetActive(true);
-            miniinfo.gameObject.transform.position = Pos;
-            miniinfo.ItemImage.sprite = ClickitemImage.sprite;
-            miniinfo.ItemName.text = Clickitem.ItemName;
-            miniinfo.ItemType.text = Clickitem.itemType.ToString();
-            miniinfo.ExPlain.text = Clickitem.ItemExplain;
+        
+        //if(Clickitem != null && ClickitemImage != null)
+        //{
+        //    miniinfo.gameObject.SetActive(true);
+        //    miniinfo.gameObject.transform.position = Pos;
+        //    miniinfo.ItemImage.sprite = ClickitemImage.sprite;
+        //    miniinfo.ItemName.text = Clickitem.ItemName;
+        //    miniinfo.ItemType.text = Clickitem.itemType.ToString();
+        //    miniinfo.ExPlain.text = Clickitem.ItemExplain;
 
 
-            if (Clickitem.ItemProperty == "")
-                miniinfo.Property.text = "";
-            else
-            {
-                string[] tmp = Clickitem.ItemProperty.Split('/');
-                miniinfo.Property.text = tmp[0] + " + " + tmp[1];
-            }
+        //    if (Clickitem.ItemProperty == "")
+        //        miniinfo.Property.text = "";
+        //    else
+        //    {
+        //        string[] tmp = Clickitem.ItemProperty.Split('/');
+        //        miniinfo.Property.text = tmp[0] + " + " + tmp[1];
+        //    }
            
-        }
+        //}
 
     }
     
-    public void End_Drag_Same(List<Slot> _list, int _num)  // 드래그 목표가 같을 때
-    {
-        if(_list[_num].item.itemType == Item.ItemType.Equipment)
-        {
-            
-            End_Drag_Different(_list, _num);
-
-            return;
-        }
-
-
-        _list[_num].item.ItemCount += Moveitem.ItemCount;
-        _list[_num].SetSlotCount();
-        Moveitem = null;
-        MoveIcon.gameObject.SetActive(false);
-        WorkingSlot = -1;
-    }
-    public void End_Drag_Different(List<Slot> _list, int _num) // 드래그 목표가 다를 때
-    {
-        if (_list == Equip)
-        {
-            if (Moveitem.itemType == Item.ItemType.Equipment && (int)Moveitem.EquipType == _num)
-            {
-                if ((int)Moveitem.EquipType == _num)
-                {
-                    SoundManager.soundmanager.soundsPlay("Equip");
-                    ApplyStatus(Moveitem);
-                    CancleItem(_list[_num].item);
-                    OldSlotList[WorkingSlot].item = _list[_num].item;
-                    OldSlotList[WorkingSlot].item.SlotNum = WorkingSlot;
-                    OldSlotList[WorkingSlot].Icon.gameObject.SetActive(true);
-                    OldSlotList[WorkingSlot].Icon.sprite = _list[_num].Icon.sprite;
-                    OldSlotList[WorkingSlot].SetSlotCount();
-
-
-                    _list[_num].item = Moveitem;
-                    _list[_num].item.SlotNum = _num;
-                    _list[_num].Icon.sprite = MoveIcon.sprite;
-                    _list[_num].SetSlotCount();
-                    Moveitem = null;
-                    MoveIcon.gameObject.SetActive(false);
-                    WorkingSlot = -1;
-                    return;
-                }
-                else
-                {
-                    End_Drag_Empty(OldSlotList, WorkingSlot);
-                    return;
-                }
-
-
-
-            }
-            else
-            {
-                End_Drag_Empty(OldSlotList, WorkingSlot);
-                return;
-            }
-        }
-        else if(_list == Quick)
-        {
-            if(Moveitem.itemType != Item.ItemType.Used)
-            {
-                End_Drag_Empty(OldSlotList, WorkingSlot);
-                return;
-            }
-        }
-        if (OldSlotList == Quick && _list[_num].item.itemType != Item.ItemType.Used)
-        {
-            End_Drag_Empty(OldSlotList, WorkingSlot);
-            return;
-        }
-
-
-
-
-
-        OldSlotList[WorkingSlot].item = _list[_num].item;
-        OldSlotList[WorkingSlot].item.SlotNum = WorkingSlot;
-        OldSlotList[WorkingSlot].Icon.gameObject.SetActive(true);
-        OldSlotList[WorkingSlot].Icon.sprite = _list[_num].Icon.sprite;
-        OldSlotList[WorkingSlot].SetSlotCount();
-
-
-        _list[_num].item = Moveitem;
-        _list[_num].item.SlotNum = _num;
-        _list[_num].Icon.sprite = MoveIcon.sprite;
-        _list[_num].SetSlotCount();
-        Moveitem = null;
-        MoveIcon.gameObject.SetActive(false);
-        WorkingSlot = -1;
-        OldSlotList = null;
-
-    }
-    public void End_Drag_Empty(List<Slot> _list, int _num) // 빈곳에 드래그 했을때 
-    {
-
-        if (_list == Equip)
-        {
-            if (Moveitem.itemType == Item.ItemType.Equipment && (int)Moveitem.EquipType == _num)
-            {
-                if((int)Moveitem.EquipType == _num)
-                {
-                    SoundManager.soundmanager.soundsPlay("Equip");
-                    ApplyStatus(Moveitem);
-                    _list[_num].item = Moveitem;
-                    _list[_num].item.SlotNum = _num;
-                    _list[_num].Icon.gameObject.SetActive(true);
-                    _list[_num].Icon.sprite = MoveIcon.sprite;
-
-                    _list[_num].SetSlotCount();
-                    Moveitem = null;
-                    MoveIcon.gameObject.SetActive(false);
-                    WorkingSlot = -1;
-                    return;
-                }
-                else
-                {
-                    End_Drag_Empty(OldSlotList, WorkingSlot);
-                    return;
-                }
-               
-
-                
-            }
-            else
-            {
-                End_Drag_Empty(OldSlotList, WorkingSlot);
-                return;
-            }
-
-
-        }
-        else if (_list == Quick)
-        {
-            if (Moveitem.itemType != Item.ItemType.Used)
-            {
-                End_Drag_Empty(OldSlotList, WorkingSlot);
-                return;
-            }
-        }
-
-
-
-        _list[_num].item = Moveitem;
-        _list[_num].item.SlotNum = _num;
-        _list[_num].Icon.gameObject.SetActive(true);
-        _list[_num].Icon.sprite = MoveIcon.sprite;
-        
-        _list[_num].SetSlotCount();
-        Moveitem = null;
-        MoveIcon.gameObject.SetActive(false);
-        WorkingSlot = -1;
-        OldSlotList = null;
-
-    }
-   
+    
    
     //public void SlotUpdate()  // 플레이어의 아이템정보를 불러온다.
     //{
@@ -679,91 +476,6 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
         
     //}
     
-    public void SlotReset()
-    {
-        foreach(Slot one in Inven)
-        {
-            one.Clear();
-        }
-        foreach (Slot one in Quick)
-        {
-            one.Clear();
-        }
-        foreach (Slot one in Equip)
-        {
-            one.Clear();
-        }
-    }
-    public void ApplyStatus(Item _item)
-    {
-        string[] tmp = _item.ItemProperty.Split('/');
+ 
 
-
-        if (_item.itemType == Item.ItemType.Equipment)
-        {
-            if (tmp[0] == "Defend")
-            {
-                Character.Player.Stat.ATK += float.Parse(tmp[1]);
-            }
-            else if (tmp[0] == "Atk")
-            {
-                Character.Player.Stat.ATK += float.Parse(tmp[1]);
-            }
-
-        }
-        else if (_item.itemType == Item.ItemType.Used)
-        {
-            if (tmp[0] == "Hp")
-            {
-                Character.Player.Stat.HP += float.Parse(tmp[1]);
-            }
-            else if (tmp[0] == "Mp")
-            {
-                Character.Player.Stat.HP += float.Parse(tmp[1]);
-            }
-
-        }
-
-        if (Character.Player.Stat.HP >= Character.Player.Stat.MAXHP)
-            Character.Player.Stat.HP = Character.Player.Stat.MAXHP;
-        if (Character.Player.Stat.MP >= Character.Player.Stat.MAXMP)
-            Character.Player.Stat.MP = Character.Player.Stat.MAXMP;
-
-    }   //장비템 효과 적용
-    public void CancleItem(Item _item)
-    {
-        string[] tmp = _item.ItemProperty.Split('/');
-        SoundManager.soundmanager.soundsPlay("Equip");
-
-        if (_item.itemType == Item.ItemType.Equipment)
-        {
-            if (tmp[0] == "Defend")
-            {
-                Character.Player.Stat.MAXHP -= float.Parse(tmp[1]);
-            }
-            else if (tmp[0] == "Atk")
-            {
-                Character.Player.Stat.ATK -= float.Parse(tmp[1]);
-            }
-        }
-
-        if (Character.Player.Stat.HP >= Character.Player.Stat.MAXHP)
-            Character.Player.Stat.HP= Character.Player.Stat.MAXHP;
-        if (Character.Player.Stat.MP >= Character.Player.Stat.MAXMP)
-            Character.Player.Stat.MP = Character.Player.Stat.MAXMP;
-    }   // 장비템 효과 적용
-
-
-
-    public void getItem(Item _item)
-    {
-        for(int i = 0; i < Inven.Count; i++)
-        {
-            if(Inven[i].Icon.gameObject.activeSelf == false)
-            {
-                Inven[i].Add(_item);
-                return;
-            }
-        }
-    }
 }

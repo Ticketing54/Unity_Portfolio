@@ -3315,6 +3315,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46159a248429bc348adc1f91dc83b303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tr: {fileID: 7294108661314793141}
+  SlotNum: 0
+  CoolTime_Icon: {fileID: 0}
+  CoolTime_Count: {fileID: 0}
   skill:
     Index: 0
     skillType: 0
@@ -3326,13 +3330,7 @@ MonoBehaviour:
     cooltime: 0
     HoldTime: 0
     skill_ability: 
-  skillImage: {fileID: 268426206191498099}
-  CoolTime_Image: {fileID: 4102515170316355750}
-  CoolTime_Num: {fileID: 0}
-  Possible_Image: {fileID: 3007553121070069391}
-  PosLev_Image: {fileID: 8420690287588554811}
   isactive: 0
-  tr: {fileID: 7294108661314793141}
 --- !u!1 &604640660270157269
 GameObject:
   m_ObjectHideFlags: 0
@@ -3342,7 +3340,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1893142725480335317}
-  - component: {fileID: 7464019870192070668}
   m_Layer: 0
   m_Name: Skill
   m_TagString: Untagged
@@ -3366,45 +3363,6 @@ Transform:
   m_Father: {fileID: 2568192962097573659}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7464019870192070668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 604640660270157269}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 854119f9f765b1d4385d7d28cee963ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SkillName: {fileID: 3402566134397707158}
-  SkillEx: {fileID: 5414703398754898475}
-  SkillPoint: {fileID: 186249502233765734}
-  NeedLev: {fileID: 1717058528930507475}
-  list:
-  - {fileID: 6454235410897117438}
-  - {fileID: 8708932360679387360}
-  - {fileID: 9216416533211465846}
-  - {fileID: 5901639962926810203}
-  - {fileID: 8690202238765893461}
-  q_list:
-  - {fileID: 4828907225410410166}
-  - {fileID: 3440378719298696227}
-  - {fileID: 3624159127511810451}
-  - {fileID: 34694604198607809}
-  OldClickPos: {x: 0, y: 0}
-  MoveIcon: {fileID: 772492494771749711}
-  skillobj: {fileID: 6689153814198640293}
-  Skillinfo: 0
-  isQuick: 0
-  isDrag: 0
-  RClick: 0
-  DontClick: {fileID: 6452738586512117701}
-  movewindow: {fileID: 9112600608602422841}
-  Window: {fileID: 3062608276264496821}
-  WindowDrag: 0
-  Window_Preset: {x: 0, y: 0}
 --- !u!1 &607780441745952787
 GameObject:
   m_ObjectHideFlags: 0
@@ -4567,10 +4525,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 3086381901731003108}
 --- !u!1 &766401766101374440
 GameObject:
@@ -4796,10 +4750,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 4947640820315809608}
 --- !u!1 &803500108151450665
 GameObject:
@@ -5293,10 +5243,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 5446612730065720410}
 --- !u!1 &836701544752651083
 GameObject:
@@ -7595,10 +7541,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 3941689952143882130}
 --- !u!1 &1014640586051746051
 GameObject:
@@ -8924,10 +8866,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 5463340556030727560}
 --- !u!1 &1350771450242575478
 GameObject:
@@ -11490,6 +11428,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46159a248429bc348adc1f91dc83b303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tr: {fileID: 1707785874449584605}
+  SlotNum: 0
+  CoolTime_Icon: {fileID: 0}
+  CoolTime_Count: {fileID: 0}
   skill:
     Index: 0
     skillType: 0
@@ -11501,13 +11443,7 @@ MonoBehaviour:
     cooltime: 0
     HoldTime: 0
     skill_ability: 
-  skillImage: {fileID: 1977838423671300858}
-  CoolTime_Image: {fileID: 264347271449030687}
-  CoolTime_Num: {fileID: 5506939993533997590}
-  Possible_Image: {fileID: 0}
-  PosLev_Image: {fileID: 0}
   isactive: 0
-  tr: {fileID: 1707785874449584605}
 --- !u!1 &1694825417707344712
 GameObject:
   m_ObjectHideFlags: 0
@@ -12880,10 +12816,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 2033540987246746577}
 --- !u!1 &2018770884757763386
 GameObject:
@@ -13388,10 +13320,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 3782632639698763752}
 --- !u!1 &2125082072736510138
 GameObject:
@@ -14199,10 +14127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 1363059708698914996}
 --- !u!1 &2220877763043307777
 GameObject:
@@ -14538,10 +14462,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 7537332868169376200}
 --- !u!1 &2311338600808544243
 GameObject:
@@ -19705,10 +19625,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 4634477979727936258}
 --- !u!1 &3215773998431972934
 GameObject:
@@ -20101,10 +20017,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 3805433055314697278}
 --- !u!1 &3236928749573921026
 GameObject:
@@ -20402,50 +20314,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2077ace60ef91f846836017b7b5aa0af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  list:
-  - {fileID: 1511509981372697274}
-  - {fileID: 6038252459612757796}
-  - {fileID: 5006784257574553654}
-  - {fileID: 3610326255816659240}
-  - {fileID: 2612453921947111448}
-  - {fileID: 2748926982362802466}
-  - {fileID: 1281190925843157704}
-  - {fileID: 281116369004634416}
-  - {fileID: 1436463718111433209}
-  - {fileID: 4123026643658811259}
-  - {fileID: 6129065331295457002}
-  - {fileID: 1808194838762915368}
-  - {fileID: 5003199184352896556}
-  - {fileID: 7417400991636004696}
-  - {fileID: 356117297526943496}
-  - {fileID: 4545971885468259743}
-  - {fileID: 8151754436030773058}
-  - {fileID: 5683033244107390108}
-  Q_list:
-  - {fileID: 4499124854604725754}
-  - {fileID: 8823801518193295039}
-  - {fileID: 6950012122532071813}
-  - {fileID: 3394811644465204675}
-  E_list:
-  - {fileID: 3881495904072984571}
-  - {fileID: 3269883521461581107}
-  - {fileID: 6138910298136916293}
-  - {fileID: 3573114731853977161}
-  - {fileID: 3734879171881864765}
+  Inven: []
+  Quick: []
+  Equip: []
+  MoveListType: 0
+  MoveItem:
+    SlotNum: 0
+  MoveSlotNum: 0
+  LastSlotNum: 0
+  QuickSlotListNumber: 0
+  ClickPos: {x: 0, y: 0}
+  InfoPreset: {x: 0, y: 0, z: 0}
+  MoveIcon: {fileID: 772492494771749711}
   movewindow: {fileID: 6018417291541592281}
   Window: {fileID: 5508345026974380814}
   WindowDrag: 0
   Window_Preset: {x: 0, y: 0}
   OldSlotList: []
-  OldClickPos: {x: 0, y: 0}
-  MoveIcon: {fileID: 772492494771749711}
-  Moveitem:
-    SlotNum: 0
-  Clickitem:
-    SlotNum: 0
-  ClickitemImage: {fileID: 0}
-  WorkingSlot: -1
-  Player: {fileID: 0}
   miniinfo: {fileID: 2477691388742004802}
   shop: {fileID: 284567366422346729}
   InventoryMax: {fileID: 4387416126475773483}
@@ -21031,7 +20916,7 @@ MonoBehaviour:
   questList: {fileID: 284567366302276994}
   QuestList_M: {fileID: 1988462196609650139}
   questlist_M: {fileID: 8344167784071527705}
-  skillmanager: {fileID: 7464019870192070668}
+  skillmanager: {fileID: 0}
   skill: {fileID: 6689153814198640293}
   QuestActive: 0
   minimap: {fileID: 5146999428605308877}
@@ -21657,10 +21542,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 1820468388537556147}
 --- !u!1 &3624778179749707192
 GameObject:
@@ -21978,10 +21859,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 8708131493727839173}
 --- !u!1 &3733771988358841525
 GameObject:
@@ -23112,10 +22989,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 334666980798453098}
 --- !u!1 &3905880711667425443
 GameObject:
@@ -23678,10 +23551,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 2359368533733414503}
 --- !u!1 &4001618953211725994
 GameObject:
@@ -23905,6 +23774,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46159a248429bc348adc1f91dc83b303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tr: {fileID: 2066132942686165473}
+  SlotNum: 0
+  CoolTime_Icon: {fileID: 0}
+  CoolTime_Count: {fileID: 0}
   skill:
     Index: 0
     skillType: 0
@@ -23916,13 +23789,7 @@ MonoBehaviour:
     cooltime: 0
     HoldTime: 0
     skill_ability: 
-  skillImage: {fileID: 1251371312927825847}
-  CoolTime_Image: {fileID: 4342052108039638863}
-  CoolTime_Num: {fileID: 7511335651267056042}
-  Possible_Image: {fileID: 0}
-  PosLev_Image: {fileID: 0}
   isactive: 0
-  tr: {fileID: 2066132942686165473}
 --- !u!1 &4009504194802006325
 GameObject:
   m_ObjectHideFlags: 0
@@ -24586,10 +24453,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 7888775188051416938}
 --- !u!1 &4076715064867483920
 GameObject:
@@ -25437,10 +25300,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 9075348545808238130}
 --- !u!1 &4208485234594376017
 GameObject:
@@ -25534,6 +25393,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46159a248429bc348adc1f91dc83b303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tr: {fileID: 3477012742183902489}
+  SlotNum: 0
+  CoolTime_Icon: {fileID: 0}
+  CoolTime_Count: {fileID: 0}
   skill:
     Index: 0
     skillType: 0
@@ -25545,13 +25408,7 @@ MonoBehaviour:
     cooltime: 0
     HoldTime: 0
     skill_ability: 
-  skillImage: {fileID: 5811397426730587766}
-  CoolTime_Image: {fileID: 2253162876355311775}
-  CoolTime_Num: {fileID: 5490500309622650993}
-  Possible_Image: {fileID: 0}
-  PosLev_Image: {fileID: 0}
   isactive: 0
-  tr: {fileID: 3477012742183902489}
 --- !u!1 &4217855467018983282
 GameObject:
   m_ObjectHideFlags: 0
@@ -26370,10 +26227,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 8654481843241071269}
 --- !u!1 &4387416126475773483
 GameObject:
@@ -28345,6 +28198,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46159a248429bc348adc1f91dc83b303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tr: {fileID: 8239487218251934411}
+  SlotNum: 0
+  CoolTime_Icon: {fileID: 0}
+  CoolTime_Count: {fileID: 0}
   skill:
     Index: 0
     skillType: 0
@@ -28356,13 +28213,7 @@ MonoBehaviour:
     cooltime: 0
     HoldTime: 0
     skill_ability: 
-  skillImage: {fileID: 600817236768157275}
-  CoolTime_Image: {fileID: 2971383882477401701}
-  CoolTime_Num: {fileID: 3582090093377021962}
-  Possible_Image: {fileID: 0}
-  PosLev_Image: {fileID: 0}
   isactive: 0
-  tr: {fileID: 8239487218251934411}
 --- !u!1 &4782333223589738924
 GameObject:
   m_ObjectHideFlags: 0
@@ -28795,10 +28646,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 1040223505383599060}
 --- !u!1 &4800214974787516769
 GameObject:
@@ -30375,6 +30222,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46159a248429bc348adc1f91dc83b303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tr: {fileID: 1229233666060385035}
+  SlotNum: 0
+  CoolTime_Icon: {fileID: 0}
+  CoolTime_Count: {fileID: 0}
   skill:
     Index: 0
     skillType: 0
@@ -30386,13 +30237,7 @@ MonoBehaviour:
     cooltime: 0
     HoldTime: 0
     skill_ability: 
-  skillImage: {fileID: 6335445160841896227}
-  CoolTime_Image: {fileID: 6509028602370375449}
-  CoolTime_Num: {fileID: 0}
-  Possible_Image: {fileID: 8857471518926687053}
-  PosLev_Image: {fileID: 4940975097209613545}
   isactive: 0
-  tr: {fileID: 1229233666060385035}
 --- !u!1 &5041183747545005254
 GameObject:
   m_ObjectHideFlags: 0
@@ -31621,10 +31466,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 6324546510650770122}
 --- !u!1 &5386290274249094053
 GameObject:
@@ -32282,6 +32123,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46159a248429bc348adc1f91dc83b303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tr: {fileID: 3285499878154654442}
+  SlotNum: 0
+  CoolTime_Icon: {fileID: 0}
+  CoolTime_Count: {fileID: 0}
   skill:
     Index: 0
     skillType: 0
@@ -32293,13 +32138,7 @@ MonoBehaviour:
     cooltime: 0
     HoldTime: 0
     skill_ability: 
-  skillImage: {fileID: 3408117731964755175}
-  CoolTime_Image: {fileID: 2227913238567934044}
-  CoolTime_Num: {fileID: 0}
-  Possible_Image: {fileID: 2443079305029682346}
-  PosLev_Image: {fileID: 1589690922625936339}
   isactive: 0
-  tr: {fileID: 3285499878154654442}
 --- !u!1 &5499247073388461607
 GameObject:
   m_ObjectHideFlags: 0
@@ -32612,10 +32451,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 6354406479661671675}
 --- !u!1 &5597700700712538034
 GameObject:
@@ -33356,10 +33191,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 7230837194733602117}
 --- !u!1 &5791503868699913991
 GameObject:
@@ -33720,10 +33551,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 6302475936976736781}
 --- !u!1 &5922492809937432509
 GameObject:
@@ -33889,10 +33716,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 3863451824461766425}
 --- !u!1 &5953012737737723780
 GameObject:
@@ -38219,6 +38042,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46159a248429bc348adc1f91dc83b303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tr: {fileID: 5655589606557881275}
+  SlotNum: 0
+  CoolTime_Icon: {fileID: 0}
+  CoolTime_Count: {fileID: 0}
   skill:
     Index: 0
     skillType: 0
@@ -38230,13 +38057,7 @@ MonoBehaviour:
     cooltime: 0
     HoldTime: 0
     skill_ability: 
-  skillImage: {fileID: 2374275206937558367}
-  CoolTime_Image: {fileID: 5949570426435268411}
-  CoolTime_Num: {fileID: 0}
-  Possible_Image: {fileID: 4270230976649059357}
-  PosLev_Image: {fileID: 4077635035457256086}
   isactive: 0
-  tr: {fileID: 5655589606557881275}
 --- !u!1 &6728096507163436771
 GameObject:
   m_ObjectHideFlags: 0
@@ -40774,10 +40595,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 5525051110390829881}
 --- !u!1 &7308746056202116307
 GameObject:
@@ -42600,6 +42417,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46159a248429bc348adc1f91dc83b303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tr: {fileID: 6237822625015731842}
+  SlotNum: 0
+  CoolTime_Icon: {fileID: 0}
+  CoolTime_Count: {fileID: 0}
   skill:
     Index: 0
     skillType: 0
@@ -42611,13 +42432,7 @@ MonoBehaviour:
     cooltime: 0
     HoldTime: 0
     skill_ability: 
-  skillImage: {fileID: 672031324488168747}
-  CoolTime_Image: {fileID: 7391412801748849950}
-  CoolTime_Num: {fileID: 0}
-  Possible_Image: {fileID: 2768867246729590844}
-  PosLev_Image: {fileID: 6428802687261440649}
   isactive: 0
-  tr: {fileID: 6237822625015731842}
 --- !u!1 &7596807834493866994
 GameObject:
   m_ObjectHideFlags: 0
@@ -43125,10 +42940,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 1448269400665938934}
 --- !u!1 &7736126593341782392
 GameObject:
@@ -43710,10 +43521,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 6940604337949736490}
 --- !u!1 &7826784127974607514
 GameObject:
@@ -44015,10 +43822,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 4356344202834369057}
 --- !u!1 &7845067304769723955
 GameObject:
@@ -44474,10 +44277,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 6702874816945634031}
 --- !u!1 &7928068439357150229
 GameObject:
@@ -46933,10 +46732,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 7386523461021984671}
 --- !u!1 &8435548081629817683
 GameObject:
@@ -47102,10 +46897,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 2899241032647900996}
 --- !u!1 &8512400417173045566
 GameObject:
@@ -48226,10 +48017,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 1900704157128792411}
 --- !u!1 &8671993515948585932
 GameObject:
@@ -48546,10 +48333,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 2712149602660518363}
 --- !u!1 &8764297645813149730
 GameObject:
@@ -48927,10 +48710,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 2498125799947325506}
 --- !u!1 &8790050345999897835
 GameObject:
@@ -49659,10 +49438,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 8172734652808430780}
 --- !u!1 &9002994973229142204
 GameObject:
@@ -50111,10 +49886,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item:
-    SlotNum: 0
-  image: {fileID: 0}
-  Count: {fileID: 0}
   tr: {fileID: 2334235297690949551}
 --- !u!1 &9066229622132558145
 GameObject:

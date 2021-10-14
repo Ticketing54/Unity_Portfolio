@@ -28,7 +28,7 @@ public class SlimeN_die : StateMachineBehaviour
             OpenDropBox = true;
             dropBox = UIManager.uimanager.dropBox;
             dropBox.gameObject.SetActive(true);            
-            dropBox.AddItem(mob.Item);
+            //dropBox.AddItem(mob.Item);
             return;
 
         }

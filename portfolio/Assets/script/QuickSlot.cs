@@ -8,6 +8,9 @@ public class QuickSlot
     Dictionary<int, Skill[]> SkillSlot;
     Item[] quickItem;
     Skill[] quickSkill;
+    int ItemSlotNum = 0;
+    int SkillSlotNum = 0;
+    public delegate Item MoveItemCheck(Item _Item, int _Last);
     public QuickSlot()
     {
         CreateSlots<Item>(ItemSlot);
@@ -22,103 +25,85 @@ public class QuickSlot
         _temp.Add(3, new T[4]);
         
     }
-    bool IsEmpty(Item[] _list, int _SlotNum)
+    public void StartItemMove(int _Start, int _LastType, int _Last, MoveItemCheck Check)  // 시작
     {
-        return (_list[_SlotNum] == null || _list[_SlotNum].itemType == Item.ItemType.None);      
+        if (_LastType==1 || _LastType == 0)
+        {
+            quickItem = ItemSlot[ItemSlotNum];
+            quickItem[_Start] = Check(quickItem[_Start], _Last);
+        }            
     }
-    bool IsEmpty(Skill[] _list, int _SlotNum)
+    public Item AriveItem(Item _Item, int _Last)      //끝
     {
-        return (_list[_SlotNum] == null || _list[_SlotNum].skillType == Skill.SkillType.None);
+        quickItem = ItemSlot[ItemSlotNum];
+        if (IsEmpty_Item(_Last))
+        {
+            quickItem[_Last] = _Item;
+            return null;
+        }
+        else if ((_Item.Index == quickItem[_Last].Index))
+        {
+            quickItem[_Last].ItemCount += _Item.Index;
+            return null;
+        }
+        else
+        {
+            Item temp = quickItem[_Last];
+            quickItem[_Last] = _Item;
+            return temp;
+        }
     }
-    public Item GetItem(int _ListNum, int _SlotNum)
+    bool IsEmpty_Item(int _Num)
     {
-        quickItem = ItemSlot[_ListNum];
-        if (IsEmpty(quickItem, _SlotNum))
+        quickItem = ItemSlot[ItemSlotNum];
+        return (quickItem[_Num] == null || quickItem[_Num].itemType == Item.ItemType.None);      
+    }
+    bool IsEmpty_Skill(int _Num)
+    {
+        quickSkill = SkillSlot[SkillSlotNum];
+        return (quickSkill[_Num] == null || quickSkill[_Num].skillType == Skill.SkillType.None);
+    }
+    public Item GetItem(int _Num)
+    {
+        quickItem = ItemSlot[ItemSlotNum];
+        if (IsEmpty_Item(_Num))
         {
             Debug.Log("아이템이 없습니다.");
             return null;
-        }
-            
-        return quickItem[_SlotNum];
+        }            
+        return quickItem[_Num];
     }
-    public Skill GetSkill(int _ListNum, int _SlotNum)
+    public Skill GetSkill(int _SlotNum)
     {
-        quickSkill= SkillSlot[_ListNum];
-        if (IsEmpty(quickSkill, _SlotNum))
+        quickSkill= SkillSlot[SkillSlotNum];
+        if (IsEmpty_Skill(_SlotNum))
         {
             Debug.Log("스킬이 없습니다.");
             return null;
-        }
-            
+        }            
         return quickSkill[_SlotNum];
     }
-    public void AddItem(int _ListNum,int _SlotNum,Item _Item)
+    public void AddItem(int _SlotNum,Item _Item)
     {
-        if (_ListNum < 0 || _ListNum > 2)
-        {
-            Debug.LogError("리스트 번호가 초과하였습니다.");
-            return;
-        }
-        if (_SlotNum < 0 || _SlotNum > 2)
-        {
-            Debug.LogError("슬롯 번호가 초과하였습니다.");
-            return;
-        }
-        switch (_ListNum)
-        {
-            case 0:
-                quickItem = ItemSlot[0];
-                quickItem[_SlotNum] = _Item;
-                break;
-            case 1:
-                quickItem = ItemSlot[1];
-                quickItem[_SlotNum] = _Item;
-                break;
-            case 2:
-                quickItem = ItemSlot[2];
-                quickItem[_SlotNum] = _Item;
-                break;
-        }
+        quickItem = ItemSlot[ItemSlotNum];
+        quickItem[_SlotNum] = _Item;        
     }   
     public void AddSkill(int _ListNum, int _SlotNum, Skill _Skill)
     {
-        if (_ListNum < 0 || _ListNum > 2)
-        {
-            Debug.LogError("리스트 번호가 초과하였습니다.");
-            return;
-        }
-        if (_SlotNum < 0 || _SlotNum > 2)
-        {
-            Debug.LogError("슬롯 번호가 초과하였습니다.");
-            return;
-        }
-        switch (_ListNum)
-        {
-            case 0:
-                quickSkill = SkillSlot[0];
-                quickSkill[_SlotNum] = _Skill;
-                break;
-            case 1:
-                quickSkill = SkillSlot[1];
-                quickSkill[_SlotNum] = _Skill;
-                break;
-            case 2:
-                quickSkill = SkillSlot[2];
-                quickSkill[_SlotNum] = _Skill;
-                break;
-        }
+        quickSkill = SkillSlot[SkillSlotNum];
+        quickSkill[_SlotNum] = _Skill;
     }
-    public void RemoveItem(int _ListNum, int _SlotNum)
+    public void RemoveItem(int _SlotNum)
     {
-        quickItem = ItemSlot[_ListNum];
+        quickItem = ItemSlot[ItemSlotNum];
         if (quickItem[_SlotNum] == null)
             return;
         else
             quickItem[_SlotNum].itemType = Item.ItemType.None;        
     }
-    public void RemoveSkill(int _ListNum, int _SlotNum)
+    public void RemoveSkill(int _SlotNum)
     {
-        quickSkill = SkillSlot[_ListNum];
+        quickSkill = SkillSlot[SkillSlotNum];
         if (quickSkill[_SlotNum] == null)
             return;
         else quickItem[_SlotNum].itemType = Item.ItemType.None;

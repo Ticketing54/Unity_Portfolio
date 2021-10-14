@@ -24,7 +24,7 @@ public class SkillSlot : Slot
         Icon.gameObject.SetActive(true);
         Icon.sprite = GameManager.gameManager.GetSprite(skill.skillSpriteName);
     }
-    public override void Clear()
+    public void Clear()
     {
         skill = null;
         Icon.sprite = null;

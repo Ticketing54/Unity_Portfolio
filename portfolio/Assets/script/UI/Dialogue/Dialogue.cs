@@ -167,7 +167,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
                             
                         
                         
-                        UIManager.uimanager.Inv.getItem(newitem);
+                        //UIManager.uimanager.Inv.getItem(newitem);
                         UIManager.uimanager.TryOpenInventory();
                     }
                     else

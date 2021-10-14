@@ -153,7 +153,7 @@ public class UIManager : MonoBehaviour
         Inven.transform.position = shop.gameObject.transform.position + new Vector3(325f, 0, 0);
 
         shop.gameObject.SetActive(true);
-        shop.ShopUpdate(_npc);
+        //shop.ShopUpdate(_npc);
         
     }
     public void CloseDialog(Npc _npc) // 대화창 닫기
@@ -278,7 +278,7 @@ public class UIManager : MonoBehaviour
         //Inv.SlotUpdate();
         Inven.gameObject.SetActive(false);
         skill.gameObject.SetActive(true);
-        skillmanager.UpdateSkill();
+        //skillmanager.UpdateSkill();
         skill.gameObject.SetActive(false);
         //for (int i = 0; i < Character.Player.myQuick.Count; i++)
         //{
@@ -288,55 +288,18 @@ public class UIManager : MonoBehaviour
     }
     public void InfoReset()
     {
-        Inven.gameObject.SetActive(true);
-        Inv.SlotReset();
+        Inven.gameObject.SetActive(true);        
         Inven.gameObject.SetActive(false);
         QuestManager.questManager.Quest_Reset();
 
     }
     public void UseQuickSlot()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1) && QuickSlot[0].Icon.gameObject.activeSelf == true)
-        {
-            //QuickSlot[0].UseItem();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2)&&QuickSlot[1].Icon.gameObject.activeSelf == true)
-        {
-           // QuickSlot[1].UseItem();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3) && QuickSlot[2].Icon.gameObject.activeSelf == true)
-        {
-            //QuickSlot[2].UseItem();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4) && QuickSlot[3].Icon.gameObject.activeSelf == true)
-        {
-            //QuickSlot[3].UseItem();
-        } 
+    {        
        
     }
     public void UseQuickSkill()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && QuickSlot_Skill[0].skillImage.gameObject.activeSelf
-            == true&& QuickSlot_Skill[0].CoolTime_Image.gameObject.activeSelf == false)
-        {
-            QuickSlot_Skill[0].UseSkill();
-        }
-        if (Input.GetKeyDown(KeyCode.W) && QuickSlot_Skill[1].skillImage.gameObject.activeSelf 
-            == true&& QuickSlot_Skill[1].CoolTime_Image.gameObject.activeSelf == false)
-        {
-            QuickSlot_Skill[1].UseSkill();
-        }
-        if (Input.GetKeyDown(KeyCode.E) && QuickSlot_Skill[2].skillImage.gameObject.activeSelf 
-            == true&& QuickSlot_Skill[2].CoolTime_Image.gameObject.activeSelf == false)
-        {
-            QuickSlot_Skill[2].UseSkill();
-        }
-        if (Input.GetKeyDown(KeyCode.R) && QuickSlot_Skill[3].skillImage.gameObject.activeSelf 
-            == true&& QuickSlot_Skill[3].CoolTime_Image.gameObject.activeSelf == false)
-        {
-            QuickSlot_Skill[3].UseSkill();
-        }
-
+       
     }
    
 
@@ -433,32 +396,32 @@ public class UIManager : MonoBehaviour
 
         //Character.Player.myIven = new List<Item>();
         
-        for (int i = 0; i < Inv.Inven.Count; i++)
-        {
-            if (Inv.Inven[i].Icon.gameObject.activeSelf == true)
-            {
-                //Character.Player.myIven.Add(Inv.list[i].item);
+        //for (int i = 0; i < Inv.Inven.Count; i++)
+        //{
+        //    if (Inv.Inven[i].Icon.gameObject.activeSelf == true)
+        //    {
+        //        //Character.Player.myIven.Add(Inv.list[i].item);
 
-            }
-        }
-        for (int i = 0; i < Inv.Quick.Count; i++)
-        {
-            if (Inv.Quick[i].Icon.gameObject.activeSelf == true)
-            {
-                Item item = Inv.Quick[i].item;
-                item.SlotNum = i;
-                //Character.Player.myQuick.Add(item);
+        //    }
+        //}
+        //for (int i = 0; i < Inv.Quick.Count; i++)
+        //{
+        //    if (Inv.Quick[i].Icon.gameObject.activeSelf == true)
+        //    {
+        //        Item item = Inv.Quick[i].item;
+        //        item.SlotNum = i;
+        //        //Character.Player.myQuick.Add(item);
 
-            }
-        }
-        for (int i = 0; i < Inv.Equip.Count; i++)
-        {
-            if (Inv.Equip[i].Icon.gameObject.activeSelf == true)
-            {
-                //Character.Player.myEquip.Add(Inv.E_list[i].item);
+        //    }
+        //}
+        //for (int i = 0; i < Inv.Equip.Count; i++)
+        //{
+        //    if (Inv.Equip[i].Icon.gameObject.activeSelf == true)
+        //    {
+        //        //Character.Player.myEquip.Add(Inv.E_list[i].item);
 
-            }
-        }
+        //    }
+        //}
 
         if (Inven.activeSelf == true)
         {

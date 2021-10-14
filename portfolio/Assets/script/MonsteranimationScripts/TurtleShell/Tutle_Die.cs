@@ -28,7 +28,7 @@ public class Tutle_Die : StateMachineBehaviour
             OpenDropBox = true;
             UIManager.uimanager.dropBox.gameObject.SetActive(true);
             dropBox = UIManager.uimanager.dropBox;
-            dropBox.AddItem(mob.Item);
+            //dropBox.AddItem(mob.Item);
             return;
 
         }

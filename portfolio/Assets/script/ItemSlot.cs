@@ -11,11 +11,29 @@ public class ItemSlot : Slot
     Item item = null;
     [SerializeField]
     Text ItemCount;
-    public override void Add()
+    public void Add(int _num)
     {
+        switch (_num)
+        {
+            case 0:
+                Character.Player.Inven.GetItem(SlotNum);
+                break;
+            case 1:
+                Character.Player.Quick.GetItem(SlotNum);
+                break;
+            case 2:
+                Character.Player.Equip.GetItem(SlotNum);
+                break;
+            default:
+                break;
+        }
         item = Character.Player.Inven.GetItem(SlotNum);
         if (item == null)
+        {
+            Clear();
             return;
+        }
+            
         Icon.gameObject.SetActive(true);
         Icon.sprite = GameManager.gameManager.GetSprite(item.itemSpriteName);
 
@@ -31,7 +49,7 @@ public class ItemSlot : Slot
         }
     }
 
-    public override void Clear()
+    public void Clear()
     {
         item = null;
         Icon.sprite = null;

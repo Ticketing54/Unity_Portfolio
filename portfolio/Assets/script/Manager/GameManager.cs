@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviour
         Load_Npc_Data();        
         UIManager.uimanager.InfoUpdate();
         ObjectPoolManager.objManager.PoolingReset_Load();
-        SkillManager.skillmanager.ApplySkill();        
+        //SkillManager.skillmanager.ApplySkill();        
         UIManager.uimanager.minimap.MapSetting();   //미니맵 변경
         //QuestManager.questManager.applyQuest();
         CameraManager.cameraManager.IsCharacter = true;
@@ -207,7 +207,7 @@ public class GameManager : MonoBehaviour
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);                
-                character.Quick.AddItem(0,tmp.SlotNum, tmp);
+                character.Quick.AddItem(tmp.SlotNum, tmp);
             }
         }
         if (DATA[4] != "")
