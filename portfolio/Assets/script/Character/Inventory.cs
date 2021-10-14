@@ -36,11 +36,11 @@ public class Inventory
     {
         return Inven[_First].Index == Inven[_Last].Index;
     }
-    public void StartItemMove(int _Start,int _LastType,int _Last,MoveItemCheck Check)  // 시작
+    public void StartItemMove(int _Start,ItemListType _EndListType,int _Last,MoveItemCheck Check)  // 시작
     {
-        if (_LastType == 1 && Inven[_Start].itemType != Item.ItemType.Used)
+        if (_EndListType == ItemListType.QUICK && Inven[_Start].itemType != Item.ItemType.Used)
             return;
-        else if (_LastType == 2 && Inven[_Start].itemType != Item.ItemType.Equipment)
+        else if (_EndListType == ItemListType.EQUIP && Inven[_Start].itemType != Item.ItemType.Equipment)
             return;
         Inven[_Start] = Check(Inven[_Start], _Last);
     }

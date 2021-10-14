@@ -31,10 +31,10 @@ public class Equipment
         EquipItem[_index] = null;
         return temp;
     }
-    public void StartItemMove(int _Start, int _LastType, int _Last, MoveItemCheck Check)  // 시작
+    public void StartItemMove(int _Start, ItemListType _EndListType, int _Last, MoveItemCheck Check)  // 시작
     {
-        if(_LastType == 0)
-            EquipItem[_Start] = Check(EquipItem[_Start], _Last);
+        if(_EndListType == ItemListType.INVEN)
+            EquipItem[_Start] = Check(EquipItem[_Start], _Last);            
     }
 
     bool IsEmpty(int _Index)

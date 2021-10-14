@@ -20330,7 +20330,6 @@ MonoBehaviour:
   Window: {fileID: 5508345026974380814}
   WindowDrag: 0
   Window_Preset: {x: 0, y: 0}
-  OldSlotList: []
   miniinfo: {fileID: 2477691388742004802}
   shop: {fileID: 284567366422346729}
   InventoryMax: {fileID: 4387416126475773483}
@@ -49359,7 +49358,7 @@ GameObject:
   - component: {fileID: 8172734652808430780}
   - component: {fileID: 1940596485160017587}
   - component: {fileID: 2018315420117467638}
-  - component: {fileID: 3881495904072984571}
+  - component: {fileID: 4069236239155985229}
   m_Layer: 5
   m_Name: Head
   m_TagString: Untagged
@@ -49426,7 +49425,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3881495904072984571
+--- !u!114 &4069236239155985229
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49435,10 +49434,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 8964646006135326894}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebb89eb08cb4d6f40b7dbb17633aab65, type: 3}
+  m_Script: {fileID: 11500000, guid: fa387d9bb6975a841a8401ef7002caa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tr: {fileID: 8172734652808430780}
+  SlotNum: 0
+  item:
+    SlotNum: 0
+  ItemCount: {fileID: 0}
 --- !u!1 &9002994973229142204
 GameObject:
   m_ObjectHideFlags: 0

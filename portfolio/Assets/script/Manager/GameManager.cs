@@ -137,7 +137,8 @@ public class GameManager : MonoBehaviour
         character = null;
         GameObject obj = Instantiate(GetResource("Character", "Character"));        
         character = obj.AddComponent<Character>();
-        Status NewStat = new Status("New", 0, 1, 0, 0, 0, 0);
+        Status NewStat = new Status("New", 0, 1, 0, 0, 0, 0);       
+
         NewStat.LevelSetting(1);
         character.Stat = NewStat;
         character.tag = "Player";
