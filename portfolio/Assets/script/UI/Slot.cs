@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 
 public class Slot : MonoBehaviour
-{       
+{   
+    [SerializeField]
     protected Image Icon;   
     public Sprite ICON { get { return Icon.sprite; } set { Icon.sprite = value; } }
     public RectTransform tr;

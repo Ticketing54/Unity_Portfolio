@@ -4,22 +4,23 @@ using UnityEngine;
 using TMPro;
 
 
-public class StatusInfo : MonoBehaviour
+public class StatusUi : MonoBehaviour
 {
 
-
-    public TextMeshProUGUI NickName;
-    public TextMeshProUGUI Lv;
-    public TextMeshProUGUI Exp;
-
-    public TextMeshProUGUI Str;
-    public TextMeshProUGUI Dex;
-    public TextMeshProUGUI Int;
-    public TextMeshProUGUI Luk;
-    public TextMeshProUGUI Hp;
-    public TextMeshProUGUI Mp;
-    public TextMeshProUGUI Atk;
-    public TextMeshProUGUI Gold;
+    [SerializeField]
+    TextMeshProUGUI NickName;
+    [SerializeField]
+    TextMeshProUGUI Lv;
+    [SerializeField]
+    TextMeshProUGUI Exp;    
+    [SerializeField]
+    TextMeshProUGUI Hp;
+    [SerializeField]
+    TextMeshProUGUI Mp;
+    [SerializeField]
+    TextMeshProUGUI Atk;
+    [SerializeField]
+    TextMeshProUGUI Gold;
     
 
 

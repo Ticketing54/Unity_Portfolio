@@ -128,8 +128,6 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
         UpdateItemSlot(_ui, _Num, _EndListType);
         LastSlotNum = -1;
     }
-    #endregion
-    #region ItemMoveUpdate
     void MoveEquipTo(ItemListType _EndListType)
     {
         if (_EndListType != ItemListType.INVEN)
@@ -167,6 +165,8 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 break;
         }
     }
+    #endregion
+    #region ItemMoveUpdate
     // 화면 갱신
     void UpdateItemSlot(List<ItemSlot> _List, int _Num, ItemListType _listType)
     {
