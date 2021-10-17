@@ -182,7 +182,7 @@ public class GameManager : MonoBehaviour
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);
-                character.Inven.Add(int.Parse(sInven[1]), tmp);
+                character.Inven.AddItem(int.Parse(sInven[1]), tmp);
             }
         }
         if (DATA[2] != "")
@@ -195,7 +195,7 @@ public class GameManager : MonoBehaviour
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = 1;                
-                character.Equip.Add((int)tmp.EquipType, tmp);
+                character.Equip.AddItem((int)tmp.EquipType, tmp);
             }
         }
         if (DATA[3] != "")

@@ -11,24 +11,25 @@ public enum ItemListType
     EQUIP,
     NONE
 }
-public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IBeginDragHandler,IDragHandler,IEndDragHandler
-{ 
+public enum Click
+{
+    LeftClick,
+    RightClick
+}
+public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IBeginDragHandler,IDragHandler,IEndDragHandler
+{
     [SerializeField]
-    List<ItemSlot> Inven = new List<ItemSlot>();           // 인벤토리
+    UI_Inventory Inven;
     [SerializeField]
-    List<ItemSlot> Quick = new List<ItemSlot>();           // 퀵 슬롯
+    UI_Equipment Equip;
     [SerializeField]
-    List<ItemSlot> Equip = new List<ItemSlot>();           // 장비창    
-
-    public delegate void MouseClickDown();
+    UI_QuickSlot Quick;
+   
+    public delegate void MouseClickDown();    
     
     
     [SerializeField]
-    List<ItemSlot> MoveList;        // 드래그중인 List    
-    [SerializeField]
-    ItemListType MoveListType;      // 드래그중인 List 종류
-    [SerializeField]
-    Item MoveItem;                  // 드래그중인 Item
+    ItemListType MoveListType;      // 드래그중인 List 종류    
     [SerializeField]
     int MoveSlotNum;                // 드래그중인 슬롯 넘버
     [SerializeField]
@@ -59,56 +60,39 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
     public bool isClick = false;
     public bool ItemInfo = false;
 
-    #region Click
-    // 눌렀을 때
-    void ClickDown(int _Num, ItemListType _Type, MouseClickDown _Mouse)
+    #region Click   
+    public void MoveItemSetting(int _Num, ItemListType _Type,Sprite _Sprite)
     {
-        switch (_Type)
-        {
-            case ItemListType.EQUIP:
-                MoveList = Equip;
-                MoveItem = Character.Player.Equip.GetItem(_Num);
-                break;
-            case ItemListType.INVEN:
-                MoveList = Inven;
-                MoveItem = Character.Player.Inven.GetItem(_Num);
-                break;
-            case ItemListType.QUICK:
-                MoveList = Quick;
-                MoveItem = Character.Player.Quick.GetItem(_Num);
-                break;
-            default:
-                return;
-        }
-        MoveListType = _Type;
+        MoveListType = _Type;        
         MoveSlotNum = _Num;
-        _Mouse();
-
-    }
-    // 우 클릭
-    void RightClick()
-    {
-        isClick = true;
-    }
-    // 좌 클릭
-    void LeftClick()
-    {
         MoveIcon.gameObject.SetActive(true);
-        MoveIcon.sprite = MoveList[MoveSlotNum].ICON;
-        MoveIcon.transform.position = ClickPos;
-        MoveList[MoveSlotNum].Clear();
-    }
+        MoveIcon.sprite = _Sprite;
+        MoveIcon.transform.position = ClickPos;        
+    } 
+    
+ 
     #endregion
     #region Drag
     //드래그 실패
     void DragFail()
     {
-        LastSlotNum = -1;
-        MoveList[MoveSlotNum].Add(MoveListType);
+        switch (MoveListType)
+        {
+            case ItemListType.EQUIP:
+                Equip.UpdateSlot(MoveSlotNum);
+                break;
+            case ItemListType.INVEN:
+                Inven.UpdateSlot(MoveSlotNum);
+                break;
+            case ItemListType.QUICK:
+                Quick.UpdateSlot(MoveSlotNum);
+                break;
+        }
+        LastSlotNum = -1;        
         MoveInfoReset();
     }
     //드래그 성공
-    void DragSuccess(List<ItemSlot> _ui, int _Num, ItemListType _EndListType)
+    void DragSuccess(int _Num, ItemListType _EndListType)
     {
         LastSlotNum = _Num;
         switch (MoveListType)
@@ -124,65 +108,16 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                 break;
             default:
                 break;
-        }
-        UpdateItemSlot(_ui, _Num, _EndListType);
+        }        
         LastSlotNum = -1;
-    }
-    void MoveEquipTo(ItemListType _EndListType)
-    {
-        if (_EndListType != ItemListType.INVEN)
-            return;
-        Character.Player.Equip.StartItemMove(MoveSlotNum, _EndListType, LastSlotNum, Character.Player.Inven.AriveItem);
-    }
-    void MoveQuickTo(ItemListType _EndListType)
-    {
-        switch (_EndListType)
-        {
-            case ItemListType.INVEN:
-                Character.Player.Equip.StartItemMove(MoveSlotNum, _EndListType, LastSlotNum, Character.Player.Inven.AriveItem);
-                break;
-            case ItemListType.QUICK:
-                Character.Player.Equip.StartItemMove(MoveSlotNum, _EndListType, LastSlotNum, Character.Player.Quick.AriveItem);
-                break;
-            default:
-                break;
-        }
-    }
-    void MoveInvenTo(ItemListType _EndListType)
-    {
-        switch (_EndListType)
-        {
-            case ItemListType.INVEN:
-                Character.Player.Inven.StartItemMove(MoveSlotNum, _EndListType, LastSlotNum, Character.Player.Inven.AriveItem);
-                break;
-            case ItemListType.QUICK:
-                Character.Player.Inven.StartItemMove(MoveSlotNum, _EndListType, LastSlotNum, Character.Player.Quick.AriveItem);
-                break;
-            case ItemListType.EQUIP:
-                Character.Player.Inven.StartItemMove(MoveSlotNum, _EndListType, LastSlotNum, Character.Player.Equip.AriveItem);
-                break;
-            default:
-                break;
-        }
-    }
-    #endregion
-    #region ItemMoveUpdate
-    // 화면 갱신
-    void UpdateItemSlot(List<ItemSlot> _List, int _Num, ItemListType _listType)
-    {
-        _List[_Num].Add(_listType);
-        MoveList[MoveSlotNum].Add(MoveListType);
-        MoveInfoReset();
-    }
-    // Move 정보 리셋
+    }    
     void MoveInfoReset()
     {
         MoveListType = ItemListType.NONE;
-        MoveItem = null;
+        LastSlotNum = -1;
         MoveSlotNum = -1;
     }
     #endregion
-
 
     public void OnPointerDown(PointerEventData data)
     {
@@ -194,20 +129,14 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
         if(miniinfo.gameObject.activeSelf==true)
             miniinfo.gameObject.SetActive(false);
 
+        
+
         if (Input.GetMouseButton(0))
         {            
             if (InventoryMax.activeSelf == false)
             {
-                for (int i = 0; i < Quick.Count; i++)
-                {
-                    if (Quick[i].isInRect(data.position) && Quick[i].ActiveIcon())
-                    {
-                        ClickDown(i, ItemListType.QUICK, LeftClick);                   
-                        ItemInfo = true;                        
-                        return;
-                    }
-
-                }
+                if (Quick.ClickDownQuick(MoveItemSetting, data.position))
+                    return;                
             }
             else if (InventoryMax.activeSelf == true)
             {
@@ -217,37 +146,12 @@ public class InventoryUI : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,
                     Window_Preset = data.position - (Vector2)Window.position;
 
                 }
-                for (int j = 0; j < Quick.Count; j++)
-                {
-                    if (Quick[j].isInRect(data.position) && Quick[j].ActiveIcon())
-                    {
-                        ClickDown(j, ItemListType.QUICK, LeftClick);                        
-                        ItemInfo = true;                                          
-                        return;
-                    }
-
-                }
-                for (int k = 0; k < Equip.Count; k++)
-                {
-                    if (Equip[k].isInRect(data.position) && Equip[k].ActiveIcon())
-                    {
-                        ClickDown(k, ItemListType.EQUIP,LeftClick);
-                        ItemInfo = true;                        
-                        return;
-                    }
-                   
-                }
-                for (int i = 0; i < Inven.Count; i++)
-                {
-                    if (Inven[i].isInRect(data.position) && Inven[i].ActiveIcon())
-                    {
-                        ClickDown(i, ItemListType.INVEN, LeftClick);
-                        ItemInfo = true;                                     
-                        return;
-                    }
-
-                }
-                
+                if (Inven.ClickInven(MoveItemSetting, data.position))
+                    return;
+                if (Equip.ClickEquip(MoveItemSetting, data.position))
+                    return;
+                if (Quick.ClickDownQuick(MoveItemSetting, data.position))
+                    return;                
 
             }
             

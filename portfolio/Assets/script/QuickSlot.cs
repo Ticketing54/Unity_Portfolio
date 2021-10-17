@@ -10,7 +10,7 @@ public class QuickSlot
     Skill[] quickSkill;
     int ItemSlotNum = 0;
     int SkillSlotNum = 0;
-    public delegate Item MoveItemCheck(Item _Item, int _Last);
+    
     public QuickSlot()
     {
         CreateSlots<Item>(ItemSlot);
@@ -25,34 +25,18 @@ public class QuickSlot
         _temp.Add(3, new T[4]);
         
     }
-    public void StartItemMove(int _Start, int _LastType, int _Last, MoveItemCheck Check)  // 시작
-    {
-        if (_LastType==1 || _LastType == 0)
-        {
-            quickItem = ItemSlot[ItemSlotNum];
-            quickItem[_Start] = Check(quickItem[_Start], _Last);
-        }            
-    }
-    public Item AriveItem(Item _Item, int _Last)      //끝
+    public Item StartItemMove(int _Start)  // 시작
     {
         quickItem = ItemSlot[ItemSlotNum];
-        if (IsEmpty_Item(_Last))
-        {
-            quickItem[_Last] = _Item;
+        if (quickItem[_Start] == null)
             return null;
-        }
-        else if ((_Item.Index == quickItem[_Last].Index))
-        {
-            quickItem[_Last].ItemCount += _Item.Index;
-            return null;
-        }
         else
         {
-            Item temp = quickItem[_Last];
-            quickItem[_Last] = _Item;
+            Item temp = quickItem[_Start];
+            quickItem[_Start] = null;
             return temp;
         }
-    }
+    }       
     bool IsEmpty_Item(int _Num)
     {
         quickItem = ItemSlot[ItemSlotNum];

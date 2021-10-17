@@ -6,7 +6,7 @@ public class Equipment
 {
     Item[] EquipItem;
     Status Stat= null;
-    public delegate Item MoveItemCheck(Item _Item, int _Last);
+    
     public Equipment(int _Size, Status _Stat)
     {
         EquipItem = new Item[_Size];
@@ -19,7 +19,7 @@ public class Equipment
         else
             return EquipItem[_Num];
     }
-    public void Add(int _index, Item _NewItem)
+    public void AddItem(int _index, Item _NewItem)
     {
         EquipItem[_index] = _NewItem;
         Stat.EquipStatus(_NewItem);
@@ -31,31 +31,21 @@ public class Equipment
         EquipItem[_index] = null;
         return temp;
     }
-    public void StartItemMove(int _Start, ItemListType _EndListType, int _Last, MoveItemCheck Check)  // 시작
+    public Item StartItemMove(int _Start)  // 시작
     {
-        if(_EndListType == ItemListType.INVEN)
-            EquipItem[_Start] = Check(EquipItem[_Start], _Last);            
+        if (EquipItem[_Start] == null)
+            return null;
+        else
+        {
+            return Subtract(_Start);
+        }
     }
 
-    bool IsEmpty(int _Index)
+    public bool IsEmpty(int _Index)
     {
         if (EquipItem[_Index] == null && EquipItem[_Index].itemType == Item.ItemType.None)
             return true;
 
         return false;
-    }
-    public Item AriveItem(Item _Item, int _Last)      //끝
-    {
-        if (IsEmpty(_Last))
-        {
-            Add(_Last, _Item);
-            return null;
-        }        
-        else
-        {
-            Item temp = Subtract(_Last);
-            Add(_Last, _Item);
-            return temp;
-        }
-    }
+    }    
 }

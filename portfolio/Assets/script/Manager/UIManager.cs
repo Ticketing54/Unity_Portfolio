@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour
 
     //인벤토리
     public GameObject Inven;
-    public InventoryUI Inv;
+    public ITemUiManager Inv;
     public bool InventoryActive    = false;
     public MiniInfo miniinfo;        
     // Exp
