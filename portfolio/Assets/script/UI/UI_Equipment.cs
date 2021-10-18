@@ -6,15 +6,30 @@ public class UI_Equipment : MonoBehaviour
 {
     [SerializeField]
     ItemSlot[] Equip = new ItemSlot[5];
-    public delegate bool Click();
+    
     public delegate void Setting(int _SlotNum, ItemListType _ListType, Sprite _Sprite);
-    public bool ClickEquip(Setting _Setting, Vector2 _ClickPos)
+    public delegate void EndSetting(int _SlotNum, ItemListType _ListType);
+    public bool ClickDownEquip(Setting _Setting, Vector2 _ClickPos)
+    {
+        for (int i = 0; i < Equip.Length; i++)
+        {
+            if (Equip[i].isInRect(_ClickPos) && !Character.Player.Equip.IsEmpty(i))
+            {
+                _Setting(i, ItemListType.INVEN, Equip[i].ICON);
+                Equip[i].Clear();
+                return true;
+            }
+
+        }
+        return false;
+    }
+    public bool CLickUpEquip(EndSetting _Setting, Vector2 _ClickPos)
     {
         for (int i = 0; i < Equip.Length; i++)
         {
             if (Equip[i].isInRect(_ClickPos) && Character.Player.Equip.IsEmpty(i))
             {
-                _Setting(i, ItemListType.INVEN, Equip[i].ICON);
+                _Setting(i, ItemListType.INVEN);
                 return true;
             }
 

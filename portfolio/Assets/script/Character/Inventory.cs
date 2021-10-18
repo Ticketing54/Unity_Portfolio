@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+[System.Serializable]
 public class Inventory
 {
+    [SerializeField]
     Item[] Inven;
     
     public Inventory()
@@ -28,7 +29,7 @@ public class Inventory
     }
     public bool IsEmpty(int _Num)
     {
-        if (Inven[_Num] == null || Inven[_Num].itemType == Item.ItemType.None)
+        if (Inven[_Num] == null)
             return true;
         else
             return false;

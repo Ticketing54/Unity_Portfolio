@@ -25,7 +25,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     [SerializeField]
     UI_QuickSlot Quick;
    
-    public delegate void MouseClickDown();    
+    public delegate void UISlotUpdate(int _SlotNum);    
     
     
     [SerializeField]
@@ -60,57 +60,60 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     public bool isClick = false;
     public bool ItemInfo = false;
 
+    void UpdateUISlot()
+    {
+        Character.Player.Quick.AllItemUpdateUi(Quick.UpdateSlot, Quick.UpdateClear);
+    }
+
     #region Click   
-    public void MoveItemSetting(int _Num, ItemListType _Type,Sprite _Sprite)
+    void MoveItemSetting(int _Num, ItemListType _Type,Sprite _Sprite)
     {
         MoveListType = _Type;        
         MoveSlotNum = _Num;
         MoveIcon.gameObject.SetActive(true);
         MoveIcon.sprite = _Sprite;
         MoveIcon.transform.position = ClickPos;        
-    } 
-    
- 
+    }
+    void EndItemSetting(int _E_Num, ItemListType _EndListType)
+    {
+        LastSlotNum = _E_Num;
+        if (Character.Player.ItemMove(MoveListType, MoveSlotNum, _EndListType, _E_Num)) // 성공
+        {
+            UIMoveUpdate(MoveListType)(MoveSlotNum);
+            UIMoveUpdate(_EndListType)(_E_Num);
+        }
+        else                                                                            // 실패
+        {
+            UIMoveUpdate(MoveListType)(MoveSlotNum);
+        }
+        MoveInfoReset();
+        LastSlotNum = -1;
+    }
     #endregion
     #region Drag
     //드래그 실패
     void DragFail()
-    {
-        switch (MoveListType)
-        {
-            case ItemListType.EQUIP:
-                Equip.UpdateSlot(MoveSlotNum);
-                break;
-            case ItemListType.INVEN:
-                Inven.UpdateSlot(MoveSlotNum);
-                break;
-            case ItemListType.QUICK:
-                Quick.UpdateSlot(MoveSlotNum);
-                break;
-        }
+    {        
+        UIMoveUpdate(MoveListType)(MoveSlotNum);
         LastSlotNum = -1;        
         MoveInfoReset();
     }
     //드래그 성공
-    void DragSuccess(int _Num, ItemListType _EndListType)
+    
+    UISlotUpdate UIMoveUpdate(ItemListType _Type)
     {
-        LastSlotNum = _Num;
-        switch (MoveListType)
+        switch (_Type)
         {
-            case ItemListType.EQUIP:
-                MoveEquipTo(_EndListType);
-                break;
-            case ItemListType.QUICK:
-                MoveQuickTo(_EndListType);
-                break;
             case ItemListType.INVEN:
-                MoveInvenTo(_EndListType);
-                break;
+                return Inven.UpdateSlot;
+            case ItemListType.EQUIP:
+                return Equip.UpdateSlot;
+            case ItemListType.QUICK:
+                return Quick.UpdateSlot;
             default:
-                break;
-        }        
-        LastSlotNum = -1;
-    }    
+                return null;
+        }
+    }
     void MoveInfoReset()
     {
         MoveListType = ItemListType.NONE;
@@ -135,7 +138,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
         {            
             if (InventoryMax.activeSelf == false)
             {
-                if (Quick.ClickDownQuick(MoveItemSetting, data.position))
+                if (Quick.ClickDownQuick_Item(MoveItemSetting, data.position))
                     return;                
             }
             else if (InventoryMax.activeSelf == true)
@@ -146,11 +149,11 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
                     Window_Preset = data.position - (Vector2)Window.position;
 
                 }
-                if (Inven.ClickInven(MoveItemSetting, data.position))
+                if (Inven.ClickdownInven(MoveItemSetting, data.position))
                     return;
-                if (Equip.ClickEquip(MoveItemSetting, data.position))
+                if (Equip.ClickDownEquip(MoveItemSetting, data.position))
                     return;
-                if (Quick.ClickDownQuick(MoveItemSetting, data.position))
+                if (Quick.ClickDownQuick_Item(MoveItemSetting, data.position))
                     return;                
 
             }
@@ -160,49 +163,11 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
         {
             
             if (InventoryMax.activeSelf == false)
-            {
-                for (int i = 0; i < Quick.Count; i++)
-                {
-                    if (Quick[i].isInRect(data.position) && Quick[i].ActiveIcon())
-                    {
-                        ClickDown(i, ItemListType.QUICK, RightClick);                        
-                        return;
-                    }
-
-                }
+            {              
+               
             }
             else if (InventoryMax.activeSelf == true)
             {
-                for (int j = 0; j < Quick.Count; j++)
-                {
-                    if (Quick[j].isInRect(data.position) && Quick[j].ActiveIcon())
-                    {
-                        
-                        ClickDown(j, ItemListType.QUICK, RightClick);
-                        return;
-                    }
-
-                }
-                for (int k = 0; k < Equip.Count; k++)
-                {
-                    if (Equip[k].isInRect(data.position) && Equip[k].ActiveIcon())
-                    {
-                        ClickDown(k, ItemListType.EQUIP, RightClick);
-                        return;
-                    }
-                    
-                }
-                for (int i = 0; i < Inven.Count; i++)
-                {
-                    if (Inven[i].isInRect(data.position) && Inven[i].ActiveIcon())
-                    {
-                        ClickDown(i, ItemListType.INVEN, RightClick);
-                        return;
-                    }
-
-                }
-                
-
 
             }
         }
@@ -216,93 +181,61 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
             return;
         WindowDrag = false;
         
-        if(Input.GetMouseButtonUp(0) && ClickPos == data.position && ItemInfo == true)   // 좌 클릭 시
-        {            
-            if (MoveListType == ItemListType.QUICK)
-            {
-                InfoPreset = new Vector3(data.position.x + 75f, data.position.y + 100f, 0);
-            }
-            else
-            {
-                InfoPreset = new Vector3(data.position.x + 75f, data.position.y - 100f, 0);
-            }            
-            ItemInfo = false;
+        //if(Input.GetMouseButtonUp(0) && ClickPos == data.position && ItemInfo == true)   // 좌 클릭 시
+        //{            
+        //    if (MoveListType == ItemListType.QUICK)
+        //    {
+        //        InfoPreset = new Vector3(data.position.x + 75f, data.position.y + 100f, 0);
+        //    }
+        //    else
+        //    {
+        //        InfoPreset = new Vector3(data.position.x + 75f, data.position.y - 100f, 0);
+        //    }            
+        //    ItemInfo = false;
             
-            End_Click_L(InfoPreset);
-            DragFail();
-            return;
+        //    End_Click_L(InfoPreset);
+        //    DragFail();
+        //    return;
             
-        }
-        else if (Input.GetMouseButtonUp(1) && ClickPos == data.position && isClick == true) // 우 클릭 시
-        {
-            isClick = false;
-            End_Click_R();
-            return;                    
+        //}
+        //else if (Input.GetMouseButtonUp(1) && ClickPos == data.position && isClick == true) // 우 클릭 시
+        //{
+        //    isClick = false;
+        //    End_Click_R();
+        //    return;                    
             
-        }
+        //}
+
+
         if (Input.GetMouseButtonUp(0))
         {
             if (InventoryMax.activeSelf == false)   // 인벤토리가 꺼져있을때
             {
-                for (int i = 0; i < Quick.Count; i++)
-                {
-                    if (Quick[i].isInRect(data.position))
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        DragSuccess(Quick,i, ItemListType.QUICK);
-                        return;
-
-                    }                   
-                }
+                if (Quick.ClickUpQuick_Item(EndItemSetting, data.position))
+                    return;
                 if (MoveSlotNum >= 0 && MoveIcon.gameObject.activeSelf == true)
-                {
-                    SoundManager.soundmanager.soundsPlay("Pick");
+                {                    
                     DragFail();
                     return;
                 }
             }
             else if (InventoryMax.activeSelf == true)  // 인벤토리 켜져있을때
             {
-
-                for (int i = 0; i < Inven.Count; i++)
+                if (Inven.ClickUpInven(EndItemSetting, data.position))
+                    return;
+                if (Quick.ClickUpQuick_Item(EndItemSetting, data.position))
+                    return;
+                if (Equip.CLickUpEquip(EndItemSetting, data.position))
+                    return;
+                //SoundManager.soundmanager.soundsPlay("Pick");
+                if (MoveSlotNum >= 0 && MoveIcon.gameObject.activeSelf == true)
                 {
-                    if (Inven[i].isInRect(data.position))
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        DragSuccess(Inven, i, ItemListType.INVEN);
-                        return;
-                    }
-                }
-
-                for (int j = 0; j < Quick.Count; j++)
-                {
-                    if (Quick[j].isInRect(data.position))
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        DragSuccess(Quick, j, ItemListType.QUICK);
-                        return;
-                    }
-                }
-
-                for (int k = 0; k < Equip.Count; k++)
-                {
-                    if (Equip[k].isInRect(data.position))
-                    {
-                        SoundManager.soundmanager.soundsPlay("Pick");
-                        DragSuccess(Equip, k, ItemListType.EQUIP);
-                        return;
-                    }
-                }
-
-                if (MoveSlotNum>=0&& MoveIcon.gameObject.activeSelf == true)
-                {
-                    SoundManager.soundmanager.soundsPlay("Pick");
                     DragFail();
                     return;
-
                 }
-
             }
+
+
         }
     } 
     

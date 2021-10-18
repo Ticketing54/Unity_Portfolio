@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Equipment
 {
+    [SerializeField]
     Item[] EquipItem;
+    [SerializeField]
     Status Stat= null;
     
     public Equipment(int _Size, Status _Stat)
@@ -43,7 +46,7 @@ public class Equipment
 
     public bool IsEmpty(int _Index)
     {
-        if (EquipItem[_Index] == null && EquipItem[_Index].itemType == Item.ItemType.None)
+        if (EquipItem[_Index] == null)
             return true;
 
         return false;

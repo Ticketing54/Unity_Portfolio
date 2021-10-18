@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
         Load_C_Data(_index);        
         Load_Map_Data();
         Load_Mob_Data();
-        Load_Npc_Data();        
+        //Load_Npc_Data();        
         UIManager.uimanager.InfoUpdate();
         ObjectPoolManager.objManager.PoolingReset_Load();
         //SkillManager.skillmanager.ApplySkill();        
@@ -146,6 +146,13 @@ public class GameManager : MonoBehaviour
         character.name = "Player";        
         Character_Name = string.Empty;
         MapName = "Village";
+        Inventory NewInven = new Inventory();
+        character.Inven = NewInven;
+        QuickSlot NewQuick = new QuickSlot();
+        character.Quick = NewQuick;
+        Equipment newEquip = new Equipment(5, NewStat);
+        character.Equip = newEquip;
+
         character.StartPos = new Vector3(31f,0f,17f);        
     }
     public void Load_C_Data(int _num)
@@ -162,19 +169,23 @@ public class GameManager : MonoBehaviour
         character = obj.AddComponent<Character>();        
         character.tag = "Player";
         character.gameObject.layer = 8;
-
         string []info = DATA[0].Split(',');
         character.name = info[0];
         Status NewStat = new Status(info[0], int.Parse(info[10]), int.Parse(info[5]), float.Parse(info[6]), float.Parse(info[7]), int.Parse(info[8]), int.Parse(info[9]));
         character.Stat = NewStat;
         ChangeLayerObj(character.gameObject.transform, 8);
         MapName = info[1];
-        character.StartPos = new Vector3(float.Parse(info[2]), float.Parse(info[3]), float.Parse(info[4]));       
-
+        character.StartPos = new Vector3(float.Parse(info[2]), float.Parse(info[3]), float.Parse(info[4]));
+        Inventory NewInven = new Inventory();
+        character.Inven = NewInven;
+        QuickSlot NewQuick = new QuickSlot();
+        character.Quick = NewQuick;
+        Equipment newEquip = new Equipment(5,NewStat);
+        character.Equip = newEquip;
 
         if(DATA[1] != "")
         {
-            info = DATA[1].Split('/');
+            info = DATA[1].Split('/');            
             foreach (string one in info)    // 인벤
             {
                 string[] sInven = one.Split(',');
@@ -182,6 +193,7 @@ public class GameManager : MonoBehaviour
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);
+                
                 character.Inven.AddItem(int.Parse(sInven[1]), tmp);
             }
         }

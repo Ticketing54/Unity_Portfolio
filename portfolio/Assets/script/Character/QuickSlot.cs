@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class QuickSlot 
 {
+    [SerializeField]
     Dictionary<int, Item[]> ItemSlot;
+    [SerializeField]
     Dictionary<int, Skill[]> SkillSlot;
     Item[] quickItem;
     Skill[] quickSkill;
     int ItemSlotNum = 0;
     int SkillSlotNum = 0;
+    public delegate void UpdateUI(int _num);
     
     public QuickSlot()
     {
@@ -25,6 +29,23 @@ public class QuickSlot
         _temp.Add(3, new T[4]);
         
     }
+    public void AllItemUpdateUi(UpdateUI _Update, UpdateUI _EmptySlot)
+    {
+        quickItem = ItemSlot[ItemSlotNum];
+
+        for (int i = 0; i < quickItem.Length; i++)
+        {
+            if (IsEmpty_Item(i))
+            {
+                _EmptySlot(i);
+            }
+            else
+            {
+                _Update(i);
+            }
+        }
+    }
+
     public Item StartItemMove(int _Start)  // 시작
     {
         quickItem = ItemSlot[ItemSlotNum];
@@ -37,15 +58,15 @@ public class QuickSlot
             return temp;
         }
     }       
-    bool IsEmpty_Item(int _Num)
+    public bool IsEmpty_Item(int _Num)
     {
         quickItem = ItemSlot[ItemSlotNum];
-        return (quickItem[_Num] == null || quickItem[_Num].itemType == Item.ItemType.None);      
+        return (quickItem[_Num] == null);      
     }
-    bool IsEmpty_Skill(int _Num)
+    public bool IsEmpty_Skill(int _Num)
     {
         quickSkill = SkillSlot[SkillSlotNum];
-        return (quickSkill[_Num] == null || quickSkill[_Num].skillType == Skill.SkillType.None);
+        return (quickSkill[_Num] == null);
     }
     public Item GetItem(int _Num)
     {

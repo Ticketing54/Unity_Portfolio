@@ -6,17 +6,18 @@ using UnityEngine;
 public class UI_QuickSlot : MonoBehaviour
 {
     [SerializeField]
-    ItemSlot[] QuickItem = new ItemSlot[18];
+    ItemSlot[] QuickItem = new ItemSlot[4];
     
-    public delegate void Setting(int _SlotNum, ItemListType _ListType, Sprite _Sprite);
+    public delegate void StartSetting(int _SlotNum, ItemListType _ListType, Sprite _Sprite);
+    public delegate void EndSetting(int _SlotNum, ItemListType _ListType);
     
-    public bool ClickDownQuick(Setting _Setting, Vector2 _ClickPos)
+    public bool ClickDownQuick_Item(StartSetting _Setting, Vector2 _ClickPos)
     {
         for (int i = 0; i < QuickItem.Length; i++)
         {
-            if (QuickItem[i].isInRect(_ClickPos) && Character.Player.Inven.IsEmpty(i))
+            if (QuickItem[i].isInRect(_ClickPos) && Character.Player.Quick.IsEmpty_Item(i))
             {
-                _Setting(i, ItemListType.INVEN, QuickItem[i].ICON);
+                _Setting(i, ItemListType.QUICK, QuickItem[i].ICON);
                 QuickItem[i].Clear();
                 return true;
             }
@@ -24,12 +25,13 @@ public class UI_QuickSlot : MonoBehaviour
         }       
         return false;
     }
-    public bool ClickUpQuick(Vector2 _ClickPos)
+    public bool ClickUpQuick_Item(EndSetting _Setting ,Vector2 _ClickPos)
     {
         for (int i = 0; i < QuickItem.Length; i++)
         {
             if (QuickItem[i].isInRect(_ClickPos))
-            {              
+            {
+                _Setting(i, ItemListType.QUICK);
                 return true;
             }
 
@@ -39,6 +41,10 @@ public class UI_QuickSlot : MonoBehaviour
     public void UpdateSlot(int _Num)
     {
         QuickItem[_Num].Add(ItemListType.QUICK);
+    }
+    public void UpdateClear(int _Num)
+    {
+        QuickItem[_Num].Clear();
     }
    
 }

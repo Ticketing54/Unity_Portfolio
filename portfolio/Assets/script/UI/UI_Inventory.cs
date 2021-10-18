@@ -9,13 +9,28 @@ public class UI_Inventory: MonoBehaviour
     [SerializeField]
     ItemSlot[] Inven = new ItemSlot[18];    
     public delegate void Setting(int _SlotNum, ItemListType _ListType, Sprite _Sprite);
-    public bool ClickInven(Setting _Setting, Vector2 _ClickPos)
+    public delegate void EndSetting(int _SlotNum, ItemListType _ListType);
+    public bool ClickdownInven(Setting _Setting, Vector2 _ClickPos)
     {
         for (int i = 0; i < Inven.Length; i++)
         {
             if (Inven[i].isInRect(_ClickPos) && Character.Player.Inven.IsEmpty(i))
             {
                 _Setting(i, ItemListType.INVEN, Inven[i].ICON);
+                Inven[i].Clear();
+                return true;
+            }
+
+        }
+        return false;
+    }
+    public bool ClickUpInven(EndSetting _Setting, Vector2 _ClickPos)
+    {
+        for (int i = 0; i < Inven.Length; i++)
+        {
+            if (Inven[i].isInRect(_ClickPos) && Character.Player.Inven.IsEmpty(i))
+            {
+                _Setting(i, ItemListType.INVEN);                
                 return true;
             }
 

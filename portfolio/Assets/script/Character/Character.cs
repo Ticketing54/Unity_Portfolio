@@ -55,7 +55,8 @@ public class Character : MonoBehaviour
 
 
 
-    #region MoveItem
+    #region MoveItemControl
+    
     public bool ItemMove(ItemListType _StartType,int _S_Num,ItemListType _EndType,int _E_Num)
     {
         Item Start = ItemMoveStart(_StartType)(_S_Num);
