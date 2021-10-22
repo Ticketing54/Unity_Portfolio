@@ -147,10 +147,27 @@ public class GameManager : MonoBehaviour
         Character_Name = string.Empty;
         MapName = "Village";
         Inventory NewInven = new Inventory();
+        //
         character.Inven = NewInven;
+        Item testITem = new Item(1, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 0);
+        Item testITem1 = new Item(2, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 1);
+        Item testITem2 = new Item(3, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 2);
+        Item testITem3 = new Item(4, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 3);
+        Item testITem4 = new Item(5, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 4);
+        Item testITem5 = new Item(6,1,"테스트용사과","apple","테스트입니다", "Defend/10",1,3,5);
+        Item testITem6 = new Item(6,1,"테스트용사과","apple","테스트입니다", "Defend/10",1,2,5);
+        character.Inven.PushItem(testITem);
+        character.Inven.PushItem(testITem1);
+        character.Inven.PushItem(testITem2);
+        character.Inven.PushItem(testITem3);
+        character.Inven.PushItem(testITem4);
+        character.Inven.PushItem(testITem5);
+        character.Inven.PushItem(testITem6);
+
+        //
         QuickSlot NewQuick = new QuickSlot();
         character.Quick = NewQuick;
-        Equipment newEquip = new Equipment(5, NewStat);
+        Equipment newEquip = new Equipment(NewStat);
         character.Equip = newEquip;
 
         character.StartPos = new Vector3(31f,0f,17f);        
@@ -180,7 +197,7 @@ public class GameManager : MonoBehaviour
         character.Inven = NewInven;
         QuickSlot NewQuick = new QuickSlot();
         character.Quick = NewQuick;
-        Equipment newEquip = new Equipment(5,NewStat);
+        Equipment newEquip = new Equipment(NewStat);
         character.Equip = newEquip;
 
         if(DATA[1] != "")
@@ -206,8 +223,13 @@ public class GameManager : MonoBehaviour
                 List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
-                tmp.ItemCount = 1;                
-                character.Equip.AddItem((int)tmp.EquipType, tmp);
+                tmp.ItemCount = 1;
+                Item check = character.Equip.PushEquip((int)tmp.EquipType, tmp);
+
+                if (check == null)
+                    Debug.LogError("장착되지 않았습니다.");
+                
+                    
             }
         }
         if (DATA[3] != "")

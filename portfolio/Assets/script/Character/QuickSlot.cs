@@ -6,13 +6,32 @@ using UnityEngine;
 public class QuickSlot 
 {
     [SerializeField]
-    Dictionary<int, Item[]> ItemSlot;
+    Dictionary<int, Dictionary<int, Item>> ItemSlot = new Dictionary<int, Dictionary<int, Item>>();
     [SerializeField]
-    Dictionary<int, Skill[]> SkillSlot;
-    Item[] quickItem;
-    Skill[] quickSkill;
+    Dictionary<int, Dictionary<int, Skill>> SkillSlot = new Dictionary<int, Dictionary<int, Skill>>();
+    Dictionary<int, Item> quickItem;
+    Dictionary<int, Skill> quickSkill;
+
     int ItemSlotNum = 0;
     int SkillSlotNum = 0;
+
+    Item item;
+    Skill skill;
+    public int ITEMSLOTNUM
+    {
+        get
+        {
+            return ItemSlotNum;
+        }
+        set
+        {
+            if (value >= 4)
+                ItemSlotNum = 0;
+            else
+                ItemSlotNum = value;
+        }
+    }
+    
     public delegate void UpdateUI(int _num);
     
     public QuickSlot()
@@ -20,20 +39,77 @@ public class QuickSlot
         CreateSlots<Item>(ItemSlot);
         CreateSlots<Skill>(SkillSlot);
     }
-    void CreateSlots<T>(Dictionary<int,T[]> _temp)
+    void CreateSlots<T>(Dictionary<int,Dictionary<int,T>> _Slot)
     {
-        _temp = new Dictionary<int, T[]>();
-        _temp.Add(0, new T[4]);
-        _temp.Add(1, new T[4]);
-        _temp.Add(2, new T[4]);
-        _temp.Add(3, new T[4]);
-        
+        for (int i = 0; i < 4; i++)
+        {
+            _Slot.Add(i, new Dictionary<int, T>());
+        }        
     }
+
+    public Item GetItem(int _SlotNum)
+    {
+        quickItem = ItemSlot[ITEMSLOTNUM];
+        if(quickItem.TryGetValue(_SlotNum, out item))
+        {
+            return item;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    public Item PopItem(int _SlotNum)
+    {
+        quickItem = ItemSlot[ITEMSLOTNUM];
+        if (quickItem.TryGetValue(_SlotNum, out item))
+        {
+            quickItem.Remove(_SlotNum);
+            return item;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    public Item AddItem(int _SlotNum, Item _NewItem)
+    {
+        quickItem = ItemSlot[ITEMSLOTNUM];
+
+        if (_NewItem.itemType != Item.ItemType.Used)        // 소모 아이템이 아닐경우
+            return _NewItem;
+
+        if (quickItem.TryGetValue(_SlotNum, out item))
+        {
+            if(quickItem[_SlotNum].Index == _NewItem.Index)
+            {
+                quickItem[_SlotNum].ItemCount += _NewItem.ItemCount;
+                return null;
+            }
+
+            quickItem.Remove(_SlotNum);
+            quickItem.Add(_SlotNum, _NewItem);
+            return item;
+        }
+        else
+        {
+            quickItem.Add(_SlotNum, _NewItem);
+            return null;
+        }
+    }
+    public bool IsEmpty_Item(int _Num)
+    {
+        quickItem = ItemSlot[ItemSlotNum];
+        return !(quickItem.TryGetValue(_Num,out item));
+    }
+
+
+
     public void AllItemUpdateUi(UpdateUI _Update, UpdateUI _EmptySlot)
     {
         quickItem = ItemSlot[ItemSlotNum];
 
-        for (int i = 0; i < quickItem.Length; i++)
+        for (int i = 0; i < 4; i++)
         {
             if (IsEmpty_Item(i))
             {
@@ -58,26 +134,12 @@ public class QuickSlot
             return temp;
         }
     }       
-    public bool IsEmpty_Item(int _Num)
-    {
-        quickItem = ItemSlot[ItemSlotNum];
-        return (quickItem[_Num] == null);      
-    }
+   
     public bool IsEmpty_Skill(int _Num)
     {
         quickSkill = SkillSlot[SkillSlotNum];
         return (quickSkill[_Num] == null);
-    }
-    public Item GetItem(int _Num)
-    {
-        quickItem = ItemSlot[ItemSlotNum];
-        if (IsEmpty_Item(_Num))
-        {
-            Debug.Log("아이템이 없습니다.");
-            return null;
-        }            
-        return quickItem[_Num];
-    }
+    }  
     public Skill GetSkill(int _SlotNum)
     {
         quickSkill= SkillSlot[SkillSlotNum];
@@ -88,24 +150,12 @@ public class QuickSlot
         }            
         return quickSkill[_SlotNum];
     }
-    public void AddItem(int _SlotNum,Item _Item)
-    {
-        quickItem = ItemSlot[ItemSlotNum];
-        quickItem[_SlotNum] = _Item;        
-    }   
+   
     public void AddSkill(int _ListNum, int _SlotNum, Skill _Skill)
     {
         quickSkill = SkillSlot[SkillSlotNum];
         quickSkill[_SlotNum] = _Skill;
-    }
-    public void RemoveItem(int _SlotNum)
-    {
-        quickItem = ItemSlot[ItemSlotNum];
-        if (quickItem[_SlotNum] == null)
-            return;
-        else
-            quickItem[_SlotNum].itemType = Item.ItemType.None;        
-    }
+    }   
     public void RemoveSkill(int _SlotNum)
     {
         quickSkill = SkillSlot[SkillSlotNum];

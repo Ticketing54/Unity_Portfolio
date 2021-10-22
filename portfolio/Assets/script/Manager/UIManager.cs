@@ -147,7 +147,7 @@ public class UIManager : MonoBehaviour
     {
         if (InventoryActive == false)
         {
-            TryOpenInventory();
+            TryOpenInventory();            
         }
             
         Inven.transform.position = shop.gameObject.transform.position + new Vector3(325f, 0, 0);
@@ -343,7 +343,7 @@ public class UIManager : MonoBehaviour
         if (InventoryActive)
         {
             OpenInventory();
-
+            Inv.UpdateInventory();
 
         }
         else

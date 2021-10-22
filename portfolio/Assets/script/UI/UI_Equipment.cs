@@ -5,18 +5,17 @@ using UnityEngine;
 public class UI_Equipment : MonoBehaviour
 {
     [SerializeField]
-    ItemSlot[] Equip = new ItemSlot[5];
-    
+    ItemSlot[] Equip = new ItemSlot[5];    
     public delegate void Setting(int _SlotNum, ItemListType _ListType, Sprite _Sprite);
     public delegate void EndSetting(int _SlotNum, ItemListType _ListType);
     public bool ClickDownEquip(Setting _Setting, Vector2 _ClickPos)
     {
         for (int i = 0; i < Equip.Length; i++)
-        {
-            if (Equip[i].isInRect(_ClickPos) && !Character.Player.Equip.IsEmpty(i))
+        {            
+            if (Equip[i].isInRect(_ClickPos))
             {
-                _Setting(i, ItemListType.INVEN, Equip[i].ICON);
-                Equip[i].Clear();
+                _Setting(i, ItemListType.EQUIP, Equip[i].ICON);
+                Equip[i].Clear();                
                 return true;
             }
 
@@ -26,10 +25,10 @@ public class UI_Equipment : MonoBehaviour
     public bool CLickUpEquip(EndSetting _Setting, Vector2 _ClickPos)
     {
         for (int i = 0; i < Equip.Length; i++)
-        {
-            if (Equip[i].isInRect(_ClickPos) && Character.Player.Equip.IsEmpty(i))
+        {            
+            if (Equip[i].isInRect(_ClickPos))            
             {
-                _Setting(i, ItemListType.INVEN);
+                _Setting(i, ItemListType.EQUIP);                
                 return true;
             }
 

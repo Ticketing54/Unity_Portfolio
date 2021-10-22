@@ -60,6 +60,11 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     public bool isClick = false;
     public bool ItemInfo = false;
 
+
+    public void UpdateInventory()
+    {
+        Inven.UpdateInven();
+    }
     void UpdateUISlot()
     {
         Character.Player.Quick.AllItemUpdateUi(Quick.UpdateSlot, Quick.UpdateClear);
@@ -77,15 +82,9 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     void EndItemSetting(int _E_Num, ItemListType _EndListType)
     {
         LastSlotNum = _E_Num;
-        if (Character.Player.ItemMove(MoveListType, MoveSlotNum, _EndListType, _E_Num)) // 성공
-        {
-            UIMoveUpdate(MoveListType)(MoveSlotNum);
-            UIMoveUpdate(_EndListType)(_E_Num);
-        }
-        else                                                                            // 실패
-        {
-            UIMoveUpdate(MoveListType)(MoveSlotNum);
-        }
+        Character.Player.ItemMove(MoveListType, MoveSlotNum, _EndListType, _E_Num);
+        UIMoveUpdate(MoveListType)(MoveSlotNum);
+        UIMoveUpdate(_EndListType)(_E_Num);
         MoveInfoReset();
         LastSlotNum = -1;
     }
@@ -119,6 +118,8 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
         MoveListType = ItemListType.NONE;
         LastSlotNum = -1;
         MoveSlotNum = -1;
+        if (MoveIcon.gameObject.activeSelf == true)
+            MoveIcon.gameObject.SetActive(false);
     }
     #endregion
 

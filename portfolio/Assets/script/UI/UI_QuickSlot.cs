@@ -15,7 +15,7 @@ public class UI_QuickSlot : MonoBehaviour
     {
         for (int i = 0; i < QuickItem.Length; i++)
         {
-            if (QuickItem[i].isInRect(_ClickPos) && Character.Player.Quick.IsEmpty_Item(i))
+            if (QuickItem[i].isInRect(_ClickPos) && !Character.Player.Quick.IsEmpty_Item(i))
             {
                 _Setting(i, ItemListType.QUICK, QuickItem[i].ICON);
                 QuickItem[i].Clear();

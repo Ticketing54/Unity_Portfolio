@@ -9,20 +9,21 @@ using System;
 public class Item
 {
     public enum ItemType
-    {
-        None,
+    {        
         Equipment,
         Used,
-        Etc
+        Etc,
+        None,
     }
     public enum EquipMentType
-    {
-        None ,
+    {        
         HEAD ,
         Armor,
         RightArm,
         LeftArm,
-        Shose
+        Shose,
+        None
+
     }
 
 
@@ -47,7 +48,7 @@ public class Item
         }
     }
     public int ItemCount { get; set; }    
-    public Item(int _Index, int _ItemType,string _ItemName, string _ItemSpriteName,string _ItemExplain, string _ItemProperty, int _ItemPrice, int _E_Index=0,int _ItemCount=1)
+    public Item(int _Index, int _ItemType,string _ItemName, string _ItemSpriteName,string _ItemExplain, string _ItemProperty, int _ItemPrice,int _ItemCount= 1,int _E_Index = 5)
     {
         Index = _Index;        
         itemType = (ItemType)_ItemType;

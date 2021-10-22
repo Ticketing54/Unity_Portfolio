@@ -14,7 +14,7 @@ public class UI_Inventory: MonoBehaviour
     {
         for (int i = 0; i < Inven.Length; i++)
         {
-            if (Inven[i].isInRect(_ClickPos) && Character.Player.Inven.IsEmpty(i))
+            if (Inven[i].isInRect(_ClickPos) && !Character.Player.Inven.IsEmpty(i))
             {
                 _Setting(i, ItemListType.INVEN, Inven[i].ICON);
                 Inven[i].Clear();
@@ -28,7 +28,7 @@ public class UI_Inventory: MonoBehaviour
     {
         for (int i = 0; i < Inven.Length; i++)
         {
-            if (Inven[i].isInRect(_ClickPos) && Character.Player.Inven.IsEmpty(i))
+            if (Inven[i].isInRect(_ClickPos))
             {
                 _Setting(i, ItemListType.INVEN);                
                 return true;
@@ -40,5 +40,15 @@ public class UI_Inventory: MonoBehaviour
     public void UpdateSlot(int _Num)
     {
         Inven[_Num].Add(ItemListType.INVEN);
+    }
+    public void UpdateInven()
+    {
+        List<int> Items = Character.Player.Inven.GetKeys();
+        Item item;
+        foreach(int one in Items)
+        {
+            Inven[one].Add(ItemListType.INVEN);
+
+        }
     }
 }

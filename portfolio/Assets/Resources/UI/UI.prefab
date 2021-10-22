@@ -13001,8 +13001,8 @@ RectTransform:
   - {fileID: 8172734652808430780}
   - {fileID: 8708131493727839173}
   - {fileID: 2498125799947325506}
-  - {fileID: 1448269400665938934}
   - {fileID: 2712149602660518363}
+  - {fileID: 1448269400665938934}
   m_Father: {fileID: 5508345026974380814}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -24519,7 +24519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Icon: {fileID: 4119849129573275270}
-  tr: {fileID: 3086381901731003108}
+  tr: {fileID: 9075348545808238130}
   SlotNum: 6
   item:
     SlotNum: 0
@@ -25473,7 +25473,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5508345026974380814
 RectTransform:
   m_ObjectHideFlags: 0
@@ -41409,7 +41409,7 @@ RectTransform:
   - {fileID: 246988110475684822}
   - {fileID: 8826624093874480109}
   m_Father: {fileID: 4193166775649543218}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -41467,7 +41467,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Icon: {fileID: 3013639363435838655}
   tr: {fileID: 1448269400665938934}
-  SlotNum: 3
+  SlotNum: 4
   item:
     SlotNum: 0
   ItemCount: {fileID: 594024719576836404}
@@ -46823,7 +46823,7 @@ RectTransform:
   - {fileID: 7207321001310135252}
   - {fileID: 8691283781465358314}
   m_Father: {fileID: 4193166775649543218}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -46881,7 +46881,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Icon: {fileID: 4013755014979579594}
   tr: {fileID: 2712149602660518363}
-  SlotNum: 4
+  SlotNum: 3
   item:
     SlotNum: 0
   ItemCount: {fileID: 3785697372482351783}

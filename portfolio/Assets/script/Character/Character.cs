@@ -11,9 +11,14 @@ public class Character : MonoBehaviour
     public static Character Player;
     public Status Stat = null;
     public Equipment Equip = null;
+    [SerializeField]
     public CharacterSkill Skill = null;
+    [SerializeField]
     public CharacterQuest Quest = null;
+    [SerializeField]
     public Inventory Inven = null;
+
+
     public QuickSlot Quick = null;
 
     public List<SkinnedMeshRenderer> Weapon = new List<SkinnedMeshRenderer>();
@@ -51,50 +56,60 @@ public class Character : MonoBehaviour
     public bool OpenLootingbox = false; // 루팅박스 
     public Vector3 StartPos;
     public delegate Item SwapStart(int _Start);
-    public delegate void SwapEnd(int _End, Item item);
+    public delegate Item SwapEnd(int _End, Item item);
 
 
 
     #region MoveItemControl
     
-    public bool ItemMove(ItemListType _StartType,int _S_Num,ItemListType _EndType,int _E_Num)
+    public void ItemMove(ItemListType _StartType,int _S_Num,ItemListType _EndType,int _E_Num)
     {
         Item Start = ItemMoveStart(_StartType)(_S_Num);
         if (Start == null)
-            return false;
-        if (CheckMoveItem(Start, _EndType, _E_Num))
-        {
-            ItemMoveEnd(_StartType)(_S_Num, Start);             // 클릭한 아이템을 보낼수 있는지 체크
-            return false;
-        }
-        else
-        {
-            Item End = ItemMoveStart(_EndType)(_E_Num);
-            if (End == null)                                    // 빈곳으로 보냈을때
-            {
-                ItemMoveEnd(_EndType)(_E_Num, Start);
-            }
-            else if (Start.Index == End.Index)                  
-            {
-                if (Start.itemType == Item.ItemType.Equipment)  // 같은 아이템일때(장비아이템일 경우 교환)
-                {
-                    ItemMoveEnd(_StartType)(_S_Num, End);
-                    ItemMoveEnd(_EndType)(_E_Num, Start);
-                }
-                else                                            // 같은 아이템일때(합산)
-                {
-                    Start.ItemCount += End.ItemCount;
-                    ItemMoveEnd(_EndType)(_E_Num, End);
-                }
-            }
-            else                                                // 다른 아이템일때 (교환)
-            {
-                ItemMoveEnd(_StartType)(_S_Num, End);
-                ItemMoveEnd(_EndType)(_E_Num, Start);
-            }
+            return;
 
-            return true;
+        Item End = ItemMoveEnd(_EndType)(_E_Num, Start);
+        if (End != null)
+        {
+            ItemMoveEnd(_StartType)(_S_Num, End);
         }
+
+
+
+
+        //if (CheckMoveItem(Start, _EndType, _E_Num))
+        //{
+        //    ItemMoveEnd(_StartType)(_S_Num, Start);             // 클릭한 아이템을 보낼수 있는지 체크
+        //    return false;
+        //}
+        //else
+        //{
+        //    Item End = ItemMoveStart(_EndType)(_E_Num);
+        //    if (End == null)                                    // 빈곳으로 보냈을때
+        //    {
+        //        ItemMoveEnd(_EndType)(_E_Num, Start);
+        //    }
+        //    else if (Start.Index == End.Index)                  
+        //    {
+        //        if (Start.itemType == Item.ItemType.Equipment)  // 같은 아이템일때(장비아이템일 경우 교환)
+        //        {
+        //            ItemMoveEnd(_StartType)(_S_Num, End);
+        //            ItemMoveEnd(_EndType)(_E_Num, Start);
+        //        }
+        //        else                                            // 같은 아이템일때(합산)
+        //        {
+        //            Start.ItemCount += End.ItemCount;
+        //            ItemMoveEnd(_EndType)(_E_Num, End);
+        //        }
+        //    }
+        //    else                                                // 다른 아이템일때 (교환)
+        //    {
+        //        ItemMoveEnd(_StartType)(_S_Num, End);
+        //        ItemMoveEnd(_EndType)(_E_Num, Start);
+        //    }
+
+        //    return true;
+        //}
     }
     
     bool CheckMoveItem(Item _item, ItemListType _EndType,int _E_Num)
@@ -125,11 +140,11 @@ public class Character : MonoBehaviour
         switch (_Start)
         {
             case ItemListType.INVEN:
-                return Inven.StartItemMove;                
+                return Inven.PopItem;                
             case ItemListType.EQUIP:
-                return Equip.StartItemMove;                
+                return Equip.PopEquip;                
             case ItemListType.QUICK:
-                return Quick.StartItemMove;                
+                return Quick.PopItem;                
             default:
                 return null;                
         }
@@ -141,7 +156,7 @@ public class Character : MonoBehaviour
             case ItemListType.INVEN:
                 return Inven.AddItem;                
             case ItemListType.EQUIP:
-                return Equip.AddItem;                
+                return Equip.PushEquip;                
             case ItemListType.QUICK:
                 return Quick.AddItem;                
             default:
