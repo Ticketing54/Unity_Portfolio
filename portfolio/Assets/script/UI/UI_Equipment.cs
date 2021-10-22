@@ -14,8 +14,7 @@ public class UI_Equipment : MonoBehaviour
         {            
             if (Equip[i].isInRect(_ClickPos))
             {
-                _Setting(i, ItemListType.EQUIP, Equip[i].ICON);
-                Equip[i].Clear();                
+                _Setting(i, ItemListType.EQUIP, Equip[i].ICON);                
                 return true;
             }
 

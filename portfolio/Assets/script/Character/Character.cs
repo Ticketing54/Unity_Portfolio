@@ -11,11 +11,9 @@ public class Character : MonoBehaviour
     public static Character Player;
     public Status Stat = null;
     public Equipment Equip = null;
-    [SerializeField]
-    public CharacterSkill Skill = null;
-    [SerializeField]
-    public CharacterQuest Quest = null;
-    [SerializeField]
+    
+    public CharacterSkill Skill = null;    
+    public CharacterQuest Quest = null;    
     public Inventory Inven = null;
 
 
@@ -73,68 +71,8 @@ public class Character : MonoBehaviour
         {
             ItemMoveEnd(_StartType)(_S_Num, End);
         }
-
-
-
-
-        //if (CheckMoveItem(Start, _EndType, _E_Num))
-        //{
-        //    ItemMoveEnd(_StartType)(_S_Num, Start);             // 클릭한 아이템을 보낼수 있는지 체크
-        //    return false;
-        //}
-        //else
-        //{
-        //    Item End = ItemMoveStart(_EndType)(_E_Num);
-        //    if (End == null)                                    // 빈곳으로 보냈을때
-        //    {
-        //        ItemMoveEnd(_EndType)(_E_Num, Start);
-        //    }
-        //    else if (Start.Index == End.Index)                  
-        //    {
-        //        if (Start.itemType == Item.ItemType.Equipment)  // 같은 아이템일때(장비아이템일 경우 교환)
-        //        {
-        //            ItemMoveEnd(_StartType)(_S_Num, End);
-        //            ItemMoveEnd(_EndType)(_E_Num, Start);
-        //        }
-        //        else                                            // 같은 아이템일때(합산)
-        //        {
-        //            Start.ItemCount += End.ItemCount;
-        //            ItemMoveEnd(_EndType)(_E_Num, End);
-        //        }
-        //    }
-        //    else                                                // 다른 아이템일때 (교환)
-        //    {
-        //        ItemMoveEnd(_StartType)(_S_Num, End);
-        //        ItemMoveEnd(_EndType)(_E_Num, Start);
-        //    }
-
-        //    return true;
-        //}
-    }
-    
-    bool CheckMoveItem(Item _item, ItemListType _EndType,int _E_Num)
-    {
-        switch (_EndType)
-        {
-            case ItemListType.INVEN:
-                return false;
-            case ItemListType.EQUIP:
-                if (_item.itemType != Item.ItemType.Equipment)
-                    return true;
-                else
-                {
-                    if ((int)_item.EquipType != _E_Num)
-                        return true;
-                    else
-                        return false;
-                }                
-            case ItemListType.QUICK:
-                return _item.itemType != Item.ItemType.Used;
-            default:
-                return true;
-        }
-    }
-    
+    }    
+   
     SwapStart ItemMoveStart(ItemListType _Start)
     {
         switch (_Start)

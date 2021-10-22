@@ -16,8 +16,7 @@ public class UI_Inventory: MonoBehaviour
         {
             if (Inven[i].isInRect(_ClickPos) && !Character.Player.Inven.IsEmpty(i))
             {
-                _Setting(i, ItemListType.INVEN, Inven[i].ICON);
-                Inven[i].Clear();
+                _Setting(i, ItemListType.INVEN, Inven[i].ICON);                
                 return true;
             }
 

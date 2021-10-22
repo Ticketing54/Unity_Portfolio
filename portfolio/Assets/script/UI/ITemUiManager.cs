@@ -29,16 +29,17 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     
     
     [SerializeField]
-    ItemListType MoveListType;      // 드래그중인 List 종류    
+    ItemListType WorkingType;      // 드래그중인 List 종류    
     [SerializeField]
-    int MoveSlotNum;                // 드래그중인 슬롯 넘버
+    int WorkingSlotNum;                // 드래그중인 슬롯 넘버
     [SerializeField]
     int LastSlotNum;                // 드래그 한 지점 슬롯 넘버    
     [SerializeField]
     Vector2 ClickPos;               // 클릭 지점
     [SerializeField]
     Vector3 InfoPreset;             // 정보창 프리셋
-    
+    [SerializeField]
+    Sprite WorkingSprite;
     [SerializeField]
     Image MoveIcon = null;          // 드래그아이템 이미지
 
@@ -60,6 +61,8 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     public bool isClick = false;
     public bool ItemInfo = false;
 
+    bool LeftClick = false;
+    bool RightClick = false;
 
     public void UpdateInventory()
     {
@@ -73,19 +76,27 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     #region Click   
     void MoveItemSetting(int _Num, ItemListType _Type,Sprite _Sprite)
     {
-        MoveListType = _Type;        
-        MoveSlotNum = _Num;
+        WorkingType = _Type;        
+        WorkingSlotNum = _Num;
         MoveIcon.gameObject.SetActive(true);
-        MoveIcon.sprite = _Sprite;
-        MoveIcon.transform.position = ClickPos;        
+        WorkingSprite = _Sprite;
+        MoveIcon.sprite = WorkingSprite;
+        MoveIcon.transform.position = ClickPos;
+        LeftClick = true;
+    }
+    void ClickItemSetting(int _Num, ItemListType _Type, Sprite _Sprite)
+    {
+        WorkingType = _Type;
+        WorkingSlotNum = _Num;
+        RightClick = true;
     }
     void EndItemSetting(int _E_Num, ItemListType _EndListType)
     {
         LastSlotNum = _E_Num;
-        Character.Player.ItemMove(MoveListType, MoveSlotNum, _EndListType, _E_Num);
-        UIMoveUpdate(MoveListType)(MoveSlotNum);
+        Character.Player.ItemMove(WorkingType, WorkingSlotNum, _EndListType, _E_Num);
+        UIMoveUpdate(WorkingType)(WorkingSlotNum);
         UIMoveUpdate(_EndListType)(_E_Num);
-        MoveInfoReset();
+        WorkingReset();
         LastSlotNum = -1;
     }
     #endregion
@@ -93,9 +104,8 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     //드래그 실패
     void DragFail()
     {        
-        UIMoveUpdate(MoveListType)(MoveSlotNum);
-        LastSlotNum = -1;        
-        MoveInfoReset();
+        UIMoveUpdate(WorkingType)(WorkingSlotNum);          
+        WorkingReset();
     }
     //드래그 성공
     
@@ -113,11 +123,14 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
                 return null;
         }
     }
-    void MoveInfoReset()
+    void WorkingReset()
     {
-        MoveListType = ItemListType.NONE;
+        WorkingType = ItemListType.NONE;
         LastSlotNum = -1;
-        MoveSlotNum = -1;
+        WorkingSlotNum = -1;
+        WorkingSprite = null;
+        LeftClick = false;
+        RightClick = false;
         if (MoveIcon.gameObject.activeSelf == true)
             MoveIcon.gameObject.SetActive(false);
     }
@@ -164,48 +177,59 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
         {
             
             if (InventoryMax.activeSelf == false)
-            {              
+            {
+                if (Quick.ClickDownQuick_Item(ClickItemSetting, data.position))
+                    return;
                
             }
             else if (InventoryMax.activeSelf == true)
             {
+                if (Quick.ClickDownQuick_Item(ClickItemSetting, data.position))
+                    return;
+                if (Equip.ClickDownEquip(ClickItemSetting, data.position))
+                    return;
+                if (Inven.ClickdownInven(ClickItemSetting, data.position))
+                    return;
 
             }
         }
         
     }  
+
+    public Vector3 GetInfoPreset(ItemListType _Type, Vector2 ClickPos)
+    {
+        if(_Type == ItemListType.QUICK)
+        {
+            return new Vector3(ClickPos.x + 75f, ClickPos.y + 100f, 0);
+        }
+        else
+        {
+            return new Vector3(ClickPos.x + 75f, ClickPos.y - 100f, 0);
+        }    
+    }
     public void OnPointerUp(PointerEventData data)
     {
-        if (MoveSlotNum < 0)
+        if (WorkingSlotNum < 0)
             return;
         if (shop.gameObject.activeSelf == true)
             return;
         WindowDrag = false;
-        
-        //if(Input.GetMouseButtonUp(0) && ClickPos == data.position && ItemInfo == true)   // 좌 클릭 시
-        //{            
-        //    if (MoveListType == ItemListType.QUICK)
-        //    {
-        //        InfoPreset = new Vector3(data.position.x + 75f, data.position.y + 100f, 0);
-        //    }
-        //    else
-        //    {
-        //        InfoPreset = new Vector3(data.position.x + 75f, data.position.y - 100f, 0);
-        //    }            
-        //    ItemInfo = false;
-            
-        //    End_Click_L(InfoPreset);
-        //    DragFail();
-        //    return;
-            
-        //}
-        //else if (Input.GetMouseButtonUp(1) && ClickPos == data.position && isClick == true) // 우 클릭 시
-        //{
-        //    isClick = false;
-        //    End_Click_R();
-        //    return;                    
-            
-        //}
+
+        if (ClickPos == data.position && LeftClick == true)              // 좌 클릭 시
+        {                  
+                    // GetInfoPreset()
+                    // 프리셋에 맞게 아이템 정보창 표시
+            DragFail();
+            return;
+
+        }
+        else if (ClickPos == data.position && RightClick == true)       // 우 클릭 시
+        {
+                            // 장착
+            WorkingReset();                             
+            return;
+
+        }
 
 
         if (Input.GetMouseButtonUp(0))
@@ -214,7 +238,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
             {
                 if (Quick.ClickUpQuick_Item(EndItemSetting, data.position))
                     return;
-                if (MoveSlotNum >= 0 && MoveIcon.gameObject.activeSelf == true)
+                if (WorkingSlotNum >= 0 && MoveIcon.gameObject.activeSelf == true)
                 {                    
                     DragFail();
                     return;
@@ -229,7 +253,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
                 if (Equip.CLickUpEquip(EndItemSetting, data.position))
                     return;
                 //SoundManager.soundmanager.soundsPlay("Pick");
-                if (MoveSlotNum >= 0 && MoveIcon.gameObject.activeSelf == true)
+                if (WorkingSlotNum >= 0 && MoveIcon.gameObject.activeSelf == true)
                 {
                     DragFail();
                     return;
@@ -272,33 +296,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
 
     }
    
-    public void End_Click_R()       //자동 장착
-    {
-        
-    }
-    public void End_Click_L(Vector3 Pos)    //정보 표시
-    {
-        
-        //if(Clickitem != null && ClickitemImage != null)
-        //{
-        //    miniinfo.gameObject.SetActive(true);
-        //    miniinfo.gameObject.transform.position = Pos;
-        //    miniinfo.ItemImage.sprite = ClickitemImage.sprite;
-        //    miniinfo.ItemName.text = Clickitem.ItemName;
-        //    miniinfo.ItemType.text = Clickitem.itemType.ToString();
-        //    miniinfo.ExPlain.text = Clickitem.ItemExplain;
-
-
-        //    if (Clickitem.ItemProperty == "")
-        //        miniinfo.Property.text = "";
-        //    else
-        //    {
-        //        string[] tmp = Clickitem.ItemProperty.Split('/');
-        //        miniinfo.Property.text = tmp[0] + " + " + tmp[1];
-        //    }
-           
-        //}
-
-    }  
+   
+ 
 
 }
