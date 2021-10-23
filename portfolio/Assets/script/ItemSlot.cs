@@ -22,7 +22,7 @@ public class ItemSlot : Slot
                 item = Character.Player.Quick.GetItem(SlotNum);
                 break;
             case ItemListType.EQUIP:
-                item = Character.Player.Equip.GetItem((Item.EquipMentType)SlotNum);
+                item = Character.Player.Equip.GetItem(SlotNum);
                 break;
             default:
                 break;

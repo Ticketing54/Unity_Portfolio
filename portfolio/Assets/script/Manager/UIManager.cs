@@ -343,7 +343,7 @@ public class UIManager : MonoBehaviour
         if (InventoryActive)
         {
             OpenInventory();
-            Inv.UpdateInventory();
+            Inv.UpdateUIInfo();
 
         }
         else
