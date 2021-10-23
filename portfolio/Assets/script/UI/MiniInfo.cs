@@ -18,7 +18,7 @@ public class MiniInfo : MonoBehaviour
     TextMeshProUGUI Property;
 
 
-    public void MiniInfoUpdate(Item _item, Vector3 Pos, Sprite _Image)    //정보 표시
+    public void End_Click_L(Item _item, Vector3 Pos, Sprite _Image)    //정보 표시
     {
         if (_item == null)
             return;

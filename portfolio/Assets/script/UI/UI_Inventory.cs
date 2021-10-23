@@ -47,6 +47,7 @@ public class UI_Inventory: MonoBehaviour
         foreach(int one in Items)
         {
             Inven[one].Add(ItemListType.INVEN);
+
         }
     }
 }

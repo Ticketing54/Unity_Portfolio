@@ -25,13 +25,15 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     [SerializeField]
     UI_QuickSlot Quick;
    
-    public delegate void UISlotUpdateType(int _SlotNum);    
+    public delegate void UISlotUpdate(int _SlotNum);    
     
     
     [SerializeField]
     ItemListType WorkingType;      // 드래그중인 List 종류    
     [SerializeField]
-    int WorkingSlotNum;                // 드래그중인 슬롯 넘버      
+    int WorkingSlotNum;                // 드래그중인 슬롯 넘버
+    [SerializeField]
+    int LastSlotNum;                // 드래그 한 지점 슬롯 넘버    
     [SerializeField]
     Vector2 ClickPos;               // 클릭 지점
     [SerializeField]
@@ -40,8 +42,6 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     Sprite WorkingSprite;
     [SerializeField]
     Image MoveIcon = null;          // 드래그아이템 이미지
-    [SerializeField]
-    Item item = null;
 
     [SerializeField]
     MoveWindow movewindow;          //윈도우창 움직이기
@@ -55,9 +55,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     Vector2 Window_Preset = Vector2.zero;       // 창 드래그 시 적용 프리셋
 
 
-    [SerializeField]           // 클릭시 정보창 
-    MiniInfo miniinfo;
-
+    public MiniInfo miniinfo;
     public Shop shop;    
     public GameObject InventoryMax;
     public bool isClick = false;
@@ -66,49 +64,16 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     bool LeftClick = false;
     bool RightClick = false;
 
-    
-   
-    #region Reset // UpdateUI
-    void UIMoveUpdate(ItemListType _Type, int _SlotNum)
-    {
-        switch (_Type)
-        {
-            case ItemListType.INVEN:
-                Inven.UpdateSlot(_SlotNum);
-                return;
-            case ItemListType.EQUIP:
-                Equip.UpdateSlot(_SlotNum);
-                return;
-            case ItemListType.QUICK:
-                Quick.UpdateSlot(_SlotNum);
-                return;
-            default:
-                return ;
-        }
-    }
-    
-    void WorkingReset()
-    {
-        WorkingType = ItemListType.NONE;
-        WorkingSlotNum = -1;
-        WorkingSprite = null;
-        ClickPos = Vector2.zero;
-        LeftClick = false;
-        RightClick = false;
-        if (MoveIcon.gameObject.activeSelf == true)
-            MoveIcon.gameObject.SetActive(false);
-    }
-    public void UpdateUIInfo()
+    public void UpdateInventory()
     {
         Inven.UpdateInven();
-        Equip.UpdateEquip();
-
-        //Quick슬롯은 처음에 보이기 때문에 처음에 업데이트 한번 할 것.
     }
-    #endregion
+    void UpdateUISlot()
+    {
+        Character.Player.Quick.AllItemUpdateUi(Quick.UpdateSlot, Quick.UpdateClear);
+    }
 
-    #region StartMoveItem   
-    // 드래그
+    #region Click   
     void MoveItemSetting(int _Num, ItemListType _Type,Sprite _Sprite)
     {
         WorkingType = _Type;        
@@ -119,39 +84,56 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
         MoveIcon.transform.position = ClickPos;
         LeftClick = true;
     }
-    // 클릭
     void ClickItemSetting(int _Num, ItemListType _Type, Sprite _Sprite)
     {
         WorkingType = _Type;
         WorkingSlotNum = _Num;
         RightClick = true;
     }
-   
-    #endregion
-
-    #region EndMoveItem
-   //드래그 성공
     void EndItemSetting(int _E_Num, ItemListType _EndListType)
     {
-        Character.Player.ItemMove(WorkingType, WorkingSlotNum, _EndListType, _E_Num, UIMoveUpdate);        
+        LastSlotNum = _E_Num;
+        Character.Player.ItemMove(WorkingType, WorkingSlotNum, _EndListType, _E_Num);
+        UIMoveUpdate(WorkingType)(WorkingSlotNum);
+        UIMoveUpdate(_EndListType)(_E_Num);
         WorkingReset();
-
+        LastSlotNum = -1;
     }
+    #endregion
+    #region Drag
     //드래그 실패
     void DragFail()
     {        
-        UIMoveUpdate(WorkingType, WorkingSlotNum);
+        UIMoveUpdate(WorkingType)(WorkingSlotNum);          
         WorkingReset();
     }
-    //우 클릭
-    void ItemInfoOn(Vector3 _Preset)
+    //드래그 성공
+    
+    UISlotUpdate UIMoveUpdate(ItemListType _Type)
     {
-        item = Character.Player.GetItem(WorkingType, WorkingSlotNum);
-        miniinfo.gameObject.SetActive(true);
-        miniinfo.MiniInfoUpdate(item, _Preset, WorkingSprite);
-        item = null;
+        switch (_Type)
+        {
+            case ItemListType.INVEN:
+                return Inven.UpdateSlot;
+            case ItemListType.EQUIP:
+                return Equip.UpdateSlot;
+            case ItemListType.QUICK:
+                return Quick.UpdateSlot;
+            default:
+                return null;
+        }
     }
-    //좌 클릭
+    void WorkingReset()
+    {
+        WorkingType = ItemListType.NONE;
+        LastSlotNum = -1;
+        WorkingSlotNum = -1;
+        WorkingSprite = null;
+        LeftClick = false;
+        RightClick = false;
+        if (MoveIcon.gameObject.activeSelf == true)
+            MoveIcon.gameObject.SetActive(false);
+    }
     #endregion
 
     public void OnPointerDown(PointerEventData data)
@@ -234,17 +216,22 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
         WindowDrag = false;
 
         if (ClickPos == data.position && LeftClick == true)              // 좌 클릭 시
-        {
-            ItemInfoOn(GetInfoPreset(WorkingType, data.position));                    
-            DragFail();            
+        {                  
+                    // GetInfoPreset()
+                    // 프리셋에 맞게 아이템 정보창 표시
+            DragFail();
             return;
+
         }
         else if (ClickPos == data.position && RightClick == true)       // 우 클릭 시
         {
-            Character.Player.ItemMove(WorkingType, WorkingSlotNum, UIMoveUpdate);                // 장착
-            WorkingReset();            
+                            // 장착
+            WorkingReset();                             
             return;
+
         }
+
+
         if (Input.GetMouseButtonUp(0))
         {
             if (InventoryMax.activeSelf == false)   // 인벤토리가 꺼져있을때
@@ -277,7 +264,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
         }
     } 
     
-
+    //
     
     public void OnBeginDrag(PointerEventData data)
     {
@@ -296,6 +283,10 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
             
             Window.position = data.position - Window_Preset;
         }
+        
+
+
+
     }
     public void OnEndDrag(PointerEventData data)
     {

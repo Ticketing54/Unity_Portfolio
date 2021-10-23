@@ -14,24 +14,16 @@ public class Equipment
     {        
         Stat = _Stat;
     }
-    public Item GetItem(int _equipType)
+    public Item GetItem(Item.EquipMentType _equipType)
     {
-        Type = (Item.EquipMentType)_equipType;
-        if(Equip.TryGetValue(Type,out item))
+        if(Equip.TryGetValue(_equipType,out item))
         {
-            Type = Item.EquipMentType.None;
             return item;
         }
         else
         {
-            Type = Item.EquipMentType.None;
             return null;
         }
-    }
-    public List<Item.EquipMentType> GetKeys()
-    {
-        List<Item.EquipMentType> Keys = new List<Item.EquipMentType>(Equip.Keys);
-        return Keys;
     }
     public Item PopEquip(int _equipType)
     {
@@ -72,7 +64,6 @@ public class Equipment
             return null;
         }
     }
-    
     public bool IsEmpty(Item.EquipMentType _equipType)
     {
         return !(Equip.TryGetValue(_equipType, out item));
