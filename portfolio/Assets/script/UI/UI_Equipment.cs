@@ -38,4 +38,13 @@ public class UI_Equipment : MonoBehaviour
     {
         Equip[_Num].Add(ItemListType.EQUIP);
     }
+    public void UpdateEquip()
+    {
+        List<Item.EquipMentType> Items = Character.Player.Equip.GetKeys();
+        Item item;
+        foreach (Item.EquipMentType one in Items)
+        {
+            Equip[(int)one].Add(ItemListType.EQUIP);
+        }
+    }
 }

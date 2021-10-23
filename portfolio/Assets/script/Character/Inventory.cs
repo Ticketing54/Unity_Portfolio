@@ -6,6 +6,7 @@ using UnityEngine;
 public class Inventory
 {
     Dictionary<int, Item> Inven = new Dictionary<int, Item>();
+    
     Item item;
     int Capacity = 18;
     public int CAPACITY
@@ -29,9 +30,7 @@ public class Inventory
     }
     
     public Item GetItem(int _SlotNum)
-    {
-        
-     
+    {    
         if(Inven.TryGetValue(_SlotNum,out item))
         {
             return item;
@@ -64,6 +63,17 @@ public class Inventory
             }
         }
         return false;
+    }
+   public int EmptySlot()
+    {
+        for (int i = 0; i < CAPACITY; i++)
+        {
+            if (!Inven.TryGetValue(i, out item))
+            {                
+                return i;
+            }
+        }
+        return -1;
     }
     public Item AddItem(int _Index, Item _NewItem)
     {
