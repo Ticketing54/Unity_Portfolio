@@ -81,12 +81,12 @@ public class GameManager : MonoBehaviour
         Load_C_Data(_index);        
         Load_Map_Data();
         Load_Mob_Data();
-        Load_Npc_Data();        
+        //Load_Npc_Data();        
         UIManager.uimanager.InfoUpdate();
         ObjectPoolManager.objManager.PoolingReset_Load();
-        SkillManager.skillmanager.ApplySkill();        
+        //SkillManager.skillmanager.ApplySkill();        
         UIManager.uimanager.minimap.MapSetting();   //미니맵 변경
-        QuestManager.questManager.applyQuest();
+        //QuestManager.questManager.applyQuest();
         CameraManager.cameraManager.IsCharacter = true;
 
     }
@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
         Load_Map_Data();
         Load_Mob_Data();
         Load_Npc_Data();
-        QuestManager.questManager.applyQuest();
+        //QuestManager.questManager.applyQuest();
         UIManager.uimanager.minimap.MapSetting();
         CameraManager.cameraManager.IsCharacter = true;
     }
@@ -135,21 +135,42 @@ public class GameManager : MonoBehaviour
     public void New_C_Data()
     {
         character = null;
-        GameObject obj = Instantiate(GetResource("Character", "Character"));
+        GameObject obj = Instantiate(GetResource("Character", "Character"));        
         character = obj.AddComponent<Character>();
+        Status NewStat = new Status("New", 0, 1, 0, 0, 0, 0);       
+
+        NewStat.LevelSetting(1);
+        character.Stat = NewStat;
         character.tag = "Player";
         character.gameObject.layer = 8;        
-        character.name = "Player";
-        character.C_Name = Character_Name;
+        character.name = "Player";        
         Character_Name = string.Empty;
         MapName = "Village";
-        character.StartPos = new Vector3(31f,0f,17f);
-        character.Lev = 1;
-        LevelTableManager.instance.GetLevelTable(1, ref character.Hp, ref character.Mp, ref character.Exp, ref character.Str, ref character.Dex,ref character.Int, ref character.Luk);
-        character.Hp_C = character.Hp;
-        character.Mp_C = character.Mp;
-        character.Exp_C = 0;
-        character.Gold = 100;
+        Inventory NewInven = new Inventory();
+        //
+        character.Inven = NewInven;
+        Item testITem = new Item(1, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 0);
+        Item testITem1 = new Item(2, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 1);
+        Item testITem2 = new Item(3, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 2);
+        Item testITem3 = new Item(4, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 3);
+        Item testITem4 = new Item(5, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 4);
+        Item testITem5 = new Item(6,1,"테스트용사과","apple","테스트입니다", "Defend/10",1,3,5);
+        Item testITem6 = new Item(6,1,"테스트용사과","apple","테스트입니다", "Defend/10",1,2,5);
+        character.Inven.PushItem(testITem);
+        character.Inven.PushItem(testITem1);
+        character.Inven.PushItem(testITem2);
+        character.Inven.PushItem(testITem3);
+        character.Inven.PushItem(testITem4);
+        character.Inven.PushItem(testITem5);
+        character.Inven.PushItem(testITem6);
+
+        //
+        QuickSlot NewQuick = new QuickSlot();
+        character.Quick = NewQuick;
+        Equipment newEquip = new Equipment(NewStat);
+        character.Equip = newEquip;
+
+        character.StartPos = new Vector3(31f,0f,17f);        
     }
     public void Load_C_Data(int _num)
     {
@@ -162,37 +183,35 @@ public class GameManager : MonoBehaviour
         string temp = UserDataManager.instance.LoadData(_num);
         string[] DATA = temp.Split('\n');
         GameObject obj = Instantiate(GetResource("Character", "Character"));        
-        character = obj.AddComponent<Character>();
-        
+        character = obj.AddComponent<Character>();        
         character.tag = "Player";
         character.gameObject.layer = 8;
-
         string []info = DATA[0].Split(',');
         character.name = info[0];
-        character.C_Name = character.name;
+        Status NewStat = new Status(info[0], int.Parse(info[10]), int.Parse(info[5]), float.Parse(info[6]), float.Parse(info[7]), int.Parse(info[8]), int.Parse(info[9]));
+        character.Stat = NewStat;
         ChangeLayerObj(character.gameObject.transform, 8);
         MapName = info[1];
         character.StartPos = new Vector3(float.Parse(info[2]), float.Parse(info[3]), float.Parse(info[4]));
-        character.Lev = int.Parse(info[5]);
-        LevelTableManager.instance.GetLevelTable(character.Lev, ref character.Hp, ref character.Mp, ref character.Exp, ref character.Str,ref character.Dex, ref character.Int, ref character.Luk);
-        character.Hp_C = float.Parse(info[6]);
-        character.Mp_C = float.Parse(info[7]);
-        character.Exp_C = float.Parse(info[8]);
-        character.SkillPoint = int.Parse(info[9]);
-        character.Gold = int.Parse(info[10]);
-
+        Inventory NewInven = new Inventory();
+        character.Inven = NewInven;
+        QuickSlot NewQuick = new QuickSlot();
+        character.Quick = NewQuick;
+        Equipment newEquip = new Equipment(NewStat);
+        character.Equip = newEquip;
 
         if(DATA[1] != "")
         {
-            info = DATA[1].Split('/');
+            info = DATA[1].Split('/');            
             foreach (string one in info)    // 인벤
             {
                 string[] sInven = one.Split(',');
                 List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
-                Item tmp = new Item(int.Parse(iteminfo[0]), iteminfo[1], iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);
-                character.myIven.Add(tmp);
+                
+                character.Inven.AddItem(int.Parse(sInven[1]), tmp);
             }
         }
         if (DATA[2] != "")
@@ -202,10 +221,15 @@ public class GameManager : MonoBehaviour
             {
                 string[] sInven = one.Split(',');
                 List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
-                Item tmp = new Item(int.Parse(iteminfo[0]), iteminfo[1], iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = 1;
-                character.myEquip.Add(tmp);
+                Item check = character.Equip.PushEquip((int)tmp.EquipType, tmp);
+
+                if (check == null)
+                    Debug.LogError("장착되지 않았습니다.");
+                
+                    
             }
         }
         if (DATA[3] != "")
@@ -215,10 +239,10 @@ public class GameManager : MonoBehaviour
             {
                 string[] sInven = one.Split(',');
                 List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
-                Item tmp = new Item(int.Parse(iteminfo[0]), iteminfo[1], iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
-                tmp.ItemCount = int.Parse(sInven[2]);
-                character.myQuick.Add(tmp);
+                tmp.ItemCount = int.Parse(sInven[2]);                
+                character.Quick.AddItem(tmp.SlotNum, tmp);
             }
         }
         if (DATA[4] != "")
@@ -345,7 +369,7 @@ public class GameManager : MonoBehaviour
                     for (int k = 0; k < shop.Length - 1; k++)
                     {
                         List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(shop[k]));
-                        Item tmp = new Item(int.Parse(iteminfo[0]), iteminfo[1], iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                        Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                         tmp.ItemCount = 1;
                         npc.item_list.Add(tmp);
 

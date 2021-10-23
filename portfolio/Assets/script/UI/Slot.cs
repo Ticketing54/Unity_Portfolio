@@ -5,12 +5,10 @@ using UnityEngine.UI;
 
 
 public class Slot : MonoBehaviour
-{
-    public Item item = null;   
-    public Image itemImage;    
-    public Text itemCount;
-
-
+{   
+    [SerializeField]
+    protected Image Icon;   
+    public Sprite ICON { get { return Icon.sprite; } set { Icon.sprite = value; } }
     public RectTransform tr;
     Rect rc;
     public Rect RC
@@ -22,8 +20,6 @@ public class Slot : MonoBehaviour
             return rc;
         }
     }
-
-
     void Start()
     {
         rc.x = tr.transform.position.x - tr.rect.width / 2;
@@ -33,82 +29,41 @@ public class Slot : MonoBehaviour
         rc.width = tr.rect.width;
         rc.height = tr.rect.height;       
     }
-
-
-
-
-
-
-
+    public bool ActiveIcon() { return Icon.gameObject.activeSelf; }
     public bool isInRect(Vector2 pos)
     {
         if (pos.x >= RC.x &&pos.x <= RC.x + RC.width &&pos.y >= RC.y - RC.height &&pos.y <= RC.y)
-        {
-            
+        {            
             return true;
         }
         return false;
-    }
-    
+    }        
 
-  
+    //public void SetSlotCount()
+    //{
+    //    //if (item.ItemCount > 1)
+    //    //{
+    //    //    Count.gameObject.SetActive(true);
+    //    //    Count.text = item.ItemCount.ToString();
+    //    //}
+
+    //    //if (item.ItemCount == 1)
+    //    //{
+
+    //    //    Count.gameObject.SetActive(false);
+
+    //    //}
 
 
-    
-    public void AddItem(Item _item)
-    {
-        item = _item;
-        itemImage.gameObject.SetActive(true);        
-        itemImage.sprite = GameManager.gameManager.GetSprite(_item.itemSpriteName);            
-        SetSlotCount();
-        
-    }
-    public void SlotClear()
-    {
-        this.item= null;
-        itemImage.sprite = null;
-        itemCount.text = string.Empty;
-        itemImage.gameObject.SetActive(false);
-        itemCount.gameObject.SetActive(false);
-        
-    }
+    //    //if (item.ItemCount <= 0)
+    //    //    Clear();
+    //}
 
-    
- 
+
     // 아이템 쿨타임
-  
-
-    public void UseItem()
-    {
-        if(item.itemType == Item.ItemType.Used)
-        {
-            
-            
-            
-            string[] Data = item.ItemProperty.Split('/');
-            if (Data[0] == "Hp")
-            {
-                if (Character.Player.isrecovery_Hp == true || Character.Player.returnHp()<=Character.Player.Hp_C)
-                    return;
-                item.ItemCount -= 1;
-                
-                SetSlotCount();
-                StartCoroutine(buf_character(Data[0],float.Parse(Data[1]),float.Parse(Data[2]), float.Parse(Data[3])));
-            }
-            else if (Data[0] == "Mp")
-            {
-                if (Character.Player.isrecovery_Mp == true || Character.Player.returnMp() <= Character.Player.Mp_C)
-                    return;
-                item.ItemCount -= 1;
-                SetSlotCount();
-                StartCoroutine(buf_character(Data[0],float.Parse(Data[1]), float.Parse(Data[2]), float.Parse(Data[3])));
-            }
-            
 
 
 
-        }
-    }
     IEnumerator buf_character(string _bufimagename,float buf_num_max, float _buf_num, float Max_Time) //버프이미지 // 총 버프하는 양 // 초당 버프하는 양// 총 버프되는시간
     {
         
@@ -152,9 +107,9 @@ public class Slot : MonoBehaviour
 
 
                     Maxbuf -= _buf_num;
-                    Character.Player.Hp_C += _buf_num;
-                    if (Character.Player.Hp_C >= Character.Player.returnHp())
-                        Character.Player.Hp_C = Character.Player.returnHp();
+                    Character.Player.Stat.HP += _buf_num;
+                    if (Character.Player.Stat.HP >= Character.Player.Stat.MAXHP)
+                        Character.Player.Stat.HP = Character.Player.Stat.MAXHP;
 
 
 
@@ -199,9 +154,9 @@ public class Slot : MonoBehaviour
 
 
                     Maxbuf -= _buf_num;
-                    Character.Player.Mp_C += _buf_num;
-                    if (Character.Player.Mp_C >= Character.Player.returnMp())
-                        Character.Player.Mp_C = Character.Player.returnMp();
+                    Character.Player.Stat.MP += _buf_num;
+                    if (Character.Player.Stat.MP >= Character.Player.Stat.MAXMP)
+                        Character.Player.Stat.MP = Character.Player.Stat.MAXMP;
 
 
 
@@ -231,27 +186,7 @@ public class Slot : MonoBehaviour
     }
    
     // 아이템 개수 조정
-    public void SetSlotCount()
-    {
-
-
-        if (item.ItemCount > 1)
-        {
-            itemCount.gameObject.SetActive(true);
-            itemCount.text = item.ItemCount.ToString();
-        }
-
-        if(item.ItemCount == 1)
-        {
-            
-            itemCount.gameObject.SetActive(false);
-            
-        }
-            
-
-        if (item.ItemCount <= 0)
-            SlotClear();
-    }
+    
 
    
    

@@ -25,15 +25,7 @@ public class LevelTableManager: SingleTon<LevelTableManager>
     }
     public void GetLevelTable(int _Level,ref float _Hp, ref float _Mp,ref float _Exp,ref int _Str,ref int _Dex,ref int _Int,ref int _Luk)
     {
-        Table = Level_Table.GetData(_Level);
-        _Level = int.Parse(Table[0]);
-        _Hp = float.Parse(Table[1]);
-        _Mp = float.Parse(Table[2]);
-        _Exp = float.Parse(Table[3]);
-        _Str = int.Parse(Table[4]);
-        _Dex = int.Parse(Table[5]);        
-        _Int = int.Parse(Table[6]);
-        _Luk = int.Parse(Table[7]);
+        
        
     }
 

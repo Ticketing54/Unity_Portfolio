@@ -122,7 +122,6 @@ public class Questlist : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,ID
     {
         if (WindowDrag == true)
         {
-
             Window.position = data.position - Window_Preset;
         }
 

@@ -9,56 +9,23 @@ using TMPro;
 public class Character : MonoBehaviour
 {
     public static Character Player;
-    public string C_Name;
-    public int Lev, Str, Dex, Int, Luk;// 스탯
-    public int Cri = 20;
-    public float Hp_E,Mp_E,Atk_E; // 장비
-    public float Hp_C,Mp_C,Exp_C = -1; // 현재
-    public float Hp,Mp,Atk,Exp;   // 기본
-    public int Gold;
-    public float Atk_Range = 1.5f;
-    public int SkillPoint = 0;
-
-    public bool isburn = false;
-    public bool isIce = false; 
+    public Status Stat = null;
+    public Equipment Equip = null;
     
-    
-    public float returnAtk()
-    {
-        float tmp = Atk + Atk_E;
-        float critical;
-        critical = Random.Range(0, 100);
-        if(critical <= Cri)
-        {
-            return (int)(Random.Range((float)(tmp * 0.8), (float)(tmp * 1.2)) *2);
-        }
-        else
-        {
-            return (int)Random.Range((float)(tmp * 0.8), (float)(tmp * 1.2) * 2);
-        }
+    public CharacterSkill Skill = null;    
+    public CharacterQuest Quest = null;    
+    public Inventory Inven = null;
 
 
-        
-    }
-    public float returnHp()
-    {
-        return Hp_E + Hp;
-    }
-    public float returnMp()
-    {
-        return Mp_E + Mp;
-    }  
-    
+    public QuickSlot Quick = null;
 
     public List<SkinnedMeshRenderer> Weapon = new List<SkinnedMeshRenderer>();
     public SkinnedMeshRenderer Character_bounds;
-
     public List<Monster> MobList = new List<Monster>();
     public List<Npc> npcList = new List<Npc>();
-    public List<Item> myIven = new List<Item>();
-    public List<Item> myEquip = new List<Item>();
-    public List<Item> myQuick = new List<Item>();
-    public List<Quest> myQuest = new List<Quest>();
+    
+    
+    
     
 
     public GameObject Target;
@@ -87,8 +54,135 @@ public class Character : MonoBehaviour
     public bool OpenLootingbox = false; // 루팅박스 
     public Vector3 StartPos;
 
+    public delegate void ITemUiSetting(ItemListType _Type,int _SlotNum);
+    
+
+
+
+    #region MoveItemControl
 
     
+    public void ItemMove(ItemListType _StartType,int _S_Num,ItemListType _EndType,int _E_Num, ITemUiSetting _Setting)
+    {
+        Item Start = ItemMoveStart(_StartType,_S_Num);
+
+        if (Start == null)
+            return;
+
+        Item End = ItemMoveEnd(_EndType,_E_Num, Start);
+        if (End != null)
+        {
+            Item Temp = ItemMoveEnd(_StartType, _S_Num, End);
+            if(Temp != null)
+                Debug.LogError("아이템 장착 오류");
+        }
+        _Setting(_StartType, _S_Num);
+        _Setting(_EndType, _E_Num);
+    }    
+    public void ItemMove(ItemListType _Type, int _SlotNum, ITemUiSetting _Setting)
+    {
+        Item Start = ItemMoveStart(_Type,_SlotNum);
+
+        if (Start == null)
+            return;
+        Item End;
+
+        if (Start.itemType != Item.ItemType.Equipment)
+        {
+            End = ItemMoveEnd(_Type,_SlotNum, Start);
+            _Setting(_Type, _SlotNum);
+            if (End != null)
+                Debug.LogError("아이템 장착 오류");
+            return;
+        }            
+        else
+        {
+            switch (_Type)
+            {
+                case ItemListType.EQUIP:
+                    int EmptySlotNum = Inven.EmptySlot();                    
+                    if(EmptySlotNum <0)         // 가득 찼을 때
+                    {
+                        End = ItemMoveEnd(_Type,_SlotNum, Start);
+                        _Setting(_Type, _SlotNum);
+                        if (End != null)
+                            Debug.LogError("아이템 장착 오류");
+                        return;
+                    }
+                    End = ItemMoveEnd(ItemListType.INVEN, EmptySlotNum, Start);
+                    _Setting(_Type, _SlotNum);
+                    _Setting(ItemListType.INVEN, EmptySlotNum);
+                    if (End != null)
+                        Debug.LogError("아이템 장착 오류");
+                    return;                    
+                case ItemListType.INVEN:
+                    End = Equip.PushEquip((int)Start.EquipType, Start);
+                    if (End != null)
+                    {
+                        Item Temp;
+                        Temp =ItemMoveEnd(_Type,_SlotNum, End);
+                        if(Temp != null)
+                            Debug.LogError("아이템 장착 오류 ");                        
+                    }
+                    _Setting(_Type, _SlotNum);
+                    _Setting(ItemListType.EQUIP, (int)Start.EquipType);
+                    return;
+                default:
+                    return;
+                    
+
+                    
+                
+            }
+        }
+    }   
+    Item ItemMoveStart(ItemListType _Start, int _SlotNum)
+    {
+        switch (_Start)
+        {
+            case ItemListType.INVEN:
+                return Inven.PopItem(_SlotNum);
+            case ItemListType.EQUIP:
+                return Equip.PopEquip(_SlotNum);
+            case ItemListType.QUICK:
+                return Quick.PopItem(_SlotNum);
+            default:
+                return null;                
+        }
+    }
+    Item ItemMoveEnd(ItemListType _End, int SlotNum, Item _StartITem)
+    {
+        switch (_End)
+        {
+            case ItemListType.INVEN:
+                return Inven.AddItem(SlotNum,_StartITem);
+            case ItemListType.EQUIP:
+                return Equip.PushEquip(SlotNum, _StartITem);
+            case ItemListType.QUICK:
+                return Quick.AddItem(SlotNum, _StartITem);
+            default:
+                Debug.LogError("잘못된 리스트 타입 입니다.");
+                return null;
+        }
+    }
+    public Item GetItem(ItemListType _Type, int _SlotNum)
+    {
+        switch (_Type)
+        {
+            case ItemListType.INVEN:
+                return Inven.GetItem(_SlotNum);
+            case ItemListType.EQUIP:
+                return Equip.GetItem(_SlotNum);
+            case ItemListType.QUICK:
+                return Quick.GetItem(_SlotNum);
+            default:
+                return null;
+        }
+    }
+
+    #endregion
+
+
 
     private void Awake()
     {        
@@ -116,16 +210,16 @@ public class Character : MonoBehaviour
     }
 
 
-    public void QuestUpdate(int _index,int _completenum)
-    {
-        foreach(Quest one in myQuest)
-        {
-            if(one.Index == _index)
-            {
-                one.QuestComplete = _completenum;
-            }
-        }
-    }
+    //public void QuestUpdate(int _index,int _completenum)
+    //{
+    //    foreach(Quest one in myQuest)
+    //    {
+    //        if(one.Index == _index)
+    //        {
+    //            one.QuestComplete = _completenum;
+    //        }
+    //    }
+    //}
     private void Start()
     {
         if (nav != null)
@@ -136,20 +230,11 @@ public class Character : MonoBehaviour
     {        
         if (UIManager.uimanager.FadeUi.alpha == 0)
             return;
-        Click();
-        LevelUp();        
+        Click();             
         Interation();
-        Move();
-        recoveryHpMp();        
-    }
-   
-    public void recoveryHpMp()
-    {
-        if (Hp_C < returnHp())
-            Hp_C += Time.deltaTime ;
-        if(Mp_C<returnMp())
-            Mp_C += Time.deltaTime ;
-    }
+        Move();        
+    }   
+    
     public void SetDestination(Vector3 dest)
     {
         if (DontMove == true)
@@ -172,8 +257,7 @@ public class Character : MonoBehaviour
                     if (hitinfo.collider.gameObject.layer == 9)
                     {
                         SetDestination(hitinfo.point);
-                        ObjectPoolManager.objManager.ClickMove("Click", hitinfo.point);
-                        Atk_Range = 1.5f;
+                        ObjectPoolManager.objManager.ClickMove("Click", hitinfo.point);                        
                         Target = null;
                         return;
                     }
@@ -221,21 +305,11 @@ public class Character : MonoBehaviour
     }
     void LevelUp()
     {
-        if(Exp_C >= Exp)
-        {
-            Exp_C -= Exp;
-            Lev++;
-            SkillPoint++;
-            LevelTableManager.instance.GetLevelTable(Lev, ref Hp, ref Mp, ref Exp,ref Str, ref Dex,ref Int, ref Luk);
-            GameObject LvEffect = ObjectPoolManager.objManager.EffectPooling("LevUp");
-            TextMeshProUGUI LvString = ObjectPoolManager.objManager.stringEffect();
-
-            
-            StartCoroutine(LevUpMove(LvEffect,LvString));
-            StartCoroutine(WaitForItLev(LvEffect, LvString.gameObject));
-            Hp_C = Hp;
-            Mp_C = Mp;
-        }
+        Stat.LevelUp();
+        GameObject LvEffect = ObjectPoolManager.objManager.EffectPooling("LevUp");
+        TextMeshProUGUI LvString = ObjectPoolManager.objManager.stringEffect();
+        StartCoroutine(LevUpMove(LvEffect, LvString));
+        StartCoroutine(WaitForItLev(LvEffect, LvString.gameObject));
     }
     IEnumerator LevUpMove(GameObject obj, TextMeshProUGUI _string)  //레벨업 
     {
@@ -270,7 +344,7 @@ public class Character : MonoBehaviour
         {
             float dis = Vector3.Distance(transform.position, Target.transform.position);
 
-            if (Target.tag == "Monster" && dis < Atk_Range)
+            if (Target.tag == "Monster" && dis < Stat.ATK_RANGE)
             {
                 Interaction_B = true;
                 SetDestination(transform.position);
@@ -368,8 +442,8 @@ public class Character : MonoBehaviour
             if (Player.Weapon[_num].bounds.Intersects(MobList[j].MobBounds.bounds))
             {
                 MobList[j].isDamage = true;
-                float Dmg = returnAtk();
-                MobList[j].Hp -= returnAtk();
+                float Dmg = Stat.ATK;
+                MobList[j].Hp -= Stat.ATK;
                 ObjectPoolManager.objManager.LoadDamage(MobList[j].gameObject, Dmg, Color.yellow, 1);
                 
             }
@@ -382,7 +456,7 @@ public class Character : MonoBehaviour
             if (MobList[i].DiSTANCE <=2f)
             {
                 MobList[i].isDamage = true;
-                float Dmg = returnAtk() * 3f;
+                float Dmg = Stat.ATK * 3f;
                 MobList[i].Hp -= Dmg;                
                 ObjectPoolManager.objManager.LoadDamage(MobList[i].gameObject, Dmg, Color.yellow, 1);
             }
@@ -406,7 +480,7 @@ public class Character : MonoBehaviour
     }    
     public void burnStateOn()  // 화상
     {
-        if(isburn == false)
+        if(Stat.isburn == false)
         {
             StartCoroutine(BurnDamage());
         }
@@ -415,7 +489,7 @@ public class Character : MonoBehaviour
     }
     public void icestateOn()     // 빙결
     {
-        if(isIce == false)
+        if(Stat.isIce == false)
         {
             StartCoroutine(IceState());
         }
@@ -426,7 +500,7 @@ public class Character : MonoBehaviour
         Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Burn");
         float timer = 0;
         float holdTime = 5;
-        isburn = true;
+        Stat.isburn = true;
         while (true)
         {
             timer += Time.deltaTime;
@@ -434,7 +508,7 @@ public class Character : MonoBehaviour
             {
                 timer -= 1;
                 holdTime -= 1;
-                Hp_C -= 5;
+                Stat.HP -= 5;
                 ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, 10f, Color.red, 1);
             }
             Effect.transform.position = Character.Player.transform.position;
@@ -445,7 +519,7 @@ public class Character : MonoBehaviour
             {
                 Effect.SetActive(false);
                 Effect = null;
-                isburn = false;
+                Stat.isburn = false;
                 yield break;
             }
             yield return null;
@@ -456,7 +530,7 @@ public class Character : MonoBehaviour
         GameObject Effect;
         Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Ice");
         float timer = 0;
-        isIce = true;        
+        Stat.isIce = true;        
         Character.Player.nav.speed -= 4f;
         Character.Player.anim.speed = 0.5f;
         while (true)
@@ -466,7 +540,7 @@ public class Character : MonoBehaviour
             {
                 Effect.SetActive(false);
                 Effect = null;
-                isIce = false;
+                Stat.isIce = false;
                 Character.Player.nav.speed += 4f;
                 Character.Player.anim.speed = 1f;
 

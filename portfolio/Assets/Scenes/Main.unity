@@ -2445,6 +2445,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 142192571}
   m_Mesh: {fileID: 4300004, guid: 9a6b68b124304da48b60c294a6e0376c, type: 3}
+--- !u!114 &148087483 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2042987267237226251, guid: 92cff636e41afdb4bbe0f88dfe4516fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 877909922}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90359b1191450ad48b8a3ceab246ace3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &148570756
 GameObject:
   m_ObjectHideFlags: 0
@@ -13923,6 +13935,11 @@ PrefabInstance:
       propertyPath: FadeUi
       value: 
       objectReference: {fileID: 211587324}
+    - target: {fileID: 8474059872808929992, guid: 92cff636e41afdb4bbe0f88dfe4516fc,
+        type: 3}
+      propertyPath: Inv
+      value: 
+      objectReference: {fileID: 148087483}
     - target: {fileID: 8584067412337973372, guid: 92cff636e41afdb4bbe0f88dfe4516fc,
         type: 3}
       propertyPath: m_AnchorMax.x

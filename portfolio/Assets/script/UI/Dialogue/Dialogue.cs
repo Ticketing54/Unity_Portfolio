@@ -133,12 +133,12 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
                     Rewards.gameObject.SetActive(true);
                     string[] tmp = _rewards.Split('/');
                     Rewards_Exp.text = tmp[0] +"EXP"; //경험치
-                    Character.Player.Exp_C += int.Parse(tmp[0]);
+                    Character.Player.Stat.EXP += int.Parse(tmp[0]);
                     if(tmp[1] != "" ) //골드
                     {
                         Rewards_Gold.gameObject.SetActive(true);
                         Rewards_Gold.text =tmp[1] +"GOLD";
-                        Character.Player.Gold += int.Parse(tmp[1]);
+                        Character.Player.Stat.GOLD += int.Parse(tmp[1]);
                     }
                     else
                     {
@@ -152,7 +152,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
                         string[] item = tmp[2].Split('#');
                         UIManager.uimanager.TryOpenInventory();
                         List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(item[0]));
-                        Item newitem = new Item(int.Parse(iteminfo[0]), iteminfo[1], iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                        Item newitem = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                         if (item[1] != null) // 여러개일때
                         {
                             newitem.ItemCount = int.Parse(item[1]);
@@ -167,7 +167,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
                             
                         
                         
-                        UIManager.uimanager.Inv.getItem(newitem);
+                        //UIManager.uimanager.Inv.getItem(newitem);
                         UIManager.uimanager.TryOpenInventory();
                     }
                     else

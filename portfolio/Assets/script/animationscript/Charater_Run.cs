@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class Charater_Run : StateMachineBehaviour
 {
+    Character Player;
     AudioSource audiosource;
     GameObject runsounds;
     
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        if(Player == null)
+            Player = animator.GetComponent<Character>();
 
         if(runsounds == null)
         {
@@ -34,7 +37,7 @@ public class Charater_Run : StateMachineBehaviour
         runsounds.transform.position = Character.Player.transform.position;
 
 
-        if(Character.Player.isIce == true &&runsounds.name !="IceRun")
+        if(Player.Stat.isIce == true &&runsounds.name !="IceRun")
         {
             runsounds.name = "IceRun";
             audiosource.Stop();
@@ -42,7 +45,7 @@ public class Charater_Run : StateMachineBehaviour
             audiosource.clip = _clip;            
             audiosource.Play();
         }
-        else if (Character.Player.isIce == false && runsounds.name != "Run")
+        else if (Player.Stat.isIce == false && runsounds.name != "Run")
         {
             runsounds.name = "Run";
             audiosource.Stop();

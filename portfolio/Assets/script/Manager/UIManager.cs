@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour
 
     //인벤토리
     public GameObject Inven;
-    public Inventory Inv;
+    public ITemUiManager Inv;
     public bool InventoryActive    = false;
     public MiniInfo miniinfo;        
     // Exp
@@ -147,13 +147,13 @@ public class UIManager : MonoBehaviour
     {
         if (InventoryActive == false)
         {
-            TryOpenInventory();
+            TryOpenInventory();            
         }
             
         Inven.transform.position = shop.gameObject.transform.position + new Vector3(325f, 0, 0);
 
         shop.gameObject.SetActive(true);
-        shop.ShopUpdate(_npc);
+        //shop.ShopUpdate(_npc);
         
     }
     public void CloseDialog(Npc _npc) // 대화창 닫기
@@ -275,68 +275,31 @@ public class UIManager : MonoBehaviour
     public void InfoUpdate()
     {
         Inven.gameObject.SetActive(true);
-        Inv.SlotUpdate();
+        //Inv.SlotUpdate();
         Inven.gameObject.SetActive(false);
         skill.gameObject.SetActive(true);
-        skillmanager.UpdateSkill();
+        //skillmanager.UpdateSkill();
         skill.gameObject.SetActive(false);
-        for (int i = 0; i < Character.Player.myQuick.Count; i++)
-        {
-            Inv.Q_list[Character.Player.myQuick[i].SlotNum].AddItem(Character.Player.myQuick[i]);
-            Inv.Q_list[Character.Player.myQuick[i].SlotNum].SetSlotCount();
-        }
+        //for (int i = 0; i < Character.Player.myQuick.Count; i++)
+        //{
+        //    Inv.Q_list[Character.Player.myQuick[i].SlotNum].Add(Character.Player.myQuick[i]);
+        //    Inv.Q_list[Character.Player.myQuick[i].SlotNum].SetSlotCount();
+        //}
     }
     public void InfoReset()
     {
-        Inven.gameObject.SetActive(true);
-        Inv.SlotReset();
+        Inven.gameObject.SetActive(true);        
         Inven.gameObject.SetActive(false);
         QuestManager.questManager.Quest_Reset();
 
     }
     public void UseQuickSlot()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1) && QuickSlot[0].itemImage.gameObject.activeSelf == true)
-        {
-            QuickSlot[0].UseItem();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2)&&QuickSlot[1].itemImage.gameObject.activeSelf == true)
-        {
-            QuickSlot[1].UseItem();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3) && QuickSlot[2].itemImage.gameObject.activeSelf == true)
-        {
-            QuickSlot[2].UseItem();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4) && QuickSlot[3].itemImage.gameObject.activeSelf == true)
-        {
-            QuickSlot[3].UseItem();
-        } 
+    {        
        
     }
     public void UseQuickSkill()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && QuickSlot_Skill[0].skillImage.gameObject.activeSelf
-            == true&& QuickSlot_Skill[0].CoolTime_Image.gameObject.activeSelf == false)
-        {
-            QuickSlot_Skill[0].UseSkill();
-        }
-        if (Input.GetKeyDown(KeyCode.W) && QuickSlot_Skill[1].skillImage.gameObject.activeSelf 
-            == true&& QuickSlot_Skill[1].CoolTime_Image.gameObject.activeSelf == false)
-        {
-            QuickSlot_Skill[1].UseSkill();
-        }
-        if (Input.GetKeyDown(KeyCode.E) && QuickSlot_Skill[2].skillImage.gameObject.activeSelf 
-            == true&& QuickSlot_Skill[2].CoolTime_Image.gameObject.activeSelf == false)
-        {
-            QuickSlot_Skill[2].UseSkill();
-        }
-        if (Input.GetKeyDown(KeyCode.R) && QuickSlot_Skill[3].skillImage.gameObject.activeSelf 
-            == true&& QuickSlot_Skill[3].CoolTime_Image.gameObject.activeSelf == false)
-        {
-            QuickSlot_Skill[3].UseSkill();
-        }
-
+       
     }
    
 
@@ -380,7 +343,7 @@ public class UIManager : MonoBehaviour
         if (InventoryActive)
         {
             OpenInventory();
-
+            Inv.UpdateUIInfo();
 
         }
         else
@@ -431,35 +394,34 @@ public class UIManager : MonoBehaviour
 
 
 
-        Character.Player.myIven = new List<Item>();
-        Character.Player.myQuick = new List<Item>();
-        Character.Player.myEquip = new List<Item>();
-        for (int i = 0; i < Inv.list.Count; i++)
-        {
-            if (Inv.list[i].itemImage.gameObject.activeSelf == true)
-            {
-                Character.Player.myIven.Add(Inv.list[i].item);
+        //Character.Player.myIven = new List<Item>();
+        
+        //for (int i = 0; i < Inv.Inven.Count; i++)
+        //{
+        //    if (Inv.Inven[i].Icon.gameObject.activeSelf == true)
+        //    {
+        //        //Character.Player.myIven.Add(Inv.list[i].item);
 
-            }
-        }
-        for (int i = 0; i < Inv.Q_list.Count; i++)
-        {
-            if (Inv.Q_list[i].itemImage.gameObject.activeSelf == true)
-            {
-                Item item = Inv.Q_list[i].item;
-                item.SlotNum = i;
-                Character.Player.myQuick.Add(item);
+        //    }
+        //}
+        //for (int i = 0; i < Inv.Quick.Count; i++)
+        //{
+        //    if (Inv.Quick[i].Icon.gameObject.activeSelf == true)
+        //    {
+        //        Item item = Inv.Quick[i].item;
+        //        item.SlotNum = i;
+        //        //Character.Player.myQuick.Add(item);
 
-            }
-        }
-        for (int i = 0; i < Inv.E_list.Count; i++)
-        {
-            if (Inv.E_list[i].itemImage.gameObject.activeSelf == true)
-            {
-                Character.Player.myEquip.Add(Inv.E_list[i].item);
+        //    }
+        //}
+        //for (int i = 0; i < Inv.Equip.Count; i++)
+        //{
+        //    if (Inv.Equip[i].Icon.gameObject.activeSelf == true)
+        //    {
+        //        //Character.Player.myEquip.Add(Inv.E_list[i].item);
 
-            }
-        }
+        //    }
+        //}
 
         if (Inven.activeSelf == true)
         {
@@ -479,7 +441,7 @@ public class UIManager : MonoBehaviour
             {
                 if (NickName.gameObject.activeSelf == false)
                     NickName.gameObject.SetActive(true);
-                NickName.text = Character.Player.C_Name;
+                NickName.text = Character.Player.Stat.NAME;
                 NickName.transform.position = Camera.main.WorldToScreenPoint(Character.Player.transform.position + new Vector3(0f, 2f, 0f));
 
                 
@@ -516,15 +478,15 @@ public class UIManager : MonoBehaviour
     }
     void statusControl()
     {
-        Hp_bar.fillAmount = Character.Player.Hp_C / Character.Player.returnHp();
-        Hp_text.text = ((int)Character.Player.Hp_C).ToString() + " / " + ((int)Character.Player.returnHp()).ToString();
-        Mp_bar.fillAmount = Character.Player.Mp_C / Character.Player.returnMp();
-        Mp_text.text = ((int)Character.Player.Mp_C).ToString() + " / " + ((int)Character.Player.returnMp()).ToString();
+        Hp_bar.fillAmount = Character.Player.Stat.HP / Character.Player.Stat.MAXHP;
+        Hp_text.text = ((int)Character.Player.Stat.HP).ToString() + " / " + ((int)Character.Player.Stat.HP).ToString();
+        Mp_bar.fillAmount = Character.Player.Stat.MP / Character.Player.Stat.MAXMP;
+        Mp_text.text = ((int)Character.Player.Stat.MP).ToString() + " / " + ((int)Character.Player.Stat.MAXMP).ToString();
         //
 
-        Lev.text = "Level : " + Character.Player.Lev.ToString();
-        Exp_Text.text = Character.Player.Exp_C.ToString() + " / " + Character.Player.Exp.ToString();
-        Exp_bar.fillAmount = Character.Player.Exp_C / Character.Player.Exp;
+        Lev.text = "Level : " + Character.Player.Stat.LEVEL.ToString();
+        Exp_Text.text = Character.Player.Stat.EXP.ToString() + " / " + Character.Player.Stat.MAXEXP.ToString();
+        Exp_bar.fillAmount = Character.Player.Stat.EXP / Character.Player.Stat.MAXEXP;
 
 
     }   

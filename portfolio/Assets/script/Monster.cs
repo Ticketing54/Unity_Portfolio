@@ -182,9 +182,9 @@ public class Monster : MonoBehaviour
                     else if (DiSTANCE < 5f && NickName != null && gameObject.tag == "Monster" && Hp > 0)
                     {
 
-                        if (Character.Player.Lev < Lev) // 몬스터 레벨이 높을 경우
+                        if (Character.Player.Stat.LEVEL < Lev) // 몬스터 레벨이 높을 경우
                             NickName.color = Color.red;
-                        else if (Character.Player.Lev >= Lev)   //몬스터 레벨이 낮을경우
+                        else if (Character.Player.Stat.LEVEL >= Lev)   //몬스터 레벨이 낮을경우
                             NickName.color = Color.white;
 
                         NickName.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0f, Nick_y, 0f));
@@ -209,9 +209,9 @@ public class Monster : MonoBehaviour
 
 
 
-                        if (Character.Player.Lev < Lev) // 몬스터 레벨이 높을 경우
+                        if (Character.Player.Stat.LEVEL < Lev) // 몬스터 레벨이 높을 경우
                             NickName.color = Color.red;
-                        else if (Character.Player.Lev >= Lev)   //몬스터 레벨이 낮을경우
+                        else if (Character.Player.Stat.LEVEL >= Lev)   //몬스터 레벨이 낮을경우
                             NickName.color = Color.white;
 
                         NickName.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0f, Nick_y, 0f));
@@ -258,8 +258,8 @@ public class Monster : MonoBehaviour
             {               
                 Hp = 0;
                 anim.SetBool("IsDie", true);
-                Character.Player.Exp_C += Exp;
-                Character.Player.Gold += Gold;                
+                Character.Player.Stat.EXP += Exp;
+                Character.Player.Stat.GOLD += Gold;                
                 ObjectPoolManager.objManager.MessageEffect("EXP " + Exp.ToString() + "+");
                 ObjectPoolManager.objManager.MessageEffect("Gold" + Gold.ToString() + "+");
             }
@@ -273,15 +273,15 @@ public class Monster : MonoBehaviour
             SoundManager.soundmanager.soundsPlay("DragonAttack", Character.Player.gameObject);
             float Atk_Dmg = Attack_Dmg() * _Dmg_x;
             
-            if((Character.Player.Hp_C - Atk_Dmg) <= 0)
+            if((Character.Player.Stat.HP - Atk_Dmg) <= 0)
             {
                 StopCoroutine(BurnDamage());
                 StopCoroutine(IceState());
-                Character.Player.Hp_C -= Atk_Dmg;
+                Character.Player.Stat.HP -= Atk_Dmg;
             }
             else
             {
-                Character.Player.Hp_C -= Atk_Dmg;
+                Character.Player.Stat.HP -= Atk_Dmg;
             }
             ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, Atk_Dmg, Color.red, 1);
 

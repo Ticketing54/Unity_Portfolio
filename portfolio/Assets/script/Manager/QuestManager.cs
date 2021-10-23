@@ -97,9 +97,8 @@ public class QuestManager : MonoBehaviour
         tmp.quest = quest;
         tmp.TextingQuestSlot();
         tmp.transform.SetParent(Mqlist.content.transform); // 퀘스트 알람등록
-        list.Add(tmp); // 퀘스트 슬롯 등록
-        Character.Player.myQuest.Add(quest); // 퀘스트 목록 등록   
-
+        list.Add(tmp); // 퀘스트 슬롯 등록        
+        Character.Player.Quest.Add(quest.Index, quest);  // 퀘스트 목록 등록   
         if (questlist_M.gameObject.activeSelf == false)
             UIManager.uimanager.TryOpenQuest();
         questlist_M.AddQuest(quest);
@@ -127,9 +126,8 @@ public class QuestManager : MonoBehaviour
                 tmp.finishQuest();
             }
         }       
-        
-        Character.Player.myQuest.Add(quest); // 퀘스트 목록 등록   
-
+                
+        Character.Player.Quest.Add(quest.Index, quest);// 퀘스트 목록 등록
         if (questlist_M.gameObject.activeSelf == false)
             UIManager.uimanager.TryOpenQuest();
         questlist_M.AddQuest(quest);
@@ -169,7 +167,7 @@ public class QuestManager : MonoBehaviour
     {
         if(questType == Quest.QuestType.Battle)  // 전투 퀘스트
         {
-            quest = GetQuest(Quest.QuestType.Battle, _goal_index);
+            //quest = GetQuest(Quest.QuestType.Battle, _goal_index);
             quest.goal_C += _num;
             if(quest.goal_C >= quest.goal_num)    // 완료되면
             {
@@ -212,7 +210,7 @@ public class QuestManager : MonoBehaviour
         }
         else if(questType == Quest.QuestType.Item)
         {
-            quest = GetQuest(Quest.QuestType.Item,_goal_index);
+            //quest = GetQuest(Quest.QuestType.Item,_goal_index);
             quest.goal_C += _num;
             if (quest.goal_C >= quest.goal_num) // 완료되면
             {
@@ -238,48 +236,48 @@ public class QuestManager : MonoBehaviour
         CMini = null;
 
     }
-    public void applyQuest()  //맵이동 하였을때 갱신
-    {
-        for(int i=0; i < Character.Player.myQuest.Count; i++)
-        {
-            if(Character.Player.myQuest[i].QuestComplete == 1)      // 퀘스트가 완료되지 않았을때
-            {
-                if(Character.Player.myQuest[i].questType == Quest.QuestType.Battle)
-                {
-                    for (int j = 0; j < Character.Player.MobList.Count; j++)
-                    {
-                        if (Character.Player.myQuest[i].goal_Index == Character.Player.MobList[j].Index)
-                            Character.Player.MobList[j].isQuestMob = true;
-                    }
-                    if (FindNpc(Character.Player.myQuest[i].npc_Index) != null)
-                    {
-                        FindNpc(Character.Player.myQuest[i].npc_Index).QuestMarkerNum = 1;
-                        QuestCompletenum(FindNpc(Character.Player.myQuest[i].npc_Index), Character.Player.myQuest[i].Index, 1);
-                    }
-                }
+    //public void applyQuest()  //맵이동 하였을때 갱신
+    //{
+    //    for(int i=0; i < Character.Player.myQuest.Count; i++)
+    //    {
+    //        if(Character.Player.myQuest[i].QuestComplete == 1)      // 퀘스트가 완료되지 않았을때
+    //        {
+    //            if(Character.Player.myQuest[i].questType == Quest.QuestType.Battle)
+    //            {
+    //                for (int j = 0; j < Character.Player.MobList.Count; j++)
+    //                {
+    //                    if (Character.Player.myQuest[i].goal_Index == Character.Player.MobList[j].Index)
+    //                        Character.Player.MobList[j].isQuestMob = true;
+    //                }
+    //                if (FindNpc(Character.Player.myQuest[i].npc_Index) != null)
+    //                {
+    //                    FindNpc(Character.Player.myQuest[i].npc_Index).QuestMarkerNum = 1;
+    //                    QuestCompletenum(FindNpc(Character.Player.myQuest[i].npc_Index), Character.Player.myQuest[i].Index, 1);
+    //                }
+    //            }
 
-            }
-            else if(Character.Player.myQuest[i].QuestComplete == 2) // 퀘스트가 완료되고, 퀘스트 보상은 안받았을때
-            {
+    //        }
+    //        else if(Character.Player.myQuest[i].QuestComplete == 2) // 퀘스트가 완료되고, 퀘스트 보상은 안받았을때
+    //        {
 
-                if (FindNpc(Character.Player.myQuest[i].npc_Index) != null)
-                {
-                    FindNpc(Character.Player.myQuest[i].npc_Index).QuestMarkerNum = 2;
-                    QuestCompletenum(FindNpc(Character.Player.myQuest[i].npc_Index), Character.Player.myQuest[i].Index, 2);
-                }
+    //            if (FindNpc(Character.Player.myQuest[i].npc_Index) != null)
+    //            {
+    //                FindNpc(Character.Player.myQuest[i].npc_Index).QuestMarkerNum = 2;
+    //                QuestCompletenum(FindNpc(Character.Player.myQuest[i].npc_Index), Character.Player.myQuest[i].Index, 2);
+    //            }
 
 
-            }
-            else if (Character.Player.myQuest[i].QuestComplete == 3) // 퀘스트가 완료되고 보상도 받았을때
-            {
-                if (FindNpc(Character.Player.myQuest[i].npc_Index) != null)
-                {
-                    FindNpc(Character.Player.myQuest[i].npc_Index).QuestMarkerNum = -1;
-                    QuestCompletenum(FindNpc(Character.Player.myQuest[i].npc_Index), Character.Player.myQuest[i].Index, 3);
-                }
-            }
-        }
-    }
+    //        }
+    //        else if (Character.Player.myQuest[i].QuestComplete == 3) // 퀘스트가 완료되고 보상도 받았을때
+    //        {
+    //            if (FindNpc(Character.Player.myQuest[i].npc_Index) != null)
+    //            {
+    //                FindNpc(Character.Player.myQuest[i].npc_Index).QuestMarkerNum = -1;
+    //                QuestCompletenum(FindNpc(Character.Player.myQuest[i].npc_Index), Character.Player.myQuest[i].Index, 3);
+    //            }
+    //        }
+    //    }
+    //}
   
 
     public void Quest_Reset() // 전부 삭제
@@ -335,24 +333,24 @@ public class QuestManager : MonoBehaviour
     }
     public void DestroyQuestSLot(int _num)
     {
-        Character.Player.QuestUpdate(_num, 3);
+        //Character.Player.QuestUpdate(_num, 3);
         MiniQuestSlot tmp = FindMiniQuestSlot(_num);
         list.Remove(tmp);
         tmp.DoneQuest();
 
 
     }
-    public Quest GetQuest(Quest.QuestType _questType,int _goalindex)  // 목표인덱스로 찾기
-    {
-        for(int i=0; i < Character.Player.myQuest.Count; i++)
-        {
-            if (Character.Player.myQuest[i].questType==_questType&& Character.Player.myQuest[i].goal_Index == _goalindex)
-                return Character.Player.myQuest[i];
-        }
+    //public Quest GetQuest(Quest.QuestType _questType,int _goalindex)  // 목표인덱스로 찾기
+    //{
+    //    for(int i=0; i < Character.Player.myQuest.Count; i++)
+    //    {
+    //        if (Character.Player.myQuest[i].questType==_questType&& Character.Player.myQuest[i].goal_Index == _goalindex)
+    //            return Character.Player.myQuest[i];
+    //    }
 
 
-        return null;
-    }
+    //    return null;
+    //}
     
     
 }
