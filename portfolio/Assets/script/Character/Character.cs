@@ -122,13 +122,16 @@ public class Character : MonoBehaviour
                         Item Temp;
                         Temp =ItemMoveEnd(_Type,_SlotNum, End);
                         if(Temp != null)
-                            Debug.LogError("아이템 장착 오류");                        
+                            Debug.LogError("아이템 장착 오류 ");                        
                     }
                     _Setting(_Type, _SlotNum);
                     _Setting(ItemListType.EQUIP, (int)Start.EquipType);
                     return;
                 default:
                     return;
+                    
+
+                    
                 
             }
         }
