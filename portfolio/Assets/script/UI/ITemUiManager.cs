@@ -105,6 +105,17 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
 
         //Quick슬롯은 처음에 보이기 때문에 처음에 업데이트 한번 할 것.
     }
+    public Vector3 GetInfoPreset(ItemListType _Type, Vector2 ClickPos)
+    {
+        if (_Type == ItemListType.QUICK)
+        {
+            return new Vector3(ClickPos.x + 75f, ClickPos.y + 100f, 0);
+        }
+        else
+        {
+            return new Vector3(ClickPos.x + 75f, ClickPos.y - 100f, 0);
+        }
+    }
     #endregion
 
     #region StartMoveItem   
@@ -214,17 +225,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
         
     }  
 
-    public Vector3 GetInfoPreset(ItemListType _Type, Vector2 ClickPos)
-    {
-        if(_Type == ItemListType.QUICK)
-        {
-            return new Vector3(ClickPos.x + 75f, ClickPos.y + 100f, 0);
-        }
-        else
-        {
-            return new Vector3(ClickPos.x + 75f, ClickPos.y - 100f, 0);
-        }    
-    }
+   
     public void OnPointerUp(PointerEventData data)
     {
         if (WorkingSlotNum < 0)

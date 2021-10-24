@@ -8,6 +8,7 @@ public class Inventory
     Dictionary<int, Item> Inven = new Dictionary<int, Item>();
     
     Item item;
+    Item ITEM { get { return item; } }
     int Capacity = 18;
     public int CAPACITY
     {        
@@ -33,7 +34,7 @@ public class Inventory
     {    
         if(Inven.TryGetValue(_SlotNum,out item))
         {
-            return item;
+            return ITEM;
         }
         else
         {
@@ -45,7 +46,7 @@ public class Inventory
         if (Inven.TryGetValue(_SlotNum, out item))
         {
             Inven.Remove(_SlotNum);
-            return item;
+            return ITEM;
         }
         else
         {
@@ -78,15 +79,15 @@ public class Inventory
     public Item AddItem(int _Index, Item _NewItem)
     {
         if(Inven.TryGetValue(_Index,out item))
-        {
-            if(Inven[_Index].Index == _NewItem.Index)
+        {            
+            if(Inven[_Index].Index == _NewItem.Index && Inven[_Index].itemType != Item.ItemType.Equipment && _NewItem.itemType != Item.ItemType.Equipment)
             {
                 Inven[_Index].ItemCount += _NewItem.ItemCount;
                 return null;
             }
             Inven.Remove(_Index);
             Inven.Add(_Index, _NewItem);
-            return item;
+            return item;            
         }
         else
         {

@@ -150,7 +150,7 @@ public class GameManager : MonoBehaviour
         //
         character.Inven = NewInven;
         Item testITem = new Item(1, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 0);
-        Item testITem1 = new Item(2, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 1);
+        Item testITem1 = new Item(1, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 1);
         Item testITem2 = new Item(3, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 2);
         Item testITem3 = new Item(4, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 3);
         Item testITem4 = new Item(5, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 4);

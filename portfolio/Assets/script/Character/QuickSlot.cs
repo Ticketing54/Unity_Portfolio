@@ -16,6 +16,7 @@ public class QuickSlot
     int SkillSlotNum = 0;
 
     Item item;
+    Item ITEM { get { return item; } }
     Skill skill;
     public int ITEMSLOTNUM
     {
@@ -52,7 +53,7 @@ public class QuickSlot
         quickItem = ItemSlot[ITEMSLOTNUM];
         if(quickItem.TryGetValue(_SlotNum, out item))
         {
-            return item;
+            return ITEM;
         }
         else
         {
@@ -65,7 +66,7 @@ public class QuickSlot
         if (quickItem.TryGetValue(_SlotNum, out item))
         {
             quickItem.Remove(_SlotNum);
-            return item;
+            return ITEM;
         }
         else
         {
@@ -89,7 +90,7 @@ public class QuickSlot
 
             quickItem.Remove(_SlotNum);
             quickItem.Add(_SlotNum, _NewItem);
-            return item;
+            return ITEM;
         }
         else
         {

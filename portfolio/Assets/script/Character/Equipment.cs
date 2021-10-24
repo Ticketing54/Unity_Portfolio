@@ -9,6 +9,7 @@ public class Equipment
     Status Stat= null;
     Dictionary<Item.EquipMentType, Item> Equip = new Dictionary<Item.EquipMentType, Item>();
     Item item;
+    Item ITEM { get { return item; } }
     Item.EquipMentType Type = Item.EquipMentType.None;
     public Equipment(Status _Stat)
     {        
@@ -20,7 +21,7 @@ public class Equipment
         if(Equip.TryGetValue(Type,out item))
         {
             Type = Item.EquipMentType.None;
-            return item;
+            return ITEM;
         }
         else
         {
@@ -41,7 +42,7 @@ public class Equipment
             Stat.TakeOffStatus(item);
             Equip.Remove(Type);
             Type = Item.EquipMentType.None;
-            return item;
+            return ITEM;
         }
         else
         {
@@ -63,7 +64,7 @@ public class Equipment
             Equip.Remove(_NewItem.EquipType);
             Stat.EquipStatus(_NewItem);
             Equip.Add(_NewItem.EquipType, _NewItem);
-            return item;
+            return ITEM;
         }
         else
         {

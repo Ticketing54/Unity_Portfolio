@@ -12,7 +12,7 @@ public class UI_Equipment : MonoBehaviour
     {
         for (int i = 0; i < Equip.Length; i++)
         {            
-            if (Equip[i].isInRect(_ClickPos))
+            if (Equip[i].isInRect(_ClickPos) && !Character.Player.Equip.IsEmpty((Item.EquipMentType)i))
             {
                 _Setting(i, ItemListType.EQUIP, Equip[i].ICON);                
                 return true;

@@ -12,9 +12,10 @@ public class Character : MonoBehaviour
     public Status Stat = null;
     public Equipment Equip = null;
     
-    public CharacterSkill Skill = null;    
-    public CharacterQuest Quest = null;    
-    public Inventory Inven = null;
+   
+    public CharacterSkill Skill { get; set; }
+    public CharacterQuest Quest { get; set; }    
+    public Inventory Inven { get; set; }
 
 
     public QuickSlot Quick = null;
@@ -54,7 +55,7 @@ public class Character : MonoBehaviour
     public bool OpenLootingbox = false; // 루팅박스 
     public Vector3 StartPos;
 
-    public delegate void ITemUiSetting(ItemListType _Type,int _SlotNum);
+    public delegate void ItemUiSetting(ItemListType _Type,int _SlotNum);
     
 
 
@@ -62,37 +63,107 @@ public class Character : MonoBehaviour
     #region MoveItemControl
 
     
-    public void ItemMove(ItemListType _StartType,int _S_Num,ItemListType _EndType,int _E_Num, ITemUiSetting _Setting)
+    public void ItemMove(ItemListType _StartType,int _S_Num,ItemListType _EndType,int _E_Num, ItemUiSetting _Setting)
     {
-        Item Start = ItemMoveStart(_StartType,_S_Num);
-
-        if (Start == null)
+        if (ItemMoveCheck(_StartType, _S_Num, _EndType, _E_Num) == false)       // 이동이 가능한지 체크
             return;
-
-        Item End = ItemMoveEnd(_EndType,_E_Num, Start);
-        if (End != null)
+        Item start = ItemMoveStart(_StartType,_S_Num);
+        if (start == null)
+            return; 
+        Item end = ItemMoveEnd(_EndType,_E_Num, start);
+        if (end != null)
         {
-            Item Temp = ItemMoveEnd(_StartType, _S_Num, End);
+            Item Temp = ItemMoveEnd(_StartType, _S_Num, end);
             if(Temp != null)
                 Debug.LogError("아이템 장착 오류");
         }
         _Setting(_StartType, _S_Num);
         _Setting(_EndType, _E_Num);
-    }    
-    public void ItemMove(ItemListType _Type, int _SlotNum, ITemUiSetting _Setting)
+    }
+
+
+    bool ItemMoveCheck(ItemListType _StartType, int _S_Num, ItemListType _EndType, int _E_Num)
     {
-        Item Start = ItemMoveStart(_Type,_SlotNum);
-
-        if (Start == null)
-            return;
-        Item End;
-
-        if (Start.itemType != Item.ItemType.Equipment)
+        Item start = GetItem(_StartType, _S_Num);
+        if (start == null)
+            return false;
+        Item end = GetItem(_EndType, _E_Num);
+        if(end == null)                     // 목표점이 비어있을때
         {
-            End = ItemMoveEnd(_Type,_SlotNum, Start);
-            _Setting(_Type, _SlotNum);
-            if (End != null)
+            switch (start.itemType)
+            {
+                case Item.ItemType.Equipment:
+                    if (_EndType == ItemListType.EQUIP && start.EquipType == (Item.EquipMentType)_E_Num)
+                        return true;
+                    if (_EndType == ItemListType.INVEN)
+                        return true;
+                    return false;
+                case Item.ItemType.Used:
+                    if (_EndType == ItemListType.INVEN || _EndType == ItemListType.QUICK)
+                        return true;
+                    return false;
+                case Item.ItemType.Etc:
+                    if (_EndType == ItemListType.INVEN)
+                        return true;
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        else
+        {
+            switch(start.itemType)          // 목표점에 아이템이 존재할때
+            {
+                case Item.ItemType.Equipment:
+                    if (_StartType != _EndType)     
+                    {
+                        if((_StartType == ItemListType.INVEN && _EndType == ItemListType.EQUIP)||(_StartType == ItemListType.EQUIP && _EndType == ItemListType.INVEN))          // 인벤토리에서 장비창으로
+                        {
+                            if (start.EquipType != end.EquipType)       // 부위가 다를경우
+                                return false;
+                            return true;                            
+                        }                        
+                        return false;                                                                  // 나머진 불가능
+                    }
+                    else
+                    {
+                        if (_StartType != ItemListType.INVEN)       // 인벤토리 내에서만
+                            return false;
+                        return true;
+                    }                                               // 나머진 불가능
+                case Item.ItemType.Used:
+                    if (_EndType == ItemListType.INVEN || _EndType == ItemListType.QUICK)
+                    return true;
+                return false;
+                case Item.ItemType.Etc:
+                    if (_EndType == ItemListType.INVEN)
+                    return true;
+                return false;
+                default:
+                    return false;
+            }
+
+        }
+
+
+
+
+
+    }   
+    public void ItemMove(ItemListType _Type, int _SlotNum, ItemUiSetting _Setting)
+    {
+        Item start = ItemMoveStart(_Type,_SlotNum);
+
+        if (start == null)
+            return;
+        Item end;
+
+        if (start.itemType != Item.ItemType.Equipment)
+        {
+            end = ItemMoveEnd(_Type,_SlotNum, start);            
+            if (end != null)
                 Debug.LogError("아이템 장착 오류");
+            _Setting(_Type, _SlotNum);
             return;
         }            
         else
@@ -103,36 +174,32 @@ public class Character : MonoBehaviour
                     int EmptySlotNum = Inven.EmptySlot();                    
                     if(EmptySlotNum <0)         // 가득 찼을 때
                     {
-                        End = ItemMoveEnd(_Type,_SlotNum, Start);
+                        end = ItemMoveEnd(_Type,_SlotNum, start);
                         _Setting(_Type, _SlotNum);
-                        if (End != null)
+                        if (end != null)
                             Debug.LogError("아이템 장착 오류");
                         return;
                     }
-                    End = ItemMoveEnd(ItemListType.INVEN, EmptySlotNum, Start);
+                    end = ItemMoveEnd(ItemListType.INVEN, EmptySlotNum, start);
                     _Setting(_Type, _SlotNum);
                     _Setting(ItemListType.INVEN, EmptySlotNum);
-                    if (End != null)
+                    if (end != null)
                         Debug.LogError("아이템 장착 오류");
                     return;                    
                 case ItemListType.INVEN:
-                    End = Equip.PushEquip((int)Start.EquipType, Start);
-                    if (End != null)
+                    end = Equip.PushEquip((int)start.EquipType, start);
+                    if (end != null)
                     {
                         Item Temp;
-                        Temp =ItemMoveEnd(_Type,_SlotNum, End);
+                        Temp =ItemMoveEnd(_Type,_SlotNum, end);
                         if(Temp != null)
                             Debug.LogError("아이템 장착 오류 ");                        
                     }
                     _Setting(_Type, _SlotNum);
-                    _Setting(ItemListType.EQUIP, (int)Start.EquipType);
+                    _Setting(ItemListType.EQUIP, (int)start.EquipType);
                     return;
                 default:
-                    return;
-                    
-
-                    
-                
+                    return;                
             }
         }
     }   
