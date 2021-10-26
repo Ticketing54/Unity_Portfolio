@@ -104,7 +104,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
                 if (one.Index.Equals(int.Parse(Npc_Text[1]))) 
                 {
 
-                    one.QuestComplete = 1;
+                    //one.State = 1;
                 }
             }
         }

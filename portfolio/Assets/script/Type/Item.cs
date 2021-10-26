@@ -8,25 +8,7 @@ using System;
 [System.Serializable]
 public class Item
 {
-    public enum ItemType
-    {        
-        Equipment,
-        Used,
-        Etc,
-        None,
-    }
-    public enum EquipMentType
-    {        
-        HEAD ,
-        Armor,
-        RightArm,
-        LeftArm,
-        Shose,
-        None
-
-    }
-
-
+   
     public int SlotNum;
 
     public EquipMentType EquipType { get; }
@@ -62,7 +44,7 @@ public class Item
     }
     public void UseItem()
     {
-        if (itemType == Item.ItemType.Used)
+        if (itemType == ItemType.USED)
         {
             string[] Data = ItemProperty.Split('/');
 

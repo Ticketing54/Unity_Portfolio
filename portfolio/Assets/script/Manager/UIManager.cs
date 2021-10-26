@@ -192,7 +192,7 @@ public class UIManager : MonoBehaviour
     }
     public void CloseQuest()
     {
-        questlist_M.emptyinfo();
+        questlist_M.ClearInfo();
         QuestList_M.SetActive(false);
 
     }

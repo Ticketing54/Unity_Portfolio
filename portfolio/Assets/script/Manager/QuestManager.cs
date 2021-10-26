@@ -39,14 +39,11 @@ public class QuestManager : MonoBehaviour
 
     public void AddQuest(int _num)
     {
-        data = QuestTableManager.instance.quest_Table.GetData(_num);
-        quest = new Quest(int.Parse(data[0]), int.Parse(data[1]), data[2], data[3], data[4], int.Parse(data[5]), int.Parse(data[6]));
+        data = QuestTableManager.instance.quest_Table.GetData(_num);        
+        
 
 
-        quest.QuestComplete = 1; // 퀘스트 진행
-
-
-        if (quest.questType == Quest.QuestType.Battle)
+        if (quest.Type == QuestType.BATTLE)
         {
             foreach (Npc npc in Character.Player.npcList)
             {
@@ -63,23 +60,23 @@ public class QuestManager : MonoBehaviour
                     Character.Player.MobList[i].isQuestMob = true;
             }
         }
-        else if (quest.questType == Quest.QuestType.Dialog)   // 특정인물 찾는 퀘스트 사용할때
-        {
-            quest.QuestComplete = 2;
+        //else if (quest.Type == QuestType.Dialog)   // 특정인물 찾는 퀘스트 사용할때
+        //{
+        //    quest.State = 2;
 
-            foreach (Npc npc in Character.Player.npcList)
-            {
-                if(npc.index == quest.npc_Index)
-                {
+        //    foreach (Npc npc in Character.Player.npcList)
+        //    {
+        //        if(npc.index == quest.npc_Index)
+        //        {
                     
-                    QuestCompletenum(npc, quest.Index, 2);
-                    npc.QuestMarkerNum = 2;
-                }
-            }
+        //            QuestCompletenum(npc, quest.Index, 2);
+        //            npc.QuestMarkerNum = 2;
+        //        }
+        //    }
 
 
-        }
-        else if (quest.questType == Quest.QuestType.Etc)   // 기타 퀘스트
+        //}
+        else if (quest.Type == QuestType.ETC)   // 기타 퀘스트
         {
             foreach (Npc npc in Character.Player.npcList)
             {
@@ -101,36 +98,36 @@ public class QuestManager : MonoBehaviour
         Character.Player.Quest.Add(quest.Index, quest);  // 퀘스트 목록 등록   
         if (questlist_M.gameObject.activeSelf == false)
             UIManager.uimanager.TryOpenQuest();
-        questlist_M.AddQuest(quest);
+        // questlist_M.AddQuestSlot(quest);
         UIManager.uimanager.TryOpenQuest();
         quest = null;
 
     }
     public void AddQuest(int _index,int completenum,int _Goal_C)
     {
-        data = QuestTableManager.instance.quest_Table.GetData(_index);
-        quest = new Quest(int.Parse(data[0]), int.Parse(data[1]), data[2], data[3], data[4], int.Parse(data[5]), int.Parse(data[6]));
-        quest.QuestComplete = completenum; // 퀘스트 진행상태
+        //data = QuestTableManager.instance.quest_Table.GetData(_index);
+        //quest = new Quest(int.Parse(data[0]), int.Parse(data[1]), data[2], data[3], data[4], int.Parse(data[5]), int.Parse(data[6]));
+        //quest.State = completenum; // 퀘스트 진행상태
 
 
-        if(completenum != 3)
-        {
+        //if(completenum != 3)
+        //{
             
-            MiniQuestSlot tmp = Instantiate(QuestSlot);
-            tmp.quest = quest;
-            tmp.TextingQuestSlot();
-            tmp.transform.SetParent(Mqlist.content.transform); // 퀘스트 알람등록
-            list.Add(tmp); // 퀘스트 슬롯 등록
-            if (completenum == 2)
-            {
-                tmp.finishQuest();
-            }
-        }       
+        //    MiniQuestSlot tmp = Instantiate(QuestSlot);
+        //    tmp.quest = quest;
+        //    tmp.TextingQuestSlot();
+        //    tmp.transform.SetParent(Mqlist.content.transform); // 퀘스트 알람등록
+        //    list.Add(tmp); // 퀘스트 슬롯 등록
+        //    if (completenum == 2)
+        //    {
+        //        tmp.finishQuest();
+        //    }
+        //}       
                 
         Character.Player.Quest.Add(quest.Index, quest);// 퀘스트 목록 등록
         if (questlist_M.gameObject.activeSelf == false)
             UIManager.uimanager.TryOpenQuest();
-        questlist_M.AddQuest(quest);
+        // questlist_M.AddQuestSlot(quest);
         UIManager.uimanager.TryOpenQuest();        
         quest = null;
 
@@ -141,7 +138,7 @@ public class QuestManager : MonoBehaviour
         {
             if(quest.Index == index)
             {
-                quest.QuestComplete = completeNum; 
+                //quest.State = completeNum; 
             }
         }
     }
@@ -152,24 +149,24 @@ public class QuestManager : MonoBehaviour
 
         foreach(QuestSlot one in questlist_M.questlist)
         {
-            if(one.quest.Index == _index)
-            {
-                one.quest.QuestComplete = 3;
-                one.DoneQuest();
-            }
+            //if(one.quest.Index == _index)
+            //{
+            //    one.quest.State = 3;
+            //    one.DoneQuest();
+            //}
         }
 
         UIManager.uimanager.TryOpenQuest();
     }
   
 
-    public void questUpdate(Quest.QuestType questType,int _goal_index, int _num =1) // 퀘스트 업데이트(잡거나 얻었을때)
+    public void questUpdate(QuestType questType,int _goal_index, int _num =1) // 퀘스트 업데이트(잡거나 얻었을때)
     {
-        if(questType == Quest.QuestType.Battle)  // 전투 퀘스트
+        if(questType == QuestType.BATTLE)  // 전투 퀘스트
         {
             //quest = GetQuest(Quest.QuestType.Battle, _goal_index);
-            quest.goal_C += _num;
-            if(quest.goal_C >= quest.goal_num)    // 완료되면
+            quest.goal_Current += _num;
+            if(quest.goal_Current >= quest.goal_Need)    // 완료되면
             {
                 for (int i = 0; i < Character.Player.MobList.Count; i++) //퀘스트몹 풀기
                 {
@@ -182,13 +179,13 @@ public class QuestManager : MonoBehaviour
                     FindNpc(quest.npc_Index).QuestMarkerNum = 2;
                 }
                     
-                quest.QuestComplete = 2;
+                //quest.State = 2;
                 IsSlot =FindMiniQuestSlot(quest.Index);
                 IsSlot.quest = quest;
                 IsSlot.finishQuest();
                 if (questlist_M.gameObject.activeSelf == false)
                     UIManager.uimanager.TryOpenQuest();
-                FindQuestSLot(quest.Index).quest.QuestComplete = 2;
+                //FindQuestSLot(quest.Index).quest.State = 2;
                 UIManager.uimanager.TryOpenQuest();
 
                 quest = null;
@@ -208,13 +205,13 @@ public class QuestManager : MonoBehaviour
             return;
 
         }
-        else if(questType == Quest.QuestType.Item)
+        else if(questType == QuestType.COLLECT)
         {
             //quest = GetQuest(Quest.QuestType.Item,_goal_index);
-            quest.goal_C += _num;
-            if (quest.goal_C >= quest.goal_num) // 완료되면
+            quest.goal_Current += _num;
+            if (quest.goal_Current >= quest.goal_Need) // 완료되면
             {
-                quest.QuestComplete = 2;
+                //quest.State = 2;
                 IsSlot = FindMiniQuestSlot(quest.Index);
                 IsSlot.quest = quest;
                 IsSlot.finishQuest();
@@ -231,7 +228,7 @@ public class QuestManager : MonoBehaviour
             return;            
         }  
        
-        CMini.quest.goal_C += _num;
+        CMini.quest.goal_Current += _num;
         CMini.UpdatePrograss();
         CMini = null;
 
@@ -293,7 +290,7 @@ public class QuestManager : MonoBehaviour
      
         if (questlist_M.gameObject.activeSelf == false)
             questlist_M.gameObject.SetActive(true);
-        questlist_M.Questlist_Reset();
+        //questlist_M.Questlist_Reset();
         questlist_M.gameObject.SetActive(false);
             
     }
@@ -322,13 +319,13 @@ public class QuestManager : MonoBehaviour
     }
     public QuestSlot FindQuestSLot(int _num)
     {
-        foreach(QuestSlot one in questlist_M.questlist)
-        {
-            if (one.quest.Index.Equals(_num))
-            {
-                return one;
-            }
-        }
+        //foreach(QuestSlot one in questlist_M.questlist)
+        //{
+        //    if (one.quest.Index.Equals(_num))
+        //    {
+        //        return one;
+        //    }
+        //}
         return null;
     }
     public void DestroyQuestSLot(int _num)

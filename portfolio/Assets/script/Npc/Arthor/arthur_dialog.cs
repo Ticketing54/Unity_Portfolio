@@ -41,57 +41,57 @@ public class arthur_dialog : StateMachineBehaviour
 
 
 
-            for (int I = 0; I < npc.quest_list.Count; I++)
-            {
-                if (npc.quest_list[I].Index == 0 && npc.quest_list[I].QuestComplete == 2)
-                {
-                    npc.QuestMarkerNum = -1;
-                    npc.quest_list[I].QuestComplete = 3;
-                    QuestManager.questManager.FindNpc(2).QuestMarkerNum = -1;
-                    QuestManager.questManager.QuestCompletenum(QuestManager.questManager.FindNpc(2), 0, 3);
-                    dialog.Npc_Texting(2);
-                    QuestManager.questManager.DestroyQuestSLot(0);
-                    QuestManager.questManager.QuestComplete_QuestList(0);
-                    return;
-                }
-                if (npc.quest_list[I].Index == 1 && npc.quest_list[I].QuestComplete == 1)
-                {                    
-                    dialog.Npc_Texting(6);                    
-                    return;
-                }
-                if (npc.quest_list[I].Index == 1 && npc.quest_list[I].QuestComplete == 2)
-                {
-                    npc.quest_list[I].QuestComplete = 3;
-                    npc.QuestMarkerNum = -1;
-                    Character.Player.Stat.HP -= 50;
-                    dialog.Npc_Texting(7);                    
-                    QuestManager.questManager.DestroyQuestSLot(1);
-                    QuestManager.questManager.QuestComplete_QuestList(1);
-                    return;
-                }
-                if (npc.quest_list[I].Index == 2 && npc.quest_list[I].QuestComplete == 1)
-                {
-                    dialog.Npc_Texting(10);
-                    return;
-                }
-                if (npc.quest_list[I].Index == 2 && npc.quest_list[I].QuestComplete == 2)
-                {
-                    npc.quest_list[I].QuestComplete = 3;
-                    npc.QuestMarkerNum = -1;
-                    dialog.Npc_Texting(12);
-                    QuestManager.questManager.DestroyQuestSLot(2);
-                    QuestManager.questManager.QuestComplete_QuestList(2);
-                    return;
+            //for (int I = 0; I < npc.quest_list.Count; I++)
+            //{
+            //    if (npc.quest_list[I].Index == 0 && npc.quest_list[I].State == 2)
+            //    {
+            //        npc.QuestMarkerNum = -1;
+            //        npc.quest_list[I].State = 3;
+            //        QuestManager.questManager.FindNpc(2).QuestMarkerNum = -1;
+            //        QuestManager.questManager.QuestCompletenum(QuestManager.questManager.FindNpc(2), 0, 3);
+            //        dialog.Npc_Texting(2);
+            //        QuestManager.questManager.DestroyQuestSLot(0);
+            //        QuestManager.questManager.QuestComplete_QuestList(0);
+            //        return;
+            //    }
+            //    if (npc.quest_list[I].Index == 1 && npc.quest_list[I].State == 1)
+            //    {                    
+            //        dialog.Npc_Texting(6);                    
+            //        return;
+            //    }
+            //    if (npc.quest_list[I].Index == 1 && npc.quest_list[I].State == 2)
+            //    {
+            //        npc.quest_list[I].State = 3;
+            //        npc.QuestMarkerNum = -1;
+            //        Character.Player.Stat.HP -= 50;
+            //        dialog.Npc_Texting(7);                    
+            //        QuestManager.questManager.DestroyQuestSLot(1);
+            //        QuestManager.questManager.QuestComplete_QuestList(1);
+            //        return;
+            //    }
+            //    if (npc.quest_list[I].Index == 2 && npc.quest_list[I].State == 1)
+            //    {
+            //        dialog.Npc_Texting(10);
+            //        return;
+            //    }
+            //    if (npc.quest_list[I].Index == 2 && npc.quest_list[I].State == 2)
+            //    {
+            //        npc.quest_list[I].State = 3;
+            //        npc.QuestMarkerNum = -1;
+            //        dialog.Npc_Texting(12);
+            //        QuestManager.questManager.DestroyQuestSLot(2);
+            //        QuestManager.questManager.QuestComplete_QuestList(2);
+            //        return;
                   
-                }                
-                if (npc.quest_list[I].Index == 2 && npc.quest_list[I].QuestComplete == 3)
-                {
-                    dialog.Npc_Texting(3);
-                    return;
+            //    }                
+            //    if (npc.quest_list[I].Index == 2 && npc.quest_list[I].State == 3)
+            //    {
+            //        dialog.Npc_Texting(3);
+            //        return;
 
-                }
+            //    }
                 
-            }
+            //}
 
 
 

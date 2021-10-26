@@ -7,14 +7,25 @@ using TMPro;
 
 public class Questlist : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,IDragHandler
 {
-    public TextMeshProUGUI Name;
-    public TextMeshProUGUI Type;
-    public TextMeshProUGUI Explain;
-    public TextMeshProUGUI Complete;
-    public ScrollRect questScroll;
+    [SerializeField]
+    TextMeshProUGUI Name;
+    [SerializeField]
+    TextMeshProUGUI Type;
+    [SerializeField]
+    TextMeshProUGUI Explain;
+    [SerializeField]
+    TextMeshProUGUI State;
+    [SerializeField]
+    ScrollRect questScroll;
+    [SerializeField]
+    HaveQuestState mainState;
 
+    Dictionary<int, Quest> Quest = new Dictionary<int, Quest>();
+    Quest quest;
+    Queue<QuestSlot> UsableSlot = new Queue<QuestSlot>();
+    QuestSlot Slot;
 
-    public List<QuestSlot> questlist = new List<QuestSlot>();
+    public List<QuestSlot> questlist = new List<QuestSlot>();           // 큐형식으로 구현해야하는데 큐를 사용하기 애매함
     public QuestSlot questslot;
 
 
@@ -30,89 +41,118 @@ public class Questlist : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,ID
             WindowDrag = true;
             Window_Preset = data.position - (Vector2)Window.position;
         }
-
-
-
-
         for (int i = 0; i < questlist.Count; i++)
         {
             if (questlist[i].isInRect(data.position))
             {
-                ShowQuest(questlist[i].quest);
+                
             }
-
-
-
         }
     }
-    public void emptyinfo()
+    public void ClearInfo()
     {
         Name.text = "";
         Type.text = "";
         Explain.text = "";
-        Complete.text = "";
+        State.text = "";
     }
-    public void ShowQuest(Quest _quest)
+    public void QuestInfoUpdate(int _Index)
     {
-        if(_quest.QuestComplete == 3)
+        quest = Character.Player.Quest.GetQuest(_Index);
+        if(quest == null)
         {
-
-            Name.text = _quest.questName;
-            Name.color = Color.gray;
-            Type.text = _quest.questType.ToString();
-            Type.color = Color.gray;
-            Explain.text = _quest.questExplain;
-            Explain.color = Color.gray;
-            Complete.text = "완료";
-            Complete.color = Color.gray;
+            Debug.LogError("퀘스트를 찾을수 없습니다.");
             return;
         }
-        Name.color = Color.white;
-        Type.color = Color.white;
-        Explain.color = Color.white;
-        Complete.color = Color.white;
-        Name.text = _quest.questName;
-        Type.text = _quest.questType.ToString();
-        Explain.text = _quest.questExplain;
-        if(_quest.QuestComplete == 1)
+        switch (quest.State)
         {
-            Complete.text = "진행중";
-        }
-        else if(_quest.QuestComplete == 2)
-        {
-            Complete.text = "달성";
-            
-        }
-        
+            case QuestState.DONE:
+                Name.text = quest.Name;
+                Name.color = Color.gray;
+                Type.text = quest.Type.ToString();
+                Type.color = Color.gray;
+                Explain.text = quest.Explain;
+                Explain.color = Color.gray;
+                State.text = "완료";
+                State.color = Color.gray;
+                quest = null;
+                return;
+            case QuestState.PLAYING:
+                Name.color = Color.white;
+                Type.color = Color.white;
+                Explain.color = Color.white;
+                State.color = Color.white;
+                Name.text = quest.Name;
+                Type.text = quest.Type.ToString();
+                Explain.text = quest.Explain;
+                State.text = "진행중";
+                quest = null;
+                return;
+            case QuestState.COMPLETE:
+                Name.color = Color.white;
+                Type.color = Color.white;
+                Explain.color = Color.white;
+                State.color = Color.white;
+                Name.text = quest.Name;
+                Type.text = quest.Type.ToString();
+                Explain.text = quest.Explain;
+                State.text = "달성";
+                quest = null;
+                return;
+            default:
+                Debug.LogError("퀘스트를 찾았으나 상태를 알 수 없습니다.");
+                quest = null;
+                return;
+        }       
     }
+    
 
 
-    public void AddQuest(Quest _quest)
+    public void UpdateQuestSlot()
     {
-        QuestSlot tmp = Instantiate(questslot);
-        tmp.quest = _quest;
-        tmp.QuestWrite();
-        tmp.transform.SetParent(questScroll.content.transform);
-        questlist.Add(tmp);
+        List<int> List;
+        QuestSlot NewQuestSlot;
+        List = Character.Player.Quest.GetQuestList(mainState);
 
-        if(_quest.QuestComplete == 3)
+        for (int i = 0; i < List.Count; i++)
         {
-            tmp.DoneQuest();
-        }
+            NewQuestSlot =GetSlot(List[i]);
+            NewQuestSlot.gameObject.SetActive(true);
+            NewQuestSlot.transform.SetParent(questScroll.content.transform);            
+        }        
     }
-    public void Questlist_Reset()
+    public void CloseQuestSlot()
     {
-
-        QuestSlot tmp;
-        for(int i = 0; i < questlist.Count; i++)
+        for (int i = 0; i < questlist.Count; i++)
         {
-            tmp = questlist[i];
-            questlist.Remove(questlist[i]);
-            Destroy(tmp.gameObject);
+            InsertSlot(questlist[i]);            
         }
-      
-
+        questlist.Clear();
     }
+    void InsertSlot(QuestSlot _UsedSlot)
+    {
+        UsableSlot.Enqueue(_UsedSlot);
+        _UsedSlot.Clear();
+        _UsedSlot.transform.SetParent(null);
+        _UsedSlot.gameObject.SetActive(false);
+    }
+    QuestSlot GetSlot(int _QuestIndex)
+    {
+        QuestSlot NewSlot;
+
+        if (UsableSlot.Count == 0)
+        {
+            NewSlot = Instantiate(questslot);
+            NewSlot.QuestIndex = _QuestIndex;
+            return NewSlot;           
+        }
+        else
+        {
+            NewSlot = UsableSlot.Dequeue();
+            NewSlot.QuestIndex = _QuestIndex;
+            return NewSlot;
+        }
+    }   
     public void OnPointerUp(PointerEventData data)
     {
         WindowDrag = false;

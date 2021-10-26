@@ -22,18 +22,18 @@ public class arthur_idle : StateMachineBehaviour
             UIManager.uimanager.dialog.npc = npc;
             animator.SetBool("Dialog", true);
         }
-        for (int I = 0; I < npc.quest_list.Count; I++)
-        {            
-            if (npc.quest_list[I].Index == 2 && npc.quest_list[I].QuestComplete == 1 && Character.Player.Stat.HP==Character.Player.Stat.MAXHP)
-            {
-                npc.quest_list[I].QuestComplete = 2;
-                npc.QuestMarkerNum = 2;
-                QuestManager.questManager.FindQuestSLot(2).quest.QuestComplete = 2;
+        //for (int I = 0; I < npc.quest_list.Count; I++)
+        //{            
+        //    if (npc.quest_list[I].Index == 2 && npc.quest_list[I].State == 1 && Character.Player.Stat.HP==Character.Player.Stat.MAXHP)
+        //    {
+        //        npc.quest_list[I].State = 2;
+        //        npc.QuestMarkerNum = 2;
+        //        QuestManager.questManager.FindQuestSLot(2).quest.State = 2;
                 
-            }
+        //    }
          
 
-        }
+        //}
 
     }
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

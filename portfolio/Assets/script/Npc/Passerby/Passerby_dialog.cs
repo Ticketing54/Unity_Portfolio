@@ -57,27 +57,27 @@ public class Passerby_dialog : StateMachineBehaviour
 
             for (int I = 0; I < npc.quest_list.Count; I++)
             {
-                if (npc.quest_list[I].Index == 4 && npc.quest_list[I].QuestComplete == 3)
-                {
-                    dialog.Npc_Texting(19);
-                    return;
+                //if (npc.quest_list[I].Index == 4 && npc.quest_list[I].State == 3)
+                //{
+                //    dialog.Npc_Texting(19);
+                //    return;
 
-                }
-                if (npc.quest_list[I].Index == 4 && npc.quest_list[I].QuestComplete == 1)
-                {                    
-                    dialog.Npc_Texting(15);                    
-                    return;
-                }                
-                if (npc.quest_list[I].Index == 4 && npc.quest_list[I].QuestComplete == 2)
-                {
-                    npc.quest_list[I].QuestComplete = 3;
-                    npc.QuestMarkerNum = -1;
-                    dialog.Npc_Texting(16);
-                    QuestManager.questManager.DestroyQuestSLot(4);
-                    QuestManager.questManager.QuestComplete_QuestList(4);
-                    return;
+                //}
+                //if (npc.quest_list[I].Index == 4 && npc.quest_list[I].State == 1)
+                //{                    
+                //    dialog.Npc_Texting(15);                    
+                //    return;
+                //}                
+                //if (npc.quest_list[I].Index == 4 && npc.quest_list[I].State == 2)
+                //{
+                //    npc.quest_list[I].State = 3;
+                //    npc.QuestMarkerNum = -1;
+                //    dialog.Npc_Texting(16);
+                //    QuestManager.questManager.DestroyQuestSLot(4);
+                //    QuestManager.questManager.QuestComplete_QuestList(4);
+                //    return;
 
-                }
+                //}
                 
 
             }

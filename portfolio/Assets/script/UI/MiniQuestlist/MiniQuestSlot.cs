@@ -17,22 +17,22 @@ public class MiniQuestSlot : MonoBehaviour
 
     public void TextingQuestSlot()
     {
-        if(quest.goal_num == 0)
+        if(quest.goal_Need == 0)
         {
-            quest_Name.text = quest.questName;
-            quest_Explain.text = quest.questExplain;
+            quest_Name.text = quest.Name;
+            quest_Explain.text = quest.Explain;
             quest_Prograss.text = "";
             return;
         }
-        quest_Name.text = quest.questName;
-        quest_Explain.text = quest.questExplain;
-        quest_Prograss.text = "( " + quest.goal_C + " / " + quest.goal_num + " )";
+        quest_Name.text = quest.Name;
+        quest_Explain.text = quest.Explain;
+        quest_Prograss.text = "( " + quest.goal_Current + " / " + quest.goal_Need + " )";
 
     }
 
     public void UpdatePrograss()   
     {
-        quest_Prograss.text = "( " + quest.goal_num + " / " + quest.goal_C + " )";
+        quest_Prograss.text = "( " + quest.goal_Need + " / " + quest.goal_Current + " )";
     }
 
     public void finishQuest()   //퀘스트 완료

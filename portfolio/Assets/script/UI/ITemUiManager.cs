@@ -4,18 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.IO;
-public enum ItemListType
-{
-    INVEN,
-    QUICK,
-    EQUIP,
-    NONE
-}
-public enum Click
-{
-    LeftClick,
-    RightClick
-}
+
 public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandler,IBeginDragHandler,IDragHandler,IEndDragHandler
 {
     [SerializeField]

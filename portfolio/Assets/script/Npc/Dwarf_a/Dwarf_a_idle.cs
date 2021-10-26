@@ -29,17 +29,17 @@ public class Dwarf_a_idle : StateMachineBehaviour
         }
         for (int I = 0; I < npc.quest_list.Count; I++)
         {
-            if (npc.quest_list[I].Index == 0 && npc.quest_list[I].QuestComplete == 0 )
+            if (npc.quest_list[I].Index == 0 && npc.quest_list[I].State == 0 )
             {                
                 npc.QuestMarkerNum = 0;
 
             }
-            else if (npc.quest_list[I].Index == 0 && npc.quest_list[I].QuestComplete == 1)
-            {
-                npc.quest_list[I].QuestComplete = 2;
-                npc.QuestMarkerNum = 1;
+            //else if (npc.quest_list[I].Index == 0 && npc.quest_list[I].State == 1)
+            //{
+            //    npc.quest_list[I].State = 2;
+            //    npc.QuestMarkerNum = 1;
 
-            }
+            //}
             else
             {
                 npc.QuestMarkerNum = 2;

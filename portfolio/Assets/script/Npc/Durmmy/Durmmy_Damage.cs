@@ -33,13 +33,13 @@ public class Durmmy_Damage : StateMachineBehaviour
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
 
-        if (quest != null && quest.QuestComplete == 1)
-        {
-            quest.QuestComplete = 2;
-            npc.QuestMarkerNum = 2;
-            QuestManager.questManager.FindMiniQuestSlot(quest.Index).finishQuest();
+        //if (quest != null && quest.State == 1)
+        //{
+        //    quest.State = 2;
+        //    npc.QuestMarkerNum = 2;
+        //    QuestManager.questManager.FindMiniQuestSlot(quest.Index).finishQuest();
 
-        }
+        //}
 
 
 

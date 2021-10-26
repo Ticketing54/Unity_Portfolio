@@ -38,50 +38,50 @@ public class mayor_Dialog : StateMachineBehaviour
         {
             
             dialog_Texting = true;
-            for (int I = 0; I < npc.quest_list.Count; I++)
-            {
-                if (npc.quest_list[I].Index == 3 && npc.quest_list[I].QuestComplete == 2)
-                {
-                    npc.quest_list[I].QuestComplete = 3;                    
-                    npc.QuestMarkerNum = 0;
-                    dialog.Npc_Texting(2);
-                    QuestManager.questManager.DestroyQuestSLot(3);
-                    QuestManager.questManager.QuestComplete_QuestList(3);
-                    return;
+            //for (int I = 0; I < npc.quest_list.Count; I++)
+            //{
+            //    if (npc.quest_list[I].Index == 3 && npc.quest_list[I].State == 2)
+            //    {
+            //        npc.quest_list[I].State = 3;                    
+            //        npc.QuestMarkerNum = 0;
+            //        dialog.Npc_Texting(2);
+            //        QuestManager.questManager.DestroyQuestSLot(3);
+            //        QuestManager.questManager.QuestComplete_QuestList(3);
+            //        return;
 
-                }
-                if (npc.quest_list[I].Index == 5 && npc.quest_list[I].QuestComplete == 0)
-                {
-                    dialog.Npc_Texting(5);
-                    return;
-                }
-                if (npc.quest_list[I].Index == 5 && npc.quest_list[I].QuestComplete == 1)
-                {                    
-                    dialog.Npc_Texting(13);                    
-                    return;
-                }
-                if (npc.quest_list[I].Index == 5 && npc.quest_list[I].QuestComplete == 2)
-                {
-                    npc.quest_list[I].QuestComplete = 3;
-                    npc.QuestMarkerNum = 0;
-                    dialog.Npc_Texting(14);
-                    QuestManager.questManager.DestroyQuestSLot(5);
-                    QuestManager.questManager.QuestComplete_QuestList(5);
-                    return;
-                }
-                if (npc.quest_list[I].Index == 6 && npc.quest_list[I].QuestComplete == 0)
-                {
-                    dialog.Npc_Texting(20);
-                    return;
-                }
-                if (npc.quest_list[I].Index == 6 && npc.quest_list[I].QuestComplete == 1)
-                {
-                    dialog.Npc_Texting(23);
-                    return;
-                }
+            //    }
+            //    if (npc.quest_list[I].Index == 5 && npc.quest_list[I].State == 0)
+            //    {
+            //        dialog.Npc_Texting(5);
+            //        return;
+            //    }
+            //    if (npc.quest_list[I].Index == 5 && npc.quest_list[I].State == 1)
+            //    {                    
+            //        dialog.Npc_Texting(13);                    
+            //        return;
+            //    }
+            //    if (npc.quest_list[I].Index == 5 && npc.quest_list[I].State == 2)
+            //    {
+            //        npc.quest_list[I].State = 3;
+            //        npc.QuestMarkerNum = 0;
+            //        dialog.Npc_Texting(14);
+            //        QuestManager.questManager.DestroyQuestSLot(5);
+            //        QuestManager.questManager.QuestComplete_QuestList(5);
+            //        return;
+            //    }
+            //    if (npc.quest_list[I].Index == 6 && npc.quest_list[I].State == 0)
+            //    {
+            //        dialog.Npc_Texting(20);
+            //        return;
+            //    }
+            //    if (npc.quest_list[I].Index == 6 && npc.quest_list[I].State == 1)
+            //    {
+            //        dialog.Npc_Texting(23);
+            //        return;
+            //    }
                 
 
-            }
+            //}
 
 
 
@@ -98,6 +98,7 @@ public class mayor_Dialog : StateMachineBehaviour
             meet = true;
 
         }
+
         if (Input.GetMouseButtonDown(0) && npc.dialog_Done == true)
         {
             npc.dialog_Done = false;

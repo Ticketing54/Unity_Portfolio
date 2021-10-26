@@ -28,8 +28,7 @@ public class Slot : MonoBehaviour
         rc.yMax = tr.rect.height;
         rc.width = tr.rect.width;
         rc.height = tr.rect.height;       
-    }
-    public bool ActiveIcon() { return Icon.gameObject.activeSelf; }
+    }    
     public bool isInRect(Vector2 pos)
     {
         if (pos.x >= RC.x &&pos.x <= RC.x + RC.width &&pos.y >= RC.y - RC.height &&pos.y <= RC.y)

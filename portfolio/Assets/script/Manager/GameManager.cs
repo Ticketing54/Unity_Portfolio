@@ -170,6 +170,8 @@ public class GameManager : MonoBehaviour
         Equipment newEquip = new Equipment(NewStat);
         character.Equip = newEquip;
 
+        character.Quest = new CharacterQuest();
+
         character.StartPos = new Vector3(31f,0f,17f);        
     }
     public void Load_C_Data(int _num)
@@ -382,7 +384,7 @@ public class GameManager : MonoBehaviour
                     {
 
                         List<string> questinfo = QuestTableManager.instance.quest_Table.GetData(int.Parse(Questlist[n]));
-                        Quest tmp  = new Quest(int.Parse(questinfo[0]), int.Parse(questinfo[1]), questinfo[2], questinfo[3], questinfo[4], int.Parse(questinfo[5]), int.Parse(questinfo[6]));
+                        Quest tmp  = new Quest(int.Parse(questinfo[0]), questinfo[1], questinfo[2], questinfo[3], questinfo[4], int.Parse(questinfo[5]), int.Parse(questinfo[6]));
                         npc.quest_list.Add(tmp);
 
                     }   

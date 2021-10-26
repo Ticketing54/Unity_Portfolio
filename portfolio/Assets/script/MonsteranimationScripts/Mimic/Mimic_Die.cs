@@ -19,7 +19,7 @@ public class Mimic_Die : StateMachineBehaviour
         mob.tag = "Item";
         OpenDropBox = false;
         if (mob.isQuestMob == true)
-            QuestManager.questManager.questUpdate(Quest.QuestType.Battle, mob.Index);
+            QuestManager.questManager.questUpdate(QuestType.BATTLE, mob.Index);
 
 
 

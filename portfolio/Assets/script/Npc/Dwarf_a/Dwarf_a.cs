@@ -35,11 +35,11 @@ public class Dwarf_a : StateMachineBehaviour
             for(int I = 0; I < npc.quest_list.Count; I++)
             {
                 
-                if (npc.quest_list[I].Index == 0 && npc.quest_list[I].QuestComplete >= 1 && npc.quest_list[I].QuestComplete <= 3)
-                {
-                    dialog.Npc_Texting(8);
-                    return;
-                }
+                //if (npc.quest_list[I].Index == 0 && npc.quest_list[I].State >= 1 && npc.quest_list[I].State <= 3)
+                //{
+                //    dialog.Npc_Texting(8);
+                //    return;
+                //}
             }          
             
             dialog.Npc_Texting(npc.Dialog_num);     

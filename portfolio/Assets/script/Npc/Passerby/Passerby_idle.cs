@@ -29,7 +29,7 @@ public class Passerby_idle : StateMachineBehaviour
 
         for (int I = 0; I < npc.quest_list.Count; I++)
         {
-            if (QuestMark == false&&npc.quest_list[I].Index == 4 && npc.quest_list[I].QuestComplete == 0 )
+            if (QuestMark == false&&npc.quest_list[I].Index == 4 && npc.quest_list[I].State == 0 )
             {
                 QuestMark = true;
                 npc.QuestMarkerNum = 0;
@@ -40,12 +40,12 @@ public class Passerby_idle : StateMachineBehaviour
 
 
             }
-            else if (npc.quest_list[I].Index == 4 && npc.quest_list[I].QuestComplete >= 2 &&isclear == false)
-            {
-                isclear = true;
-                npc.nav.Warp(new Vector3(236f, 0, 88));          
+            //else if (npc.quest_list[I].Index == 4 && npc.quest_list[I].State >= 2 &&isclear == false)
+            //{
+            //    isclear = true;
+            //    npc.nav.Warp(new Vector3(236f, 0, 88));          
 
-            }
+            //}
 
 
         }

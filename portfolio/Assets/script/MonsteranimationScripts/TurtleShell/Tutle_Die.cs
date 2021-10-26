@@ -17,7 +17,7 @@ public class Tutle_Die : StateMachineBehaviour
         OpenDropBox = false;
         mob.tag = "Item";
         if (mob.isQuestMob == true)
-            QuestManager.questManager.questUpdate(Quest.QuestType.Battle, mob.Index);
+            QuestManager.questManager.questUpdate(QuestType.BATTLE, mob.Index);
     }
 
 

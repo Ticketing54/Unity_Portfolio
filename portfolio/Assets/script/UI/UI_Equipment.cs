@@ -12,7 +12,7 @@ public class UI_Equipment : MonoBehaviour
     {
         for (int i = 0; i < Equip.Length; i++)
         {            
-            if (Equip[i].isInRect(_ClickPos) && !Character.Player.Equip.IsEmpty((Item.EquipMentType)i))
+            if (Equip[i].isInRect(_ClickPos) && !Character.Player.Equip.IsEmpty((EquipMentType)i))
             {
                 _Setting(i, ItemListType.EQUIP, Equip[i].ICON);                
                 return true;
@@ -40,9 +40,9 @@ public class UI_Equipment : MonoBehaviour
     }
     public void UpdateEquip()
     {
-        List<Item.EquipMentType> Items = Character.Player.Equip.GetKeys();
+        List<EquipMentType> Items = Character.Player.Equip.GetKeys();
         Item item;
-        foreach (Item.EquipMentType one in Items)
+        foreach (EquipMentType one in Items)
         {
             Equip[(int)one].Add(ItemListType.EQUIP);
         }
