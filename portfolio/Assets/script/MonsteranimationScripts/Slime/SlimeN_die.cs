@@ -16,8 +16,7 @@ public class SlimeN_die : StateMachineBehaviour
         animator.SetBool("DropItem", true);
         OpenDropBox = false;
         mob.tag = "Item";
-        if (mob.isQuestMob == true)
-            QuestManager.questManager.questUpdate(QuestType.BATTLE, mob.Index);
+       
     }
 
 

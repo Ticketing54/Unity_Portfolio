@@ -98,7 +98,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
         Npc_Text = npc.Dialog.GetData(Dialog_num);
         if (Npc_Text[1] != "")
         {
-            QuestManager.questManager.AddQuest(int.Parse(Npc_Text[1]));
+           
             foreach(Quest one in npc.quest_list)
             {
                 if (one.Index.Equals(int.Parse(Npc_Text[1]))) 

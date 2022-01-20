@@ -17,7 +17,7 @@ public enum QuestType
 }
 public enum QuestState
 {
-    None,
+    NONE,
     READY,
     PLAYING,
     COMPLETE,
@@ -27,7 +27,8 @@ public enum GoalType
 {
     NPC,
     MONSTER,
-    ITEM
+    ITEM,
+    ETC
 }
 public enum ItemListType
 {

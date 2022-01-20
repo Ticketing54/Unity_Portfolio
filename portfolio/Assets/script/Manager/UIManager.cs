@@ -36,6 +36,7 @@ public class UIManager : MonoBehaviour
     //퀵슬롯
     public List<Slot> QuickSlot;
     public List<SkillSlot> QuickSlot_Skill;
+    public QuickQuest quickQuest;
     //드랍박스
     public DropBox dropBox;
 
@@ -177,22 +178,18 @@ public class UIManager : MonoBehaviour
         if (QuestActive)
         {
             OpenQuest();
-
-
         }
         else
             CloseQuest();
     } 
     public void OpenQuest()
     {
-
         QuestList_M.SetActive(true);
-
-
+        questlist_M.UpdateQuestSlot();
     }
     public void CloseQuest()
     {
-        questlist_M.ClearInfo();
+        questlist_M.ClearInfo();        
         QuestList_M.SetActive(false);
 
     }
@@ -289,8 +286,7 @@ public class UIManager : MonoBehaviour
     public void InfoReset()
     {
         Inven.gameObject.SetActive(true);        
-        Inven.gameObject.SetActive(false);
-        QuestManager.questManager.Quest_Reset();
+        Inven.gameObject.SetActive(false);       
 
     }
     public void UseQuickSlot()

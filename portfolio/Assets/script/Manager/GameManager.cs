@@ -32,9 +32,7 @@ public class GameManager : MonoBehaviour
     public string MapName = string.Empty;    
   
     private void Awake()
-    {
-        
-        
+    {        
         if (gameManager == null)
         {
             gameManager = this;
@@ -145,33 +143,12 @@ public class GameManager : MonoBehaviour
         character.gameObject.layer = 8;        
         character.name = "Player";        
         Character_Name = string.Empty;
-        MapName = "Village";
-        Inventory NewInven = new Inventory();
-        //
-        character.Inven = NewInven;
-        Item testITem = new Item(1, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 0);
-        Item testITem1 = new Item(1, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 1);
-        Item testITem2 = new Item(3, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 2);
-        Item testITem3 = new Item(4, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 3);
-        Item testITem4 = new Item(5, 0, "테스트용장비", "armor", "테스트입니다", "Defend/10",1,1, 4);
-        Item testITem5 = new Item(6,1,"테스트용사과","apple","테스트입니다", "Defend/10",1,3,5);
-        Item testITem6 = new Item(6,1,"테스트용사과","apple","테스트입니다", "Defend/10",1,2,5);
-        character.Inven.PushItem(testITem);
-        character.Inven.PushItem(testITem1);
-        character.Inven.PushItem(testITem2);
-        character.Inven.PushItem(testITem3);
-        character.Inven.PushItem(testITem4);
-        character.Inven.PushItem(testITem5);
-        character.Inven.PushItem(testITem6);
-
-        //
-        QuickSlot NewQuick = new QuickSlot();
-        character.Quick = NewQuick;
+        MapName = "Village";        
+        character.Inven = new Inventory();        
+        character.Quick = new QuickSlot();
+        character.quest = new CharacterQuest();
         Equipment newEquip = new Equipment(NewStat);
         character.Equip = newEquip;
-
-        character.Quest = new CharacterQuest();
-
         character.StartPos = new Vector3(31f,0f,17f);        
     }
     public void Load_C_Data(int _num)
@@ -229,7 +206,7 @@ public class GameManager : MonoBehaviour
                 Item check = character.Equip.PushEquip((int)tmp.EquipType, tmp);
 
                 if (check == null)
-                    Debug.LogError("장착되지 않았습니다.");
+                    Debug.LogError("불러온 장비가 장착되지 않았습니다.");
                 
                     
             }
@@ -247,16 +224,16 @@ public class GameManager : MonoBehaviour
                 character.Quick.AddItem(tmp.SlotNum, tmp);
             }
         }
-        if (DATA[4] != "")
-        {
-            info = DATA[4].Split('/');      //퀘스트
-            foreach (string one in info)
-            {
-                string[] squest = one.Split(',');
-                QuestManager.questManager.AddQuest(int.Parse(squest[0]), int.Parse(squest[1]), int.Parse(squest[2]));
-            }
+        //if (DATA[4] != "")
+        //{
+        //    info = DATA[4].Split('/');      //퀘스트
+        //    foreach (string one in info)
+        //    {
+        //        string[] squest = one.Split(',');
+        //        QuestManager.questManager.AddQuest(int.Parse(squest[0]), int.Parse(squest[1]), int.Parse(squest[2]));
+        //    }
 
-        }
+        //}
 
 
 

@@ -16,7 +16,7 @@ public class Quest
     public int goal_Index { get; }      //퀘스트 목표
     public int goal_Need { get; }        //퀘스트 필요갯수샤차
     public int goal_Current { get; set; }
-    public QuestState State { get; }
+    public QuestState State { get; set; }
 
     public Quest(int _index, string _questName,string _Type, string _questExplain,string _goalType, int _goal_Index,int _goal_Need,string _State = "NONE")
     {
@@ -35,7 +35,7 @@ public class Quest
         
         Explain = _questExplain;
 
-        if (Enum.TryParse(_Type, out goalType))
+        if (Enum.TryParse(_goalType, out goalType))
         {
             goal_Type = goalType;
         }
@@ -45,11 +45,24 @@ public class Quest
         goal_Index = _goal_Index;
         goal_Need = _goal_Need;
 
-        if (Enum.TryParse(_Type, out questState))
+        if (Enum.TryParse(_State, out questState))
         {
             State = questState;
         }
         else
             Debug.LogError("퀘스트 상태 변환이 이뤄지지 않았습니다.");
+    }
+    public void QuestUpdate(int _need)
+    {
+        goal_Current += _need;
+        if(goal_Current >= goal_Need)
+        {
+            State = QuestState.COMPLETE;
+        }
+
+    }
+    public void QuestDone()
+    {
+        State = QuestState.DONE;
     }
 }

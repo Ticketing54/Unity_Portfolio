@@ -17,7 +17,7 @@ public class SkillSlot : Slot
     Skill skill;
     public void Add(string _Name)
     {
-        skill = Character.Player.Skill.FindSKill(_Name);
+        skill = Character.Player.skill.FindSKill(_Name);
         if (skill == null)
             return;
 

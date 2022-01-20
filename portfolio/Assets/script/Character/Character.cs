@@ -13,8 +13,8 @@ public class Character : MonoBehaviour
     public Equipment Equip = null;
     
    
-    public CharacterSkill Skill { get; set; }
-    public CharacterQuest Quest { get; set; }    
+    public CharacterSkill skill { get; set; }
+    public CharacterQuest quest { get; set; }    
     public Inventory Inven { get; set; }
 
 
@@ -275,16 +275,7 @@ public class Character : MonoBehaviour
     }
 
 
-    //public void QuestUpdate(int _index,int _completenum)
-    //{
-    //    foreach(Quest one in myQuest)
-    //    {
-    //        if(one.Index == _index)
-    //        {
-    //            one.QuestComplete = _completenum;
-    //        }
-    //    }
-    //}
+   
     private void Start()
     {
         if (nav != null)
@@ -297,9 +288,22 @@ public class Character : MonoBehaviour
             return;
         Click();             
         Interation();
-        Move();        
+        Move();
+        TestQuest();
     }   
     
+
+
+    public void TestQuest()
+    {
+        
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            
+            quest.Add(0, new Quest(0, "테스트 퀘스트 입니다.", "DIALOG", "테스트 중입니다.", "MONSTER", 0, 0));
+        }
+        
+    }
     public void SetDestination(Vector3 dest)
     {
         if (DontMove == true)

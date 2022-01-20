@@ -41,11 +41,15 @@ public class Questlist : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,ID
             WindowDrag = true;
             Window_Preset = data.position - (Vector2)Window.position;
         }
+
+        if (IsEmpty())
+            return;
+        
         for (int i = 0; i < questlist.Count; i++)
         {
             if (questlist[i].isInRect(data.position))
             {
-                
+                QuestInfoUpdate(questlist[i].QuestIndex);
             }
         }
     }
@@ -58,7 +62,7 @@ public class Questlist : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,ID
     }
     public void QuestInfoUpdate(int _Index)
     {
-        quest = Character.Player.Quest.GetQuest(_Index);
+        quest = Character.Player.quest.GetQuest(_Index);
         if(quest == null)
         {
             Debug.LogError("퀘스트를 찾을수 없습니다.");
@@ -110,15 +114,19 @@ public class Questlist : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,ID
 
     public void UpdateQuestSlot()
     {
+        CloseQuestSlot();
         List<int> List;
         QuestSlot NewQuestSlot;
-        List = Character.Player.Quest.GetQuestList(mainState);
+        List = Character.Player.quest.GetQuestList(mainState);
 
         for (int i = 0; i < List.Count; i++)
         {
-            NewQuestSlot =GetSlot(List[i]);
+            NewQuestSlot = GetSlot(List[i]);
             NewQuestSlot.gameObject.SetActive(true);
-            NewQuestSlot.transform.SetParent(questScroll.content.transform);            
+            ///퀘스트 이름 확인할 것
+            NewQuestSlot.QuestWrite("테스트입니다");
+            NewQuestSlot.transform.SetParent(questScroll.content.transform);
+            questlist.Add(NewQuestSlot);
         }        
     }
     public void CloseQuestSlot()
@@ -135,6 +143,10 @@ public class Questlist : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,ID
         _UsedSlot.Clear();
         _UsedSlot.transform.SetParent(null);
         _UsedSlot.gameObject.SetActive(false);
+    }
+    bool IsEmpty()
+    {
+        return questlist.Count == 0;
     }
     QuestSlot GetSlot(int _QuestIndex)
     {

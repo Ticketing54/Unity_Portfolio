@@ -11605,7 +11605,7 @@ GameObject:
   - component: {fileID: 11208387830664412}
   - component: {fileID: 5022023481438800017}
   m_Layer: 0
-  m_Name: Quest_Complete
+  m_Name: Quest_State
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11894,7 +11894,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8950857811884863289
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12008,8 +12008,9 @@ MonoBehaviour:
   Name: {fileID: 2643819885078317312}
   Type: {fileID: 6115880390815510575}
   Explain: {fileID: 3412767864818796452}
-  Complete: {fileID: 5022023481438800017}
+  State: {fileID: 5022023481438800017}
   questScroll: {fileID: 430510768255747990}
+  mainState: 0
   questlist: []
   questslot: {fileID: 7243892953428459311}
   moveWindow: {fileID: 3930902189039336737}
@@ -19670,12 +19671,14 @@ MonoBehaviour:
   Inven: {fileID: 4866800140412343796}
   Equip: {fileID: 5093756377783719370}
   Quick: {fileID: 8766689809667883157}
-  MoveListType: 0
-  MoveSlotNum: 0
-  LastSlotNum: 0
+  WorkingType: 0
+  WorkingSlotNum: 0
   ClickPos: {x: 0, y: 0}
   InfoPreset: {x: 0, y: 0, z: 0}
+  WorkingSprite: {fileID: 0}
   MoveIcon: {fileID: 772492494771749711}
+  item:
+    SlotNum: 0
   movewindow: {fileID: 6018417291541592281}
   Window: {fileID: 1938357304284880217}
   WindowDrag: 0
@@ -20254,6 +20257,7 @@ MonoBehaviour:
   - {fileID: 3440378719298696227}
   - {fileID: 3624159127511810451}
   - {fileID: 34694604198607809}
+  quickQuest: {fileID: 9004501558030729735}
   dropBox: {fileID: 5111986036097197840}
   UiObj: {fileID: 284567367072188015}
   FadeUi: {fileID: 3944034882062055957}
@@ -24719,8 +24723,9 @@ GameObject:
   - component: {fileID: 918323845988496560}
   - component: {fileID: 3513136267629311496}
   - component: {fileID: 284567366302276994}
+  - component: {fileID: 9004501558030729735}
   m_Layer: 13
-  m_Name: MiniQuestlist
+  m_Name: QuickQuest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24814,6 +24819,21 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &9004501558030729735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4220895968367117128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85dca2aaef71d541b1495d78ada354b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  QuestSlot: {fileID: 284567366765360282}
+  list: []
+  Mqlist: {fileID: 284567366302276994}
 --- !u!1 &4224624462989488810
 GameObject:
   m_ObjectHideFlags: 0
@@ -25473,7 +25493,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5508345026974380814
 RectTransform:
   m_ObjectHideFlags: 0
@@ -36382,16 +36402,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 813d894f973aa4347880d1d4a6e374e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quest:
-    Index: 0
-    npc_Index: 0
-    QuestComplete: 0
-    questName: 
-    questType: 0
-    questExplain: 
-    goal_Index: 0
-    goal_num: 0
-    goal_C: 0
   quest_Name: {fileID: 3737046057113111755}
   quest_Explain: {fileID: 4275981470955040475}
   quest_Prograss: {fileID: 1708317535019649369}
@@ -43752,18 +43762,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b1c26336abebde45bd7edbe144f2e96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quest:
-    Index: 0
-    npc_Index: 0
-    QuestComplete: 0
-    questName: 
-    questType: 0
-    questExplain: 
-    goal_Index: 0
-    goal_num: 0
-    goal_C: 0
-  Text: {fileID: 4133943623568503117}
+  Icon: {fileID: 0}
   tr: {fileID: 1140459280732038767}
+  Text: {fileID: 4133943623568503117}
 --- !u!1 &8093197189941632810
 GameObject:
   m_ObjectHideFlags: 0
