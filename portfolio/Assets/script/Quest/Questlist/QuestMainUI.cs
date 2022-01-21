@@ -5,8 +5,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
-public class Questlist : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,IDragHandler
+public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,IDragHandler
 {
+
+    // 오브젝트
     [SerializeField]
     TextMeshProUGUI Name;
     [SerializeField]
@@ -18,9 +20,9 @@ public class Questlist : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,ID
     [SerializeField]
     ScrollRect questScroll;
     [SerializeField]
+    // 퀘스트 상태
     HaveQuestState mainState;
-
-    Dictionary<int, Quest> Quest = new Dictionary<int, Quest>();
+    
     Quest quest;
     Queue<QuestSlot> UsableSlot = new Queue<QuestSlot>();
     QuestSlot Slot;

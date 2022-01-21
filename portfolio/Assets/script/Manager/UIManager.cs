@@ -51,7 +51,7 @@ public class UIManager : MonoBehaviour
     public MiniQuestSlot questSlot;
     public ScrollRect questList;
     public GameObject QuestList_M;
-    public Questlist questlist_M;
+    public QuestMainUI questlist_M;
     
     
 

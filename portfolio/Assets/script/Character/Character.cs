@@ -300,7 +300,7 @@ public class Character : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F1))
         {
             
-            quest.Add(0, new Quest(0, "테스트 퀘스트 입니다.", "DIALOG", "테스트 중입니다.", "MONSTER", 0, 0));
+            quest.Add(0, new Quest(0, "테스트 퀘스트 입니다.", "DIALOG", "테스트 중입니다.", "MONSTER", 0, 0,"PLAYING"));
         }
         
     }
