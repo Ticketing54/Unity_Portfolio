@@ -2,49 +2,83 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PoolingManager<T>{
-    class PoolingData
-    {
-        public PoolingData(T _prefab)
-        {
-            Prefab = _prefab;
-            Pool = new Queue<T>();
-            Pool.Enqueue(_prefab);
+
+
+public interface Pooling
+{
+    void Reset();
+    void Reposition();
+
+}
+public class PoolingManager<T> where T : Pooling, new()
+{
+    class PoolingData 
+    {        
+        Queue<T> Pool;
+        int count;        
+        public PoolingData()
+        {            
+            Pool = new Queue<T>();            
             count = 1;
         }
 
-        void Add(T _data)
+        public void Add(T _data)
         {
+            _data.Reset();
+            _data.Reposition();
             Pool.Enqueue(_data);
-            
-            
-        }
-        T Prefab;
-        Queue<T> Pool;
-        int count;
+            count++;
+        }        
+        public T GetData()
+        {
+            if(count <= 0)
+            {
+                return new T();
+            }
 
-        T 
+            return Pool.Dequeue();
+        }
+
+        
+        public int Count { get { return count;} }
+
+        
     }
 
 
     Dictionary<string, PoolingData> dic = new Dictionary<string, PoolingData>();
-    PoolingData data;
-    public delegate void ResetObj(T _obj);
     
-    public void Add(string _Key,T _t, ResetObj _Reset)
+    
+    public void Add(string _Key,T _t)
     {
-        _Reset(_t);
-
+        PoolingData data;
         if (dic.TryGetValue(_Key,out data))
         {
-
+            data.Add(_t);            
         }
         else
         {
-            dic.Add(_Key, new PoolingData(_t));            
+            data = new PoolingData();
+            data.Add(_t);
+            dic.Add(_Key,data);        
         }
-
         data = null;
+    }
+
+    public T GetData(string _Key)
+    {
+        PoolingData data;
+        if (dic.TryGetValue(_Key, out data))
+        {
+            return data.GetData();
+        }
+        else
+        {
+            data = new PoolingData();
+            dic.Add(_Key,data);
+            return data.GetData();
+        }
+        
     }
 
    

@@ -160,7 +160,7 @@ public class ObjectPoolManager : MonoBehaviour
         foreach(bufimage one in buf_list)
         {
             if(one.gameObject.activeSelf == false)
-            {
+            {                
                 one.gameObject.SetActive(true);
                 return one;
             }
