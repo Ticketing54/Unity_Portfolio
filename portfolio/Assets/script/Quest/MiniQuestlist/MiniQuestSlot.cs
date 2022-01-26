@@ -43,10 +43,6 @@ public class MiniQuestSlot : MonoBehaviour
         quest_Prograss.text = "완료";
     }
 
-    public void DoneQuest()
-    {
-        Destroy(this.gameObject);
-    }
 
 
 

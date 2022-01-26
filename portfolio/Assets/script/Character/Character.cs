@@ -9,16 +9,38 @@ using TMPro;
 public class Character : MonoBehaviour
 {
     public static Character Player;
-    public Status Stat = null;
-    public Equipment Equip = null;
-    
-   
+    public Character()
+    {
+        skill = new CharacterSkill();
+        quest = new CharacterQuest();
+        Inven = new Inventory();
+        QuickSlot = new QuickSlot();
+        //Stat = new Status();
+        //Equip = new Equipment();
+    }
+
+
+
+
+    public Status Stat { get; set; }
+    public Equipment Equip { get; set; }   
     public CharacterSkill skill { get; set; }
     public CharacterQuest quest { get; set; }    
     public Inventory Inven { get; set; }
+    public QuickSlot QuickSlot { get; set; }
+
+    public LinkedList<Quest> QuickQuest = new LinkedList<Quest>();
 
 
-    public QuickSlot Quick = null;
+
+
+
+
+
+
+
+
+
 
     public List<SkinnedMeshRenderer> Weapon = new List<SkinnedMeshRenderer>();
     public SkinnedMeshRenderer Character_bounds;
@@ -210,7 +232,7 @@ public class Character : MonoBehaviour
             case ItemListType.EQUIP:
                 return Equip.PopEquip(_SlotNum);
             case ItemListType.QUICK:
-                return Quick.PopItem(_SlotNum);
+                return QuickSlot.PopItem(_SlotNum);
             default:
                 return null;                
         }
@@ -224,7 +246,7 @@ public class Character : MonoBehaviour
             case ItemListType.EQUIP:
                 return Equip.PushEquip(SlotNum, _StartITem);
             case ItemListType.QUICK:
-                return Quick.AddItem(SlotNum, _StartITem);
+                return QuickSlot.AddItem(SlotNum, _StartITem);
             default:
                 Debug.LogError("잘못된 리스트 타입 입니다.");
                 return null;
@@ -239,7 +261,7 @@ public class Character : MonoBehaviour
             case ItemListType.EQUIP:
                 return Equip.GetItem(_SlotNum);
             case ItemListType.QUICK:
-                return Quick.GetItem(_SlotNum);
+                return QuickSlot.GetItem(_SlotNum);
             default:
                 return null;
         }

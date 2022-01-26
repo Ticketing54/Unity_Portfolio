@@ -19,7 +19,7 @@ public class ItemSlot : Slot
                 item = Character.Player.Inven.GetItem(SlotNum);
                 break;
             case ItemListType.QUICK:
-                item = Character.Player.Quick.GetItem(SlotNum);
+                item = Character.Player.QuickSlot.GetItem(SlotNum);
                 break;
             case ItemListType.EQUIP:
                 item = Character.Player.Equip.GetItem(SlotNum);

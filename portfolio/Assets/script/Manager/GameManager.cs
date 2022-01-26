@@ -145,7 +145,7 @@ public class GameManager : MonoBehaviour
         Character_Name = string.Empty;
         MapName = "Village";        
         character.Inven = new Inventory();        
-        character.Quick = new QuickSlot();
+        character.QuickSlot = new QuickSlot();
         character.quest = new CharacterQuest();
         Equipment newEquip = new Equipment(NewStat);
         character.Equip = newEquip;
@@ -175,7 +175,7 @@ public class GameManager : MonoBehaviour
         Inventory NewInven = new Inventory();
         character.Inven = NewInven;
         QuickSlot NewQuick = new QuickSlot();
-        character.Quick = NewQuick;
+        character.QuickSlot = NewQuick;
         Equipment newEquip = new Equipment(NewStat);
         character.Equip = newEquip;
 
@@ -221,7 +221,7 @@ public class GameManager : MonoBehaviour
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);                
-                character.Quick.AddItem(tmp.SlotNum, tmp);
+                character.QuickSlot.AddItem(tmp.SlotNum, tmp);
             }
         }
         //if (DATA[4] != "")

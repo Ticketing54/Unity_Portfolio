@@ -4,26 +4,24 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class QuickQuest : MonoBehaviour
-{ 
-    public MiniQuestSlot QuestSlot;
-    public List<MiniQuestSlot> list = new List<MiniQuestSlot>();
+{     
+    public LinkedList<MiniQuestSlot> list = new LinkedList<MiniQuestSlot>();
     public ScrollRect Mqlist;
+    int Count = 0;
     
         
 
     public void AddQuest(Quest _quest)
     {
-        if (list.Count >= 4)
+        foreach(MiniQuestSlot one in list)
         {
-            Debug.Log("더이상 추가 불가능");
-            return;
-        }
-            
-        MiniQuestSlot tmp = Instantiate(QuestSlot);
-        tmp.quest = _quest;
-        tmp.TextingQuestSlot();
-        tmp.transform.SetParent(Mqlist.content.transform); // 퀘스트 알람등록
-        list.Add(tmp); // 퀘스트 슬롯 등록               
+            if(one.gameObject.activeSelf== false)
+            {
+                one.gameObject.SetActive(true);
+                one.quest = _quest;
+                one.TextingQuestSlot();
+            }
+        }                 
     }
     public void ClearQuest()
     {
@@ -43,9 +41,10 @@ public class QuickQuest : MonoBehaviour
     {
         foreach(MiniQuestSlot one in list)
         {
-            if(one.quest.Index == _index)
-            {
-                one.DoneQuest();
+            if(one.gameObject.activeSelf == true && one.quest.Index == _index)
+            {                
+                list.Remove(one);
+                list.AddLast(one);
             }
         }
     }
