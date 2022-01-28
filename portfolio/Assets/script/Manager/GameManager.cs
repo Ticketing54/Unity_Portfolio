@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public string Character_Name = string.Empty;
 
     List<Monster> mob_list = new List<Monster>();    
-    public ResourceManager<string, GameObject> resource = new ResourceManager<string, GameObject>();
+    public ResourceManager resource = new ResourceManager();
     public Dictionary<string, Sprite> ImageManager = new Dictionary<string, Sprite>();
 
 
@@ -55,19 +55,13 @@ public class GameManager : MonoBehaviour
 
     public void StartResourcesd()
     {
-        ResourceInDic("Character");
-        ResourceInDic("Monster");
-        ResourceInDic("Map");
-        ResourceInDic("Npc");
-        ResourceInDic("Effect");        
-        ResourceInDic("QuestMark");
-        GetImageResources();
-        ItemTableManager.instance.LoadTable();
-        LevelTableManager.instance.LoadTable();
-        MonsterTableManager.instance.LoadTable();        
-        QuestTableManager.instance.LoadTable();
-        SkillTableManager.instance.LoadTable();
-        
+        resource.LoadGameObjectRes();                                
+        resource.LoadImageResources();
+        resource.LoadTable(TABLETYPE.ITEM, "csv/Table/ItemTable");
+        resource.LoadTable(TABLETYPE.ITEM, "csv/Table/LevelTable");
+        resource.LoadTable(TABLETYPE.ITEM, "csv/Table/MonsterTable");
+        resource.LoadTable(TABLETYPE.ITEM, "csv/Table/SkillTable");
+        resource.LoadTable(TABLETYPE.ITEM, "csv/Table/QuestTable");    
 
     }
     public void LoadGame(int _index)    // 저장된 데이터 로드
@@ -185,7 +179,8 @@ public class GameManager : MonoBehaviour
             foreach (string one in info)    // 인벤
             {
                 string[] sInven = one.Split(',');
-                List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
+                
+                List<string> iteminfo = resource.GetTable(TABLETYPE.ITEM, int.Parse(sInven[0]));
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);
@@ -337,7 +332,7 @@ public class GameManager : MonoBehaviour
                     string[] tmp = dialog_data[j].Split(',');
                     for (int a = 0; a < tmp.Length; a++)
                     {
-                        npc.Dialog.AddData(int.Parse(tmp[0]), tmp[a]);
+                        //npc.Dialog.AddData(int.Parse(tmp[0]), tmp[a]);
                     }
                 }
                 //상점 물건 데이터
@@ -382,14 +377,7 @@ public class GameManager : MonoBehaviour
         
         
     } 
-    public void GetImageResources()     //이미지 파일 저장
-    {
-        Sprite[] obj = Resources.LoadAll<Sprite>("Image" + "/");
-        foreach(Sprite one in obj)
-        {
-            ImageManager.Add(one.name, one);
-        }
-    }
+  
     public Sprite GetSprite(string _name)       //이미지 파일
     {
         Sprite one;
@@ -414,28 +402,17 @@ public class GameManager : MonoBehaviour
 
     }
     public GameObject GetResource(string _key, string _name)        //resource 안의 리스트안의 하나의 게임오브젝트 불러오기
-    {
-
-        
-        foreach(GameObject one in resource.GetData(_key))
-        {
-            if (one.name.Equals(_name))
-            {
-                return one ;
-            }
+    {        
+        //foreach(GameObject one in resource.GetData(_key))
+        //{
+        //    if (one.name.Equals(_name))
+        //    {
+        //        return one ;
+        //    }
            
-        }
+        //}
         return null;
     }
-    public void ResourceInDic(string _name ) // 리소스
-    {
-        GameObject[] obj = Resources.LoadAll<GameObject>(_name+"/"  );
-        foreach(GameObject one in obj)
-        {
-            
-            resource.AddData(_name,one);
-        }
-    }           //resource 안에 집어 넣기
-
+ 
               
 }

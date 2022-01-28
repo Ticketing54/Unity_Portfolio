@@ -18,7 +18,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     
     
     [SerializeField]
-    ItemListType WorkingType;      // 드래그중인 List 종류    
+    ITEMLISTTYPE WorkingType;      // 드래그중인 List 종류    
     [SerializeField]
     int WorkingSlotNum;                // 드래그중인 슬롯 넘버      
     [SerializeField]
@@ -58,17 +58,17 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     
    
     #region Reset // UpdateUI
-    void UIMoveUpdate(ItemListType _Type, int _SlotNum)
+    void UIMoveUpdate(ITEMLISTTYPE _Type, int _SlotNum)
     {
         switch (_Type)
         {
-            case ItemListType.INVEN:
+            case ITEMLISTTYPE.INVEN:
                 Inven.UpdateSlot(_SlotNum);
                 return;
-            case ItemListType.EQUIP:
+            case ITEMLISTTYPE.EQUIP:
                 Equip.UpdateSlot(_SlotNum);
                 return;
-            case ItemListType.QUICK:
+            case ITEMLISTTYPE.QUICK:
                 Quick.UpdateSlot(_SlotNum);
                 return;
             default:
@@ -78,7 +78,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
     
     void WorkingReset()
     {
-        WorkingType = ItemListType.NONE;
+        WorkingType = ITEMLISTTYPE.NONE;
         WorkingSlotNum = -1;
         WorkingSprite = null;
         ClickPos = Vector2.zero;
@@ -94,9 +94,9 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
 
         //Quick슬롯은 처음에 보이기 때문에 처음에 업데이트 한번 할 것.
     }
-    public Vector3 GetInfoPreset(ItemListType _Type, Vector2 ClickPos)
+    public Vector3 GetInfoPreset(ITEMLISTTYPE _Type, Vector2 ClickPos)
     {
-        if (_Type == ItemListType.QUICK)
+        if (_Type == ITEMLISTTYPE.QUICK)
         {
             return new Vector3(ClickPos.x + 75f, ClickPos.y + 100f, 0);
         }
@@ -109,7 +109,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
 
     #region StartMoveItem   
     // 드래그
-    void MoveItemSetting(int _Num, ItemListType _Type,Sprite _Sprite)
+    void MoveItemSetting(int _Num, ITEMLISTTYPE _Type,Sprite _Sprite)
     {
         WorkingType = _Type;        
         WorkingSlotNum = _Num;
@@ -120,7 +120,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
         LeftClick = true;
     }
     // 클릭
-    void ClickItemSetting(int _Num, ItemListType _Type, Sprite _Sprite)
+    void ClickItemSetting(int _Num, ITEMLISTTYPE _Type, Sprite _Sprite)
     {
         WorkingType = _Type;
         WorkingSlotNum = _Num;
@@ -131,7 +131,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
 
     #region EndMoveItem
    //드래그 성공
-    void EndItemSetting(int _E_Num, ItemListType _EndListType)
+    void EndItemSetting(int _E_Num, ITEMLISTTYPE _EndListType)
     {
         Character.Player.ItemMove(WorkingType, WorkingSlotNum, _EndListType, _E_Num, UIMoveUpdate);        
         WorkingReset();

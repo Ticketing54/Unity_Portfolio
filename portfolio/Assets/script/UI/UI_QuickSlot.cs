@@ -8,8 +8,8 @@ public class UI_QuickSlot : MonoBehaviour
     [SerializeField]
     ItemSlot[] QuickItem = new ItemSlot[4];
     
-    public delegate void StartSetting(int _SlotNum, ItemListType _ListType, Sprite _Sprite);
-    public delegate void EndSetting(int _SlotNum, ItemListType _ListType);
+    public delegate void StartSetting(int _SlotNum, ITEMLISTTYPE _ListType, Sprite _Sprite);
+    public delegate void EndSetting(int _SlotNum, ITEMLISTTYPE _ListType);
     
     public bool ClickDownQuick_Item(StartSetting _Setting, Vector2 _ClickPos)
     {
@@ -17,7 +17,7 @@ public class UI_QuickSlot : MonoBehaviour
         {
             if (QuickItem[i].isInRect(_ClickPos) && !Character.Player.QuickSlot.IsEmpty_Item(i))
             {
-                _Setting(i, ItemListType.QUICK, QuickItem[i].ICON);                
+                _Setting(i, ITEMLISTTYPE.QUICK, QuickItem[i].ICON);                
                 return true;
             }
 
@@ -30,7 +30,7 @@ public class UI_QuickSlot : MonoBehaviour
         {
             if (QuickItem[i].isInRect(_ClickPos))
             {
-                _Setting(i, ItemListType.QUICK);
+                _Setting(i, ITEMLISTTYPE.QUICK);
                 return true;
             }
 
@@ -39,7 +39,7 @@ public class UI_QuickSlot : MonoBehaviour
     }
     public void UpdateSlot(int _Num)
     {
-        QuickItem[_Num].Add(ItemListType.QUICK);
+        QuickItem[_Num].Add(ITEMLISTTYPE.QUICK);
     }
     public void UpdateClear(int _Num)
     {

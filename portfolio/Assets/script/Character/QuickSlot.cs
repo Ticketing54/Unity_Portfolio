@@ -77,7 +77,7 @@ public class QuickSlot
     {
         quickItem = ItemSlot[ITEMSLOTNUM];
 
-        if (_NewItem.itemType != ItemType.USED)        // 소모 아이템이 아닐경우
+        if (_NewItem.itemType != ITEMTYPE.USED)        // 소모 아이템이 아닐경우
             return _NewItem;
 
         if (quickItem.TryGetValue(_SlotNum, out item))
@@ -162,6 +162,6 @@ public class QuickSlot
         quickSkill = SkillSlot[SkillSlotNum];
         if (quickSkill[_SlotNum] == null)
             return;
-        else quickItem[_SlotNum].itemType = ItemType.NONE;
+        else quickItem[_SlotNum].itemType = ITEMTYPE.NONE;
     }
 }

@@ -77,14 +77,14 @@ public class Character : MonoBehaviour
     public bool OpenLootingbox = false; // 루팅박스 
     public Vector3 StartPos;
 
-    public delegate void ItemUiSetting(ItemListType _Type,int _SlotNum);
+    public delegate void ItemUiSetting(ITEMLISTTYPE _Type,int _SlotNum);
     
 
 
 
     #region MoveItemControl
     
-    public void ItemMove(ItemListType _StartType,int _S_Num,ItemListType _EndType,int _E_Num, ItemUiSetting _Setting)
+    public void ItemMove(ITEMLISTTYPE _StartType,int _S_Num,ITEMLISTTYPE _EndType,int _E_Num, ItemUiSetting _Setting)
     {
         if (ItemMoveCheck(_StartType, _S_Num, _EndType, _E_Num) == false)       // 이동이 가능한지 체크
             return;
@@ -101,7 +101,7 @@ public class Character : MonoBehaviour
         _Setting(_StartType, _S_Num);
         _Setting(_EndType, _E_Num);
     }
-    public void ItemMove(ItemListType _Type, int _SlotNum, ItemUiSetting _Setting)
+    public void ItemMove(ITEMLISTTYPE _Type, int _SlotNum, ItemUiSetting _Setting)
     {
         Item start = ItemMoveStart(_Type, _SlotNum);
 
@@ -109,7 +109,7 @@ public class Character : MonoBehaviour
             return;
         Item end;
 
-        if (start.itemType != ItemType.EQUIPMENT)
+        if (start.itemType != ITEMTYPE.EQUIPMENT)
         {
             end = ItemMoveEnd(_Type, _SlotNum, start);
             if (end != null)
@@ -121,7 +121,7 @@ public class Character : MonoBehaviour
         {
             switch (_Type)
             {
-                case ItemListType.EQUIP:
+                case ITEMLISTTYPE.EQUIP:
                     int EmptySlotNum = Inven.EmptySlot();
                     if (EmptySlotNum < 0)         // 가득 찼을 때
                     {
@@ -131,13 +131,13 @@ public class Character : MonoBehaviour
                             Debug.LogError("아이템 장착 오류");
                         return;
                     }
-                    end = ItemMoveEnd(ItemListType.INVEN, EmptySlotNum, start);
+                    end = ItemMoveEnd(ITEMLISTTYPE.INVEN, EmptySlotNum, start);
                     _Setting(_Type, _SlotNum);
-                    _Setting(ItemListType.INVEN, EmptySlotNum);
+                    _Setting(ITEMLISTTYPE.INVEN, EmptySlotNum);
                     if (end != null)
                         Debug.LogError("아이템 장착 오류");
                     return;
-                case ItemListType.INVEN:
+                case ITEMLISTTYPE.INVEN:
                     end = Equip.PushEquip((int)start.EquipType, start);
                     if (end != null)
                     {
@@ -147,14 +147,14 @@ public class Character : MonoBehaviour
                             Debug.LogError("아이템 장착 오류 ");
                     }
                     _Setting(_Type, _SlotNum);
-                    _Setting(ItemListType.EQUIP, (int)start.EquipType);
+                    _Setting(ITEMLISTTYPE.EQUIP, (int)start.EquipType);
                     return;
                 default:
                     return;
             }
         }
     }
-    bool ItemMoveCheck(ItemListType _StartType, int _S_Num, ItemListType _EndType, int _E_Num)
+    bool ItemMoveCheck(ITEMLISTTYPE _StartType, int _S_Num, ITEMLISTTYPE _EndType, int _E_Num)
     {
         Item start = GetItem(_StartType, _S_Num);
         if (start == null)
@@ -164,18 +164,18 @@ public class Character : MonoBehaviour
         {
             switch (start.itemType)
             {
-                case ItemType.EQUIPMENT:
-                    if (_EndType == ItemListType.EQUIP && start.EquipType == (EquipMentType)_E_Num)
+                case ITEMTYPE.EQUIPMENT:
+                    if (_EndType == ITEMLISTTYPE.EQUIP && start.EquipType == (EQUIPTYPE)_E_Num)
                         return true;
-                    if (_EndType == ItemListType.INVEN)
-                        return true;
-                    return false;
-                case ItemType.USED:
-                    if (_EndType == ItemListType.INVEN || _EndType == ItemListType.QUICK)
+                    if (_EndType == ITEMLISTTYPE.INVEN)
                         return true;
                     return false;
-                case ItemType.ETC:
-                    if (_EndType == ItemListType.INVEN)
+                case ITEMTYPE.USED:
+                    if (_EndType == ITEMLISTTYPE.INVEN || _EndType == ITEMLISTTYPE.QUICK)
+                        return true;
+                    return false;
+                case ITEMTYPE.ETC:
+                    if (_EndType == ITEMLISTTYPE.INVEN)
                         return true;
                     return false;
                 default:
@@ -186,10 +186,10 @@ public class Character : MonoBehaviour
         {
             switch(start.itemType)          // 목표점에 아이템이 존재할때
             {
-                case ItemType.EQUIPMENT:
+                case ITEMTYPE.EQUIPMENT:
                     if (_StartType != _EndType)     
                     {
-                        if((_StartType == ItemListType.INVEN && _EndType == ItemListType.EQUIP)||(_StartType == ItemListType.EQUIP && _EndType == ItemListType.INVEN))          // 인벤토리에서 장비창으로
+                        if((_StartType == ITEMLISTTYPE.INVEN && _EndType == ITEMLISTTYPE.EQUIP)||(_StartType == ITEMLISTTYPE.EQUIP && _EndType == ITEMLISTTYPE.INVEN))          // 인벤토리에서 장비창으로
                         {
                             if (start.EquipType != end.EquipType)       // 부위가 다를경우
                                 return false;
@@ -199,16 +199,16 @@ public class Character : MonoBehaviour
                     }
                     else
                     {
-                        if (_StartType != ItemListType.INVEN)       // 인벤토리 내에서만
+                        if (_StartType != ITEMLISTTYPE.INVEN)       // 인벤토리 내에서만
                             return false;
                         return true;
                     }                                               // 나머진 불가능
-                case ItemType.USED:
-                    if (_EndType == ItemListType.INVEN || _EndType == ItemListType.QUICK)
+                case ITEMTYPE.USED:
+                    if (_EndType == ITEMLISTTYPE.INVEN || _EndType == ITEMLISTTYPE.QUICK)
                     return true;
                 return false;
-                case ItemType.ETC:
-                    if (_EndType == ItemListType.INVEN)
+                case ITEMTYPE.ETC:
+                    if (_EndType == ITEMLISTTYPE.INVEN)
                     return true;
                 return false;
                 default:
@@ -223,44 +223,44 @@ public class Character : MonoBehaviour
 
     }   
     
-    Item ItemMoveStart(ItemListType _Start, int _SlotNum)
+    Item ItemMoveStart(ITEMLISTTYPE _Start, int _SlotNum)
     {
         switch (_Start)
         {
-            case ItemListType.INVEN:
+            case ITEMLISTTYPE.INVEN:
                 return Inven.PopItem(_SlotNum);
-            case ItemListType.EQUIP:
+            case ITEMLISTTYPE.EQUIP:
                 return Equip.PopEquip(_SlotNum);
-            case ItemListType.QUICK:
+            case ITEMLISTTYPE.QUICK:
                 return QuickSlot.PopItem(_SlotNum);
             default:
                 return null;                
         }
     }
-    Item ItemMoveEnd(ItemListType _End, int SlotNum, Item _StartITem)
+    Item ItemMoveEnd(ITEMLISTTYPE _End, int SlotNum, Item _StartITem)
     {
         switch (_End)
         {
-            case ItemListType.INVEN:
+            case ITEMLISTTYPE.INVEN:
                 return Inven.AddItem(SlotNum,_StartITem);
-            case ItemListType.EQUIP:
+            case ITEMLISTTYPE.EQUIP:
                 return Equip.PushEquip(SlotNum, _StartITem);
-            case ItemListType.QUICK:
+            case ITEMLISTTYPE.QUICK:
                 return QuickSlot.AddItem(SlotNum, _StartITem);
             default:
                 Debug.LogError("잘못된 리스트 타입 입니다.");
                 return null;
         }
     }
-    public Item GetItem(ItemListType _Type, int _SlotNum)
+    public Item GetItem(ITEMLISTTYPE _Type, int _SlotNum)
     {
         switch (_Type)
         {
-            case ItemListType.INVEN:
+            case ITEMLISTTYPE.INVEN:
                 return Inven.GetItem(_SlotNum);
-            case ItemListType.EQUIP:
+            case ITEMLISTTYPE.EQUIP:
                 return Equip.GetItem(_SlotNum);
-            case ItemListType.QUICK:
+            case ITEMLISTTYPE.QUICK:
                 return QuickSlot.GetItem(_SlotNum);
             default:
                 return null;

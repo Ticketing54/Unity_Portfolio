@@ -8,15 +8,15 @@ public class UI_Inventory: MonoBehaviour
 {
     [SerializeField]
     ItemSlot[] Inven = new ItemSlot[18];    
-    public delegate void Setting(int _SlotNum, ItemListType _ListType, Sprite _Sprite);
-    public delegate void EndSetting(int _SlotNum, ItemListType _ListType);
+    public delegate void Setting(int _SlotNum, ITEMLISTTYPE _ListType, Sprite _Sprite);
+    public delegate void EndSetting(int _SlotNum, ITEMLISTTYPE _ListType);
     public bool ClickdownInven(Setting _Setting, Vector2 _ClickPos)
     {
         for (int i = 0; i < Inven.Length; i++)
         {
             if (Inven[i].isInRect(_ClickPos) && !Character.Player.Inven.IsEmpty(i))
             {
-                _Setting(i, ItemListType.INVEN, Inven[i].ICON);                
+                _Setting(i, ITEMLISTTYPE.INVEN, Inven[i].ICON);                
                 return true;
             }
 
@@ -29,7 +29,7 @@ public class UI_Inventory: MonoBehaviour
         {
             if (Inven[i].isInRect(_ClickPos))
             {
-                _Setting(i, ItemListType.INVEN);                
+                _Setting(i, ITEMLISTTYPE.INVEN);                
                 return true;
             }
 
@@ -38,7 +38,7 @@ public class UI_Inventory: MonoBehaviour
     }
     public void UpdateSlot(int _Num)
     {
-        Inven[_Num].Add(ItemListType.INVEN);
+        Inven[_Num].Add(ITEMLISTTYPE.INVEN);
     }
     public void UpdateInven()
     {
@@ -46,7 +46,7 @@ public class UI_Inventory: MonoBehaviour
         Item item;
         foreach(int one in Items)
         {
-            Inven[one].Add(ItemListType.INVEN);
+            Inven[one].Add(ITEMLISTTYPE.INVEN);
         }
     }
 }

@@ -95,7 +95,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
             npc.ExitDialog = true;
             return;
         }
-        Npc_Text = npc.Dialog.GetData(Dialog_num);
+        //Npc_Text = npc.Dialog.GetData(Dialog_num);
         if (Npc_Text[1] != "")
         {
            

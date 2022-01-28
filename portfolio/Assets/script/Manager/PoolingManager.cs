@@ -10,15 +10,17 @@ public interface Pooling
     void Reposition();
 
 }
-public class PoolingManager<T> where T : Pooling, new()
+public class PoolingManager<T> where T : MonoBehaviour, Pooling
 {
     class PoolingData 
-    {        
+    {
         Queue<T> Pool;
+        GameObject Prefab;
         int count;        
-        public PoolingData()
+        public PoolingData(string _PrefabName)
         {            
-            Pool = new Queue<T>();            
+            Pool = new Queue<T>();
+            Prefab = GameManager.gameManager.GetResource(_PrefabName, _PrefabName);
             count = 1;
         }
 
@@ -33,7 +35,9 @@ public class PoolingManager<T> where T : Pooling, new()
         {
             if(count <= 0)
             {
-                return new T();
+                GameObject obj = GameObject.Instantiate(Prefab);               
+
+                return obj.AddComponent<T>();
             }
 
             return Pool.Dequeue();
@@ -58,7 +62,7 @@ public class PoolingManager<T> where T : Pooling, new()
         }
         else
         {
-            data = new PoolingData();
+            data = new PoolingData(_Key);
             data.Add(_t);
             dic.Add(_Key,data);        
         }
@@ -74,7 +78,7 @@ public class PoolingManager<T> where T : Pooling, new()
         }
         else
         {
-            data = new PoolingData();
+            data = new PoolingData(_Key);
             dic.Add(_Key,data);
             return data.GetData();
         }

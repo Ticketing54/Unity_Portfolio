@@ -21,7 +21,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
     ScrollRect questScroll;
     [SerializeField]
     // 퀘스트 상태
-    HaveQuestState mainState;
+    HAVEQUESTSTATE mainState;
     
     Quest quest;
     Queue<QuestSlot> UsableSlot = new Queue<QuestSlot>();
@@ -72,7 +72,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
         }
         switch (quest.State)
         {
-            case QuestState.DONE:
+            case QUESTSTATE.DONE:
                 Name.text = quest.Name;
                 Name.color = Color.gray;
                 Type.text = quest.Type.ToString();
@@ -83,7 +83,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
                 State.color = Color.gray;
                 quest = null;
                 return;
-            case QuestState.PLAYING:
+            case QUESTSTATE.PLAYING:
                 Name.color = Color.white;
                 Type.color = Color.white;
                 Explain.color = Color.white;
@@ -94,7 +94,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
                 State.text = "진행중";
                 quest = null;
                 return;
-            case QuestState.COMPLETE:
+            case QUESTSTATE.COMPLETE:
                 Name.color = Color.white;
                 Type.color = Color.white;
                 Explain.color = Color.white;

@@ -3,19 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum HaveQuestState
+public enum TABLETYPE
+{
+    ITEM,
+    LEVEL,
+    MONSTER,
+    QUEST,
+    SKILL,
+    USER,
+    NONE,
+}
+
+
+public enum RESTYPE
+{
+    GAMEOBJECT,
+    IMAGE,
+    NONE,
+}
+public enum HAVEQUESTSTATE
 {
     PLAYING,
     FINISH
 }
-public enum QuestType
+public enum QUESTTYPE
 {
     BATTLE,
     COLLECT,
     DIALOG,
     ETC
 }
-public enum QuestState
+public enum QUESTSTATE
 {
     NONE,
     READY,
@@ -23,28 +41,28 @@ public enum QuestState
     COMPLETE,
     DONE
 }
-public enum GoalType
+public enum GOALTYPE
 {
     NPC,
     MONSTER,
     ITEM,
     ETC
 }
-public enum ItemListType
+public enum ITEMLISTTYPE
 {
     INVEN,
     QUICK,
     EQUIP,
     NONE
 }
-public enum ItemType
+public enum ITEMTYPE
 {
     EQUIPMENT,
     USED,
     ETC,
     NONE,
 }
-public enum EquipMentType
+public enum EQUIPTYPE
 {
     HEAD,
     ARMOR,

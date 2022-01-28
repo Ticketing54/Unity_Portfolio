@@ -80,7 +80,7 @@ public class Inventory
     {
         if(Inven.TryGetValue(_Index,out item))
         {            
-            if(Inven[_Index].Index == _NewItem.Index && Inven[_Index].itemType != ItemType.EQUIPMENT && _NewItem.itemType != ItemType.EQUIPMENT)
+            if(Inven[_Index].Index == _NewItem.Index && Inven[_Index].itemType != ITEMTYPE.EQUIPMENT && _NewItem.itemType != ITEMTYPE.EQUIPMENT)
             {
                 Inven[_Index].ItemCount += _NewItem.ItemCount;
                 return null;

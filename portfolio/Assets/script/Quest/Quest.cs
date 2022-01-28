@@ -9,20 +9,20 @@ public class Quest
     
     public int Index { get; }
     public string Name { get; }
-    public QuestType Type { get; }      
+    public QUESTTYPE Type { get; }      
     public string Explain { get; }
     public int npc_Index { get; }
-    public GoalType goal_Type { get; }
+    public GOALTYPE goal_Type { get; }
     public int goal_Index { get; }      //퀘스트 목표
     public int goal_Need { get; }        //퀘스트 필요갯수샤차
     public int goal_Current { get; set; }
-    public QuestState State { get; set; }
+    public QUESTSTATE State { get; set; }
 
     public Quest(int _index, string _questName,string _Type, string _questExplain,string _goalType, int _goal_Index,int _goal_Need,string _State = "NONE")
     {
-        QuestType questType;
-        GoalType goalType;
-        QuestState questState;
+        QUESTTYPE questType;
+        GOALTYPE goalType;
+        QUESTSTATE questState;
 
         Index = _index;
         Name = _questName;
@@ -57,12 +57,12 @@ public class Quest
         goal_Current += _need;
         if(goal_Current >= goal_Need)
         {
-            State = QuestState.COMPLETE;
+            State = QUESTSTATE.COMPLETE;
         }
 
     }
     public void QuestDone()
     {
-        State = QuestState.DONE;
+        State = QUESTSTATE.DONE;
     }
 }

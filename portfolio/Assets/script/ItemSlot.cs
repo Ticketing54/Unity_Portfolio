@@ -11,17 +11,17 @@ public class ItemSlot : Slot
     Item item = null;
     [SerializeField]
     Text ItemCount;
-    public void Add(ItemListType _Type)
+    public void Add(ITEMLISTTYPE _Type)
     {
         switch (_Type)
         {
-            case ItemListType.INVEN:
+            case ITEMLISTTYPE.INVEN:
                 item = Character.Player.Inven.GetItem(SlotNum);
                 break;
-            case ItemListType.QUICK:
+            case ITEMLISTTYPE.QUICK:
                 item = Character.Player.QuickSlot.GetItem(SlotNum);
                 break;
-            case ItemListType.EQUIP:
+            case ITEMLISTTYPE.EQUIP:
                 item = Character.Player.Equip.GetItem(SlotNum);
                 break;
             default:

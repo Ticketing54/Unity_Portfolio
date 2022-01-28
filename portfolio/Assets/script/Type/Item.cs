@@ -11,8 +11,8 @@ public class Item
    
     public int SlotNum;
 
-    public EquipMentType EquipType { get; }
-    public ItemType itemType { get; set; }
+    public EQUIPTYPE EquipType { get; }
+    public ITEMTYPE itemType { get; set; }
     public int Index { get; }
     public string ItemName { get; }
     public string ItemExplain { get; }
@@ -33,18 +33,18 @@ public class Item
     public Item(int _Index, int _ItemType,string _ItemName, string _ItemSpriteName,string _ItemExplain, string _ItemProperty, int _ItemPrice,int _ItemCount= 1,int _E_Index = 5)
     {
         Index = _Index;        
-        itemType = (ItemType)_ItemType;
+        itemType = (ITEMTYPE)_ItemType;
         ItemName = _ItemName;
         itemSpriteName = _ItemSpriteName;
         ItemExplain = _ItemExplain;
         ItemProperty = _ItemProperty;
         ItemPrice = _ItemPrice;   
-        EquipType = (EquipMentType)_E_Index;
+        EquipType = (EQUIPTYPE)_E_Index;
         ItemCount = _ItemCount;
     }
     public void UseItem()
     {
-        if (itemType == ItemType.USED)
+        if (itemType == ITEMTYPE.USED)
         {
             string[] Data = ItemProperty.Split('/');
 

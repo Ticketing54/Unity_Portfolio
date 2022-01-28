@@ -10,7 +10,7 @@ public class Npc : MonoBehaviour
 {
     public string NpcName = string.Empty;
     public int index;
-    public ResourceManager<int, string> Dialog = new ResourceManager<int, string>();
+    public ResourceManager Dialog = new ResourceManager();
     public List<Item> item_list = new List<Item>();
     public List<Quest> quest_list = new List<Quest>();
     float Dis;
@@ -255,8 +255,8 @@ public class Npc : MonoBehaviour
     {
         if(NpcTalk != null)
         {
-            List<string> talk_list = Dialog.GetData(_num);
-            string talk = talk_list[1];
+            //List<string> talk_list = Dialog.GetData(_num);
+            string talk;
             for( int i = 0; i<= talk.Length; i++)
             {
                 NpcTalk.text = talk.Substring(0, i);
