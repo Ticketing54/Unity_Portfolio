@@ -22,7 +22,7 @@ public class SkillSlot : Slot
             return;
 
         Icon.gameObject.SetActive(true);
-        Icon.sprite = GameManager.gameManager.GetSprite(skill.skillSpriteName);
+        Icon.sprite = GameManager.gameManager.resource.GetImage(skill.skillSpriteName);
     }
     public void Clear()
     {
@@ -159,7 +159,7 @@ public class SkillSlot : Slot
         float _coolTime = _skill.cooltime;
         Effect = ObjectPoolManager.objManager.EffectPooling(skill.skillSpriteName);
         buf_Image = ObjectPoolManager.objManager.PoolingbufControl();                               
-        buf_Image.bufsprite.sprite = GameManager.gameManager.ImageManager[skill.skillSpriteName];   //체력바 위 버프 이미지
+        buf_Image.bufsprite.sprite = GameManager.gameManager.resource.GetImage(skill.skillSpriteName);   //체력바 위 버프 이미지
         buf_Image.cooltime_num.gameObject.SetActive(true);                                          //쿨타임 숫자
         float HoldTime = skill.HoldTime;
         float HoldTime_Max = HoldTime;

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour 
 {
     public static GameManager gameManager;
-    public int Player_num ;    
+    public int Player_num { get; set; }
    
 
     public Character character = null;
@@ -19,16 +19,14 @@ public class GameManager : MonoBehaviour
     public string Character_Name = string.Empty;
 
     List<Monster> mob_list = new List<Monster>();    
-    public ResourceManager resource = new ResourceManager();
-    public Dictionary<string, Sprite> ImageManager = new Dictionary<string, Sprite>();
+    public ResourceManager resource = new ResourceManager();    
 
 
     public bool isCharacter = false;    //캐릭터 생성 여부
     
    
 
-    //정보
-    string Id = string.Empty;
+    //정보    
     public string MapName = string.Empty;    
   
     private void Awake()
@@ -58,10 +56,10 @@ public class GameManager : MonoBehaviour
         resource.LoadGameObjectRes();                                
         resource.LoadImageResources();
         resource.LoadTable(TABLETYPE.ITEM, "csv/Table/ItemTable");
-        resource.LoadTable(TABLETYPE.ITEM, "csv/Table/LevelTable");
-        resource.LoadTable(TABLETYPE.ITEM, "csv/Table/MonsterTable");
-        resource.LoadTable(TABLETYPE.ITEM, "csv/Table/SkillTable");
-        resource.LoadTable(TABLETYPE.ITEM, "csv/Table/QuestTable");    
+        resource.LoadTable(TABLETYPE.LEVEL, "csv/Table/LevelTable");
+        resource.LoadTable(TABLETYPE.MONSTER, "csv/Table/MonsterTable");
+        resource.LoadTable(TABLETYPE.SKILL, "csv/Table/SkillTable");
+        resource.LoadTable(TABLETYPE.QUEST, "csv/Table/QuestTable");    
 
     }
     public void LoadGame(int _index)    // 저장된 데이터 로드
@@ -127,7 +125,8 @@ public class GameManager : MonoBehaviour
     public void New_C_Data()
     {
         character = null;
-        GameObject obj = Instantiate(GetResource("Character", "Character"));        
+        
+        GameObject obj = Instantiate(resource.GetGameObject("Character"));        
         character = obj.AddComponent<Character>();
         Status NewStat = new Status("New", 0, 1, 0, 0, 0, 0);       
 
@@ -155,7 +154,7 @@ public class GameManager : MonoBehaviour
             
         string temp = UserDataManager.instance.LoadData(_num);
         string[] DATA = temp.Split('\n');
-        GameObject obj = Instantiate(GetResource("Character", "Character"));        
+        GameObject obj = Instantiate(resource.GetGameObject("Character"));        
         character = obj.AddComponent<Character>();        
         character.tag = "Player";
         character.gameObject.layer = 8;
@@ -194,7 +193,7 @@ public class GameManager : MonoBehaviour
             foreach (string one in info)
             {
                 string[] sInven = one.Split(',');
-                List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
+                List<string> iteminfo = resource.GetTable(TABLETYPE.ITEM, int.Parse(sInven[0]));
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = 1;
@@ -212,7 +211,7 @@ public class GameManager : MonoBehaviour
             foreach (string one in info)
             {
                 string[] sInven = one.Split(',');
-                List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(sInven[0]));
+                List<string> iteminfo = resource.GetTable(TABLETYPE.ITEM, int.Parse(sInven[0]));
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);                
@@ -243,7 +242,7 @@ public class GameManager : MonoBehaviour
         for (int i = 1; i < ldata.Length - 1; i++)
         {
             string[] data = ldata[i].Split(',');
-            GameObject tmpobj = Instantiate(GetResource("Map", "Potal"));
+            GameObject tmpobj = Instantiate(resource.GetGameObject("Potal"));
             potal =tmpobj.AddComponent<Potal>();
             potal.MapName = data[0].Replace("\n","");
             potal.transform.position = new Vector3(float.Parse(data[1]), float.Parse(data[2]), float.Parse(data[3]));
@@ -263,8 +262,9 @@ public class GameManager : MonoBehaviour
         for (int i = 1; i < ldata.Length - 1; i++)
         {
             string[] data = ldata[i].Split(',');
-            List<string> mobinfo = MonsterTableManager.instance.Monster_Table.GetData(int.Parse(data[0]));
-            GameObject tmpobj = Instantiate(GetResource("Monster", mobinfo[1]));
+            
+            List<string> mobinfo = resource.GetTable(TABLETYPE.MONSTER, int.Parse(data[0]));
+            GameObject tmpobj = Instantiate(resource.GetGameObject(mobinfo[1]));
             Vector3 pos = new Vector3(float.Parse(data[1]), float.Parse(data[2]), float.Parse(data[3]));
             tmpobj.transform.position = pos;
             mob = tmpobj.AddComponent<Monster>();           
@@ -304,9 +304,9 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < ldata.Length - 1; i++)
         {
             string[] data = ldata[i].Split(',');
-            if (GetResource("Npc", data[2]) != null)
+            if (resource.GetGameObject(data[2]) != null)
             {
-                GameObject tmpobj = Instantiate(GetResource("Npc", data[2]));
+                GameObject tmpobj = Instantiate(resource.GetGameObject(data[2]));
                 Vector3 pos = new Vector3(float.Parse(data[3]), float.Parse(data[4]), float.Parse(data[5]));
                 Vector3 rot = new Vector3(float.Parse(data[6]), float.Parse(data[7]), float.Parse(data[8]));
                 Vector3 scale = new Vector3(float.Parse(data[9]), float.Parse(data[10]), float.Parse(data[11]));
@@ -342,7 +342,8 @@ public class GameManager : MonoBehaviour
                     string[] shop = data[12].Split('/');
                     for (int k = 0; k < shop.Length - 1; k++)
                     {
-                        List<string> iteminfo = ItemTableManager.instance.Item_Table.GetData(int.Parse(shop[k]));
+
+                        List<string> iteminfo = resource.GetTable(TABLETYPE.ITEM, int.Parse(shop[k]));
                         Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                         tmp.ItemCount = 1;
                         npc.item_list.Add(tmp);
@@ -354,8 +355,7 @@ public class GameManager : MonoBehaviour
                     string[] Questlist = data[13].Split('/');
                     for (int n = 0; n < Questlist.Length; n++)
                     {
-
-                        List<string> questinfo = QuestTableManager.instance.quest_Table.GetData(int.Parse(Questlist[n]));
+                        List<string> questinfo = resource.GetTable(TABLETYPE.QUEST, int.Parse(Questlist[n]));                        
                         Quest tmp  = new Quest(int.Parse(questinfo[0]), questinfo[1], questinfo[2], questinfo[3], questinfo[4], int.Parse(questinfo[5]), int.Parse(questinfo[6]));
                         npc.quest_list.Add(tmp);
 
@@ -378,18 +378,6 @@ public class GameManager : MonoBehaviour
         
     } 
   
-    public Sprite GetSprite(string _name)       //이미지 파일
-    {
-        Sprite one;
-        if(ImageManager.TryGetValue(_name,out one))
-        {
-
-            return one;
-        }
-
-        return null;
-
-    }
     public void ChangeLayerObj(Transform _Obj, int _Layer)
     {
         _Obj.gameObject.layer = _Layer;
@@ -401,18 +389,6 @@ public class GameManager : MonoBehaviour
         }
 
     }
-    public GameObject GetResource(string _key, string _name)        //resource 안의 리스트안의 하나의 게임오브젝트 불러오기
-    {        
-        //foreach(GameObject one in resource.GetData(_key))
-        //{
-        //    if (one.name.Equals(_name))
-        //    {
-        //        return one ;
-        //    }
-           
-        //}
-        return null;
-    }
- 
+   
               
 }

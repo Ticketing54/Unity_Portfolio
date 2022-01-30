@@ -48,22 +48,22 @@ public class MiniMap : MonoBehaviour
         if (MiniMap_nActive == false)
         {
             miniMap_n_Max_Min();
-            MapSprite_n.sprite = GameManager.gameManager.GetSprite(GameManager.gameManager.MapName);
+            MapSprite_n.sprite = GameManager.gameManager.resource.GetImage(GameManager.gameManager.MapName);
         }
         else
         {
-            MapSprite_n.sprite = GameManager.gameManager.GetSprite(GameManager.gameManager.MapName);
+            MapSprite_n.sprite = GameManager.gameManager.resource.GetImage(GameManager.gameManager.MapName);
         }
 
         if(MiniMap_MActive == false)
         {
             miniMap_M_Max_Min();
-            MapSprite_M.sprite = GameManager.gameManager.GetSprite(GameManager.gameManager.MapName);
+            MapSprite_M.sprite = GameManager.gameManager.resource.GetImage(GameManager.gameManager.MapName);
             miniMap_M_Max_Min();
         }
         else
         {
-            MapSprite_M.sprite = GameManager.gameManager.GetSprite(GameManager.gameManager.MapName);
+            MapSprite_M.sprite = GameManager.gameManager.resource.GetImage(GameManager.gameManager.MapName);
         }
         
 

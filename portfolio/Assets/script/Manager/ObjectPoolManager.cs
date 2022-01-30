@@ -91,7 +91,7 @@ public class ObjectPoolManager : MonoBehaviour
 
         }
 
-        GameObject newone = GameManager.gameManager.GetResource("QuestMark", _name);
+        GameObject newone = GameManager.gameManager.resource.GetGameObject("QuestMark");
         GameObject obj = Instantiate(newone);
         obj.name = _name;        
         QuestMarkList.Add(obj);
@@ -389,8 +389,8 @@ public class ObjectPoolManager : MonoBehaviour
             
             
         }
-        
-        GameObject newone = GameManager.gameManager.GetResource("Effect",_name);
+
+        GameObject newone = GameManager.gameManager.resource.GetGameObject(_name);
         GameObject obj = Instantiate(newone);
         obj.name = _name;
         EffectPos_Dic.Add(obj, obj.transform.position);

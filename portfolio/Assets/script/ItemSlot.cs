@@ -34,7 +34,7 @@ public class ItemSlot : Slot
             return;
         }            
         Icon.gameObject.SetActive(true);
-        Icon.sprite = GameManager.gameManager.GetSprite(item.itemSpriteName);
+        Icon.sprite = GameManager.gameManager.resource.GetImage(item.itemSpriteName);
 
         if (item.ItemCount > 1)
         {

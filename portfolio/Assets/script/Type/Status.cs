@@ -91,7 +91,7 @@ public class Status
     }
     public void LevelSetting(int _Level)
     {        
-        Table = LevelTableManager.instance.Level_Table.GetData(_Level);     
+        Table = GameManager.gameManager.resource.GetTable(TABLETYPE.LEVEL,_Level);            
         
         Level = int.Parse(Table[0]);
         Hp = float.Parse(Table[1]);

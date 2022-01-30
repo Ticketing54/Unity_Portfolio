@@ -39,7 +39,7 @@ public class Potal : MonoBehaviour
                 if (MiniMap_Dot_M == null)
                 {
                     MiniMap_Dot_M = ObjectPoolManager.objManager.PoolingMiniDot_M();
-                    MiniMap_Dot_M.sprite = GameManager.gameManager.GetSprite("Dot_P");
+                    MiniMap_Dot_M.sprite = GameManager.gameManager.resource.GetImage("Dot_P");
                 }
                 else
                 {

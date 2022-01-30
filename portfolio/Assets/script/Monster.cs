@@ -103,7 +103,7 @@ public class Monster : MonoBehaviour
                 {
 
                     MiniMap_Dot = ObjectPoolManager.objManager.PoolingMiniDot_n();
-                    MiniMap_Dot.sprite = GameManager.gameManager.GetSprite("Dot_E");
+                    MiniMap_Dot.sprite = GameManager.gameManager.resource.GetImage("Dot_E");
 
                 }
                 else if (DiSTANCE <= 15f && MiniMap_Dot != null)

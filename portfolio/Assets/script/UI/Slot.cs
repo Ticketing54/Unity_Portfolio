@@ -73,7 +73,7 @@ public class Slot : MonoBehaviour
         float cooltime = 0;
         bufimage bufimage = ObjectPoolManager.objManager.PoolingbufControl();  // 버프이미지
         GameObject bufEffect = ObjectPoolManager.objManager.EffectPooling(_bufimagename);   //버프 이펙트     
-        bufimage.bufsprite.sprite = GameManager.gameManager.ImageManager[_bufimagename];
+        bufimage.bufsprite.sprite = GameManager.gameManager.resource.GetImage(_bufimagename);
         
 
         if(_bufimagename == "Hp")

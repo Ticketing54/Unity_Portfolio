@@ -127,7 +127,7 @@ public class Npc : MonoBehaviour
                 {
 
                     MiniMap_Dot = ObjectPoolManager.objManager.PoolingMiniDot_n();
-                    MiniMap_Dot.sprite = GameManager.gameManager.GetSprite("Dot_N");
+                    MiniMap_Dot.sprite = GameManager.gameManager.resource.GetImage("Dot_N");
 
                 }
                 else if (DISTANCE <= 20f && MiniMap_Dot != null)
@@ -160,7 +160,7 @@ public class Npc : MonoBehaviour
                 if(MiniMap_Dot_M == null)
                 {
                     MiniMap_Dot_M = ObjectPoolManager.objManager.PoolingMiniDot_M();
-                    MiniMap_Dot_M.sprite = GameManager.gameManager.GetSprite("Dot_N");
+                    MiniMap_Dot_M.sprite = GameManager.gameManager.resource.GetImage("Dot_N");
                 }
                 else
                 {
@@ -256,7 +256,7 @@ public class Npc : MonoBehaviour
         if(NpcTalk != null)
         {
             //List<string> talk_list = Dialog.GetData(_num);
-            string talk;
+            string talk = "";
             for( int i = 0; i<= talk.Length; i++)
             {
                 NpcTalk.text = talk.Substring(0, i);

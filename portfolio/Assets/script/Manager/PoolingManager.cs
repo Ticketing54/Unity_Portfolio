@@ -20,7 +20,7 @@ public class PoolingManager<T> where T : MonoBehaviour, Pooling
         public PoolingData(string _PrefabName)
         {            
             Pool = new Queue<T>();
-            Prefab = GameManager.gameManager.GetResource(_PrefabName, _PrefabName);
+            Prefab = GameManager.gameManager.resource.GetGameObject(_PrefabName);
             count = 1;
         }
 
