@@ -92,3 +92,65 @@ public class PoolingManager_PrimitiveObject<Type> where Type : MonoBehaviour
 
   
 }
+
+
+
+public class PoolingManager_Class <Type> where Type : new()
+{
+    Dictionary<string, PoolData<Type>> poolingData;
+
+    public PoolingManager_Class()
+    {
+        poolingData = new Dictionary<string, PoolData<Type>>();
+    }
+
+    public void Add(string _Key, Type _NewPoolingData)
+    {
+
+        if (_NewPoolingData == null)
+        {
+            Debug.LogError("데이터가 존재하지 않습니다.");
+            return;
+        }
+
+        PoolData<Type> poolData;
+        if (poolingData.TryGetValue(_Key, out poolData))
+        {
+            poolData.Add(_NewPoolingData);
+
+        }
+        else
+        {
+            poolData = new PoolData<Type>(_NewPoolingData);
+            Type NewPoolObject = new Type()
+                ;
+            poolData.Add(_NewPoolingData);
+            poolingData.Add(_Key, poolData);
+        }
+    }
+
+
+    public Type GetData(string _Key)
+    {
+        PoolData<Type> poolData;
+        if (poolingData.TryGetValue(_Key, out poolData))
+        {
+            Type poolDataObject = poolData.GetData();
+            if (poolDataObject == null)
+            {
+                return GameObject.Instantiate<Type>(poolData.instantiateObject);
+            }
+            else
+            {
+                return poolDataObject;
+            }
+        }
+        else
+        {
+            Debug.LogError("존재하지 않는 데이터 입니다.");
+            return default(Type);
+        }
+    }
+
+
+}
