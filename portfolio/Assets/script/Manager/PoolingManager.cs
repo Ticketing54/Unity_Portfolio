@@ -4,91 +4,91 @@ using UnityEngine;
 
 
 
-public interface Pooling
+class PoolData<Type>
 {
-    void Reset();
-    void Reposition();
+    Queue<Type> Pool;
+    public Type instantiateObject { get; set; }
+    int count = 0;
 
+    public PoolData(Type _instantiateObject)
+    {
+        Pool = new Queue<Type>();
+        instantiateObject = _instantiateObject;
+        count = 0;
+    }    
+
+    public void Add(Type _PoolingObject)
+    {
+        Pool.Enqueue(_PoolingObject);
+        count++;
+    }
+    public Type GetData()
+    {
+        if (count <= 0)
+        {
+            return default(Type);
+        }
+        count--;
+        return Pool.Dequeue();
+    }
+    public int Count { get { return count; } }
 }
-public class PoolingManager<T> where T : MonoBehaviour, Pooling
+
+public class PoolingManager_PrimitiveObject<Type> where Type : MonoBehaviour
 {
-    class PoolingData 
-    {
-        Queue<T> Pool;
-        GameObject Prefab;
-        int count;        
-        public PoolingData(string _PrefabName)
-        {            
-            Pool = new Queue<T>();
-            Prefab = GameManager.gameManager.resource.GetGameObject(_PrefabName);
-            count = 1;
-        }
+    Dictionary<string, PoolData<Type>> poolingData;
 
-        public void Add(T _data)
+    public PoolingManager_PrimitiveObject()
+    {
+        poolingData = new Dictionary<string, PoolData<Type>>();
+    }
+
+    public void Add(string _Key,Type _NewPoolingData)
+    {
+
+        if (_NewPoolingData == null)
         {
-            _data.Reset();
-            _data.Reposition();
-            Pool.Enqueue(_data);
-            count++;
-        }        
-        public T GetData()
+            Debug.LogError("데이터가 존재하지 않습니다.");
+            return;
+        }
+            
+        PoolData<Type> poolData;
+        if(poolingData.TryGetValue(_Key, out poolData))
         {
-            if(count <= 0)
+            poolData.Add(_NewPoolingData);
+
+        }
+        else
+        {
+            poolData = new PoolData<Type>(_NewPoolingData);
+            Type NewPoolObject = GameObject.Instantiate<Type>(_NewPoolingData);
+            poolData.Add(_NewPoolingData);
+            poolingData.Add(_Key, poolData);
+        }
+    }
+
+  
+    public Type GetData(string _Key)
+    {
+        PoolData<Type> poolData;
+        if (poolingData.TryGetValue(_Key, out poolData))
+        {
+            Type poolDataObject = poolData.GetData();
+            if (poolDataObject == null)
             {
-                GameObject obj = GameObject.Instantiate(Prefab);               
-
-                return obj.AddComponent<T>();
+                return GameObject.Instantiate<Type>(poolData.instantiateObject);
             }
-
-            return Pool.Dequeue();
-        }
-
-        
-        public int Count { get { return count;} }
-
-        
-    }
-
-
-    Dictionary<string, PoolingData> dic = new Dictionary<string, PoolingData>();
-    
-    
-    public void Add(string _Key,T _t)
-    {
-        PoolingData data;
-        if (dic.TryGetValue(_Key,out data))
-        {
-            data.Add(_t);            
+            else
+            {
+                return poolDataObject;
+            }
         }
         else
         {
-            data = new PoolingData(_Key);
-            data.Add(_t);
-            dic.Add(_Key,data);        
+            Debug.LogError("존재하지 않는 데이터 입니다.");
+            return default(Type);
         }
-        data = null;
     }
 
-    public T GetData(string _Key)
-    {
-        PoolingData data;
-        if (dic.TryGetValue(_Key, out data))
-        {
-            return data.GetData();
-        }
-        else
-        {
-            data = new PoolingData(_Key);
-            dic.Add(_Key,data);
-            return data.GetData();
-        }
-        
-    }
-
-   
-
-
-       
-
-
+  
 }

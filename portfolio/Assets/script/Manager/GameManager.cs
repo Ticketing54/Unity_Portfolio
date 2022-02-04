@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
         CameraManager.cameraManager.IsCharacter = true;
 
     }
-    public void NewGame()       // 새로운 게임시작
+    public void NewGame()       // 새로운 게임시작 
     {
         
         isCharacter = true;                     

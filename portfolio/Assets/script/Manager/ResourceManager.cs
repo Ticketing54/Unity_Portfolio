@@ -67,7 +67,7 @@ public class ResourceManager
     // 경로 재입력할것
     public void LoadGameObjectRes()
     {
-        GameObject[] obj = Resources.LoadAll<GameObject>("obj/");        //
+        GameObject[] obj = Resources.LoadAll<GameObject>("Obj/");        //
         foreach (GameObject one in obj)
         {
             ObjRes.Add(one.name, one);            
