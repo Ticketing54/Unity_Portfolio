@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class PoolingManager_PrimitiveObject<Type> where Type : Object
+public class PoolingManager<Type> where Type : Object
 {
-    Dictionary<string, PoolData_Instantiate<Type>> poolingData;
+    Dictionary<string, PoolData<Type>> poolingData;
 
-    public PoolingManager_PrimitiveObject()
+    public PoolingManager()
     {
-        poolingData = new Dictionary<string, PoolData_Instantiate<Type>>();
+        poolingData = new Dictionary<string, PoolData<Type>>();
     }
 
     public void Add(string _Key, Type _NewPoolingData)
@@ -21,21 +21,21 @@ public class PoolingManager_PrimitiveObject<Type> where Type : Object
             return;
         }
 
-        PoolData_Instantiate<Type> poolData;
+        PoolData<Type> poolData;
         if (poolingData.TryGetValue(_Key, out poolData))
         {
             poolData.Add(_NewPoolingData);
         }
         else
         {            
-            poolingData.Add(_Key, new PoolData_Instantiate<Type>(_NewPoolingData));
+            poolingData.Add(_Key, new PoolData<Type>(_NewPoolingData));
         }
     }
 
 
     public Type GetData(string _Key)
     {
-        PoolData_Instantiate<Type> poolData;
+        PoolData<Type> poolData;
         if (poolingData.TryGetValue(_Key, out poolData))
         {
             return poolData.GetData();

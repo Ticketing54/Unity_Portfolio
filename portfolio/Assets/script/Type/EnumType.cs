@@ -2,7 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+public enum CLICKEFFECT
+{
+    NORMAL,
+    ENERMY,
+    FRIEND,
+    NONE
+}
 public enum TABLETYPE
 {
     ITEM,

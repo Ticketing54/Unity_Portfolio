@@ -5,8 +5,9 @@ using UnityEngine;
 public class EffectManager : MonoBehaviour
 {
     public static EffectManager effectManager;
-    PoolingManager_PrimitiveObject<GameObject> EffectRes;
+    PoolingManager<GameObject> EffectRes;
     Dictionary<string, GameObject> effectParent;
+    List<GameObject> ClickEffect;
 
     
 
@@ -22,21 +23,69 @@ public class EffectManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        EffectRes = new PoolingManager_PrimitiveObject<GameObject>();
+        EffectRes = new PoolingManager<GameObject>();
         effectParent = new Dictionary<string, GameObject>();
+        ClickEffect = new List<GameObject>();
+        ClickEffectRes();
     }
 
-
-    public GameObject LoadResourceEffect(string _EffectName)
+    #region ClickEffect
+    void ClickEffectRes()
     {
-        return null;
+        ClickEffect.Add(GameManager.gameManager.resource.GetGameObject("ClickEffect"));
+        ClickEffect.Add(GameManager.gameManager.resource.GetGameObject("ClickEffect"));
+        ClickEffect.Add(GameManager.gameManager.resource.GetGameObject("ClickEffect"));
+    }   
+
+    public void ClickEffectOn(CLICKEFFECT _ClickEffect, Transform _Target)                      // 대상이 있음
+    {
+        GameObject clickEffect = ClickEffectCheck(_ClickEffect);
+        clickEffect.transform.SetParent(_Target);
+        clickEffect.gameObject.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        clickEffect.gameObject.transform.localPosition = new Vector3(0f, 0f, 0f);
     }
-    public GameObject GetEffect(string _EffectName)
+    public void ClickEffectOn(CLICKEFFECT _ClickEffect, Vector3 _Pos)                           // 바닥
+    {
+        GameObject clickEffect = ClickEffectCheck(_ClickEffect);
+        clickEffect.gameObject.transform.position = _Pos + new Vector3(0f, 1f, 0f);
+    }
+    GameObject ClickEffectCheck(CLICKEFFECT _ClickEffect)                                       // 클릭 대상에 따라 하나만 켜져있게함
+    {
+        GameObject SeletClickEffect = ClickEffect[(int)_ClickEffect];
+
+        foreach(GameObject one  in ClickEffect)
+        {
+            if(one == SeletClickEffect)
+            {
+                if (one.gameObject.activeSelf == false)
+                {
+                    one.gameObject.SetActive(true);
+                }                                    
+            }
+            else
+            {
+                if (one.gameObject.activeSelf == true)
+                {
+                    one.gameObject.SetActive(true);
+                }
+                one.gameObject.SetActive(false);
+            }
+        }
+
+        return SeletClickEffect;
+    }
+    #endregion
+
+    GameObject LoadResourceEffect(string _EffectName)                       // 리소스에서 받아오기
+    {
+        return GameManager.gameManager.resource.GetGameObject(_EffectName);
+    }
+    GameObject GetEffect(string _EffectName)                                // Effect 이름별로 꺼내오기
     {
         GameObject effectObj = EffectRes.GetData(_EffectName);
         if (effectObj == null)
         {
-            GameObject NewEffect = LoadResourceEffect(_EffectName);        // 리소스 수정후 수정할 것
+            GameObject NewEffect = LoadResourceEffect(_EffectName);         // 리소스 수정후 수정할 것
             AddEfect(NewEffect);
             return GetEffect(_EffectName);
         }
@@ -47,11 +96,11 @@ public class EffectManager : MonoBehaviour
         }
 
     }
-    public void AddEfect(GameObject _Effect)
+    void AddEfect(GameObject _Effect)                                       // Effect 사용 후 저장
     {
         GameObject Parent;
         string EffectName = _Effect.name;
-        if(!effectParent.TryGetValue(EffectName,out Parent))            /// 오류 확인할 것!
+        if(!effectParent.TryGetValue(EffectName,out Parent))                // 오류 확인할 것!
         {
             Parent = new GameObject(EffectName);
             Parent.transform.SetParent(this.transform);
@@ -67,7 +116,7 @@ public class EffectManager : MonoBehaviour
     }
 
 
-    public void LoadEffect(string _EffectName, Vector3 _Pos,float _Holdingtime)
+    public void LoadEffect(string _EffectName, Vector3 _Pos,float _Holdingtime)     // 이펙트 사용
     {
         GameObject Effect = GetEffect(_EffectName);
         StartCoroutine(TurnoffEffect(Effect, _Holdingtime));
