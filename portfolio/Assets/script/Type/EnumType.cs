@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum DAMAGE
+{
+    NOMAL,
+    CRITICAL
+}
 public enum CLICKEFFECT
 {
     NORMAL,

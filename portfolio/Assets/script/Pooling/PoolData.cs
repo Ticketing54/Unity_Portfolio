@@ -11,7 +11,7 @@ public class PoolData<Type> where Type : Object
     public PoolData(Type _Prefab)
     {
         Pool = new Queue<Type>();
-        Prefab = _Prefab;        
+        Prefab = _Prefab;          
         count = 0;
     }
 
@@ -23,11 +23,11 @@ public class PoolData<Type> where Type : Object
     public Type GetData()
     {
         if (count <= 0)
-        {
+        {            
             return Object.Instantiate<Type>(Prefab);
         }
-        count--;
 
+        count--;
         return Pool.Dequeue();
     }
 

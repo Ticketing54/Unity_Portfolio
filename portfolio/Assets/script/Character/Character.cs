@@ -6,7 +6,23 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using TMPro;
 
-public class Character : MonoBehaviour
+
+public interface UIControl
+{    
+    public bool UsingUi { get; set; }    
+    public string NickName { get; }
+    public float Distance { get; }
+
+    
+    
+}
+
+interface BattleUiControl : UIControl
+{
+    public float HP_Current { get;}
+    public float HP_Max { get; }
+}
+public class Character : MonoBehaviour, BattleUiControl 
 {
     public static Character Player;
     public Character()
@@ -29,12 +45,31 @@ public class Character : MonoBehaviour
     public Inventory Inven { get; set; }
     public QuickSlot QuickSlot { get; set; }
 
+
+
     public LinkedList<Quest> QuickQuest = new LinkedList<Quest>();
 
+    #region UiControl
+
+    bool isUsingUi = false;
+    public bool UsingUi
+    {
+        get
+        {
+            return isUsingUi;
+        }
+        set
+        {
+            isUsingUi = value;
+        }
+    }
+    public float HP_Current => Stat.HP;
+    public float HP_Max => Stat.MAXHP;        
+    public string NickName => Stat.NAME;
+    public float Distance => 0;
 
 
-
-
+    #endregion
 
 
 
@@ -650,5 +685,5 @@ public class Character : MonoBehaviour
         SoundManager.soundmanager.soundsPlay(_Name, Character.Player.gameObject);    
     }
 
-
+ 
 }
