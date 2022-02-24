@@ -2,26 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PoolData<Type> where Type : Component
-{ 
-    protected Type Prefab;
-    protected Queue<Type> Pool;
+
+public class PoolData_Resource
+{
+    protected GameObject Prefab;
+    protected Queue<GameObject> Pool;
     protected int count = 0;
     GameObject Parent;
     string Key;
-    public PoolData(Type _Prefab, GameObject _Parent,string _Key)
+    public PoolData_Resource(string _Key, GameObject _Parent,GameObject _Prefab)
     {
-        Pool = new Queue<Type>();
-        Prefab = _Prefab;        
-        count = 0;
+        Pool = new Queue<GameObject>();
+        Prefab = _Prefab;
         Key = _Key;
-        GameObject NewParent = new GameObject(Key+" : "+count);        
+        count = 0;        
+        GameObject NewParent = new GameObject(Key + " : " + count);
         NewParent.transform.SetParent(_Parent.transform);
 
         Parent = NewParent;
     }
 
-    public void Add(Type _PoolingObject)
+    public void Add(GameObject _PoolingObject)
     {
         _PoolingObject.transform.SetParent(Parent.transform);
         _PoolingObject.gameObject.SetActive(false);
@@ -29,13 +30,13 @@ public class PoolData<Type> where Type : Component
         count++;
         SetParentName();
     }
-    
-    public Type GetData()
+
+    public GameObject GetData()
     {
-        Type NewType;
+        GameObject NewType;
         if (count <= 0)
-        {          
-            NewType = Object.Instantiate<Type>(Prefab);
+        {
+            NewType = GameObject.Instantiate(Prefab);
             NewType.transform.SetParent(Parent.transform);
 
             return NewType;

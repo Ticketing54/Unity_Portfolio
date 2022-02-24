@@ -29,7 +29,9 @@ public class MiniInfo : MonoBehaviour
         ExPlain.text = _item.ItemExplain;
 
         if (_item.ItemProperty == "")
+        {
             Property.text = "";
+        }            
         else
         {
             string[] tmp = _item.ItemProperty.Split('/');

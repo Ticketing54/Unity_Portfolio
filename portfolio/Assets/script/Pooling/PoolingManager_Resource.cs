@@ -1,19 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-
-public class PoolingManager<Type> where Type : Component
+public class PoolingManager_Resource
 {
-    Dictionary<string, PoolData<Type>> poolingData;
+    Dictionary<string, PoolData_Resource> poolingData;
     GameObject Parent;
-    public PoolingManager(GameObject _Parent)
+    public PoolingManager_Resource(GameObject _Parent)
     {
-        poolingData = new Dictionary<string, PoolData<Type>>();
+        poolingData = new Dictionary<string, PoolData_Resource>();
         Parent = _Parent;
     }
 
-    public void Add(string _Key, Type _NewPoolingData)
+    public void Add(string _Key, GameObject _NewPoolingData)
     {
 
         if (_NewPoolingData == null)
@@ -22,22 +20,20 @@ public class PoolingManager<Type> where Type : Component
             return;
         }
 
-        PoolData<Type> poolData;
+        PoolData_Resource poolData;
         if (poolingData.TryGetValue(_Key, out poolData))
         {
             poolData.Add(_NewPoolingData);
         }
         else
         {
-            
-            poolingData.Add(_Key, new PoolData<Type>(_NewPoolingData,Parent,_Key));
+            poolingData.Add(_Key, new PoolData_Resource(_Key,Parent,_NewPoolingData));            
         }
-    }
+    }   
 
-
-    public Type GetData(string _Key)
+    public GameObject GetData(string _Key)
     {
-        PoolData<Type> poolData;
+        PoolData_Resource poolData;
         if (poolingData.TryGetValue(_Key, out poolData))
         {
             return poolData.GetData();
@@ -45,7 +41,7 @@ public class PoolingManager<Type> where Type : Component
         else
         {
             Debug.LogError("존재하지 않는 데이터 입니다.");
-            return default(Type);
+            return null;
         }
     }
 }

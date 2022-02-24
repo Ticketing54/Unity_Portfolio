@@ -7,8 +7,7 @@ public class QuickQuest : MonoBehaviour
 {     
     public LinkedList<MiniQuestSlot> list = new LinkedList<MiniQuestSlot>();
     public ScrollRect Mqlist;
-    int Count = 0;
-    
+    int Count = 0;    
         
 
     public void AddQuest(Quest _quest)

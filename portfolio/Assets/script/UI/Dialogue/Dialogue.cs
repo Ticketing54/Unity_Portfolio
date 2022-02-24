@@ -87,7 +87,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
         Rewards.gameObject.SetActive(false);
         if(Dialog_num == 0)
         {
-            UIManager.uimanager.OpenShop(npc);
+            //UIManager.uimanager.OpenShop(npc);
             
         }
         if(Dialog_num == -1)
@@ -150,7 +150,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
                     {
                         Rewards_Item.gameObject.SetActive(true);
                         string[] item = tmp[2].Split('#');
-                        UIManager.uimanager.TryOpenInventory();
+                        //UIManager.uimanager.TryOpenInventory();
                         List<string> iteminfo = GameManager.gameManager.resource.GetTable(TABLETYPE.ITEM, int.Parse(item[0]));                            
                         Item newitem = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                         if (item[1] != null) // 여러개일때
@@ -168,7 +168,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
                         
                         
                         //UIManager.uimanager.Inv.getItem(newitem);
-                        UIManager.uimanager.TryOpenInventory();
+                        //UIManager.uimanager.TryOpenInventory();
                     }
                     else
                     {

@@ -24,9 +24,9 @@ public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointe
 
         if (this.gameObject.activeSelf == true)
         {
-            UIManager.uimanager.InventoryActive = true;
-            if (UIManager.uimanager.Inven.gameObject.activeSelf == false)
-                UIManager.uimanager.Inven.gameObject.SetActive(true);
+            //UIManager.uimanager.InventoryActive = true;
+            //if (UIManager.uimanager.Inven.gameObject.activeSelf == false)
+            //    UIManager.uimanager.Inven.gameObject.SetActive(true);
 
         }
             

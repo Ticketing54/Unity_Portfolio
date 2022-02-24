@@ -5,7 +5,7 @@ using UnityEngine;
 public class EffectManager : MonoBehaviour
 {
     public static EffectManager effectManager;
-    PoolingManager<GameObject> EffectRes;
+    PoolingManager_Resource EffectRes;
     Dictionary<string, GameObject> effectParent;
     List<GameObject> ClickEffect;
 
@@ -13,7 +13,7 @@ public class EffectManager : MonoBehaviour
 
     private void Awake()
     {
-        if(effectManager == null)
+        if (effectManager == null)
         {
             effectManager = this;
             DontDestroyOnLoad(gameObject);
@@ -23,7 +23,7 @@ public class EffectManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        EffectRes = new PoolingManager<GameObject>();
+        EffectRes = new PoolingManager_Resource(this.gameObject);
         effectParent = new Dictionary<string, GameObject>();
         ClickEffect = new List<GameObject>();
         ClickEffectRes();
@@ -35,7 +35,7 @@ public class EffectManager : MonoBehaviour
         ClickEffect.Add(GameManager.gameManager.resource.GetGameObject("ClickEffect"));
         ClickEffect.Add(GameManager.gameManager.resource.GetGameObject("ClickEffect"));
         ClickEffect.Add(GameManager.gameManager.resource.GetGameObject("ClickEffect"));
-    }   
+    }
 
     public void ClickEffectOn(CLICKEFFECT _ClickEffect, Transform _Target)                      // 대상이 있음
     {
@@ -53,14 +53,14 @@ public class EffectManager : MonoBehaviour
     {
         GameObject SeletClickEffect = ClickEffect[(int)_ClickEffect];
 
-        foreach(GameObject one  in ClickEffect)
+        foreach (GameObject one in ClickEffect)
         {
-            if(one == SeletClickEffect)
+            if (one == SeletClickEffect)
             {
                 if (one.gameObject.activeSelf == false)
                 {
                     one.gameObject.SetActive(true);
-                }                                    
+                }
             }
             else
             {
@@ -100,33 +100,33 @@ public class EffectManager : MonoBehaviour
     {
         GameObject Parent;
         string EffectName = _Effect.name;
-        if(!effectParent.TryGetValue(EffectName,out Parent))                // 오류 확인할 것!
+        if (!effectParent.TryGetValue(EffectName, out Parent))                // 오류 확인할 것!
         {
             Parent = new GameObject(EffectName);
             Parent.transform.SetParent(this.transform);
             Parent.gameObject.transform.position = Vector3.zero;
             effectParent.Add(EffectName, new GameObject(EffectName));
-        }        
+        }
 
-        _Effect.transform.SetParent(Parent.transform);        
+        _Effect.transform.SetParent(Parent.transform);
         _Effect.gameObject.SetActive(false);
 
 
-        EffectRes.Add(_Effect.name, _Effect);            
+        EffectRes.Add(_Effect.name, _Effect);
     }
 
 
-    public void LoadEffect(string _EffectName, Vector3 _Pos,float _Holdingtime)     // 이펙트 사용
+    public void LoadEffect(string _EffectName, Vector3 _Pos, float _Holdingtime)     // 이펙트 사용
     {
         GameObject Effect = GetEffect(_EffectName);
         StartCoroutine(TurnoffEffect(Effect, _Holdingtime));
     }
 
-    IEnumerator TurnoffEffect(GameObject _Effect,float _Holdingtime)
+    IEnumerator TurnoffEffect(GameObject _Effect, float _Holdingtime)
     {
         yield return new WaitForSeconds(_Holdingtime);
         AddEfect(_Effect);
     }
-   
+
 
 }

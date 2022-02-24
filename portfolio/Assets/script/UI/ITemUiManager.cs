@@ -161,8 +161,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
 
         ClickPos = data.position; // 클릭지점        
 
-        if(miniinfo.gameObject.activeSelf==true)
-            miniinfo.gameObject.SetActive(false);
+        UIManager.uimanager.CloseMiniitemInfo();
 
         
 

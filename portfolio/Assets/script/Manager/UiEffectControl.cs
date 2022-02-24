@@ -15,19 +15,24 @@ public class UiEffectControl : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI sampleNicName;                      // 닉네임
     [SerializeField]
-    Image sampleHpBar;
+    TextMeshProUGUI sampleLevelup;                      // 레벨업 텍스트
+    [SerializeField]
+    Image sampleHpBar;                                  // Hpbar
+    
 
     private void Awake()
-    {        
-        textPool = new PoolingManager<TextMeshProUGUI>();
-        imagePool = new PoolingManager<Image>();
+    {
+        
+        textPool = new PoolingManager<TextMeshProUGUI>(this.gameObject);
+        imagePool = new PoolingManager<Image>(this.gameObject);
 
         textPool.Add("DamageEffect", sampleDamageEffect);
         textPool.Add("NickName", sampleNicName);
         imagePool.Add("HpBar", sampleHpBar);
+        textPool.Add("LevelUp", sampleLevelup);
     }
     #region NickName
-    void UnitUion(UIControl _Target)
+    public void UnitUion(UIControl _Target)                         // 수정할 것
     {
         StartCoroutine(IShowNickName(_Target));            
     }
@@ -76,12 +81,42 @@ public class UiEffectControl : MonoBehaviour
         hpBar.gameObject.SetActive(false);
         imagePool.Add("HpBar", hpBar);
         yield break;
-    }   
+    }
     #endregion
+    #region LevelUp
+    public void LevelUpEffect(GameObject _Target)
+    {
+        TextMeshProUGUI LevelupText = textPool.GetData("LevelUp");
+        StartCoroutine(LevelupMotion(LevelupText, _Target));
+    }
+    IEnumerator LevelupMotion(TextMeshProUGUI _LevelUpText, GameObject _Target)
+    {
+        float timer = 0f;
+        float Moveto_Y = 0;
+        float Preset_Y = 0;
+        while (timer <= 2f)
+        {
+            Vector3 TargetPos = _Target.transform.position;
+            Moveto_Y += Time.deltaTime;
 
+            Preset_Y = _Target.transform.position.y + 1f;
+            _LevelUpText.transform.position = Camera.main.WorldToScreenPoint(new Vector3(TargetPos.x, Preset_Y += Moveto_Y, TargetPos.z));
+            _LevelUpText.fontSize += Time.deltaTime * 20f;
+            timer += Time.deltaTime;
+            yield return null;
+        }
 
+        _LevelUpText.fontSize = 50;
 
-    void LoadDamageEffect(float _Damage,GameObject _Target,DAMAGE _DamageState = DAMAGE.NOMAL)
+        textPool.Add("LevelUp", _LevelUpText);
+
+        yield break;
+    }
+
+    #endregion
+    #region DamageEffect
+
+    void LoadDamageEffect(float _Damage, GameObject _Target, DAMAGE _DamageState = DAMAGE.NOMAL)
     {
         TextMeshProUGUI DmgEffect = textPool.GetData("DamageEffect");
         DmgEffect.gameObject.SetActive(true);
@@ -93,31 +128,32 @@ public class UiEffectControl : MonoBehaviour
             DmgEffect.fontSize = 100;
         }
 
-        StartCoroutine(DamageEffecting(DmgEffect,_Target));
+        StartCoroutine(DamageEffecting(DmgEffect, _Target));
     }
 
-    IEnumerator DamageEffecting(TextMeshProUGUI _Text,GameObject _Target)
+    IEnumerator DamageEffecting(TextMeshProUGUI _Text, GameObject _Target)
     {
         float timer = 0f;
-        Vector3 TargetPos = _Target.transform.position;        
+        Vector3 TargetPos = _Target.transform.position;
 
         while (timer <= 3f)
         {
-            _Text.transform.position = Camera.main.WorldToScreenPoint(new Vector3(TargetPos.x, TargetPos.y += Time.deltaTime,TargetPos.z));
+            _Text.transform.position = Camera.main.WorldToScreenPoint(new Vector3(TargetPos.x, TargetPos.y += Time.deltaTime, TargetPos.z));
             yield return null;
         }
 
-        TextReset(_Text);        
+        TextReset(_Text);
 
         textPool.Add("DamageEffect", _Text);
 
         yield break;
     }
+    #endregion
+
     void TextReset(TextMeshProUGUI _Effect)
     {
         _Effect.fontSize = 50;
-        _Effect.color = Color.white;
-        _Effect.gameObject.SetActive(false);
+        _Effect.color = Color.white;        
     }
-   
+    
 }

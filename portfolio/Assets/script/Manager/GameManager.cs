@@ -67,12 +67,12 @@ public class GameManager : MonoBehaviour
         
         isCharacter = true;
         UIManager.uimanager.UiObj.SetActive(true);
-        UIManager.uimanager.InfoReset();
+        //UIManager.uimanager.InfoReset();
         Load_C_Data(_index);        
         Load_Map_Data();
         Load_Mob_Data();
         //Load_Npc_Data();        
-        UIManager.uimanager.InfoUpdate();
+        //UIManager.uimanager.InfoUpdate();
         ObjectPoolManager.objManager.PoolingReset_Load();
         //SkillManager.skillmanager.ApplySkill();        
         UIManager.uimanager.minimap.MapSetting();   //미니맵 변경
@@ -86,11 +86,11 @@ public class GameManager : MonoBehaviour
         isCharacter = true;                     
         New_C_Data();
         UIManager.uimanager.UiObj.SetActive(true);
-        UIManager.uimanager.InfoReset();
+        //UIManager.uimanager.InfoReset();
         Load_Map_Data();
         Load_Mob_Data();
         Load_Npc_Data();        
-        UIManager.uimanager.InfoUpdate();
+        //UIManager.uimanager.InfoUpdate();
         ObjectPoolManager.objManager.PoolingReset_Load();
         UIManager.uimanager.minimap.MapSetting();
         CameraManager.cameraManager.IsCharacter = true;
@@ -115,7 +115,7 @@ public class GameManager : MonoBehaviour
         CameraManager.cameraManager.IsCharacter = false;        
         isCharacter = false;        
         ObjectPoolManager.objManager.PoolingReset_Load();
-        UIManager.uimanager.InfoReset();
+        //UIManager.uimanager.InfoReset();
         Destroy(Character.Player.gameObject);        
         
         

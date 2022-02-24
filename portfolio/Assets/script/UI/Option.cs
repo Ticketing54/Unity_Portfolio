@@ -75,7 +75,7 @@ public class Option : MonoBehaviour
     {
         int num = ClickNum;
         ClickNum = -1;
-        UIManager.uimanager.SaveItemInfo();
+        //UIManager.uimanager.SaveItemInfo();
         //UserDataManager.instance.SaveData(num);
         OpenSavedGames();
         Save_Message.gameObject.SetActive(false);

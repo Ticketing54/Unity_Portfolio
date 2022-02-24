@@ -7,21 +7,6 @@ using UnityEngine.UI;
 using TMPro;
 
 
-public interface UIControl
-{    
-    public bool UsingUi { get; set; }    
-    public string NickName { get; }
-    public float Distance { get; }
-
-    
-    
-}
-
-interface BattleUiControl : UIControl
-{
-    public float HP_Current { get;}
-    public float HP_Max { get; }
-}
 public class Character : MonoBehaviour, BattleUiControl 
 {
     public static Character Player;
@@ -35,8 +20,7 @@ public class Character : MonoBehaviour, BattleUiControl
         //Equip = new Equipment();
     }
 
-
-
+  
 
     public Status Stat { get; set; }
     public Equipment Equip { get; set; }   
@@ -68,6 +52,10 @@ public class Character : MonoBehaviour, BattleUiControl
     public string NickName => Stat.NAME;
     public float Distance => 0;
 
+    public bool isClick()
+    {
+        return Character.Player.Target == this.gameObject;
+    }
 
     #endregion
 
@@ -346,20 +334,14 @@ public class Character : MonoBehaviour, BattleUiControl
         Click();             
         Interation();
         Move();
-        TestQuest();
+        Test();
     }   
     
 
 
-    public void TestQuest()
+    public void Test()
     {
-        
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            
-            quest.Add(0, new Quest(0, "테스트 퀘스트 입니다.", "DIALOG", "테스트 중입니다.", "MONSTER", 0, 0,"PLAYING"));
-        }
-        
+        UIManager.uimanager.uieffect.UnitUion(this);        
     }
     public void SetDestination(Vector3 dest)
     {
@@ -685,5 +667,5 @@ public class Character : MonoBehaviour, BattleUiControl
         SoundManager.soundmanager.soundsPlay(_Name, Character.Player.gameObject);    
     }
 
- 
+   
 }
