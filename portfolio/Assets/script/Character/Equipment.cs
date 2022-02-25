@@ -3,80 +3,64 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Equipment
+public class Equipment : ItemMove
 {    
     [SerializeField]
-    Status Stat= null;
-    Dictionary<EQUIPTYPE, Item> Equip = new Dictionary<EQUIPTYPE, Item>();
+    Status Stat= null;    
+
+    Item[] Equip = new Item[5];
     Item item;
+
     Item ITEM { get { return item; } }
-    EQUIPTYPE Type = EQUIPTYPE.NONE;
+    
     public Equipment(Status _Stat)
     {        
         Stat = _Stat;
     }
     public Item GetItem(int _equipType)
     {
-        Type = (EQUIPTYPE)_equipType;
-        if(Equip.TryGetValue(Type,out item))
-        {
-            Type = EQUIPTYPE.NONE;
-            return ITEM;
-        }
-        else
-        {
-            Type = EQUIPTYPE.NONE;
-            return null;
-        }
+        return Equip[_equipType];
     }
-    public List<EQUIPTYPE> GetKeys()
-    {
-        List<EQUIPTYPE> Keys = new List<EQUIPTYPE>(Equip.Keys);
-        return Keys;
-    }
-    public Item PopEquip(int _equipType)
-    {
-        Type = (EQUIPTYPE)_equipType;
-        if (Equip.TryGetValue(Type,out item))
-        {
-            Stat.TakeOffStatus(item);
-            Equip.Remove(Type);
-            Type = EQUIPTYPE.NONE;
-            return ITEM;
-        }
-        else
-        {
-            Type = EQUIPTYPE.NONE;
-            return null;
-        }
-        
-    }
-    public Item PushEquip(int _equipType, Item _NewItem)
-    {
-        Type = (EQUIPTYPE)_equipType;
 
-        if (_NewItem.EquipType != Type|| _NewItem.itemType != ITEMTYPE.EQUIPMENT)             // 같은 타입이 아닐 경우 // 장비 아이템이 아닐 경우
-            return _NewItem;
-
-        if (Equip.TryGetValue(Type,out item))
+    public Item PopItem(int _Index)
+    {
+        Item popItem = GetItem(_Index);
+        Equip[_Index] = null;
+        Stat.TakeOffStatus(popItem);
+        return popItem;
+    }
+    public void AddItem(Item _NewItem)
+    {
+        if (_NewItem.itemType != ITEMTYPE.EQUIPMENT) 
         {
-            Stat.TakeOffStatus(item);
-            Equip.Remove(_NewItem.EquipType);
-            Stat.EquipStatus(_NewItem);
-            Equip.Add(_NewItem.EquipType, _NewItem);
-            return ITEM;
+            Debug.LogError("잘못된 아이템을 장비로 장착하려합니다");
+            return;
+        }
+
+        Equip[(int)_NewItem.itemType] = _NewItem;
+        Stat.EquipStatus(_NewItem);        
+    }
+
+    public Item Exchange(int _index, Item _NewItem)
+    {
+        Item popItem = PopItem(_index);
+        AddItem(_NewItem);
+        return popItem;        
+    }
+
+    public bool PossableMoveItem(int _index, Item _MoveItem)
+    {
+        if (_MoveItem.itemType != ITEMTYPE.EQUIPMENT)
+        {
+            return false;
+        }            
+        else if(_index != (int)_MoveItem.itemType)
+        {
+            return false;
         }
         else
         {
-            Stat.EquipStatus(_NewItem);
-            Equip.Add(_NewItem.EquipType, _NewItem);
-            return null;
+            return true;
         }
-    }
-    
-    public bool IsEmpty(EQUIPTYPE _equipType)
-    {
-        return !(Equip.TryGetValue(_equipType, out item));
-    }
-    
+    }    
 }

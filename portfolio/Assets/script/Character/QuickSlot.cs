@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class QuickSlot 
+public class QuickSlot :ItemMove
 {
     [SerializeField]
-    Dictionary<int, Dictionary<int, Item>> ItemSlot = new Dictionary<int, Dictionary<int, Item>>();
+    Dictionary<int, Item[]> ItemSlot = new Dictionary<int,Item[]>();
     [SerializeField]
-    Dictionary<int, Dictionary<int, Skill>> SkillSlot = new Dictionary<int, Dictionary<int, Skill>>();
-    Dictionary<int, Item> quickItem;
-    Dictionary<int, Skill> quickSkill;
+    Dictionary<int, Skill[]> SkillSlot = new Dictionary<int, Skill[]>();
+    Item[] quickItem;
+    Skill[] quickSkill;
 
     int ItemSlotNum = 0;
     int SkillSlotNum = 0;
@@ -40,68 +40,76 @@ public class QuickSlot
         CreateSlots<Item>(ItemSlot);
         CreateSlots<Skill>(SkillSlot);
     }
-    void CreateSlots<T>(Dictionary<int,Dictionary<int,T>> _Slot)
+    void CreateSlots<T>(Dictionary<int,T[]> _Slot)
     {
         for (int i = 0; i < 4; i++)
         {
-            _Slot.Add(i, new Dictionary<int, T>());
+            _Slot.Add(i, new T[4]);
         }        
     }
 
     public Item GetItem(int _SlotNum)
     {
         quickItem = ItemSlot[ITEMSLOTNUM];
-        if(quickItem.TryGetValue(_SlotNum, out item))
-        {
-            return ITEM;
-        }
-        else
-        {
-            return null;
-        }
+
+        Item item = quickItem[_SlotNum];
+        return item;
     }
     public Item PopItem(int _SlotNum)
     {
         quickItem = ItemSlot[ITEMSLOTNUM];
-        if (quickItem.TryGetValue(_SlotNum, out item))
+        Item PopItem = quickItem[_SlotNum];
+        quickItem[_SlotNum] = null;
+        quickItem = null;
+        return PopItem;
+    }
+
+    public Item Exchange(int _Index, Item _NewItem)
+    {
+        Item popItem =PopItem(_Index);
+
+        if(popItem.Index == _NewItem.Index)
         {
-            quickItem.Remove(_SlotNum);
-            return ITEM;
+            _NewItem.ItemCount += popItem.ItemCount;
+            popItem = null;
+        }
+
+        AddItem(_Index, _NewItem);
+
+        return popItem;
+    }
+    public bool PossableMoveItem(int _index, Item _MoveItem)
+    {
+        if (_MoveItem.itemType != ITEMTYPE.USED)
+        {
+            return false;
         }
         else
         {
-            return null;
+            return true;
         }
     }
-    public Item AddItem(int _SlotNum, Item _NewItem)
+
+    public void AddItem(int _listNum, int _SlotNum, Item _NewItem)
+    {
+        quickItem = ItemSlot[_listNum];
+        quickItem[_SlotNum] = _NewItem;
+        quickItem = null;
+    }
+    public void AddItem(int _SlotNum, Item _NewItem)
     {
         quickItem = ItemSlot[ITEMSLOTNUM];
-
-        if (_NewItem.itemType != ITEMTYPE.USED)        // 소모 아이템이 아닐경우
-            return _NewItem;
-
-        if (quickItem.TryGetValue(_SlotNum, out item))
-        {
-            if(quickItem[_SlotNum].Index == _NewItem.Index)
-            {
-                quickItem[_SlotNum].ItemCount += _NewItem.ItemCount;
-                return null;
-            }
-
-            quickItem.Remove(_SlotNum);
-            quickItem.Add(_SlotNum, _NewItem);
-            return ITEM;
-        }
-        else
-        {
-            quickItem.Add(_SlotNum, _NewItem);
-            return null;
-        }
+        quickItem[_SlotNum] = _NewItem;
+        quickItem = null;
     }
     public bool IsEmpty_Item(int _Num)
     {
         quickItem = ItemSlot[ItemSlotNum];
-        return !(quickItem.TryGetValue(_Num,out item));
+        Item item = quickItem[_Num];
+        quickItem = null;
+
+
+        return item == null;
     }
 
 
@@ -139,7 +147,11 @@ public class QuickSlot
     public bool IsEmpty_Skill(int _Num)
     {
         quickSkill = SkillSlot[SkillSlotNum];
-        return (quickSkill[_Num] == null);
+        Skill skill= quickSkill[_Num];
+        quickSkill = null;
+
+
+        return skill == null;        
     }  
     public Skill GetSkill(int _SlotNum)
     {
@@ -164,4 +176,6 @@ public class QuickSlot
             return;
         else quickItem[_SlotNum].itemType = ITEMTYPE.NONE;
     }
+
+   
 }

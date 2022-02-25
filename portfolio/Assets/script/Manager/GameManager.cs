@@ -215,7 +215,7 @@ public class GameManager : MonoBehaviour
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = int.Parse(sInven[2]);                
-                character.QuickSlot.AddItem(tmp.SlotNum, tmp);
+                //character.QuickSlot.ExchangeItem(tmp.SlotNum, tmp);
             }
         }
         //if (DATA[4] != "")

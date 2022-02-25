@@ -3,100 +3,55 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Inventory
-{
-    Dictionary<int, Item> Inven = new Dictionary<int, Item>();
-    
-    Item item;
-    Item ITEM { get { return item; } }
-    int Capacity = 18;
-    public int CAPACITY
-    {        
-        get
-        {
-            return Capacity;
-        }
-        set
-        {
-            if (value < 18)
-                Capacity = 18;
-            else
-                Capacity = value;
-        }
-    }
-    public List<int> GetKeys()
-    {
-        List<int> Keys = new List<int>(Inven.Keys);
-        return Keys;
-    }
+public class Inventory : ItemMove
+{    
+    Item[] Inven = new Item[18];    
+    int itemCount = 0;    
     
     public Item GetItem(int _SlotNum)
-    {    
-        if(Inven.TryGetValue(_SlotNum,out item))
-        {
-            return ITEM;
-        }
-        else
-        {
-            return null;
-        }
+    {
+        return Inven[_SlotNum];
     }   
     public Item PopItem(int _SlotNum)
     {
-        if (Inven.TryGetValue(_SlotNum, out item))
-        {
-            Inven.Remove(_SlotNum);
-            return ITEM;
-        }
-        else
-        {
-            return null;
-        }
+        Item PopItem = GetItem(_SlotNum);
+        Inven[_SlotNum] = null;
+        itemCount--;
+
+        return PopItem;
     }
     public bool PushItem(Item _NewItem)
     {
-        for (int i = 0; i < CAPACITY; i++)
+        for(int slotNum = 0; slotNum < Inven.Length; slotNum++)
         {
-            if (!Inven.TryGetValue(i, out item))
+            if (Inven[slotNum] == null)
             {
-                Inven.Add(i, _NewItem);
+                Inven[slotNum] = _NewItem;
+                ++itemCount;
                 return true;
             }
         }
         return false;
-    }
-   public int EmptySlot()
-    {
-        for (int i = 0; i < CAPACITY; i++)
-        {
-            if (!Inven.TryGetValue(i, out item))
-            {                
-                return i;
-            }
-        }
-        return -1;
-    }
-    public Item AddItem(int _Index, Item _NewItem)
-    {
-        if(Inven.TryGetValue(_Index,out item))
-        {            
-            if(Inven[_Index].Index == _NewItem.Index && Inven[_Index].itemType != ITEMTYPE.EQUIPMENT && _NewItem.itemType != ITEMTYPE.EQUIPMENT)
-            {
-                Inven[_Index].ItemCount += _NewItem.ItemCount;
-                return null;
-            }
-            Inven.Remove(_Index);
-            Inven.Add(_Index, _NewItem);
-            return item;            
-        }
-        else
-        {
-            Inven.Add(_Index, _NewItem);
-            return null;
-        }        
     }   
+    public void AddItem(int _Index, Item _NewItem)
+    {
+        Inven[_Index] = _NewItem;
+    }   
+
+    public Item ExchangeItem(int _Index, Item _NewItem)
+    {
+        Item OldItem = Inven[_Index];
+
+        if(OldItem.Index == _NewItem.Index)
+        {
+            OldItem.ItemCount += _NewItem.ItemCount;
+            return null;
+        }
+        Inven[_Index] = _NewItem;
+        return OldItem;
+    }
     public bool IsEmpty(int _Num)
     {
-        return !(Inven.TryGetValue(_Num, out item));
+        return Inven[_Num] == null;
     }     
 }

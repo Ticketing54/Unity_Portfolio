@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System;
 public class UIManager : MonoBehaviour
 {
     public static UIManager uimanager;
@@ -85,11 +85,64 @@ public class UIManager : MonoBehaviour
     }
 
     #endregion
+    #region ClickMove
+
+    ITEMLISTTYPE startListType  = ITEMLISTTYPE.NONE;
+    int          startListIndex = -1;
+
+    public void StartDragItem(ITEMLISTTYPE _StartListType, int _StartListIndex)
+    {
+        startListType = _StartListType;
+        startListIndex = _StartListIndex;
+        StartCoroutine(MoveToItem());
+    }
+    public event DragEndItem dragEndItem;
+
+    public delegate void DragEndItem(ITEMLISTTYPE _StartListType, int _StartListIndex, Vector2 _Pos);
+
+    IEnumerator MoveToItem()
+    {
+        while(true)
+        {
+            if (Input.GetMouseButtonUp(0))
+            {                
+                Vector2 Pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                dragEndItem(startListType, startListIndex, Pos);
+                
+                
+
+
+                startListType = ITEMLISTTYPE.NONE;
+                startListIndex = -1;
+                yield break;
+            }
+            yield return null;
+        }        
+    }    
+
+    #endregion
 
     #region Quick_Slots
-    public List<Slot> QuickSlot_Item;
-    public List<SkillSlot> QuickSlot_Skill;
-    public QuickQuest quickQuest;
+    [SerializeField]
+    List<Slot> QuickSlot_Item;
+    [SerializeField]
+    List<SkillSlot> QuickSlot_Skill;
+    [SerializeField]
+    QuickQuest quickQuest;
+
+
+   
+
+
+
+    void QuickSlot_Item_Update()
+    {
+
+    }
+    void QuickSlot_Skill_Update()
+    {
+
+    }
     #endregion
 
     #region DropBox    

@@ -230,7 +230,7 @@ public class ITemUiManager : MonoBehaviour,IPointerUpHandler, IPointerDownHandle
         }
         else if (ClickPos == data.position && RightClick == true)       // 우 클릭 시
         {
-            Character.Player.ItemMove(WorkingType, WorkingSlotNum, UIMoveUpdate);                // 장착
+            Character.Player.ItemMove(WorkingType, WorkingSlotNum, UIMoveUpdate);                //   수정할 것!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             WorkingReset();            
             return;
         }
