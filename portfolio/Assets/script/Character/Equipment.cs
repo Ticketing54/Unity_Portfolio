@@ -62,5 +62,31 @@ public class Equipment : ItemMove
         {
             return true;
         }
-    }    
+    }
+
+    public string GetImage(int _index)
+    {
+        Item getImageItem = Equip[_index];
+        if(getImageItem == null)
+        {
+            return string.Empty;
+        }
+        else
+        {
+            return getImageItem.itemSpriteName;
+        }
+    }
+
+    public int? GetItemCount(int _index)
+    {
+        Item getImageItem = Equip[_index];
+        if (getImageItem == null)
+        {
+            return null;
+        }
+        else
+        {
+            return getImageItem.ItemCount;
+        }
+    }
 }

@@ -1063,6 +1063,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 65652747}
   m_Mesh: {fileID: 4300000, guid: 9a6b68b124304da48b60c294a6e0376c, type: 3}
+--- !u!114 &66506250 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3220099196860458110, guid: 92cff636e41afdb4bbe0f88dfe4516fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 877909922}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64aa43d9bc44f9147969afaaf0d50aad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &76411975
 GameObject:
   m_ObjectHideFlags: 0
@@ -2445,18 +2457,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 142192571}
   m_Mesh: {fileID: 4300004, guid: 9a6b68b124304da48b60c294a6e0376c, type: 3}
---- !u!114 &148087483 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2042987267237226251, guid: 92cff636e41afdb4bbe0f88dfe4516fc,
-    type: 3}
-  m_PrefabInstance: {fileID: 877909922}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90359b1191450ad48b8a3ceab246ace3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &148570756
 GameObject:
   m_ObjectHideFlags: 0
@@ -13895,7 +13895,7 @@ PrefabInstance:
         type: 3}
       propertyPath: Inv
       value: 
-      objectReference: {fileID: 148087483}
+      objectReference: {fileID: 66506250}
     - target: {fileID: 8584067412337973372, guid: 92cff636e41afdb4bbe0f88dfe4516fc,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -13926,7 +13926,8 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4866800140412343796, guid: 92cff636e41afdb4bbe0f88dfe4516fc, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 92cff636e41afdb4bbe0f88dfe4516fc, type: 3}
 --- !u!1 &877909924 stripped
 GameObject:

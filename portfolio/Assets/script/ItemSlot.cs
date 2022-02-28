@@ -6,40 +6,23 @@ using UnityEngine.UI;
 public class ItemSlot : Slot
 {
     [SerializeField]
-    int SlotNum;
-    [SerializeField]
-    Item item = null;
+    int SlotNum;    
     [SerializeField]
     Text ItemCount;
-    public void Add(ITEMLISTTYPE _Type)
+    public void Add(string _SpriteName, int? _ItemCount)
     {
-        switch (_Type)
-        {
-            case ITEMLISTTYPE.INVEN:
-                item = Character.Player.Inven.GetItem(SlotNum);
-                break;
-            case ITEMLISTTYPE.QUICK:
-                item = Character.Player.QuickSlot.GetItem(SlotNum);
-                break;
-            case ITEMLISTTYPE.EQUIP:
-                item = Character.Player.Equip.GetItem(SlotNum);
-                break;
-            default:
-                break;
-        }
-        
-        if (item == null)
+        if (_SpriteName == string.Empty)
         {
             Clear();
             return;
-        }            
+        }
         Icon.gameObject.SetActive(true);
-        Icon.sprite = GameManager.gameManager.resource.GetImage(item.itemSpriteName);
+        Icon.sprite = GameManager.gameManager.resource.GetImage(_SpriteName);        
 
-        if (item.ItemCount > 1)
+        if (_ItemCount > 1)
         {
             ItemCount.gameObject.SetActive(true);
-            ItemCount.text = item.ItemCount.ToString();
+            ItemCount.text = _ItemCount.ToString();
         }
         else
         {
@@ -47,10 +30,9 @@ public class ItemSlot : Slot
                 ItemCount.gameObject.SetActive(false);
         }
     }
-
-    public void Clear()
-    {
-        item = null;
+    
+    public override void Clear()
+    {        
         Icon.sprite = null;
         Icon.gameObject.SetActive(false);
 

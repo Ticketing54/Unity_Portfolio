@@ -7,7 +7,7 @@ public interface UIControl
     bool UsingUi { get; set; }
     string NickName { get; }
     float Distance { get; }
-    bool isClick();
+    bool isClick();    
 }
 public interface BattleUiControl : UIControl
 {
@@ -25,3 +25,9 @@ public interface NpcUiControl : UIControl
 
 }
 
+public interface ItemUiContorl
+{
+    void UpdateItemSlot(int _Index);
+
+    void ClearSlot(int _Index);
+}

@@ -35,16 +35,20 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Ui_Inventory
+
+    [SerializeField]
+    UI_Inventory Inv;
+    public delegate void UpdateInventoryUi();
+    public UpdateInventoryUi updateInven;
     
-    public ITemUiManager Inv;
-    bool InventoryActive = false;
+    bool inventoryActive = false;    
+    public bool InventoryActive { get { return inventoryActive; } }
     public void TryOpenInventory()
     {
-        InventoryActive = !InventoryActive;
-        if (InventoryActive)
+        inventoryActive = !inventoryActive;
+        if (inventoryActive)
         {
-            OpenInventory();
-            Inv.UpdateUIInfo();
+            OpenInventory();            
         }
         else
         {
@@ -89,16 +93,55 @@ public class UIManager : MonoBehaviour
 
     ITEMLISTTYPE startListType  = ITEMLISTTYPE.NONE;
     int          startListIndex = -1;
+    Vector2      startDragPos   = Vector2.zero;
+    IEnumerator  movetoItem;
+    ItemSlot movestartslot = null;
+    public delegate void DragStartItem(Vector2 _Pos);
+    public delegate void DragEndItem(ITEMLISTTYPE _StartListType, int _StartListIndex, Vector2 _Pos);
+    public  DragStartItem dragStartItem;
+    public  DragEndItem dragEndItem;
 
-    public void StartDragItem(ITEMLISTTYPE _StartListType, int _StartListIndex)
+    public void LeftClick()
     {
+
+    }
+    public void MovingFail()
+    {
+        ClickMoveReset();
+    }
+    public bool SameClickPos(Vector2 _Pos)
+    {
+        return _Pos == startDragPos;
+    }
+    void ClickMoveReset()
+    {
+        startListType = ITEMLISTTYPE.NONE;
+        startListIndex = -1;
+        startDragPos = Vector2.zero;
+        movestartslot = null;
+    }
+    public void StartDragItem(ITEMLISTTYPE _StartListType, int _StartListIndex, Vector2 _StartDragPos, ItemSlot _moveSlot)
+    {
+        if(movestartslot != null)               // 이전 슬롯
+        {
+            movestartslot.ClickedSlot_End();
+            movestartslot = null;
+        }      
+
+
         startListType = _StartListType;
         startListIndex = _StartListIndex;
+        movestartslot = _moveSlot;
+
+        if (movetoItem != null)
+        {
+            StopCoroutine(movetoItem);
+            movetoItem = null;
+        }
+        movetoItem = MoveToItem();
         StartCoroutine(MoveToItem());
     }
-    public event DragEndItem dragEndItem;
-
-    public delegate void DragEndItem(ITEMLISTTYPE _StartListType, int _StartListIndex, Vector2 _Pos);
+    
 
     IEnumerator MoveToItem()
     {
@@ -108,12 +151,8 @@ public class UIManager : MonoBehaviour
             {                
                 Vector2 Pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 dragEndItem(startListType, startListIndex, Pos);
-                
-                
 
-
-                startListType = ITEMLISTTYPE.NONE;
-                startListIndex = -1;
+                ClickMoveReset();                                                           //드래그 정보 리셋
                 yield break;
             }
             yield return null;
@@ -202,7 +241,18 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if(Character.Player!= null)
+            {
+                dragStartItem(Input.mousePosition);
+            }
+            
+        }
+
+
+
         if(Character.Player != null && FadeUi.alpha == 1)
         {            
             

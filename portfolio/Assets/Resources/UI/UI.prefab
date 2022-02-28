@@ -657,7 +657,7 @@ RectTransform:
   - {fileID: 3975022932373777474}
   - {fileID: 6886337452664395980}
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1399,7 +1399,7 @@ Transform:
   - {fileID: 2785015686850996266}
   - {fileID: 2180259606956660761}
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &284567366258166868
 MonoBehaviour:
@@ -1515,6 +1515,8 @@ Transform:
   - {fileID: 103743235183487585}
   - {fileID: 5618762409399249769}
   - {fileID: 6066539457905538427}
+  - {fileID: 5508345026974380814}
+  - {fileID: 3073791015426775785}
   m_Father: {fileID: 2568192962097573659}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3255,17 +3257,6 @@ MonoBehaviour:
   SlotNum: 0
   CoolTime_Icon: {fileID: 0}
   CoolTime_Count: {fileID: 0}
-  skill:
-    Index: 0
-    skillType: 0
-    skillName: 
-    Mana: 
-    skillExplain: 
-    skillSpriteName: 
-    needLevel: 0
-    cooltime: 0
-    HoldTime: 0
-    skill_ability: 
   isactive: 0
 --- !u!1 &604640660270157269
 GameObject:
@@ -3297,7 +3288,7 @@ Transform:
   - {fileID: 3062608276264496821}
   - {fileID: 8213816292873299466}
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &624735609643448016
 GameObject:
@@ -4482,8 +4473,6 @@ MonoBehaviour:
   Icon: {fileID: 6969404640531628034}
   tr: {fileID: 3086381901731003108}
   SlotNum: 11
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 5204855558825642851}
 --- !u!1 &766401766101374440
 GameObject:
@@ -4711,8 +4700,6 @@ MonoBehaviour:
   Icon: {fileID: 3898970396272427895}
   tr: {fileID: 4947640820315809608}
   SlotNum: 16
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 8413800545404426349}
 --- !u!1 &803500108151450665
 GameObject:
@@ -5217,6 +5204,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6066539457905538427}
+  - component: {fileID: 5142811801932857281}
   m_Layer: 0
   m_Name: QuickSlot
   m_TagString: Untagged
@@ -5240,6 +5228,24 @@ Transform:
   m_Father: {fileID: 7433016678484947063}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5142811801932857281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815987547402263817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f7ff028c388bd645926a980256c4bd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemSlots:
+  - {fileID: 7169585701213376912}
+  - {fileID: 4528988804443966538}
+  - {fileID: 7502091775042409402}
+  - {fileID: 6082013659007781160}
+  Count: 4
 --- !u!1 &836701544752651083
 GameObject:
   m_ObjectHideFlags: 0
@@ -6308,7 +6314,7 @@ GameObject:
   - component: {fileID: 5025577920471930759}
   - component: {fileID: 1529827359503642290}
   m_Layer: 5
-  m_Name: Back
+  m_Name: Man
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7600,8 +7606,6 @@ MonoBehaviour:
   Icon: {fileID: 6861085672894884079}
   tr: {fileID: 6758746522633012106}
   SlotNum: 2
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 2836470523048875323}
 --- !u!1 &1014640586051746051
 GameObject:
@@ -8855,8 +8859,6 @@ MonoBehaviour:
   Icon: {fileID: 6236598153889302778}
   tr: {fileID: 5463340556030727560}
   SlotNum: 0
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 1195840760019949384}
 --- !u!1 &1333819537119001003
 GameObject:
@@ -11336,17 +11338,6 @@ MonoBehaviour:
   SlotNum: 0
   CoolTime_Icon: {fileID: 0}
   CoolTime_Count: {fileID: 0}
-  skill:
-    Index: 0
-    skillType: 0
-    skillName: 
-    Mana: 
-    skillExplain: 
-    skillSpriteName: 
-    needLevel: 0
-    cooltime: 0
-    HoldTime: 0
-    skill_ability: 
   isactive: 0
 --- !u!1 &1694825417707344712
 GameObject:
@@ -11887,7 +11878,7 @@ Transform:
   m_Children:
   - {fileID: 8950857811884863289}
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1868572431798228000
 GameObject:
@@ -12430,7 +12421,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8950857811884863289
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12858,8 +12849,6 @@ MonoBehaviour:
   Icon: {fileID: 3468179573665953672}
   tr: {fileID: 85718031092347010}
   SlotNum: 3
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 687210607214463925}
 --- !u!1 &2018770884757763386
 GameObject:
@@ -13366,8 +13355,6 @@ MonoBehaviour:
   Icon: {fileID: 7256076775241002343}
   tr: {fileID: 3782632639698763752}
   SlotNum: 9
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 8855091724646890434}
 --- !u!1 &2125082072736510138
 GameObject:
@@ -13597,12 +13584,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86c1783596b19d2458835af5f60b63dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Equip:
+  ItemSlots:
   - {fileID: 4069236239155985229}
   - {fileID: 7097580062970803988}
   - {fileID: 1796637510365498260}
   - {fileID: 3425229942308802533}
   - {fileID: 6517636084810036770}
+  Count: 5
 --- !u!1 &2136899732448590191
 GameObject:
   m_ObjectHideFlags: 0
@@ -14196,8 +14184,6 @@ MonoBehaviour:
   Icon: {fileID: 2539023891043302605}
   tr: {fileID: 1363059708698914996}
   SlotNum: 13
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 7089937088234558589}
 --- !u!1 &2220877763043307777
 GameObject:
@@ -14535,8 +14521,6 @@ MonoBehaviour:
   Icon: {fileID: 1441339050278948900}
   tr: {fileID: 7537332868169376200}
   SlotNum: 1
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 22928727633082437}
 --- !u!1 &2311338600808544243
 GameObject:
@@ -14699,7 +14683,7 @@ GameObject:
   - component: {fileID: 2487230974254822177}
   - component: {fileID: 4866800140412343796}
   m_Layer: 5
-  m_Name: Inventory_back
+  m_Name: Slots
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14791,25 +14775,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64aa43d9bc44f9147969afaaf0d50aad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Inven:
-  - {fileID: 6451661280112545088}
-  - {fileID: 8617829277109991174}
-  - {fileID: 6124342492072043709}
-  - {fileID: 7232274633850083179}
-  - {fileID: 4755890955808849753}
-  - {fileID: 7132782497304309219}
-  - {fileID: 5606282032431205780}
-  - {fileID: 846255892300240282}
-  - {fileID: 8251957703233265102}
-  - {fileID: 2759555416779006519}
-  - {fileID: 5789424020753771669}
-  - {fileID: 1545301048165232550}
-  - {fileID: 6977152355813974948}
-  - {fileID: 3088336652761998031}
-  - {fileID: 4769755984093195610}
-  - {fileID: 5882902749434481509}
-  - {fileID: 2939662360047925216}
-  - {fileID: 5988969029604418178}
+  ItemSlots: []
+  Count: 0
 --- !u!1 &2362262678543396094
 GameObject:
   m_ObjectHideFlags: 0
@@ -19646,8 +19613,6 @@ MonoBehaviour:
   Icon: {fileID: 1458003983395910932}
   tr: {fileID: 4634477979727936258}
   SlotNum: 10
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 5732017299466266291}
 --- !u!1 &3215773998431972934
 GameObject:
@@ -20089,7 +20054,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 14
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4153720977804355399
 MonoBehaviour:
@@ -20309,72 +20274,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &3282566401295170469
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8446957600075884950}
-  - component: {fileID: 2042987267237226251}
-  m_Layer: 0
-  m_Name: ItemUiManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8446957600075884950
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3282566401295170469}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 5508345026974380814}
-  - {fileID: 8747821741845786123}
-  - {fileID: 3073791015426775785}
-  m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2042987267237226251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3282566401295170469}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90359b1191450ad48b8a3ceab246ace3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Inven: {fileID: 4866800140412343796}
-  Equip: {fileID: 5093756377783719370}
-  Quick: {fileID: 8766689809667883157}
-  WorkingType: 0
-  WorkingSlotNum: 0
-  ClickPos: {x: 0, y: 0}
-  InfoPreset: {x: 0, y: 0, z: 0}
-  WorkingSprite: {fileID: 0}
-  MoveIcon: {fileID: 772492494771749711}
-  item:
-    SlotNum: 0
-  movewindow: {fileID: 6018417291541592281}
-  Window: {fileID: 1938357304284880217}
-  WindowDrag: 0
-  DontClick: {fileID: 6452738586512117701}
-  miniinfo: {fileID: 2477691388742004802}
-  shop: {fileID: 284567366422346729}
-  InventoryMax: {fileID: 4387416126475773483}
-  isClick: 0
-  ItemInfo: 0
 --- !u!1 &3282907145598601941
 GameObject:
   m_ObjectHideFlags: 0
@@ -20823,7 +20722,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 7433016678484947063}
-  - {fileID: 8446957600075884950}
   - {fileID: 1893142725480335317}
   - {fileID: 3670267645748940307}
   - {fileID: 7167535805653460478}
@@ -20921,8 +20819,8 @@ MonoBehaviour:
   uieffect: {fileID: 4633113795115840755}
   topEnermyInfoUi: {fileID: 5588532885464634305}
   bottom_Character_Info: {fileID: 0}
-  Inv: {fileID: 2042987267237226251}
-  miniItemInfo: {fileID: 0}
+  Inv: {fileID: 3220099196860458110}
+  miniItemInfo: {fileID: 2477691388742004802}
   QuickSlot_Item: []
   QuickSlot_Skill:
   - {fileID: 4828907225410410166}
@@ -21567,8 +21465,6 @@ MonoBehaviour:
   Icon: {fileID: 5279881874166311356}
   tr: {fileID: 1820468388537556147}
   SlotNum: 8
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 1974473533896756628}
 --- !u!1 &3624778179749707192
 GameObject:
@@ -21888,8 +21784,6 @@ MonoBehaviour:
   Icon: {fileID: 681150882020244181}
   tr: {fileID: 8708131493727839173}
   SlotNum: 1
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 63528879815238848}
 --- !u!1 &3733771988358841525
 GameObject:
@@ -21930,7 +21824,7 @@ RectTransform:
   - {fileID: 8885264774429474045}
   - {fileID: 4074659564085267335}
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -22332,7 +22226,7 @@ RectTransform:
   - {fileID: 5916542091029451487}
   - {fileID: 2159448157010943844}
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -23585,8 +23479,6 @@ MonoBehaviour:
   Icon: {fileID: 852507736071117634}
   tr: {fileID: 2359368533733414503}
   SlotNum: 5
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 8260067613221610461}
 --- !u!1 &4001618953211725994
 GameObject:
@@ -23815,17 +23707,6 @@ MonoBehaviour:
   SlotNum: 0
   CoolTime_Icon: {fileID: 0}
   CoolTime_Count: {fileID: 0}
-  skill:
-    Index: 0
-    skillType: 0
-    skillName: 
-    Mana: 
-    skillExplain: 
-    skillSpriteName: 
-    needLevel: 0
-    cooltime: 0
-    HoldTime: 0
-    skill_ability: 
   isactive: 0
 --- !u!1 &4009504194802006325
 GameObject:
@@ -24493,8 +24374,6 @@ MonoBehaviour:
   Icon: {fileID: 3630061111270147564}
   tr: {fileID: 8273506731469565102}
   SlotNum: 1
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 5455297843965447165}
 --- !u!1 &4076715064867483920
 GameObject:
@@ -25196,8 +25075,6 @@ MonoBehaviour:
   Icon: {fileID: 4119849129573275270}
   tr: {fileID: 9075348545808238130}
   SlotNum: 6
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 6986337342358197118}
 --- !u!1 &4208485234594376017
 GameObject:
@@ -25296,17 +25173,6 @@ MonoBehaviour:
   SlotNum: 0
   CoolTime_Icon: {fileID: 0}
   CoolTime_Count: {fileID: 0}
-  skill:
-    Index: 0
-    skillType: 0
-    skillName: 
-    Mana: 
-    skillExplain: 
-    skillSpriteName: 
-    needLevel: 0
-    cooltime: 0
-    HoldTime: 0
-    skill_ability: 
   isactive: 0
 --- !u!1 &4217855467018983282
 GameObject:
@@ -26141,8 +26007,6 @@ MonoBehaviour:
   Icon: {fileID: 7126000603234977593}
   tr: {fileID: 8654481843241071269}
   SlotNum: 4
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 2875545502239751963}
 --- !u!1 &4387416126475773483
 GameObject:
@@ -26155,13 +26019,14 @@ GameObject:
   - component: {fileID: 5508345026974380814}
   - component: {fileID: 4324358817219056955}
   - component: {fileID: 940701957818947934}
+  - component: {fileID: 3220099196860458110}
   m_Layer: 5
-  m_Name: ItemUi
+  m_Name: Inventory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5508345026974380814
 RectTransform:
   m_ObjectHideFlags: 0
@@ -26181,8 +26046,8 @@ RectTransform:
   - {fileID: 2285717708566204001}
   - {fileID: 7982012524317939261}
   - {fileID: 3364658269055232519}
-  m_Father: {fileID: 8446957600075884950}
-  m_RootOrder: 0
+  m_Father: {fileID: 7433016678484947063}
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -26226,6 +26091,38 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3220099196860458110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4387416126475773483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64aa43d9bc44f9147969afaaf0d50aad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemSlots:
+  - {fileID: 6451661280112545088}
+  - {fileID: 8617829277109991174}
+  - {fileID: 6124342492072043709}
+  - {fileID: 7232274633850083179}
+  - {fileID: 4755890955808849753}
+  - {fileID: 7132782497304309219}
+  - {fileID: 5606282032431205780}
+  - {fileID: 846255892300240282}
+  - {fileID: 8251957703233265102}
+  - {fileID: 2759555416779006519}
+  - {fileID: 5789424020753771669}
+  - {fileID: 1545301048165232550}
+  - {fileID: 6977152355813974948}
+  - {fileID: 3088336652761998031}
+  - {fileID: 4769755984093195610}
+  - {fileID: 5882902749434481509}
+  - {fileID: 2939662360047925216}
+  - {fileID: 5988969029604418178}
+  Count: 18
 --- !u!1 &4413231086422681135
 GameObject:
   m_ObjectHideFlags: 0
@@ -28075,17 +27972,6 @@ MonoBehaviour:
   SlotNum: 0
   CoolTime_Icon: {fileID: 0}
   CoolTime_Count: {fileID: 0}
-  skill:
-    Index: 0
-    skillType: 0
-    skillName: 
-    Mana: 
-    skillExplain: 
-    skillSpriteName: 
-    needLevel: 0
-    cooltime: 0
-    HoldTime: 0
-    skill_ability: 
   isactive: 0
 --- !u!1 &4795925938384212842
 GameObject:
@@ -30120,17 +30006,6 @@ MonoBehaviour:
   SlotNum: 0
   CoolTime_Icon: {fileID: 0}
   CoolTime_Count: {fileID: 0}
-  skill:
-    Index: 0
-    skillType: 0
-    skillName: 
-    Mana: 
-    skillExplain: 
-    skillSpriteName: 
-    needLevel: 0
-    cooltime: 0
-    HoldTime: 0
-    skill_ability: 
   isactive: 0
 --- !u!1 &5041183747545005254
 GameObject:
@@ -30866,98 +30741,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\uACC4\uC18D\uD558\uAE30"
---- !u!1 &5358780673027785104
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8747821741845786123}
-  - component: {fileID: 214181230102691135}
-  - component: {fileID: 7274565957171036625}
-  - component: {fileID: 8766689809667883157}
-  m_Layer: 5
-  m_Name: Quick
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &8747821741845786123
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5358780673027785104}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 8446957600075884950}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 290.29, y: -457.12997}
-  m_SizeDelta: {x: 454.1853, y: 93.74228}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &214181230102691135
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5358780673027785104}
-  m_CullTransparentMesh: 0
---- !u!114 &7274565957171036625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5358780673027785104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!114 &8766689809667883157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5358780673027785104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f7ff028c388bd645926a980256c4bd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  QuickItem:
-  - {fileID: 7169585701213376912}
-  - {fileID: 4528988804443966538}
-  - {fileID: 7502091775042409402}
-  - {fileID: 6082013659007781160}
 --- !u!1 &5362924536901520762
 GameObject:
   m_ObjectHideFlags: 0
@@ -31452,8 +31235,6 @@ MonoBehaviour:
   Icon: {fileID: 500288391048633825}
   tr: {fileID: 6324546510650770122}
   SlotNum: 12
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 7962712796575074762}
 --- !u!1 &5386290274249094053
 GameObject:
@@ -32042,17 +31823,6 @@ MonoBehaviour:
   SlotNum: 0
   CoolTime_Icon: {fileID: 0}
   CoolTime_Count: {fileID: 0}
-  skill:
-    Index: 0
-    skillType: 0
-    skillName: 
-    Mana: 
-    skillExplain: 
-    skillSpriteName: 
-    needLevel: 0
-    cooltime: 0
-    HoldTime: 0
-    skill_ability: 
   isactive: 0
 --- !u!1 &5499247073388461607
 GameObject:
@@ -32961,8 +32731,6 @@ MonoBehaviour:
   Icon: {fileID: 3210128175964062048}
   tr: {fileID: 7230837194733602117}
   SlotNum: 2
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 7847246966630672107}
 --- !u!1 &5791503868699913991
 GameObject:
@@ -33325,8 +33093,6 @@ MonoBehaviour:
   Icon: {fileID: 4436583644761643665}
   tr: {fileID: 6302475936976736781}
   SlotNum: 17
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 2825946857567738650}
 --- !u!1 &5922492809937432509
 GameObject:
@@ -34094,7 +33860,7 @@ RectTransform:
   - {fileID: 2647702701818881762}
   - {fileID: 5542751879635663203}
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -35858,8 +35624,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 8446957600075884950}
-  m_RootOrder: 2
+  m_Father: {fileID: 7433016678484947063}
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -37119,7 +36885,7 @@ RectTransform:
   - {fileID: 4163747031567443338}
   - {fileID: 6018074603074215117}
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -37222,7 +36988,7 @@ RectTransform:
   - {fileID: 6871761191808889520}
   - {fileID: 2847725554684743433}
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -37968,17 +37734,6 @@ MonoBehaviour:
   SlotNum: 0
   CoolTime_Icon: {fileID: 0}
   CoolTime_Count: {fileID: 0}
-  skill:
-    Index: 0
-    skillType: 0
-    skillName: 
-    Mana: 
-    skillExplain: 
-    skillSpriteName: 
-    needLevel: 0
-    cooltime: 0
-    HoldTime: 0
-    skill_ability: 
   isactive: 0
 --- !u!1 &6733543628523249663
 GameObject:
@@ -40465,8 +40220,6 @@ MonoBehaviour:
   Icon: {fileID: 5460988264882787351}
   tr: {fileID: 5525051110390829881}
   SlotNum: 15
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 4060641587170430386}
 --- !u!1 &7308746056202116307
 GameObject:
@@ -41907,7 +41660,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -41981,7 +41734,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -42354,17 +42107,6 @@ MonoBehaviour:
   SlotNum: 0
   CoolTime_Icon: {fileID: 0}
   CoolTime_Count: {fileID: 0}
-  skill:
-    Index: 0
-    skillType: 0
-    skillName: 
-    Mana: 
-    skillExplain: 
-    skillSpriteName: 
-    needLevel: 0
-    cooltime: 0
-    HoldTime: 0
-    skill_ability: 
   isactive: 0
 --- !u!1 &7596807834493866994
 GameObject:
@@ -42875,8 +42617,6 @@ MonoBehaviour:
   Icon: {fileID: 3013639363435838655}
   tr: {fileID: 1448269400665938934}
   SlotNum: 4
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 594024719576836404}
 --- !u!1 &7736126593341782392
 GameObject:
@@ -43763,8 +43503,6 @@ MonoBehaviour:
   Icon: {fileID: 8696285116700210592}
   tr: {fileID: 5851954578100174647}
   SlotNum: 0
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 2982666142803262820}
 --- !u!1 &7845067304769723955
 GameObject:
@@ -44069,7 +43807,7 @@ RectTransform:
   - {fileID: 3740860172940875150}
   - {fileID: 235466531415009967}
   m_Father: {fileID: 2568192962097573659}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -46835,8 +46573,6 @@ MonoBehaviour:
   Icon: {fileID: 8133323180663730589}
   tr: {fileID: 2899241032647900996}
   SlotNum: 7
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 3021376361896137927}
 --- !u!1 &8512400417173045566
 GameObject:
@@ -47960,8 +47696,6 @@ MonoBehaviour:
   Icon: {fileID: 4839202909393586401}
   tr: {fileID: 1900704157128792411}
   SlotNum: 14
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 2648314959127970138}
 --- !u!1 &8671993515948585932
 GameObject:
@@ -48280,8 +48014,6 @@ MonoBehaviour:
   Icon: {fileID: 4013755014979579594}
   tr: {fileID: 2712149602660518363}
   SlotNum: 3
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 3785697372482351783}
 --- !u!1 &8764297645813149730
 GameObject:
@@ -48661,8 +48393,6 @@ MonoBehaviour:
   Icon: {fileID: 2364490642862471669}
   tr: {fileID: 2498125799947325506}
   SlotNum: 2
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 3540618886870375717}
 --- !u!1 &8790050345999897835
 GameObject:
@@ -49527,8 +49257,6 @@ MonoBehaviour:
   Icon: {fileID: 4673312310422515422}
   tr: {fileID: 8172734652808430780}
   SlotNum: 0
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 7007782286535774936}
 --- !u!1 &9002994973229142204
 GameObject:
@@ -49979,8 +49707,6 @@ MonoBehaviour:
   Icon: {fileID: 2802309884837889278}
   tr: {fileID: 2334235297690949551}
   SlotNum: 3
-  item:
-    SlotNum: 0
   ItemCount: {fileID: 499724246001709696}
 --- !u!1 &9066229622132558145
 GameObject:

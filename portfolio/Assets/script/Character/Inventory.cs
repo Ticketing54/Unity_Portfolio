@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 [System.Serializable]
 public class Inventory : ItemMove
@@ -28,17 +29,24 @@ public class Inventory : ItemMove
             {
                 Inven[slotNum] = _NewItem;
                 ++itemCount;
+
+                if(UIManager.uimanager.InventoryActive == true)
+                {   
+                    UIManager.uimanager.updateInven();
+                }
+
                 return true;
             }
         }
         return false;
     }   
+    
     public void AddItem(int _Index, Item _NewItem)
     {
         Inven[_Index] = _NewItem;
     }   
 
-    public Item ExchangeItem(int _Index, Item _NewItem)
+    public Item Exchange(int _Index, Item _NewItem)
     {
         Item OldItem = Inven[_Index];
 
@@ -53,5 +61,38 @@ public class Inventory : ItemMove
     public bool IsEmpty(int _Num)
     {
         return Inven[_Num] == null;
-    }     
+    }
+
+    public bool PossableMoveItem(int _index, Item _MoveItem)
+    {
+        return true;
+    }
+
+    public string GetImage(int _index)
+    {
+        Item getImageitem = Inven[_index];
+        if (getImageitem == null)
+        {
+            return string.Empty;
+        }
+        else
+        {
+            return getImageitem.itemSpriteName;
+        }
+            
+    }
+
+    public int? GetItemCount(int _index)
+    {
+        Item getImageitem = Inven[_index];
+        if (getImageitem == null)
+        {
+            return null;
+        }
+        else
+        {
+            return getImageitem.ItemCount;
+        }
+
+    }
 }

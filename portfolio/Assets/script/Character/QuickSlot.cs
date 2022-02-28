@@ -177,5 +177,35 @@ public class QuickSlot :ItemMove
         else quickItem[_SlotNum].itemType = ITEMTYPE.NONE;
     }
 
-   
+    public string GetImage(int _index)
+    {
+        quickItem = ItemSlot[ITEMSLOTNUM];
+        Item getImageitem = quickItem[_index];
+        quickSkill = null;
+
+        if (getImageitem == null)
+        {
+            return string.Empty;
+        }
+        else
+        {
+            return getImageitem.itemSpriteName;
+        }
+    }
+
+    public int? GetItemCount(int _index)
+    {
+        quickSkill = SkillSlot[SkillSlotNum];
+        Item getImageitem = quickItem[_index];
+        quickSkill = null;
+
+        if (getImageitem == null)
+        {
+            return null;
+        }
+        else
+        {
+            return getImageitem.ItemCount;
+        }
+    }
 }

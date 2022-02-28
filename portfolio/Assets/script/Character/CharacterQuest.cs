@@ -35,7 +35,7 @@ public class CharacterQuest
 
         quest.QuestUpdate(_need);
         // 퀘스트 UI 업데이트 할 것!      
-        UIManager.uimanager.quickQuest.UpdateQuest(_index);
+        //UIManager.uimanager.quickQuest.UpdateQuest(_index);
         QuestDic = null;
         quest = null;
     }
@@ -65,7 +65,7 @@ public class CharacterQuest
         }
         QuestDic.Add(_index, _NewQuest);
         AddList(HAVEQUESTSTATE.PLAYING, _index);
-        UIManager.uimanager.quickQuest.AddQuest(_NewQuest);
+        //UIManager.uimanager.quickQuest.AddQuest(_NewQuest);
         QuestDic = null;
     }
     public void AddList(HAVEQUESTSTATE _state, int _Index)

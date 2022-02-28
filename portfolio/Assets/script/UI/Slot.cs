@@ -37,32 +37,36 @@ public class Slot : MonoBehaviour
         }
         return false;
     }        
-
-    //public void SetSlotCount()
-    //{
-    //    //if (item.ItemCount > 1)
-    //    //{
-    //    //    Count.gameObject.SetActive(true);
-    //    //    Count.text = item.ItemCount.ToString();
-    //    //}
-
-    //    //if (item.ItemCount == 1)
-    //    //{
-
-    //    //    Count.gameObject.SetActive(false);
-
-    //    //}
-
-
-    //    //if (item.ItemCount <= 0)
-    //    //    Clear();
-    //}
-
-
-    // 아이템 쿨타임
-
-
-
+    public void ClickedSlot_Start()
+    {
+        Color alpacontrol = Icon.color;
+        alpacontrol.a = 200;
+        Icon.color = alpacontrol;
+    }
+    public void ClickedSlot_End()
+    {
+        Color alpacontrol = Icon.color;
+        alpacontrol.a = 255;
+        Icon.color = alpacontrol;
+    }
+    public bool isEmpty()
+    {
+        return ICON == null;
+    }
+    public virtual void Clear()
+    {
+        Icon.sprite = null;
+        Icon.gameObject.SetActive(false);
+    }
+    public virtual void Add(string _SpriteName)
+    {
+        if (_SpriteName == null)
+        {
+            Clear();
+        }
+        Icon.gameObject.SetActive(true);
+        Icon.sprite = GameManager.gameManager.resource.GetImage(_SpriteName);
+    }
     IEnumerator buf_character(string _bufimagename,float buf_num_max, float _buf_num, float Max_Time) //버프이미지 // 총 버프하는 양 // 초당 버프하는 양// 총 버프되는시간
     {
         

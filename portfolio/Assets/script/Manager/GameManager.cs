@@ -137,7 +137,33 @@ public class GameManager : MonoBehaviour
         character.name = "Player";        
         Character_Name = string.Empty;
         MapName = "Village";        
-        character.Inven = new Inventory();        
+        character.Inven = new Inventory();
+
+        // Test
+
+
+        Item test1 = new Item(0, 1, "test", "apple", "테스트입니다", "테스트입니다", 0);
+        
+        Item test2 = new Item(0, 1, "test2", "armor", "테스트입니다", "테스트입니다", 0);
+        Item test3 = new Item(0, 1, "test3", "axe", "테스트입니다", "테스트입니다", 0);
+        Item test4 = new Item(0, 1, "test4", "bag", "테스트입니다", "테스트입니다", 0);
+        
+
+        character.Inven.PushItem(test1);
+        character.Inven.PushItem(test2);
+        character.Inven.PushItem(test3);
+        character.Inven.PushItem(test4);
+        
+
+
+
+        //
+
+
+
+
+
+
         character.QuickSlot = new QuickSlot();
         character.quest = new CharacterQuest();
         Equipment newEquip = new Equipment(NewStat);
@@ -197,11 +223,7 @@ public class GameManager : MonoBehaviour
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = 1;
-                Item check = character.Equip.PushEquip((int)tmp.EquipType, tmp);
-
-                if (check == null)
-                    Debug.LogError("불러온 장비가 장착되지 않았습니다.");
-                
+                character.Equip.AddItem(tmp);        
                     
             }
         }

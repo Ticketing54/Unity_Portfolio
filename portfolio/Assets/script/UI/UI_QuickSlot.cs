@@ -3,87 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class UI_QuickSlot : MonoBehaviour
+public class UI_QuickSlot : UI_ItemSlots
 {
-    [SerializeField]
-    ItemSlot[] QuickItem = new ItemSlot[4];
-    
-    public delegate void StartSetting(int _SlotNum, ITEMLISTTYPE _ListType, Sprite _Sprite);
-    public delegate void EndSetting(int _SlotNum, ITEMLISTTYPE _ListType);
-    private void OnEnable()
+    public override void UpdateItemSlots()
     {
-        UIManager.uimanager.dragEndItem += ClickUpItem;
+        StartCoroutine(UpdateQuickSlot());
     }
-    private void OnDisable()
+    public override void SetItemMove()
     {
-        UIManager.uimanager.dragEndItem -= ClickUpItem;
-    }
-    int? isInRect(Vector2 _ClickPos)
-    {
-        for (int i = 0; i < QuickItem.Length; i++)
-        {
-            if (QuickItem[i].isInRect(_ClickPos))
-            {
-                return i;
-            }
-
-        }
-        return null;
+        itemMove = Character.Player.QuickSlot;
     }
 
-
-    public void ClickUpItem(ITEMLISTTYPE _StartListType,int _StartListIndex,Vector2 _ClickPos)
+    IEnumerator UpdateQuickSlot()
     {
-        int? ClickPoint = isInRect(_ClickPos);
+        yield return new WaitForEndOfFrame();
 
-        if(ClickPoint != null)
+
+        if(itemMove == null)
         {
-            Character.Player.ItemMove()
-
-
-
-            // 성공 실패 나눌것
-
-        }
-        else
-        {
-            return;
+            SetItemMove();
         }
 
-    }
-    public bool ClickDownQuick_Item(StartSetting _Setting, Vector2 _ClickPos)
-    {
-        for (int i = 0; i < QuickItem.Length; i++)
+        for (int itemIndex = 0; itemIndex < Count - 1; itemIndex++)
         {
-            if (QuickItem[i].isInRect(_ClickPos) && !Character.Player.QuickSlot.IsEmpty_Item(i))
-            {
-                _Setting(i, ITEMLISTTYPE.QUICK, QuickItem[i].ICON);                
-                return true;
-            }
-
-        }       
-        return false;
-    }
-    public bool ClickUpQuick_Item(EndSetting _Setting ,Vector2 _ClickPos)
-    {
-        for (int i = 0; i < QuickItem.Length; i++)
-        {
-            if (QuickItem[i].isInRect(_ClickPos))
-            {
-                _Setting(i, ITEMLISTTYPE.QUICK);
-                return true;
-            }
-
+            ItemSlots[itemIndex].Add(itemMove.GetImage(itemIndex), itemMove.GetItemCount(itemIndex));
         }
-        return false;
     }
-    public void UpdateSlot(int _Num)
-    {
-        QuickItem[_Num].Add(ITEMLISTTYPE.QUICK);
-    }
-    public void UpdateClear(int _Num)
-    {
-        QuickItem[_Num].Clear();
-    }
-   
 }
