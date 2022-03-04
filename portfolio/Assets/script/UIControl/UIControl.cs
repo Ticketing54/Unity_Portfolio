@@ -25,9 +25,3 @@ public interface NpcUiControl : UIControl
 
 }
 
-public interface ItemUiContorl
-{
-    void UpdateItemSlot(int _Index);
-
-    void ClearSlot(int _Index);
-}

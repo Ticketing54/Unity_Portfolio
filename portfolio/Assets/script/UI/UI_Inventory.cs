@@ -6,24 +6,11 @@ using UnityEngine.Events;
 [System.Serializable]
 public class UI_Inventory : UI_ItemSlots
 {
-    public override void OnEnable()
+    private void Awake()
     {
-        base.OnEnable();
-        UIManager.uimanager.updateInven+= UpdateItemSlots;
-
-    }
-    public override void OnDisable()
-    {
-        base.OnDisable();
-        UIManager.uimanager.updateInven -= UpdateItemSlots;
+        itemListType = ITEMLISTTYPE.INVEN;
     }
 
-    
-    
 
-    public override void SetItemMove()
-    {
-        itemMove = Character.Player.Inven;
-    }
 
 }

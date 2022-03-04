@@ -59,6 +59,8 @@ public class Character : MonoBehaviour, BattleUiControl
 
     #endregion
     #region MoveItemControl   
+    Item itemMoveItem;
+    Item ITEMMOVEITEM { get { return itemMoveItem; } }
   
     ItemMove ChangeITemMove(ITEMLISTTYPE _itemListType)
     {
@@ -76,6 +78,20 @@ public class Character : MonoBehaviour, BattleUiControl
                 return null;
         }
     }
+    
+    public Item ItemList_GetItem(ITEMLISTTYPE _ListType, int _Index)
+    {        
+        itemMoveItem = ChangeITemMove(_ListType).GetItem(_Index);
+
+        if(itemMoveItem== null)
+        {
+            return null;
+        }
+            
+        return ITEMMOVEITEM;
+    }
+
+
 
     public bool ItemMove(ITEMLISTTYPE _StartListType, ITEMLISTTYPE _EndListType, int _StartListIndex, int _EndListIndex)
     {

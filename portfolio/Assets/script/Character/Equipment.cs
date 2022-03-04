@@ -17,9 +17,9 @@ public class Equipment : ItemMove
     {        
         Stat = _Stat;
     }
-    public Item GetItem(int _equipType)
+    public ref Item GetItem(int _equipType)
     {
-        return Equip[_equipType];
+        return ref Equip[_equipType];
     }
 
     public Item PopItem(int _Index)
@@ -64,29 +64,5 @@ public class Equipment : ItemMove
         }
     }
 
-    public string GetImage(int _index)
-    {
-        Item getImageItem = Equip[_index];
-        if(getImageItem == null)
-        {
-            return string.Empty;
-        }
-        else
-        {
-            return getImageItem.itemSpriteName;
-        }
-    }
-
-    public int? GetItemCount(int _index)
-    {
-        Item getImageItem = Equip[_index];
-        if (getImageItem == null)
-        {
-            return null;
-        }
-        else
-        {
-            return getImageItem.ItemCount;
-        }
-    }
+  
 }

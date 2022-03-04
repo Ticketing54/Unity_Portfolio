@@ -48,12 +48,12 @@ public class QuickSlot :ItemMove
         }        
     }
 
-    public Item GetItem(int _SlotNum)
+    public ref Item GetItem(int _SlotNum)
     {
         quickItem = ItemSlot[ITEMSLOTNUM];
 
-        Item item = quickItem[_SlotNum];
-        return item;
+        
+        return ref quickItem[_SlotNum]; 
     }
     public Item PopItem(int _SlotNum)
     {
@@ -177,35 +177,5 @@ public class QuickSlot :ItemMove
         else quickItem[_SlotNum].itemType = ITEMTYPE.NONE;
     }
 
-    public string GetImage(int _index)
-    {
-        quickItem = ItemSlot[ITEMSLOTNUM];
-        Item getImageitem = quickItem[_index];
-        quickSkill = null;
-
-        if (getImageitem == null)
-        {
-            return string.Empty;
-        }
-        else
-        {
-            return getImageitem.itemSpriteName;
-        }
-    }
-
-    public int? GetItemCount(int _index)
-    {
-        quickSkill = SkillSlot[SkillSlotNum];
-        Item getImageitem = quickItem[_index];
-        quickSkill = null;
-
-        if (getImageitem == null)
-        {
-            return null;
-        }
-        else
-        {
-            return getImageitem.ItemCount;
-        }
-    }
+ 
 }

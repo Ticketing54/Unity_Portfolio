@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
         //UIManager.uimanager.InfoUpdate();
         ObjectPoolManager.objManager.PoolingReset_Load();
         //SkillManager.skillmanager.ApplySkill();        
-        UIManager.uimanager.minimap.MapSetting();   //미니맵 변경
+        //UIManager.uimanager.minimap.MapSetting();   //미니맵 변경
         //QuestManager.questManager.applyQuest();
         CameraManager.cameraManager.IsCharacter = true;
 
@@ -85,14 +85,14 @@ public class GameManager : MonoBehaviour
         
         isCharacter = true;                     
         New_C_Data();
-        UIManager.uimanager.UiObj.SetActive(true);
+        //UIManager.uimanager.UiObj.SetActive(true);
         //UIManager.uimanager.InfoReset();
         Load_Map_Data();
         Load_Mob_Data();
         Load_Npc_Data();        
         //UIManager.uimanager.InfoUpdate();
         ObjectPoolManager.objManager.PoolingReset_Load();
-        UIManager.uimanager.minimap.MapSetting();
+        //UIManager.uimanager.minimap.MapSetting();
         CameraManager.cameraManager.IsCharacter = true;
     }
     public void NewArea(string _name)       // 맵이동

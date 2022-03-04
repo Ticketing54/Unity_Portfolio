@@ -60,7 +60,7 @@ public class Slot : MonoBehaviour
     }
     public virtual void Add(string _SpriteName)
     {
-        if (_SpriteName == null)
+        if (_SpriteName == string.Empty)
         {
             Clear();
         }

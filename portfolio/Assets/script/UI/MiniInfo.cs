@@ -18,12 +18,12 @@ public class MiniInfo : MonoBehaviour
     TextMeshProUGUI Property;
 
 
-    public void MiniInfoUpdate(Item _item, Vector3 Pos, Sprite _Image)    //정보 표시
+    public void SetMiniInfo(Item _item, Vector2 Pos)    //정보 표시
     {
         if (_item == null)
             return;
         transform.position = Pos;
-        ItemImage.sprite = _Image;
+        ItemImage.sprite = GameManager.gameManager.resource.GetImage(_item.itemSpriteName);
         ItemName.text = _item.ItemName;
         ItemType.text = _item.itemType.ToString();
         ExPlain.text = _item.ItemExplain;
@@ -39,6 +39,9 @@ public class MiniInfo : MonoBehaviour
         }
     }
 
-
+    private void Update()
+    {
+        this.gameObject.transform.position = Input.mousePosition;
+    }
 
 }

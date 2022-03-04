@@ -9,9 +9,9 @@ public class Inventory : ItemMove
     Item[] Inven = new Item[18];    
     int itemCount = 0;    
     
-    public Item GetItem(int _SlotNum)
+    public ref Item GetItem(int _SlotNum)
     {
-        return Inven[_SlotNum];
+        return ref Inven[_SlotNum];
     }   
     public Item PopItem(int _SlotNum)
     {
@@ -68,31 +68,5 @@ public class Inventory : ItemMove
         return true;
     }
 
-    public string GetImage(int _index)
-    {
-        Item getImageitem = Inven[_index];
-        if (getImageitem == null)
-        {
-            return string.Empty;
-        }
-        else
-        {
-            return getImageitem.itemSpriteName;
-        }
-            
-    }
-
-    public int? GetItemCount(int _index)
-    {
-        Item getImageitem = Inven[_index];
-        if (getImageitem == null)
-        {
-            return null;
-        }
-        else
-        {
-            return getImageitem.ItemCount;
-        }
-
-    }
+  
 }

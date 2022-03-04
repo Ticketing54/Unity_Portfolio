@@ -62,102 +62,65 @@ public class UIManager : MonoBehaviour
     public void CloseInventory()
     {        
         Inv.gameObject.SetActive(false);
-        if (miniItemInfo.gameObject.activeSelf == true)             // 아이템 정보가 안꺼졌을때 종료
-        {
-            miniItemInfo.gameObject.SetActive(false);
-        }            
+              
     }
 
 
     #endregion
 
-    #region MiniItemInfo
-    [SerializeField]
-    MiniInfo miniItemInfo;
-    public void MiniItemInfoUpdate(Item _item,Vector3 _Pos,Sprite _ItemImage)
-    {
-        miniItemInfo.gameObject.SetActive(true);
-        miniItemInfo.MiniInfoUpdate(_item, _Pos, _ItemImage);
-    }
-    public void CloseMiniitemInfo()
-    {
-        if(miniItemInfo.gameObject.activeSelf == true)
-        {
-            miniItemInfo.gameObject.SetActive(false);
-        }
-        
-    }
 
-    #endregion
     #region ClickMove
+    [SerializeField]
+    MiniInfo miniInfo;
 
-    ITEMLISTTYPE startListType  = ITEMLISTTYPE.NONE;
+    UI_ItemSlots startUiItemSlot = null;
+    ITEMLISTTYPE startListType = ITEMLISTTYPE.NONE;   
     int          startListIndex = -1;
-    Vector2      startDragPos   = Vector2.zero;
-    IEnumerator  movetoItem;
-    ItemSlot movestartslot = null;
-    public delegate void DragStartItem(Vector2 _Pos);
-    public delegate void DragEndItem(ITEMLISTTYPE _StartListType, int _StartListIndex, Vector2 _Pos);
-    public  DragStartItem dragStartItem;
-    public  DragEndItem dragEndItem;
-
-    public void LeftClick()
+        
+    
+    public void ClickUpitemSlot(UI_ItemSlots _endUiItemSlot,ITEMLISTTYPE _EndListType, int _EndListIndex)
     {
-
-    }
-    public void MovingFail()
-    {
+        if(startListIndex == _EndListIndex)
+        {
+            LeftClick(Character.Player.ItemList_GetItem(startListType,startListIndex));
+            ClickMoveReset();
+            return;
+        }
+        if (Character.Player.ItemMove(startListType, _EndListType, startListIndex, _EndListIndex))
+        {
+            startUiItemSlot.UpdateSlot(startListIndex, Character.Player.ItemList_GetItem(startListType, startListIndex));
+            _endUiItemSlot.UpdateSlot(_EndListIndex, Character.Player.ItemList_GetItem(_EndListType, _EndListIndex));
+        }
         ClickMoveReset();
     }
-    public bool SameClickPos(Vector2 _Pos)
+
+    public void LeftClick(Item _Miniinfoitem)
     {
-        return _Pos == startDragPos;
+        miniInfo.gameObject.SetActive(true);
+        Vector2 Pos = Input.mousePosition;
+        miniInfo.SetMiniInfo(_Miniinfoitem, Pos);
     }
+    public bool ClickUpPossable()
+    {
+        if(startListType == ITEMLISTTYPE.NONE || startListIndex < 0)
+        {
+            return false;
+        }
+        return true;
+    } 
     void ClickMoveReset()
     {
+        startUiItemSlot = null;
+        startListIndex = -1;        
         startListType = ITEMLISTTYPE.NONE;
-        startListIndex = -1;
-        startDragPos = Vector2.zero;
-        movestartslot = null;
     }
-    public void StartDragItem(ITEMLISTTYPE _StartListType, int _StartListIndex, Vector2 _StartDragPos, ItemSlot _moveSlot)
+    public void StartDragItem(UI_ItemSlots _startUiItemSlot,ITEMLISTTYPE _startListType,int _startListIndex)
     {
-        if(movestartslot != null)               // 이전 슬롯
-        {
-            movestartslot.ClickedSlot_End();
-            movestartslot = null;
-        }      
-
-
-        startListType = _StartListType;
-        startListIndex = _StartListIndex;
-        movestartslot = _moveSlot;
-
-        if (movetoItem != null)
-        {
-            StopCoroutine(movetoItem);
-            movetoItem = null;
-        }
-        movetoItem = MoveToItem();
-        StartCoroutine(MoveToItem());
+        startUiItemSlot = _startUiItemSlot;
+        startListType = _startListType;
+        startListIndex = _startListIndex;           
     }
     
-
-    IEnumerator MoveToItem()
-    {
-        while(true)
-        {
-            if (Input.GetMouseButtonUp(0))
-            {                
-                Vector2 Pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                dragEndItem(startListType, startListIndex, Pos);
-
-                ClickMoveReset();                                                           //드래그 정보 리셋
-                yield break;
-            }
-            yield return null;
-        }        
-    }    
 
     #endregion
 
@@ -240,17 +203,7 @@ public class UIManager : MonoBehaviour
   
 
     void Update()
-    {
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            if(Character.Player!= null)
-            {
-                dragStartItem(Input.mousePosition);
-            }
-            
-        }
-
+    {       
 
 
         if(Character.Player != null && FadeUi.alpha == 1)
