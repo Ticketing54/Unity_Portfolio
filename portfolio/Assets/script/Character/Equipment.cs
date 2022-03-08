@@ -17,9 +17,9 @@ public class Equipment : ItemMove
     {        
         Stat = _Stat;
     }
-    public ref Item GetItem(int _equipType)
+    public Item GetItem(int _equipType)
     {
-        return ref Equip[_equipType];
+        return  Equip[_equipType];
     }
 
     public Item PopItem(int _Index)
@@ -50,19 +50,27 @@ public class Equipment : ItemMove
 
     public bool PossableMoveItem(int _index, Item _MoveItem)
     {
-        if (_MoveItem.itemType != ITEMTYPE.EQUIPMENT)
-        {
-            return false;
-        }            
-        else if(_index != (int)_MoveItem.itemType)
-        {
-            return false;
-        }
-        else
+        if (_MoveItem == null)
         {
             return true;
         }
+        else
+        {
+            if(_MoveItem.itemType != ITEMTYPE.EQUIPMENT)
+            {
+                return false;
+            }
+            else if((int)_MoveItem.EquipType != _index)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
     }
 
-  
 }

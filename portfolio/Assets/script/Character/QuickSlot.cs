@@ -48,12 +48,12 @@ public class QuickSlot :ItemMove
         }        
     }
 
-    public ref Item GetItem(int _SlotNum)
+    public  Item GetItem(int _SlotNum)
     {
         quickItem = ItemSlot[ITEMSLOTNUM];
 
         
-        return ref quickItem[_SlotNum]; 
+        return  quickItem[_SlotNum]; 
     }
     public Item PopItem(int _SlotNum)
     {
@@ -68,7 +68,7 @@ public class QuickSlot :ItemMove
     {
         Item popItem =PopItem(_Index);
 
-        if(popItem.Index == _NewItem.Index)
+        if(popItem != null && popItem.Index == _NewItem.Index)
         {
             _NewItem.ItemCount += popItem.ItemCount;
             popItem = null;
@@ -80,14 +80,17 @@ public class QuickSlot :ItemMove
     }
     public bool PossableMoveItem(int _index, Item _MoveItem)
     {
-        if (_MoveItem.itemType != ITEMTYPE.USED)
-        {
-            return false;
-        }
-        else
+        if(_MoveItem== null)
         {
             return true;
         }
+
+        if(_MoveItem.itemType != ITEMTYPE.USED)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public void AddItem(int _listNum, int _SlotNum, Item _NewItem)

@@ -102,6 +102,11 @@ public class Status
     }  
     public void EquipStatus(Item _item)
     {
+
+        if (_item == null)
+            return;
+
+
         string[] tmp = _item.ItemProperty.Split('/');
         switch (tmp[0])
         {
@@ -117,6 +122,10 @@ public class Status
     }
     public void TakeOffStatus(Item _item)
     {
+        if (_item == null)
+            return;
+
+
         string[] tmp = _item.ItemProperty.Split('/');
         switch (tmp[0])
         {

@@ -68,83 +68,103 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
-
     #region ClickMove
-    [SerializeField]
+    [SerializeField]                // 클릭시 아이템 정보
     MiniInfo miniInfo;
+    [SerializeField]
+    MoveIcon moveicon;              // 드래그 아이콘
+    [SerializeField]
+    Image DontClick;                // 드래그 시 클릭방지
 
-    UI_ItemSlots startUiItemSlot = null;
+    // Left 클릭 정보    
     ITEMLISTTYPE startListType = ITEMLISTTYPE.NONE;   
     int          startListIndex = -1;
-        
+    ItemSlot startItemSlot = null;
+    Coroutine RunningCoroutine;                              // 증복 실행 방지
     
-    public void ClickUpitemSlot(UI_ItemSlots _endUiItemSlot,ITEMLISTTYPE _EndListType, int _EndListIndex)
+
+
+    public delegate void EndClicItemMove(Vector2 _Pos);
+    public EndClicItemMove itemoveEnd;
+
+    public delegate void UpdateUiSlot(ITEMLISTTYPE _itemListType, int _Index);
+    public UpdateUiSlot updateUiSlot;
+    
+    public void StartDragItem(ItemSlot _itemSlot,ITEMLISTTYPE _startListType, int _startListIndex)
     {
-        if(startListIndex == _EndListIndex)
+        if (RunningCoroutine != null)
+        {
+            StopCoroutine(RunningCoroutine);
+        }
+
+                
+        startItemSlot = _itemSlot;
+        startListType = _startListType;
+        startListIndex = _startListIndex;
+        SetMoveIcon(startItemSlot.ICON);
+        startItemSlot.ClickedSlot_Start();
+        RunningCoroutine = StartCoroutine(ClickStart());
+    }
+    IEnumerator ClickStart()
+    {
+        DontClick.gameObject.SetActive(true);
+        while (true)
+        {
+            if (Input.GetMouseButtonUp(0))
+            {
+                itemoveEnd(Input.mousePosition);
+
+
+                yield break;
+            }
+            yield return null;
+        }
+    }
+
+    public void ClickUpitemSlot(ITEMLISTTYPE _EndListType, int _EndListIndex)
+    {
+        if (startListType == ITEMLISTTYPE.NONE || startListIndex < 0)           // 클릭이 되지 않았을떄
+        {
+            ClickMoveReset();
+            return;
+        }            
+
+
+        if(startListIndex == _EndListIndex && startListType == _EndListType)                // 같은곳을 클릭 했을때
         {
             LeftClick(Character.Player.ItemList_GetItem(startListType,startListIndex));
             ClickMoveReset();
             return;
         }
-        if (Character.Player.ItemMove(startListType, _EndListType, startListIndex, _EndListIndex))
-        {
-            startUiItemSlot.UpdateSlot(startListIndex, Character.Player.ItemList_GetItem(startListType, startListIndex));
-            _endUiItemSlot.UpdateSlot(_EndListIndex, Character.Player.ItemList_GetItem(_EndListType, _EndListIndex));
-        }
+
+        Character.Player.ItemMove(startListType, _EndListType, startListIndex, _EndListIndex);
+            
         ClickMoveReset();
     }
 
-    public void LeftClick(Item _Miniinfoitem)
+    void SetMoveIcon(Sprite _image)                  //드래그 아이콘 설정
+    {
+        moveicon.gameObject.SetActive(true);
+        moveicon.ActiveMoveIcon(_image);
+    }
+    void LeftClick(Item _Miniinfoitem)
     {
         miniInfo.gameObject.SetActive(true);
         Vector2 Pos = Input.mousePosition;
         miniInfo.SetMiniInfo(_Miniinfoitem, Pos);
-    }
-    public bool ClickUpPossable()
-    {
-        if(startListType == ITEMLISTTYPE.NONE || startListIndex < 0)
-        {
-            return false;
-        }
-        return true;
-    } 
+    }   
     void ClickMoveReset()
     {
-        startUiItemSlot = null;
+        DontClick.gameObject.SetActive(false);        
         startListIndex = -1;        
         startListType = ITEMLISTTYPE.NONE;
-    }
-    public void StartDragItem(UI_ItemSlots _startUiItemSlot,ITEMLISTTYPE _startListType,int _startListIndex)
-    {
-        startUiItemSlot = _startUiItemSlot;
-        startListType = _startListType;
-        startListIndex = _startListIndex;           
-    }
-    
 
-    #endregion
-
-    #region Quick_Slots
-    [SerializeField]
-    List<Slot> QuickSlot_Item;
-    [SerializeField]
-    List<SkillSlot> QuickSlot_Skill;
-    [SerializeField]
-    QuickQuest quickQuest;
-
-
-   
-
-
-
-    void QuickSlot_Item_Update()
-    {
-
-    }
-    void QuickSlot_Skill_Update()
-    {
-
-    }
+        if (startItemSlot != null)
+        {
+            startItemSlot.ClickedSlot_End();
+        }
+        startItemSlot = null;
+    }   
     #endregion
 
     #region DropBox    
@@ -212,11 +232,7 @@ public class UIManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.I))
             {
                 //TryOpenInventory();
-            }
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                TryOpenSkill();
-            }
+            }          
             if (Input.GetKeyDown(KeyCode.Q))
             {
 
@@ -378,86 +394,14 @@ public class UIManager : MonoBehaviour
     }
 
     
-    //public void InfoUpdate()
-    //{
-    //    Inven.gameObject.SetActive(true);
-    //    //Inv.SlotUpdate();
-    //    Inven.gameObject.SetActive(false);
-    //    skill.gameObject.SetActive(true);
-    //    //skillmanager.UpdateSkill();
-    //    skill.gameObject.SetActive(false);
-    //    //for (int i = 0; i < Character.Player.myQuick.Count; i++)
-    //    //{
-    //    //    Inv.Q_list[Character.Player.myQuick[i].SlotNum].Add(Character.Player.myQuick[i]);
-    //    //    Inv.Q_list[Character.Player.myQuick[i].SlotNum].SetSlotCount();
-    //    //}
-    //}
-    //public void InfoReset()
-    //{
-    //    Inven.gameObject.SetActive(true);        
-    //    Inven.gameObject.SetActive(false);       
-
-    //}
     
-    //public void EscControl()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.Escape))
-    //    {
-    //        if(Inven.activeSelf == true)
-    //        {
-    //            //TryOpenInventory();
-    //            return;
-    //        }
-    //        if(skill.activeSelf == true)
-    //        {
-    //            TryOpenSkill();
-    //            return;
-    //        }
-    //        if(QuestList_M.activeSelf == true)
-    //        {
-    //            TryOpenQuest();
-    //            return;     
-    //        }            
-    //        if(option.gameObject.activeSelf == false)
-    //        {
-    //            OpenOtion();
-    //            return;
-    //        }
 
-
-    //    }
-    //}
     public void OpenOtion()
     {
         option.gameObject.SetActive(true);
 
 
     }
-void TryOpenSkill()
-    {
-        SkillActive = !SkillActive;
-        if (SkillActive)
-        {
-            OpenSkill();
 
-
-        }
-        else
-            CloseSkill();
-    } // 스킬창 오픈
-    public void OpenSkill()
-    {
-        
-        skill.SetActive(true);        
-
-        
-    }
-    public void CloseSkill()
-    {     
-        skill.SetActive(false);
-
-    }
-
-   
    
 }

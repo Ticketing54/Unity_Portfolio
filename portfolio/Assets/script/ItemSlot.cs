@@ -9,15 +9,15 @@ public class ItemSlot : Slot
     int SlotNum;    
     [SerializeField]
     Text ItemCount;
-    public void Add(string _SpriteName, int? _ItemCount)
+    public void Add(string _SpriteName, int _ItemCount)
     {
         if (_SpriteName == string.Empty)
         {
             Clear();
             return;
         }
-        Icon.gameObject.SetActive(true);
-        Icon.sprite = GameManager.gameManager.resource.GetImage(_SpriteName);        
+        icon.gameObject.SetActive(true);
+        icon.sprite = GameManager.gameManager.resource.GetImage(_SpriteName);        
 
         if (_ItemCount > 1)
         {
@@ -33,8 +33,8 @@ public class ItemSlot : Slot
     
     public override void Clear()
     {        
-        Icon.sprite = null;
-        Icon.gameObject.SetActive(false);
+        icon.sprite = null;
+        icon.gameObject.SetActive(false);
 
         if(ItemCount.gameObject.activeSelf==true)
             ItemCount.gameObject.SetActive(false);

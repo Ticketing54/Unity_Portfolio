@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using System;
 
 [System.Serializable]
-public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
+public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField]
     protected ItemSlot[] itemSlots;
@@ -13,95 +13,145 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler,IPointer
     protected int Count;
 
     protected ITEMLISTTYPE itemListType;
-    
+
+    public delegate Item GetItemInfo(int _Index);
+
+    int rightClickindex = -1;
   
     public virtual void OnEnable()
     {
+        UpdateAllSlot();
+        UIManager.uimanager.itemoveEnd += this.LeftClickUp;
+        UIManager.uimanager.updateUiSlot+= this.UpdateSlot;
         
        
     }
     public virtual void OnDisable()
     {
-       
+        UIManager.uimanager.itemoveEnd -= this.LeftClickUp;
+        UIManager.uimanager.updateUiSlot -= this.UpdateSlot;
     }
     
-
-    public void UpdateSlot(int _index,  Item _item)
+    public void UpdateAllSlot()
     {
-        
-        if (_item == null)
+        Item getitem;
+        for (int itemSlotNum=0; itemSlotNum < itemSlots.Length; itemSlotNum++)
+        {
+            getitem = Character.Player.ItemList_GetItem(itemListType, itemSlotNum);
+            if(getitem == null)
+            {
+                itemSlots[itemSlotNum].Clear();
+            }
+            else
+            {
+                itemSlots[itemSlotNum].Add(getitem.itemSpriteName, getitem.ItemCount);
+            }
+            
+            getitem = null;
+        }
+    }
+    public void UpdateSlot(ITEMLISTTYPE _itemListType, int _index)
+    {
+
+        if (_itemListType != itemListType)
+        {
+            return;
+        }
+
+        Item getitem = Character.Player.ItemList_GetItem(itemListType, _index);
+        if (getitem == null)
         {
             itemSlots[_index].Clear();
             return;
         }
-        itemSlots[_index].Add(_item.itemSpriteName, _item.ItemCount);
+        itemSlots[_index].Add(getitem.itemSpriteName, getitem.ItemCount);
     }
 
-    int isInRect_Down(Vector2 _ClickPos)
+    protected void LeftClickDown(Vector2 _ClickPos)
     {
-        for (int invenUiIndex = 0; invenUiIndex < itemSlots.Length; invenUiIndex++)
+        int index = isInSlots_Down(_ClickPos);
+        if (index >= 0)
         {
-            if (itemSlots[invenUiIndex].isInRect(_ClickPos) && !itemSlots[invenUiIndex].isEmpty())      
-            {
-                return invenUiIndex;
-            }
-
-        }
-        return -1;
-    }
-    int isInRect_Up(Vector2 _ClickPos)
-    {
-        for (int invenUiIndex = 0; invenUiIndex < itemSlots.Length; invenUiIndex++)
-        {
-            if (itemSlots[invenUiIndex].isInRect(_ClickPos))      
-            {
-                return invenUiIndex;
-            }
-
-        }
-        return -1;
+            UIManager.uimanager.StartDragItem(itemSlots[index], itemListType, index);
+        }             
     }
 
     
-
-
-    public void OnPointerDown(PointerEventData ClickPoint)
+    protected void LeftClickUp(Vector2 _ClickPos)
     {
-        if (Input.GetMouseButtonDown(0))
+        int index = isInSlots_Up(_ClickPos);
+        if (index >= 0)
         {
-            int Index = isInRect_Down(ClickPoint.position);
-            if (Index < 0)
-            {
-                return;
-            }
-            else
-            {
-                UIManager.uimanager.StartDragItem(this,itemListType,Index);
-            }
+            UIManager.uimanager.ClickUpitemSlot(itemListType, index);
+        }
+        
+    }
+    protected void RightClickDown(Vector2 _ClickPos)
+    {
+        rightClickindex = -1;               // 초기화
+
+        int index = isInSlots_Down(_ClickPos);
+        if (index >= 0)
+        {
+            rightClickindex = index;
         }
     }
 
-    public void OnPointerUp(PointerEventData ClickPoint)
+
+    protected void RightClickUp(Vector2 _ClickPos)
     {
-        if (!UIManager.uimanager.ClickUpPossable())
+        int index = isInSlots_Up(_ClickPos);
+        if (index >= 0 && rightClickindex == index)
         {
-            return;                                             // 이전 정보가 없을때 실패
+            Character.Player.ItemMove_Auto(itemListType, index);
         }
 
-
-        if (Input.GetMouseButtonUp(0))
+    }
+    int isInSlots_Down(Vector2 _ClickPos)
+    {
+        for (int itemMoveUiIndex = 0; itemMoveUiIndex < itemSlots.Length; itemMoveUiIndex++)
         {
-            int Index = isInRect_Up(ClickPoint.position);
-            if (Index < 0)
+            if (itemSlots[itemMoveUiIndex].isInRect(_ClickPos) && !itemSlots[itemMoveUiIndex].isEmpty())
             {
-                return;
-            }
-            else
-            {
-                UIManager.uimanager.ClickUpitemSlot(this,itemListType, Index);
-                
+                return itemMoveUiIndex;
             }
         }
-    }   
+
+        return -1;
+    }
+    int isInSlots_Up(Vector2 _ClickPos)
+    {
+        for (int itemMoveUiIndex = 0; itemMoveUiIndex < itemSlots.Length; itemMoveUiIndex++)
+        {
+            if (itemSlots[itemMoveUiIndex].isInRect(_ClickPos))
+            {
+                return itemMoveUiIndex;
+            }
+
+        }
+        return -1;
+    }
+
+
+
+    public void OnPointerDown(PointerEventData clickPoint)
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            LeftClickDown(clickPoint.position);
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            RightClickDown(clickPoint.position);
+        }
+    }
+
+    public void OnPointerUp(PointerEventData clickPoint)
+    {
+        if (Input.GetMouseButtonUp(1))
+        {
+            RightClickUp(clickPoint.position);
+        }
+    }
 }
 

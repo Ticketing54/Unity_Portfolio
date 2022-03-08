@@ -93,44 +93,65 @@ public class Character : MonoBehaviour, BattleUiControl
 
 
 
-    public bool ItemMove(ITEMLISTTYPE _StartListType, ITEMLISTTYPE _EndListType, int _StartListIndex, int _EndListIndex)
+    public void ItemMove(ITEMLISTTYPE _StartListType, ITEMLISTTYPE _EndListType, int _StartListIndex, int _EndListIndex)
     {
         ItemMove start_ItemMove = ChangeITemMove(_StartListType);
         ItemMove end_ItemMove   = ChangeITemMove(_EndListType);
 
         Item startItem = start_ItemMove.GetItem(_StartListIndex);
-        Item endItem   = start_ItemMove.GetItem(_EndListIndex);
+        Item endItem   = end_ItemMove.GetItem(_EndListIndex);
 
 
         if(startItem == null && endItem == null)
         {
-            Debug.LogError("빈 두아이템을 옮기려합니다.");
-            return false;
+            Debug.LogError("빈 두아이템을 옮기려합니다.");            
         }
         else if(start_ItemMove.PossableMoveItem(_StartListIndex,endItem) && end_ItemMove.PossableMoveItem(_EndListIndex, startItem))
         {
             startItem = start_ItemMove.PopItem(_StartListIndex);                // 시작지점 아이템을 Pop 하여
             endItem = end_ItemMove.Exchange(_EndListIndex, startItem);          // 목적지점 아이템과 교환
-            startItem = start_ItemMove.Exchange(_StartListIndex, endItem);      // 시작지점 아이템과 교환
+            start_ItemMove.Exchange(_StartListIndex, endItem);      // 시작지점 아이템과 교환
 
-            if(startItem != null)
-            {
-                Debug.LogError("startItem != null");
-            }
-            if (endItem != null)
-            {
-                Debug.LogError("endItem != null");
-            }
-            return true;
-        }
-        else
-        {
 
-            Debug.Log("이동이 불가합니다.");
-            return false;
+            UIManager.uimanager.updateUiSlot(_StartListType, _StartListIndex);
+            UIManager.uimanager.updateUiSlot(_EndListType, _EndListIndex);
+
+                     
         }
+        
     }
-   
+
+    public void ItemMove_Auto(ITEMLISTTYPE _StartListType, int _StartListIndex)
+    {
+        ItemMove start_ItemMove = ChangeITemMove(_StartListType);        
+
+        switch (_StartListType)
+        {
+            case ITEMLISTTYPE.EQUIP:
+                {
+                    ItemMove(_StartListType, ITEMLISTTYPE.INVEN, _StartListIndex, Inven.Empty_SlotNum());
+                    break;
+                }
+            case ITEMLISTTYPE.INVEN:
+                {
+                    Item rightClickitem = start_ItemMove.GetItem(_StartListIndex);
+                    if(rightClickitem!= null&& rightClickitem.itemType == ITEMTYPE.EQUIPMENT)
+                    {
+                        ItemMove(_StartListType, ITEMLISTTYPE.EQUIP, _StartListIndex, (int)rightClickitem.EquipType);
+                        break;
+                        
+                    }
+                    break;
+                }
+            case ITEMLISTTYPE.QUICK:
+                {
+                    break;
+                }
+            default:
+                break;
+
+        }        
+    }  
     #endregion
 
 

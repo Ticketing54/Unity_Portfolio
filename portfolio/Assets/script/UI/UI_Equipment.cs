@@ -7,6 +7,6 @@ public class UI_Equipment : UI_ItemSlots
 
     private void Awake()
     {
-        
+        itemListType = ITEMLISTTYPE.EQUIP;
     }
 }

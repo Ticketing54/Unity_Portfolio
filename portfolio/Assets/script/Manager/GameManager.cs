@@ -142,22 +142,19 @@ public class GameManager : MonoBehaviour
         // Test
 
 
-        Item test1 = new Item(0, 1, "test", "apple", "테스트입니다", "테스트입니다", 0);
-        
-        Item test2 = new Item(0, 1, "test2", "armor", "테스트입니다", "테스트입니다", 0);
-        Item test3 = new Item(0, 1, "test3", "axe", "테스트입니다", "테스트입니다", 0);
-        Item test4 = new Item(0, 1, "test4", "bag", "테스트입니다", "테스트입니다", 0);
-        
-
+        Item test1 = new Item(0, (int)ITEMTYPE.EQUIPMENT, "test", "apple", "테스트입니다", "Defend/10", 0,1,0);
+        Item test2 = new Item(1, (int)ITEMTYPE.EQUIPMENT, "test2", "armor", "테스트입니다", "Defend/1", 0,1,2);
+        Item test3 = new Item(1, (int)ITEMTYPE.EQUIPMENT, "test3", "axe", "테스트입니다", "Defend/2", 0,1,2);
+        Item test4 = new Item(2, (int)ITEMTYPE.USED, "test4", "bag", "테스트입니다", "테스트입니다", 0);
+        Item test5 = new Item(2, (int)ITEMTYPE.USED, "test4", "bag", "테스트입니다", "테스트입니다", 0);
+        Item test6 = new Item(3, (int)ITEMTYPE.USED, "test4", "book", "테스트입니다", "테스트입니다", 0);
         character.Inven.PushItem(test1);
         character.Inven.PushItem(test2);
         character.Inven.PushItem(test3);
         character.Inven.PushItem(test4);
-        
+        character.Inven.PushItem(test5);
+        character.Inven.PushItem(test6);
 
-
-
-        //
 
 
 

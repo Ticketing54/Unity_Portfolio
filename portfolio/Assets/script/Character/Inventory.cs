@@ -7,28 +7,27 @@ using System;
 public class Inventory : ItemMove
 {    
     Item[] Inven = new Item[18];    
-    int itemCount = 0;    
     
-    public ref Item GetItem(int _SlotNum)
+    
+    public  Item GetItem(int _SlotNum)
     {
-        return ref Inven[_SlotNum];
+        return  Inven[_SlotNum];
     }   
     public Item PopItem(int _SlotNum)
     {
         Item PopItem = GetItem(_SlotNum);
         Inven[_SlotNum] = null;
-        itemCount--;
-
         return PopItem;
     }
+
+    
     public bool PushItem(Item _NewItem)
     {
         for(int slotNum = 0; slotNum < Inven.Length; slotNum++)
         {
             if (Inven[slotNum] == null)
             {
-                Inven[slotNum] = _NewItem;
-                ++itemCount;
+                Inven[slotNum] = _NewItem;                
 
                 if(UIManager.uimanager.InventoryActive == true)
                 {   
@@ -45,12 +44,22 @@ public class Inventory : ItemMove
     {
         Inven[_Index] = _NewItem;
     }   
-
+    public int Empty_SlotNum()
+    {
+        for(int index = 0; index < Inven.Length; index++)
+        {
+            if(Inven[index] == null)
+            {                
+                return index;
+            }
+        }
+        return -1;
+    }
     public Item Exchange(int _Index, Item _NewItem)
     {
         Item OldItem = Inven[_Index];
 
-        if(OldItem.Index == _NewItem.Index)
+        if(OldItem != null && OldItem.Index == _NewItem.Index )
         {
             OldItem.ItemCount += _NewItem.ItemCount;
             return null;
@@ -68,5 +77,4 @@ public class Inventory : ItemMove
         return true;
     }
 
-  
 }

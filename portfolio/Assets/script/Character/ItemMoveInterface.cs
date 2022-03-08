@@ -4,9 +4,9 @@ using UnityEngine;
 
 public interface ItemMove
 {
-    ref Item GetItem(int _Index);
+    Item GetItem(int _Index);
     Item PopItem(int _Index);        
-    Item Exchange(int _index, Item _NewItem);
+    Item Exchange(int _index, Item _NewItem);   
 
     bool PossableMoveItem(int _index, Item _MoveItem);
 }

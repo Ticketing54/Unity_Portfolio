@@ -9,6 +9,8 @@ public class MiniInfo : MonoBehaviour
     [SerializeField]
     Image ItemImage;
     [SerializeField]
+    RectTransform Rect;
+    [SerializeField]
     TextMeshProUGUI ItemName;
     [SerializeField]
     TextMeshProUGUI ItemType;
@@ -18,11 +20,32 @@ public class MiniInfo : MonoBehaviour
     TextMeshProUGUI Property;
 
 
+    Vector2 Preset_Up;
+    Vector2 Preset_Down;
+    float width;
+    float height;
+
+    private void Awake()
+    {
+        width = (Rect.rect.width / 2);
+        height = (Rect.rect.height / 2);
+        Preset_Up = new Vector2(width, -height);
+        Preset_Down = new Vector2(width, height);
+        
+    }
     public void SetMiniInfo(Item _item, Vector2 Pos)    //정보 표시
     {
         if (_item == null)
             return;
-        transform.position = Pos;
+        if(Pos.y <= Rect.rect.height)
+        {
+            transform.position = Pos + Preset_Down;
+        }
+        else
+        {
+            transform.position = Pos + Preset_Up;
+        }
+        
         ItemImage.sprite = GameManager.gameManager.resource.GetImage(_item.itemSpriteName);
         ItemName.text = _item.ItemName;
         ItemType.text = _item.itemType.ToString();
@@ -35,13 +58,15 @@ public class MiniInfo : MonoBehaviour
         else
         {
             string[] tmp = _item.ItemProperty.Split('/');
-            Property.text = tmp[0]+" + "+tmp[1];
+            Property.text = _item.ItemProperty;
         }
     }
-
     private void Update()
     {
-        this.gameObject.transform.position = Input.mousePosition;
+        if (Input.GetMouseButtonDown(0))
+        {
+            this.gameObject.SetActive(false);
+        }
     }
 
 }

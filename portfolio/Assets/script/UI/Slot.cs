@@ -7,8 +7,8 @@ using UnityEngine.UI;
 public class Slot : MonoBehaviour
 {   
     [SerializeField]
-    protected Image Icon;   
-    public Sprite ICON { get { return Icon.sprite; } set { Icon.sprite = value; } }
+    protected Image icon;   
+    public Sprite ICON { get { return icon.sprite; } set { icon.sprite = value; } }
     public RectTransform tr;
     Rect rc;
     public Rect RC
@@ -39,15 +39,15 @@ public class Slot : MonoBehaviour
     }        
     public void ClickedSlot_Start()
     {
-        Color alpacontrol = Icon.color;
-        alpacontrol.a = 200;
-        Icon.color = alpacontrol;
+        Color alpacontrol = icon.color;
+        alpacontrol.a = 0.25f;
+        icon.color = alpacontrol;
     }
     public void ClickedSlot_End()
     {
-        Color alpacontrol = Icon.color;
-        alpacontrol.a = 255;
-        Icon.color = alpacontrol;
+        Color alpacontrol = icon.color;
+        alpacontrol.a = 1;
+        icon.color = alpacontrol;
     }
     public bool isEmpty()
     {
@@ -55,8 +55,8 @@ public class Slot : MonoBehaviour
     }
     public virtual void Clear()
     {
-        Icon.sprite = null;
-        Icon.gameObject.SetActive(false);
+        icon.sprite = null;
+        icon.gameObject.SetActive(false);
     }
     public virtual void Add(string _SpriteName)
     {
@@ -64,8 +64,8 @@ public class Slot : MonoBehaviour
         {
             Clear();
         }
-        Icon.gameObject.SetActive(true);
-        Icon.sprite = GameManager.gameManager.resource.GetImage(_SpriteName);
+        icon.gameObject.SetActive(true);
+        icon.sprite = GameManager.gameManager.resource.GetImage(_SpriteName);
     }
     IEnumerator buf_character(string _bufimagename,float buf_num_max, float _buf_num, float Max_Time) //버프이미지 // 총 버프하는 양 // 초당 버프하는 양// 총 버프되는시간
     {
