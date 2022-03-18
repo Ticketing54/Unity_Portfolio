@@ -108,9 +108,9 @@ public class Character : MonoBehaviour, BattleUiControl
         }
         else if(start_ItemMove.PossableMoveItem(_StartListIndex,endItem) && end_ItemMove.PossableMoveItem(_EndListIndex, startItem))
         {
-            startItem = start_ItemMove.PopItem(_StartListIndex);                // 시작지점 아이템을 Pop 하여
-            endItem = end_ItemMove.Exchange(_EndListIndex, startItem);          // 목적지점 아이템과 교환
-            start_ItemMove.Exchange(_StartListIndex, endItem);      // 시작지점 아이템과 교환
+            Item popItem = start_ItemMove.PopItem(_StartListIndex);  // 시작지점 아이템을 Pop 하여
+            start_ItemMove.AddItem(_StartListIndex, end_ItemMove.Exchange(_EndListIndex, popItem));     // 목적지점 아이템과 교환
+            
 
 
             UIManager.uimanager.updateUiSlot(_StartListType, _StartListIndex);

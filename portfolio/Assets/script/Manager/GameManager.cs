@@ -90,8 +90,7 @@ public class GameManager : MonoBehaviour
         Load_Map_Data();
         Load_Mob_Data();
         Load_Npc_Data();        
-        //UIManager.uimanager.InfoUpdate();
-        ObjectPoolManager.objManager.PoolingReset_Load();
+        //UIManager.uimanager.InfoUpdate();        
         //UIManager.uimanager.minimap.MapSetting();
         CameraManager.cameraManager.IsCharacter = true;
     }
@@ -220,7 +219,7 @@ public class GameManager : MonoBehaviour
                 Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
                 tmp.SlotNum = int.Parse(sInven[1]);
                 tmp.ItemCount = 1;
-                character.Equip.AddItem(tmp);        
+                character.Equip.AddItem((int)tmp.EquipType,tmp);        
                     
             }
         }

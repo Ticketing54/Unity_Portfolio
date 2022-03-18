@@ -28,7 +28,7 @@ public class boss_Sleep : StateMachineBehaviour
             
 
 
-        UIManager.uimanager.DialogControl();
+        //UIManager.uimanager.DialogControl();
         director.Play();
     }
 

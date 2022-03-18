@@ -68,6 +68,36 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
+    #region Equipment
+    public UI_Equipment uI_Equipment;
+    bool equipmentActive = false;
+    public bool EquipmentActive { get { return equipmentActive; } }
+    public void TryOpenEquipment()
+    {
+        equipmentActive = !equipmentActive;
+        if (equipmentActive)
+        {
+            OpenEquipment();
+        }
+        else
+        {
+            CloseEquipment();
+        }
+    }
+    public void OpenEquipment()
+    {
+        uI_Equipment.gameObject.SetActive(true);
+    }
+    public void CloseEquipment()
+    {
+        uI_Equipment.gameObject.SetActive(false);
+
+    }
+
+
+
+    #endregion
+
     #region ClickMove
     [SerializeField]                // 클릭시 아이템 정보
     MiniInfo miniInfo;
@@ -80,6 +110,7 @@ public class UIManager : MonoBehaviour
     ITEMLISTTYPE startListType = ITEMLISTTYPE.NONE;   
     int          startListIndex = -1;
     ItemSlot startItemSlot = null;
+
     Coroutine RunningCoroutine;                              // 증복 실행 방지
     
 
@@ -87,8 +118,9 @@ public class UIManager : MonoBehaviour
     public delegate void EndClicItemMove(Vector2 _Pos);
     public EndClicItemMove itemoveEnd;
 
-    public delegate void UpdateUiSlot(ITEMLISTTYPE _itemListType, int _Index);
-    public UpdateUiSlot updateUiSlot;
+    // 각각의 아이템슬롯 업데이트
+    public delegate void UpdateUiSlot(ITEMLISTTYPE _itemListType, int _Index);                      //
+    public UpdateUiSlot updateUiSlot;                                                               // 따로 자료형을 만들어서 제작하면 여러개를 한번에 할수 있을듯
     
     public void StartDragItem(ItemSlot _itemSlot,ITEMLISTTYPE _startListType, int _startListIndex)
     {
@@ -177,9 +209,26 @@ public class UIManager : MonoBehaviour
     public GameObject UiObj;
     public CanvasGroup FadeUi;
     public Image FadeInout;
-    public Dialogue dialog;
-    public Shop shop;
+    //public Dialogue dialog;
+    //public Shop shop;
     #endregion
+
+    #region UpdateMessage
+    [SerializeField]
+    PatchUi updateMessage;
+
+    public delegate void UpdatePatchMessage(float _percent);
+    public UpdatePatchMessage updatePatchMessage;
+    public void OpenUpdateMessage(long _downloadFileSize)
+    {
+        updateMessage.gameObject.SetActive(true);
+    }
+    public void CloseUpdateMessage()
+    {
+        updateMessage.gameObject.SetActive(false);
+    }
+    #endregion
+
 
     #region Quest
     public MiniQuestSlot questSlot;
@@ -267,7 +316,7 @@ public class UIManager : MonoBehaviour
         minimap.miniMap_n_Max_Min();
     }
    
-
+   
 
     //public void OpenShop(Npc _npc) // 상점열기
     //{
@@ -282,21 +331,21 @@ public class UIManager : MonoBehaviour
     //    //shop.ShopUpdate(_npc);
         
     //}
-    public void CloseDialog(Npc _npc) // 대화창 닫기
-    {
-        _npc.dialog_Done = false;
-        _npc.Dialog_num = 1;
-        _npc.NextDialog = -1;
-        dialog.ChoiceReset();
-        UIManager.uimanager.DialogControl();
+    //public void CloseDialog(Npc _npc) // 대화창 닫기
+    //{
+    //    _npc.dialog_Done = false;
+    //    _npc.Dialog_num = 1;
+    //    _npc.NextDialog = -1;
+    //    dialog.ChoiceReset();
+    //    //UIManager.uimanager.DialogControl();
 
-        if (shop.gameObject.activeSelf == true)
-        {
-            shop.gameObject.SetActive(false);
-            //TryOpenInventory();
-        }
+    //    if (shop.gameObject.activeSelf == true)
+    //    {
+    //        shop.gameObject.SetActive(false);
+    //        //TryOpenInventory();
+    //    }
         
-    }
+    //}
     public void TryOpenQuest()
     {
         QuestActive = !QuestActive;
@@ -318,82 +367,6 @@ public class UIManager : MonoBehaviour
         QuestList_M.SetActive(false);
 
     }
-    public void DialogControl()
-    {
-        StartCoroutine(Fade(!dialog.gameObject.activeSelf));        
-    }
-
-    IEnumerator Fade(bool UiAtice)
-    {
-        Color color = FadeInout.color;
-        if(color.a <= 0)
-        {
-            FadeInout.gameObject.SetActive(true);
-            while (true)
-            {
-                color.a += Time.deltaTime;
-                FadeInout.color = color;
-
-                if(color.a >= 1)
-                {
-                    if (UiAtice)
-                    {
-                        FadeUi.alpha = 0;
-                    }
-                    else
-                    {
-                        FadeUi.alpha = 1;
-                    }
-
-                    dialog.gameObject.SetActive(UiAtice);
-                    dialog.dialogreset();
-                    StartCoroutine(Fade(UiAtice));
-                    yield break;
-                }
-
-
-
-
-                yield return null;
-            }
-
-
-
-        }
-        else if (color.a >= 1)
-        {
-            while (true)
-            {
-                color.a -=Time.deltaTime;
-                FadeInout.color = color;
-
-
-                if (color.a <= 0)
-                {
-                    FadeInout.gameObject.SetActive(false);
-                    yield break;
-                }
-                    
-
-
-
-
-                yield return null;
-            }
-
-
-
-
-
-
-        }
-
-        
-
-        
-    }
-
-    
     
 
     public void OpenOtion()

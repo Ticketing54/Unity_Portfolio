@@ -18,8 +18,8 @@ public class Dwarf_b_idle : StateMachineBehaviour
     {
         if (npc.DISTANCE < 4f && Character.Player.Interaction_T == true && Character.Player.ClickObj == true)
         {
-            UIManager.uimanager.DialogControl();
-            UIManager.uimanager.dialog.npc = npc;
+            //UIManager.uimanager.DialogControl();
+            
             animator.SetBool("Dialog", true);
             return;
         }

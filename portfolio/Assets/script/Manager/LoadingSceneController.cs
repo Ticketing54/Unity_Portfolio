@@ -99,18 +99,18 @@ public class LoadingSceneController : MonoBehaviour
             StartCoroutine(Fade(false));
             
             SceneManager.sceneLoaded -= OnSceneLoaded;
-            if(loadSceneName == "Main")
-            {                
-                GameManager.gameManager.MainMenu();
-            }
-            else if(GameManager.gameManager.isCharacter == true)
-            {
-                GameManager.gameManager.NewArea(GameManager.gameManager.MapName);
-            }
-            else if(GameManager.gameManager.isCharacter == false)
-            {
-                GameManager.gameManager.LoadGame(GameManager.gameManager.Player_num);
-            }
+            //if(loadSceneName == "Main")
+            //{                
+            //    GameManager.gameManager.MainMenu();
+            //}
+            //else if(GameManager.gameManager.isCharacter == true)
+            //{
+            //    GameManager.gameManager.NewArea(GameManager.gameManager.MapName);
+            //}
+            //else if(GameManager.gameManager.isCharacter == false)
+            //{
+            //    GameManager.gameManager.LoadGame(GameManager.gameManager.Player_num);
+            //}
 
         }
     }

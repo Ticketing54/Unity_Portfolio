@@ -29,22 +29,27 @@ public class Equipment : ItemMove
         Stat.TakeOffStatus(popItem);
         return popItem;
     }
-    public void AddItem(Item _NewItem)
+    public void AddItem(int _index,Item _NewItem)
     {
-        if (_NewItem.itemType != ITEMTYPE.EQUIPMENT) 
+        if (_NewItem != null)
         {
-            Debug.LogError("잘못된 아이템을 장비로 장착하려합니다");
-            return;
-        }
+            if (_NewItem.itemType != ITEMTYPE.EQUIPMENT )
+            {
+                Debug.LogError("잘못된 아이템을 장비로 장착하려합니다");
+                return;
+            }
+            Stat.EquipStatus(_NewItem);
+        }        
 
-        Equip[(int)_NewItem.itemType] = _NewItem;
-        Stat.EquipStatus(_NewItem);        
+        Equip[_index] = _NewItem;   
+        
+        
     }
 
     public Item Exchange(int _index, Item _NewItem)
     {
         Item popItem = PopItem(_index);
-        AddItem(_NewItem);
+        AddItem((int)_NewItem.EquipType,_NewItem);
         return popItem;        
     }
 
@@ -73,4 +78,5 @@ public class Equipment : ItemMove
 
     }
 
+   
 }

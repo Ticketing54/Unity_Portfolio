@@ -19,9 +19,65 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
     public TextMeshProUGUI Rewards_Exp;
     public TextMeshProUGUI Rewards_Gold;
     public TextMeshProUGUI Rewards_Item;
-    
 
-    
+
+
+
+    // Fade
+    [SerializeField]
+    Image FadeInout;
+
+
+    private void OnEnable()
+    {
+        StartCoroutine(Fade());
+    }
+    private void OnDisable()
+    {
+        StartCoroutine(Fade());
+    }
+
+
+    IEnumerator Fade()
+    {
+        Color color = FadeInout.color;
+        if (color.a <= 0)
+        {
+            FadeInout.gameObject.SetActive(true);
+            while (true)
+            {
+                color.a += Time.deltaTime;
+                FadeInout.color = color;
+
+                if (color.a >= 1)
+                {                                     
+                    dialogreset();
+                    StartCoroutine(Fade());
+                    yield break;
+                }
+                yield return null;
+            }
+        }
+        else if (color.a >= 1)
+        {
+            while (true)
+            {
+                color.a -= Time.deltaTime;
+                FadeInout.color = color;                
+                yield return null;
+
+                if (color.a <= 1)
+                {                   
+                    yield break;
+                }
+            }           
+        }
+    }
+
+
+
+
+
 
     public Npc npc = null;
 

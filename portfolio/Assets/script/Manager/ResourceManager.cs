@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEngine.UI;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using System;
 
 public class ResourceManager
@@ -11,6 +13,10 @@ public class ResourceManager
     Dictionary<string, Sprite> ImgRes;
     Dictionary<TABLETYPE, List<string>> TableRes;
     Dictionary<int, string> DialogueRes;
+
+
+    AsyncOperationHandle handle;
+
     public ResourceManager()
     {
         ObjRes = new Dictionary<string, GameObject>();
@@ -19,8 +25,14 @@ public class ResourceManager
         DialogueRes = new Dictionary<int, string>();
     }    
 
-    public GameObject GetGameObject(string _Name)
+
+   
+    public void DownloadResource()
     {
+
+    }
+    public GameObject GetGameObject(string _Name)
+    {        
         GameObject Obj;
         if(ObjRes.TryGetValue(_Name,out Obj))
         {

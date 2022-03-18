@@ -12,8 +12,7 @@ public class Dwarf_b_Dialog : StateMachineBehaviour
     {
         if (npc == null)
             npc = animator.GetComponent<Npc>();
-        if (dialog == null)
-            dialog = UIManager.uimanager.dialog;
+        
 
         dialog_Texting = false;
 
@@ -42,7 +41,7 @@ public class Dwarf_b_Dialog : StateMachineBehaviour
         if (npc.dialog_Done == true && Input.GetKeyDown(KeyCode.Escape) || npc.ExitDialog == true)  // 나가기 버튼 // 대화가 끝났을때 
         {
             npc.ExitDialog = false;
-            UIManager.uimanager.CloseDialog(npc);
+            
             animator.SetBool("Dialog", false);
         }
 

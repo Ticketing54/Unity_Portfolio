@@ -47,7 +47,7 @@ public class boss_SleepScream : StateMachineBehaviour
     {
 
         audio.gameObject.SetActive(false);
-        UIManager.uimanager.DialogControl();
+        //UIManager.uimanager.DialogControl();
         CameraManager.cameraManager.IsCharacter = true;
         CameraManager.cameraManager.gameObject.transform.parent = null;
         director.Stop();

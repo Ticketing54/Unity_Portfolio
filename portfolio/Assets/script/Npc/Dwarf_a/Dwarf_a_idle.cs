@@ -22,8 +22,8 @@ public class Dwarf_a_idle : StateMachineBehaviour
     {
         if(npc.DISTANCE < 4f && Character.Player.Interaction_T == true && Character.Player.ClickObj == true)
         {            
-            UIManager.uimanager.DialogControl();
-            UIManager.uimanager.dialog.npc = npc;
+            //UIManager.uimanager.DialogControl();
+            //UIManager.uimanager.dialog.npc = npc;
             animator.SetBool("Dialog", true);
             return;
         }
