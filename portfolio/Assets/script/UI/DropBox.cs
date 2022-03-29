@@ -7,8 +7,7 @@ using UnityEngine.EventSystems;
 public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointerUpHandler
 {
     public List<Slot> DropSlotlist = new List<Slot>();   
-    public MiniInfo miniinfo;    
-    public ITemUiManager Inven;
+    public MiniInfo miniinfo;        
 
 
     public MoveWindow moveWindow;

@@ -179,6 +179,24 @@ public class QuickSlot :ItemMove
             return;
         else quickItem[_SlotNum].itemType = ITEMTYPE.NONE;
     }
+    public string QuickItemInfo()
+    {
+        string Data = string.Empty;
 
- 
+        Item[] activeQuick = ItemSlot[ItemSlotNum];
+        for (int i = 0; i < activeQuick.Length; i++)
+        {
+            if (activeQuick[i] != null)
+            {
+                if (Data != string.Empty)
+                {
+                    Data += "/";
+                }
+                Data += activeQuick[i].Index + "," + i+","+activeQuick[i].ItemCount;
+            }
+        }
+        return Data;
+
+    }
+
 }

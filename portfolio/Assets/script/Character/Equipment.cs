@@ -73,10 +73,25 @@ public class Equipment : ItemMove
             {
                 return true;
             }
-
         }
+    }
+    public string EqipInfo()
+    {
+        string Data = string.Empty;
+        for (int i = 0; i < Equip.Length; i++)
+        {
+
+            if (Equip[i] != null)
+            {
+                if (Data != string.Empty)
+                {
+                    Data += "/";
+                }
+                Data += Equip[i].Index + "," + i;
+            }
+        }
+        return Data;
 
     }
 
-   
 }

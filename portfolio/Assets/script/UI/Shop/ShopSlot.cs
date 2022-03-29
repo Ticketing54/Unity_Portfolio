@@ -38,7 +38,7 @@ public class ShopSlot : MonoBehaviour
     public void AddItem(Item _item)
     {
         item = _item;
-        ItemImage.sprite = GameManager.gameManager.resource.GetImage(_item.itemSpriteName);
+        ItemImage.sprite = ResourceManager.resource.GetImage(_item.itemSpriteName);
         ItemName.gameObject.SetActive(true);
         ItemName.text = item.ItemName;
         ItemPrice.gameObject.SetActive(true);

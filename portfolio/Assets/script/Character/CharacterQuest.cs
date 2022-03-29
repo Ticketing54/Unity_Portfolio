@@ -6,145 +6,78 @@ using System.Linq;
 
 public class CharacterQuest 
 {
-    Dictionary<HAVEQUESTSTATE, Dictionary<int, Quest>> All_QuesDic = new Dictionary<HAVEQUESTSTATE, Dictionary<int, Quest>>();
-    Dictionary<int, Quest> QuestDic;
-    List<int> PlayingQuestList = new List<int>();
-    List<int> DoneQuestList = new List<int>();
-    Quest quest = null;
+    Dictionary<int, Quest> questDic = new Dictionary<int, Quest>();
     
-    public CharacterQuest()
+    
+    public void AddQuest(int _index)
     {
-        All_QuesDic[HAVEQUESTSTATE.PLAYING] = new Dictionary<int, Quest>();
-        All_QuesDic[HAVEQUESTSTATE.FINISH] = new Dictionary<int, Quest>();
-    }
-
-    public void UpdateQuest(int _index,int _need)
-    {
-        QuestDic = All_QuesDic[HAVEQUESTSTATE.PLAYING];
-
-        if (QuestDic.TryGetValue(_index, out quest))
+        if (questDic.ContainsKey(_index))
         {
-                      
-        }
-       else
-        {
-            Debug.LogError($"퀘스트 인덱스 {quest.Index}");
-            Debug.LogError("없는 퀘스트를 업데이트 하려 합니다.");
+            Debug.Log("있는 퀘스트를 더할려고합니다.");
             return;
         }
-
-        quest.QuestUpdate(_need);
-        // 퀘스트 UI 업데이트 할 것!      
-        //UIManager.uimanager.quickQuest.UpdateQuest(_index);
-        QuestDic = null;
-        quest = null;
-    }
-
-    // 퀘스트 등록
-    public void Add(HAVEQUESTSTATE _state,int _index, Quest _NewQuest)
-    {        
-        QuestDic = All_QuesDic[_state];
-        
-        if (QuestDic.TryGetValue(_index, out quest))
+        List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable",_index);
+        List<int> precedQuest;
+        Quest quest;
+        if (questTable[1] != "")
         {
-            Debug.LogError($"퀘스트 인덱스 {quest.Index}");
-            Debug.LogError("있는 퀘스트를 다시 받으려고 합니다.");
-        }
-        QuestDic.Add(_index, _NewQuest);
-        AddList(_state, _index);
-        QuestDic = null;
-    }
-    // 게임상에서 퀘스트를 받았을때
-    public void Add(int _index, Quest _NewQuest)
-    {
-        QuestDic = All_QuesDic[HAVEQUESTSTATE.PLAYING];
-        if (QuestDic.TryGetValue(_index, out quest))
-        {
-            Debug.LogError($"퀘스트 인덱스 {quest.Index}");
-            Debug.LogError("있는 퀘스트를 다시 받으려고 합니다.");
-        }
-        QuestDic.Add(_index, _NewQuest);
-        AddList(HAVEQUESTSTATE.PLAYING, _index);
-        //UIManager.uimanager.quickQuest.AddQuest(_NewQuest);
-        QuestDic = null;
-    }
-    public void AddList(HAVEQUESTSTATE _state, int _Index)
-    {
-        switch (_state)
-        {
-            case HAVEQUESTSTATE.PLAYING:
-                PlayingQuestList.Add(_Index);
-                PlayingQuestList.Sort();                
-                return;
-            case HAVEQUESTSTATE.FINISH:
-                DoneQuestList.Add(_Index);
-                DoneQuestList.Sort();
-                return;
-        }
-        QuestDic = null;
-    }
-    public List<int> GetQuestList(HAVEQUESTSTATE _state)
-    {
-        QuestDic = All_QuesDic[_state];
-        List<int> SoltList = QuestDic.Keys.ToList<int>();
-        SoltList.Sort();
-        return SoltList;
-    }
-    
-    public bool IsQuest(int _index)
-    {
-        QuestDic = All_QuesDic[HAVEQUESTSTATE.FINISH];
-        if (QuestDic.TryGetValue(_index, out quest))
-        {
-            return true;
-        }
-        QuestDic = All_QuesDic[HAVEQUESTSTATE.PLAYING];
-        if (QuestDic.TryGetValue(_index, out quest))
-        {
-            return true;
-        }
-        return false;
-    }
-    public Quest GetQuest(int _index)
-    {
-        QuestDic = All_QuesDic[HAVEQUESTSTATE.FINISH];
-        if (QuestDic.TryGetValue(_index, out quest))
-        {
-            return quest;
-        }
-        QuestDic = All_QuesDic[HAVEQUESTSTATE.PLAYING];
-        if (QuestDic.TryGetValue(_index, out quest))
-        {
-            return quest;
-        }
-        return null;
-    }
-    public QUESTSTATE GetState(int _index)
-    {
-        QuestDic = All_QuesDic[HAVEQUESTSTATE.FINISH];
-        if (QuestDic.TryGetValue(_index, out quest))
-        {
-            return quest.State;
-        }
-        QuestDic = All_QuesDic[HAVEQUESTSTATE.PLAYING];
-        if (QuestDic.TryGetValue(_index, out quest))
-        {
-            return quest.State;
-        }
-        return QUESTSTATE.NONE;
-    }
-    public void FinishQuest(int _index)
-    {
-        QuestDic = All_QuesDic[HAVEQUESTSTATE.PLAYING];
-        if (QuestDic.TryGetValue(_index, out quest))
-        {
-            QuestDic.Remove(_index);
-            All_QuesDic[HAVEQUESTSTATE.FINISH].Add(_index, quest);
-            QuestDic = null;
-
+            precedQuest = new List<int>();
+            string[] arrayPreced = questTable[1].Split('/');
+            for (int i = 0; i < arrayPreced.Length; i++)
+            {
+                precedQuest.Add(int.Parse(arrayPreced[i]));
+            }
+            quest = new Quest(int.Parse(questTable[0]), questTable[2], questTable[3], questTable[4], questTable[5], int.Parse(questTable[6]), int.Parse(questTable[7]), "PLAYING",precedQuest);
         }
         else
-            Debug.LogError("없는 퀘스트를 완료하려 합니다.");        
+        {
+            quest = new Quest(int.Parse(questTable[0]), questTable[2], questTable[3], questTable[4], questTable[5], int.Parse(questTable[6]), int.Parse(questTable[7]), "PLAYING");
+        }
+        
+        questDic.Add(_index, quest);
     }
-    
+    public Quest GetQuest (int _index)
+    {
+        Quest quest;
+        if(questDic.TryGetValue(_index,out quest))
+        {
+            return quest;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    public int ChracterState_Quest(int _index)
+    {
+        Quest quest = GetQuest(_index);
+        if (quest == null)
+        {
+            return (int)QUESTSTATE.NONE;
+        }
+            
+        List<int> precedQuestList = quest.PrecedeQuest;
+
+        foreach(int questindex in precedQuestList)
+        {
+            Quest precedQuest = GetQuest(questindex);
+            if(precedQuest == null || (precedQuest.State != QUESTSTATE.DONE))
+            {
+                return (int)QUESTSTATE.DONE;
+            }
+        }
+
+        switch (quest.State)
+        {
+            case QUESTSTATE.PLAYING:
+                return (int)QUESTSTATE.PLAYING;
+            case QUESTSTATE.COMPLETE:
+                return (int)QUESTSTATE.COMPLETE;
+            case QUESTSTATE.DONE:
+                return (int)QUESTSTATE.DONE;
+            default:
+                return 3;
+        }        
+    }
+   
 }

@@ -47,7 +47,7 @@ public enum QUESTTYPE
 public enum QUESTSTATE
 {
     NONE,
-    READY,
+    READY =0,
     PLAYING,
     COMPLETE,
     DONE

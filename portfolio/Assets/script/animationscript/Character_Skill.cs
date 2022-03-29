@@ -12,9 +12,9 @@ public class Character_Skill : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
 
-        if (nav == null)
-            nav = Character.Player.nav;
-        Character.Player.DontMove = true;
+        //if (nav == null)
+        //    nav = Character.Player.nav;
+        //Character.Player.DontMove = true;
         Character.Player.Target = null;
         Skill_num = animator.GetFloat("SkillNum");
 
@@ -46,7 +46,7 @@ public class Character_Skill : StateMachineBehaviour
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        Character.Player.DontMove = false;
+        //Character.Player.DontMove = false;
         if (Skill_num == 1)
         {
             nav.avoidancePriority = 50;

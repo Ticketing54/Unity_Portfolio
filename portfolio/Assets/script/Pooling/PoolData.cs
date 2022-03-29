@@ -12,7 +12,8 @@ public class PoolData<Type> where Type : Component
     public PoolData(Type _Prefab, GameObject _Parent,string _Key)
     {
         Pool = new Queue<Type>();
-        Prefab = _Prefab;        
+        Prefab = _Prefab;
+        _Prefab.gameObject.SetActive(false);
         count = 0;
         Key = _Key;
         GameObject NewParent = new GameObject(Key+" : "+count);        
@@ -35,14 +36,15 @@ public class PoolData<Type> where Type : Component
         Type NewType;
         if (count <= 0)
         {          
-            NewType = Object.Instantiate<Type>(Prefab);
-            NewType.transform.SetParent(Parent.transform);
-
-            return NewType;
+            NewType = Object.Instantiate<Type>(Prefab);            
         }
-        NewType = Pool.Dequeue();
-        NewType.gameObject.SetActive(true);
-        count--;
+        else
+        {
+            NewType = Pool.Dequeue();
+            count--;
+        }
+        NewType.transform.SetParent(Parent.transform);
+        NewType.gameObject.SetActive(true);        
         SetParentName();
         return NewType;
     }

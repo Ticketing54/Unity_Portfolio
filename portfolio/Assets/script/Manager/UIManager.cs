@@ -6,19 +6,19 @@ using UnityEngine.UI;
 using System;
 public class UIManager : MonoBehaviour
 {
-    public static UIManager uimanager;
-    public RectTransform UI;
+    public static UIManager uimanager;    
 
     #region Ui_Effect
 
     public UiEffectControl uieffect;
-
+    [SerializeField]
+    GameObject baseUi;
     #endregion
 
     #region Middle_Top_HpBar    
     [SerializeField]
     TopEnermyInfoUi topEnermyInfoUi;
-    public void Open_Top_EnermyInfo(MonsterUiControl _Monster)              // 상단 중앙 적정보 UI
+    public void Open_Top_EnermyInfo(BattleUnit _Monster)              // 상단 중앙 적정보 UI
     {
         topEnermyInfoUi.gameObject.SetActive(true);
         topEnermyInfoUi.Top_EnermyInfoUi(_Monster);
@@ -205,26 +205,107 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
+
+    #region Fade
+    [SerializeField]
+    Image fadeInout;
+
+    public delegate void FadeInTurnOnOffUi();                       // Fade in ->UiOnOff ->Fade out
+    
+   
+    public void FadeInOut(FadeInTurnOnOffUi _middleFuc)
+    {
+        StartCoroutine(Fade(_middleFuc));
+    }
+    
+    IEnumerator Fade(FadeInTurnOnOffUi _middleFuc)
+    {
+        fadeInout.gameObject.SetActive(true);
+        Color controlColor = fadeInout.color;                
+
+        float timer = 0;
+        bool isFadein = true;
+        while(true)
+        {
+            yield return null;
+            timer += Time.unscaledDeltaTime ;
+
+            controlColor.a = isFadein ? Mathf.Lerp(0f, 1f, timer) : Mathf.Lerp(1f, 0f, timer);
+            fadeInout.color = controlColor;
+
+            if(isFadein == true && controlColor.a >= 1)
+            {
+                _middleFuc();                               /// 어두워졌을때 작업
+                isFadein = false;
+                timer = 0;
+            }
+
+            if(isFadein == false && controlColor.a <= 0)
+            {
+                break;
+            }
+        }
+
+        fadeInout.gameObject.SetActive(false);        
+    }
+    #endregion
     #region Dialog
-    public GameObject UiObj;
-    public CanvasGroup FadeUi;
-    public Image FadeInout;
-    //public Dialogue dialog;
+    [SerializeField]
+    DialogueUi dialog;
     //public Shop shop;
+    NpcUnit npc;
+    public void OpenDialog(NpcUnit _npc)
+    {
+        npc = _npc;
+        StartCoroutine(Fade(SetDialog));        
+    }
+    void SetDialog()
+    {
+        baseUi.gameObject.SetActive(false);
+        dialog.gameObject.SetActive(true);
+        dialog.StartDialogue(npc);        
+    }
+    void QuitDialog()
+    {        
+        baseUi.gameObject.SetActive(true);
+        dialog.gameObject.SetActive(false);
+    }
+    public void CloseDialog()
+    {
+        npc = null;
+        StartCoroutine(Fade(QuitDialog));        
+    }
     #endregion
 
     #region UpdateMessage
     [SerializeField]
-    PatchUi updateMessage;
+    PatchUi updateMessage;    
+    [SerializeField]
+    CanvasGroup patchCanvasGroup;
 
-    public delegate void UpdatePatchMessage(float _percent);
-    public UpdatePatchMessage updatePatchMessage;
+
+
     public void OpenUpdateMessage(long _downloadFileSize)
+    {        
+        updateMessage.SetUpdateMessage(_downloadFileSize);
+    }    
+    public void ClosePatchUi()
     {
-        updateMessage.gameObject.SetActive(true);
+        StartCoroutine(FadeoutPatch());
     }
-    public void CloseUpdateMessage()
-    {
+    IEnumerator FadeoutPatch()
+    {        
+        while (true)
+        {            
+            patchCanvasGroup.alpha -= Time.unscaledDeltaTime*0.5f;
+            if(patchCanvasGroup.alpha <= 0)
+            {
+                break;
+            }
+
+            yield return null;
+        }
+
         updateMessage.gameObject.SetActive(false);
     }
     #endregion
@@ -275,7 +356,7 @@ public class UIManager : MonoBehaviour
     {       
 
 
-        if(Character.Player != null && FadeUi.alpha == 1)
+        if(Character.Player != null )
         {            
             
             if (Input.GetKeyDown(KeyCode.I))

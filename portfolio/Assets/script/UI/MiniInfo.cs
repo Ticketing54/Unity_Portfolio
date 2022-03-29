@@ -46,7 +46,7 @@ public class MiniInfo : MonoBehaviour
             transform.position = Pos + Preset_Up;
         }
         
-        ItemImage.sprite = GameManager.gameManager.resource.GetImage(_item.itemSpriteName);
+        ItemImage.sprite = ResourceManager.resource.GetImage(_item.itemSpriteName);
         ItemName.text = _item.ItemName;
         ItemType.text = _item.itemType.ToString();
         ExPlain.text = _item.ItemExplain;

@@ -6,28 +6,28 @@ using System;
 [System.Serializable]
 public class Inventory : ItemMove
 {    
-    Item[] Inven = new Item[18];    
+    Item[] inven = new Item[18];    
     
     
     public  Item GetItem(int _SlotNum)
     {
-        return  Inven[_SlotNum];
+        return  inven[_SlotNum];
     }   
     public Item PopItem(int _SlotNum)
     {
         Item PopItem = GetItem(_SlotNum);
-        Inven[_SlotNum] = null;
+        inven[_SlotNum] = null;
         return PopItem;
     }
 
     
     public bool PushItem(Item _NewItem)
     {
-        for(int slotNum = 0; slotNum < Inven.Length; slotNum++)
+        for(int slotNum = 0; slotNum < inven.Length; slotNum++)
         {
-            if (Inven[slotNum] == null)
+            if (inven[slotNum] == null)
             {
-                Inven[slotNum] = _NewItem;                
+                inven[slotNum] = _NewItem;                
 
                 if(UIManager.uimanager.InventoryActive == true)
                 {   
@@ -42,13 +42,13 @@ public class Inventory : ItemMove
     
     public void AddItem(int _Index, Item _NewItem)
     {
-        Inven[_Index] = _NewItem;
+        inven[_Index] = _NewItem;
     }   
     public int Empty_SlotNum()
     {
-        for(int index = 0; index < Inven.Length; index++)
+        for(int index = 0; index < inven.Length; index++)
         {
-            if(Inven[index] == null)
+            if(inven[index] == null)
             {                
                 return index;
             }
@@ -57,24 +57,41 @@ public class Inventory : ItemMove
     }
     public Item Exchange(int _Index, Item _NewItem)
     {
-        Item OldItem = Inven[_Index];
+        Item OldItem = inven[_Index];
 
         if(OldItem != null && OldItem.Index == _NewItem.Index )
         {
             OldItem.ItemCount += _NewItem.ItemCount;
             return null;
         }
-        Inven[_Index] = _NewItem;
+        inven[_Index] = _NewItem;
         return OldItem;
     }
     public bool IsEmpty(int _Num)
     {
-        return Inven[_Num] == null;
+        return inven[_Num] == null;
     }
 
     public bool PossableMoveItem(int _index, Item _MoveItem)
     {
         return true;
     }
-
+    public string InvenInfo()
+    {
+        string Data = string.Empty;
+        for (int i = 0; i < inven.Length; i++)
+        {
+           
+            if (inven[i] != null)
+            {
+                if (Data != string.Empty)
+                {
+                    Data += "/";
+                }
+                Data += inven[i].Index + "," + i + "," + inven[i].ItemCount ;
+            }
+        }
+        return Data;
+        
+    }
 }

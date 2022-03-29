@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: CharacterAssets
+  m_EditorClassIdentifier: 
+  m_GroupName: CharacterAssets
+  m_Data:
+    m_SerializedData: []
+  m_GUID: d3b04fd695cee03448523856e81e004f
+  m_SerializeEntries:
+  - m_GUID: 017f5940b5749c6438539b257c1a1376
+    m_Address: Durmmy_a
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Npc
+  - m_GUID: 096bafb892fdf0247835de85df748bf8
+    m_Address: BeginnerBlacksmith
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Npc
+  - m_GUID: 66b93afd83d334a40bf99f39cce5a850
+    m_Address: Blacksmith
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Npc
+  - m_GUID: 7e6e29f21a00d5f499e21eb93d6fabaa
+    m_Address: Mayor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Npc
+  - m_GUID: 8d51a8c633c9b8140837e8ca8306a444
+    m_Address: Mimic
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: acd48a71ada92f646822b8a20d83ab01
+    m_Address: Boss
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: ccd3bb096cfe8604bb5626f6c6b7e53f
+    m_Address: skill2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: d1d12cb5876b24b54b24e92e0d93fede
+    m_Address: Durmmy_b
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: e4cdd691d3086cf41885136f52785424
+    m_Address: Author
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Npc
+  - m_GUID: f018c9b8a16f9c3449b1c025f1a66ce4
+    m_Address: Citizen
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Npc
+  - m_GUID: f933c455b886ad644b60dc415ab31bb3
+    m_Address: Passerby
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Npc
+  - m_GUID: 950430d29cc1ab149a41d3be494239e4
+    m_Address: PlayerCharacter
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Player
+    - Patch
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 6defd24f3161a494192e121d10f7c432, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ee98f87a1e897da4bb05a4c883009bf9, type: 2}
+    - {fileID: 11400000, guid: 0be4203844b9d7546ab8d9abb2399335, type: 2}

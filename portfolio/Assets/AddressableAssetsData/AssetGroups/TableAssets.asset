@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: TableAssets
+  m_EditorClassIdentifier: 
+  m_GroupName: TableAssets
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 899037ef07c73714ba0725ad7c0e5d63
+  m_SerializeEntries:
+  - m_GUID: 1cd05f2cdb0aca64fbc59124818be6c3
+    m_Address: LevelTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: 28af58e2c1a97474ba09a13a89b96743
+    m_Address: VillageTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+    - Patch
+  - m_GUID: 2df6b677811f32d41a1dc46d2611ef80
+    m_Address: QuestTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: 3815b4eb9ceac9f48b38f7715462528f
+    m_Address: ItemTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: 6ede9ff3977d6e849ba48422fe215290
+    m_Address: UserTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: b140c77cb33d18d479945b4a12b72df3
+    m_Address: MonsterTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: b82870fcac6590a4bb79d56dd302aebb
+    m_Address: NpcTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: ec37377c6e3624344a85448273357c3b
+    m_Address: SkillTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 6defd24f3161a494192e121d10f7c432, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 797eb13c43233f8439468f463b382bb5, type: 2}
+    - {fileID: 11400000, guid: 0f3ecd07cb847af46a789742d7456331, type: 2}

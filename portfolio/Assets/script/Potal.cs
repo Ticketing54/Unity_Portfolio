@@ -38,8 +38,8 @@ public class Potal : MonoBehaviour
             {
                 if (MiniMap_Dot_M == null)
                 {
-                    MiniMap_Dot_M = ObjectPoolManager.objManager.PoolingMiniDot_M();
-                    MiniMap_Dot_M.sprite = GameManager.gameManager.resource.GetImage("Dot_P");
+                    //MiniMap_Dot_M = ObjectPoolManager.objManager.PoolingMiniDot_M();
+                    MiniMap_Dot_M.sprite = ResourceManager.resource.GetImage("Dot_P");
                 }
                 else
                 {
@@ -81,9 +81,7 @@ public class Potal : MonoBehaviour
         if (DISTANCE < 1 && isWarp == false && Character.Player !=null)
         {
             isWarp = true;            
-            GameManager.gameManager.MapName = MapName;
-            Character.Player.nav.SetDestination(Character.Player.transform.position);
-            Character.Player.nav.Warp(Pos);
+            GameManager.gameManager.MapName = MapName;            
             LoadingSceneController.instance.LoadScene(MapName);
         }
             

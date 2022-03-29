@@ -51,14 +51,14 @@ public class Item
             switch (Data[0])
             {
                 case "Hp":
-                    if (Character.Player.isrecovery_Hp == true || Character.Player.Stat.MAXHP <= Character.Player.Stat.HP)
+                    if (Character.Player.isrecovery_Hp == true || Character.Player.STAT.MAXHP <= Character.Player.STAT.HP)
                         return;
                     //SetSlotCount();
                     //StartCoroutine(buf_character(Data[0], float.Parse(Data[1]), float.Parse(Data[2]), float.Parse(Data[3])));
                     ItemCount -= 1;
                     break;
                 case "Mp":
-                    if (Character.Player.isrecovery_Mp == true || Character.Player.Stat.MAXMP <= Character.Player.Stat.MP)
+                    if (Character.Player.isrecovery_Mp == true || Character.Player.STAT.MAXMP <= Character.Player.STAT.MP)
                         return;
                     //SetSlotCount();
                     //StartCoroutine(buf_character(Data[0], float.Parse(Data[1]), float.Parse(Data[2]), float.Parse(Data[3])));
