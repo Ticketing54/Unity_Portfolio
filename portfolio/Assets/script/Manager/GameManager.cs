@@ -76,32 +76,34 @@ public class GameManager : MonoBehaviour
         
         GameObject obj = Instantiate(ResourceManager.resource.character);        
         character = obj.AddComponent<Character>();
-        Status NewStat = new Status("New", 0, 1, 0, 0, 0, 0);       
+        Status NewStat = new Status("New",1, 0, 0, 0, 0);       
 
         NewStat.LevelSetting(1);
-        character.STAT = NewStat;
+        character.stat = NewStat;
         character.tag = "Player";
         character.gameObject.layer = 8;        
         character.name = "Player";        
         Character_Name = string.Empty;
         MapName = "Village";        
-        character.INVEN = new Inventory();
+        character.inven = new Inventory();
+        character.inven.gold = 5000;
+
 
         // Test
 
 
-        Item test1 = new Item(0, (int)ITEMTYPE.EQUIPMENT, "test", "apple", "테스트입니다", "Defend/10", 0,1,0);
-        Item test2 = new Item(1, (int)ITEMTYPE.EQUIPMENT, "test2", "armor", "테스트입니다", "Defend/1", 0,1,2);
-        Item test3 = new Item(1, (int)ITEMTYPE.EQUIPMENT, "test3", "axe", "테스트입니다", "Defend/2", 0,1,2);
-        Item test4 = new Item(2, (int)ITEMTYPE.USED, "test4", "bag", "테스트입니다", "테스트입니다", 0);
-        Item test5 = new Item(2, (int)ITEMTYPE.USED, "test4", "bag", "테스트입니다", "테스트입니다", 0);
-        Item test6 = new Item(3, (int)ITEMTYPE.USED, "test4", "book", "테스트입니다", "테스트입니다", 0);
-        character.INVEN.PushItem(test1);
-        character.INVEN.PushItem(test2);
-        character.INVEN.PushItem(test3);
-        character.INVEN.PushItem(test4);
-        character.INVEN.PushItem(test5);
-        character.INVEN.PushItem(test6);
+        Item test1 = new Item(1,1);
+        Item test2 = new Item(1,3);
+        Item test3 = new Item(1,2);
+        Item test4 = new Item(2,1);
+        Item test5 = new Item(2,2);
+        Item test6 = new Item(3,1);
+        character.inven.PushItem(test1);
+        character.inven.PushItem(test2);
+        character.inven.PushItem(test3);
+        character.inven.PushItem(test4);
+        character.inven.PushItem(test5);
+        character.inven.PushItem(test6);
 
 
 
@@ -109,10 +111,10 @@ public class GameManager : MonoBehaviour
 
 
 
-        character.QUICKSLOT = new QuickSlot();
-        character.QUEST = new CharacterQuest();
+        character.quickSlot = new QuickSlot();
+        character.quest = new CharacterQuest();
         Equipment newEquip = new Equipment(NewStat);
-        character.EQUIP = newEquip;
+        character.equip = newEquip;
         character.transform.position = new Vector3(31f,0f,17f);        
     }
     public void Load_C_Data(int _num)
@@ -131,17 +133,16 @@ public class GameManager : MonoBehaviour
         character.gameObject.layer = 8;
         string []info = DATA[0].Split(',');
         character.name = info[0];
-        Status NewStat = new Status(info[0], int.Parse(info[10]), int.Parse(info[5]), float.Parse(info[6]), float.Parse(info[7]), int.Parse(info[8]), int.Parse(info[9]));
-        character.STAT = NewStat;
+        Status NewStat = new Status(info[0], int.Parse(info[5]), float.Parse(info[6]), float.Parse(info[7]), int.Parse(info[8]), int.Parse(info[9]));
+        character.stat = NewStat;
         ChangeLayerObj(character.gameObject.transform, 8);
-        MapName = info[1];
-        character.StartPos = new Vector3(float.Parse(info[2]), float.Parse(info[3]), float.Parse(info[4]));
+        MapName = info[1];        
         Inventory NewInven = new Inventory();
-        character.INVEN = NewInven;
+        character.inven = NewInven;
         QuickSlot NewQuick = new QuickSlot();
-        character.QUICKSLOT = NewQuick;
+        character.quickSlot = NewQuick;
         Equipment newEquip = new Equipment(NewStat);
-        character.EQUIP = newEquip;
+        character.equip = newEquip;
 
         if(DATA[1] != "")
         {
@@ -151,11 +152,11 @@ public class GameManager : MonoBehaviour
                 string[] sInven = one.Split(',');
                 
                 List<string> iteminfo = ResourceManager.resource.GetTable_Index("ItemTable", int.Parse(sInven[0]));
-                Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
-                tmp.SlotNum = int.Parse(sInven[1]);
-                tmp.ItemCount = int.Parse(sInven[2]);
+                //Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                //tmp.SlotNum = int.Parse(sInven[1]);
+                //tmp.ItemCount = int.Parse(sInven[2]);
                 
-                character.INVEN.AddItem(int.Parse(sInven[1]), tmp);
+                //character.inven.AddItem(int.Parse(sInven[1]), tmp);
             }
         }
         if (DATA[2] != "")
@@ -165,10 +166,10 @@ public class GameManager : MonoBehaviour
             {
                 string[] sInven = one.Split(',');
                 List<string> iteminfo = ResourceManager.resource.GetTable_Index("ItemTable", int.Parse(sInven[0]));
-                Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
-                tmp.SlotNum = int.Parse(sInven[1]);
-                tmp.ItemCount = 1;
-                character.EQUIP.AddItem((int)tmp.EquipType,tmp);        
+                //Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                //tmp.SlotNum = int.Parse(sInven[1]);
+                //tmp.ItemCount = 1;
+                //character.equip.AddItem((int)tmp.equipType,tmp);        
                     
             }
         }
@@ -179,9 +180,9 @@ public class GameManager : MonoBehaviour
             {
                 string[] sInven = one.Split(',');
                 List<string> iteminfo = ResourceManager.resource.GetTable_Index("ItemTable", int.Parse(sInven[0]));
-                Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
-                tmp.SlotNum = int.Parse(sInven[1]);
-                tmp.ItemCount = int.Parse(sInven[2]);                
+                //Item tmp = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
+                //tmp.SlotNum = int.Parse(sInven[1]);
+                //tmp.ItemCount = int.Parse(sInven[2]);                
                 //character.QuickSlot.ExchangeItem(tmp.SlotNum, tmp);
             }
         }

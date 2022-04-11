@@ -1,83 +1,68 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 
+[System.Serializable]
+public class QuestDic : SerializableDictionary<int, QUESTSTATE> { }
+[System.Serializable]
 public class CharacterQuest 
-{
-    Dictionary<int, Quest> questDic = new Dictionary<int, Quest>();
+{    
+    [SerializeField]
+    QuestDic questDic = new QuestDic();
+    
     
     
     public void AddQuest(int _index)
     {
         if (questDic.ContainsKey(_index))
         {
-            Debug.Log("있는 퀘스트를 더할려고합니다.");
+            Debug.Log("있는 퀘스트를 더할려고 합니다.");
             return;
-        }
-        List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable",_index);
-        List<int> precedQuest;
-        Quest quest;
-        if (questTable[1] != "")
-        {
-            precedQuest = new List<int>();
-            string[] arrayPreced = questTable[1].Split('/');
-            for (int i = 0; i < arrayPreced.Length; i++)
-            {
-                precedQuest.Add(int.Parse(arrayPreced[i]));
-            }
-            quest = new Quest(int.Parse(questTable[0]), questTable[2], questTable[3], questTable[4], questTable[5], int.Parse(questTable[6]), int.Parse(questTable[7]), "PLAYING",precedQuest);
-        }
-        else
-        {
-            quest = new Quest(int.Parse(questTable[0]), questTable[2], questTable[3], questTable[4], questTable[5], int.Parse(questTable[6]), int.Parse(questTable[7]), "PLAYING");
-        }
-        
-        questDic.Add(_index, quest);
-    }
-    public Quest GetQuest (int _index)
-    {
-        Quest quest;
-        if(questDic.TryGetValue(_index,out quest))
-        {
-            return quest;
-        }
-        else
-        {
-            return null;
-        }
-    }
-    public int ChracterState_Quest(int _index)
-    {
-        Quest quest = GetQuest(_index);
-        if (quest == null)
-        {
-            return (int)QUESTSTATE.NONE;
-        }
-            
-        List<int> precedQuestList = quest.PrecedeQuest;
+        }      
 
-        foreach(int questindex in precedQuestList)
+        Quest quest = new Quest(_index,"PLAYING");       
+        questDic.Add(_index, QUESTSTATE.PLAYING);
+    }
+    
+    public QUESTSTATE ChracterState_Quest(int _index)
+    {        
+        if (!questDic.ContainsKey(_index))                                                          // 퀘스트가 없을 경우
         {
-            Quest precedQuest = GetQuest(questindex);
-            if(precedQuest == null || (precedQuest.State != QUESTSTATE.DONE))
+            Quest quest = new Quest(_index,"PLAYING");
+
+            List<int> precedQuestList = quest.PrecedeQuest;
+                
+            if (precedQuestList != null)                                                            // 선행 퀘스트가 있을 경우
             {
-                return (int)QUESTSTATE.DONE;
+                foreach (int questindex in precedQuestList)
+                {
+                    if (!questDic.ContainsKey(_index) || questDic[_index] != QUESTSTATE.DONE)       // 선행 퀘스트를 안했을 경우
+                    {
+                        return QUESTSTATE.NONE;
+                    }
+                }
+
+                return QUESTSTATE.READY;                                                            // 선행퀘스트를 다 했을 경우
+            }
+            else
+            {
+                return QUESTSTATE.READY;                                                            // 선행 퀘스트가 없을 경우
             }
         }
-
-        switch (quest.State)
+        else                                                                                        // 퀘스트가 있을경우
         {
-            case QUESTSTATE.PLAYING:
-                return (int)QUESTSTATE.PLAYING;
-            case QUESTSTATE.COMPLETE:
-                return (int)QUESTSTATE.COMPLETE;
-            case QUESTSTATE.DONE:
-                return (int)QUESTSTATE.DONE;
-            default:
-                return 3;
-        }        
-    }
-   
+            switch (questDic[_index])
+            {
+                case QUESTSTATE.PLAYING:
+                    return QUESTSTATE.PLAYING;
+                case QUESTSTATE.COMPLETE:
+                    return QUESTSTATE.COMPLETE;
+                case QUESTSTATE.DONE:
+                    return QUESTSTATE.DONE;
+                default:
+                    return QUESTSTATE.NONE;
+            }
+        }            
+    }   
 }

@@ -91,7 +91,7 @@ public class SkillSlot : Slot
                 string[] buf = info[i].Split('/');
                 if (buf[0] == "Atk")
                 {
-                    Character.Player.STAT.ATK += int.Parse(buf[1]);
+                    Character.Player.stat.ATK += int.Parse(buf[1]);
 
                 }
                 else if (buf[0] == "Spd")
@@ -100,7 +100,7 @@ public class SkillSlot : Slot
                 }
                 else if (buf[0] == "Cri")
                 {
-                    Character.Player.STAT.CRI += int.Parse(buf[1]);
+                    Character.Player.stat.CRI += int.Parse(buf[1]);
 
                 }
 
@@ -115,7 +115,7 @@ public class SkillSlot : Slot
                 string[] buf = info[i].Split('/');
                 if (buf[0] == "Atk")
                 {
-                    Character.Player.STAT.ATK -= int.Parse(buf[1]);
+                    Character.Player.stat.ATK -= int.Parse(buf[1]);
 
                 }
                 else if (buf[0] == "Spd")
@@ -125,7 +125,7 @@ public class SkillSlot : Slot
                 }
                 else if (buf[0] == "Cri")
                 {
-                    Character.Player.STAT.CRI -= int.Parse(buf[1]);
+                    Character.Player.stat.CRI -= int.Parse(buf[1]);
 
                 }
 

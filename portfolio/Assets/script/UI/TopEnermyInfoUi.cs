@@ -25,7 +25,7 @@ public class TopEnermyInfoUi : MonoBehaviour
             enermy_Name.color = Color.white;
         }
 
-        enermy_Name.text = _Monster.NICKNAME;                                                   // Name
+        enermy_Name.text = _Monster.NickName;                                                   // Name
 
         enermy_Hp.fillAmount = (float)(_Monster.HP_CURENT / _Monster.Hp_Max);                  // Hpbar
 

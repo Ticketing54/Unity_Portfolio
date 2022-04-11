@@ -7,8 +7,7 @@ using TMPro;
 
 
 public class Npc :NpcUnit
-{    
-    
+{   
     
     protected NavMeshAgent nav;   
 
@@ -20,84 +19,52 @@ public class Npc :NpcUnit
         nick_YPos = _nickYPos;        
         items = _items;
         dialogue = _dialogue;        
-    }   
-
-
-
+    }
+    public bool HasQuest(int _questIndex)
+    {
+        for (int i = 0; i < quests.Count; i++)
+        {
+            if(quests[i] == _questIndex)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    private void OnEnable()
+    {
+        
+    }
     public virtual void Start()
     {
-        nav = this.GetComponent<NavMeshAgent>();
+        UIManager.uimanager.uiEffectManager.ActiveNpcUi(this);
+        nav = this.GetComponent<NavMeshAgent>();        
         //if (nav != null)
         //    nav.Warp(startPos);
-
-
-
         //StartCoroutine(NickUpdate());
         //StartCoroutine(Mini_DotMove());
         //StartCoroutine(Mini_Dot_MMove());
-
     }
-    //IEnumerator NickUpdate()
-    //{
+    IEnumerator ApprochChracter()
+    {
+        yield return null;
 
-    //    while (true)
-    //    {
-    //        if (Character.Player != null && Camera.main !=null)
-    //        {
-    //            if (DISTANCE < 4f && NickName == null)
-    //            {
-    //                NickName = ObjectPoolManager.objManager.PoolingNickName();
-    //                NickName.text = NpcName;
-    //            }                    
-    //            if (DISTANCE < 4f && NickName != null || Character.Player.Target ==this.gameObject)
-    //            {
-    //                if(NickName == null)
-    //                {
-    //                    NickName = ObjectPoolManager.objManager.PoolingNickName();
-    //                    NickName.text = NpcName;
-    //                }
-    //                NickName.color = Color.white;
-    //                NickName.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0f, Nick_y, 0f));
-    //            }
-    //            else
-    //            {
+        while (true)
+        {
 
-    //                if (NickName != null)
-    //                {
-    //                    NickName.gameObject.SetActive(false);
-    //                    NickName = null;
-    //                }
-    //            }
-
-    //            if(NpcTalk != null)
-    //            {
-    //                NpcTalk.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0f, Nick_y+0.3f, 0f));
-    //            }
-
-                
-    //        }
-
-
-            
-
-
-
-    //        yield return null;
-
-
-    //    }
-
-    //}
+        }
+    }
+    
     //private void Update()
     //{
-        
+
     //    QuestMarkControl();
     //}
 
 
 
 
-  
+
     //IEnumerator Mini_DotMove()
     //{
     //    while (true)
@@ -156,7 +123,7 @@ public class Npc :NpcUnit
     //                MiniMap_Dot_M.gameObject.SetActive(false);
     //                MiniMap_Dot_M = null;
     //            }
-                
+
     //        }
 
     //        yield return null;
@@ -165,7 +132,7 @@ public class Npc :NpcUnit
 
     //public void QuestMarkControl()
     //{
-        
+
 
     //    if (QuestMarkerNum == 2)
     //    {
@@ -176,7 +143,7 @@ public class Npc :NpcUnit
     //            QuestMark = ObjectPoolManager.objManager.QuestMarkPooling("Clear");
     //            QuestMark.gameObject.SetActive(true);
     //        }
-           
+
     //        QuestMark.transform.position = new Vector3(transform.position.x, Nick_y + 0.5f, transform.position.z);
     //        QuestMark.transform.Rotate(Vector3.up, turnspeed * Time.deltaTime);
 
@@ -192,12 +159,12 @@ public class Npc :NpcUnit
     //            QuestMark.gameObject.SetActive(true);
 
     //        }
-            
+
     //        QuestMark.transform.position = new Vector3(transform.position.x, Nick_y+0.5f, transform.position.z);
     //        QuestMark.transform.Rotate(Vector3.up, turnspeed * Time.deltaTime);
-                
 
-            
+
+
 
     //    }       
     //    else if (QuestMarkerNum == 1)
@@ -209,7 +176,7 @@ public class Npc :NpcUnit
     //            QuestMark = ObjectPoolManager.objManager.QuestMarkPooling("NoClear");
     //            QuestMark.gameObject.SetActive(true);
     //        }
-           
+
     //        QuestMark.transform.position = new Vector3(transform.position.x, Nick_y + 0.5f, transform.position.z);
     //        QuestMark.transform.Rotate(Vector3.up, turnspeed * Time.deltaTime);
 
@@ -224,7 +191,7 @@ public class Npc :NpcUnit
     //            QuestMark.gameObject.SetActive(false);
     //            QuestMark = null;
     //        }
-                
+
 
     //    }
     //}
@@ -246,7 +213,7 @@ public class Npc :NpcUnit
     //                NpcTalk.text = "";
     //                dialog_Done = true;
     //                yield break;
-                        
+
     //            }
 
 

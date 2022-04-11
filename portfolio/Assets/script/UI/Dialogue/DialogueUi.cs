@@ -33,6 +33,8 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
     TextMeshProUGUI reward_Gold;    
     [SerializeField]
     TextMeshProUGUI rewards_Item;
+    [SerializeField]
+    AddQuestText_Ui addQuestEffect;     // 퀘스트를 수락하셨습니다. << 메세지
 
     List<int> items;
     List<int> quests;
@@ -46,14 +48,18 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         choicePool = new PoolData<Choice>(clickChoiceBar, choice_NotUsed, "Choice");
         
     }
+
     private void OnDisable()
-    {
+    {        
+        addQuestEffect.gameObject.SetActive(false);             // 퀘스트 등록 이벤트 
         ChoiceReset();
         npc_DialogData = null;
-        quests = null;        
+        quests = null;
         DialogTextReset();
-    }  
+        Character.Player.isCantMove = false;
+    }
     
+   
     public void OnPointerDown(PointerEventData data)
     {
         runningIndex = -1;
@@ -119,7 +125,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
             dialogData.Add(subdialog);
         }
         npc_DialogData = dialogData;
-        npc_name.text = _npc.NICKNAME;
+        npc_name.text = _npc.NickName;
         FirstDialog();
     }
 
@@ -133,25 +139,25 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         for (int i = 0; i < quests.Count; i++)
         {
             string[] arrchoiceData = arrQuesttoChoice[i].Split('#');    // 퀘스트받기전 # 퀘스트 진행중(미완료) # 퀘스트 진행중(완료시) # 말
-            int number = Character.Player.QUEST.ChracterState_Quest(quests[i]);
+            QUESTSTATE state = Character.Player.quest.ChracterState_Quest(quests[i]);
             Choice choice = choicePool.GetData();
             choice.transform.SetParent(scrollect.content.transform);
             choice.Text.text = arrchoiceData[3];
-            switch (number)
+            switch (state)
             {
-                case (int)QUESTSTATE.NONE:
+                case QUESTSTATE.READY:
                     {
                         choice.moveToDialogNum = int.Parse(arrchoiceData[0]);
                         choice_List.Add(choice);
                         break;
                     }
-                case (int)QUESTSTATE.PLAYING:
+                case QUESTSTATE.PLAYING:
                     {
                         choice.moveToDialogNum = int.Parse(arrchoiceData[1]);
                         choice_List.Add(choice);
                         break;
                     }
-                case (int)QUESTSTATE.COMPLETE:
+                case QUESTSTATE.COMPLETE:
                     {
                         choice.moveToDialogNum = int.Parse(arrchoiceData[2]);
                         choice_List.Add(choice);
@@ -170,9 +176,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
     }
 
     void FirstDialog()
-    {
-                                                                         // 배열 [3] 짜리 퀘스트 인덱스/ 진행상황 / 대화 시작 넘버 //진행상황 0 /받지도 않음 1/ 받고 완료를 안함 2/ 받고 완료를함 3/ 퀘스트 보상까지 받음
-
+    {                                                                        
         QuestStateToChoice();
         List<string> subDialogData = npc_DialogData[1];
         if (items !=null)
@@ -249,64 +253,77 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         if (_dialog_Index == -2)
         {
             UIManager.uimanager.CloseDialog();
-        }
-        if (_dialog_Index == -1)
-        {
-            // 상점 열기
             return;
         }
         ChoiceReset();
+        if (_dialog_Index == -1)
+        {            
+            UIManager.uimanager.OpenShopfromDialog(items);
+            return;
+        }
+        
         List<string> dialogData = npc_DialogData[_dialog_Index];
-
-        StartCoroutine(Npc_Dialog_Texting(dialogData)); // 대화 입력
+        StartCoroutine(CoDialog_Texting(dialogData)); // 대화 입력
     }
 
 
-    IEnumerator Npc_Dialog_Texting(List<string> _dialogData)
+    IEnumerator CoDialog_Texting(List<string> _dialogData)
     {
-        string dialog = _dialogData[2];
-        string choice = _dialogData[3];
-        string nextDialog = _dialogData[4];
-        string rewards = _dialogData[5];
+        string quest        = _dialogData[1];           // 퀘스트
+        string dialog       = _dialogData[2];           // 대화
+        string choice       = _dialogData[3];           // 선택지
+        string nextDialog   = _dialogData[4];           // 다음 대화
+        string rewards      = _dialogData[5];                                                                   // 보상
+
+        if (!string.IsNullOrEmpty(quest))                                                                       // 퀘스트
+        {
+            Character.Player.quest.AddQuest(int.Parse(quest));
+            addQuestEffect.gameObject.SetActive(true);
+        }
+
+
         for (int i = 0; i <= dialog.Length; i++)
         {
             npc_dialog.text = dialog.Substring(0, i);
 
             if (i == dialog.Length)
             {
-                if (rewards != ""&&rewards !="\r") // 경험치 골드 아이템 순
+               
+                if (!string.IsNullOrEmpty(rewards))                                                             // 보상
                 {
                     reward.gameObject.SetActive(true);
                     string[] tmp = rewards.Split('/');
                     rewards_Exp.text = tmp[0] + "EXP"; //경험치
-                    Character.Player.STAT.EXP += int.Parse(tmp[0]);
-                    if (tmp[1] != "") //골드
+                    Character.Player.stat.EXP += int.Parse(tmp[0]);
+                    if (!string.IsNullOrEmpty(tmp[1]))                                                          //골드
                     {
                         reward_Gold.gameObject.SetActive(true);
                         reward_Gold.text = tmp[1] + "GOLD";
-                        Character.Player.STAT.GOLD += int.Parse(tmp[1]);
+                        Character.Player.inven.gold += int.Parse(tmp[1]);
                     }
                     else
                     {
                         reward_Gold.gameObject.SetActive(false);
                     }
 
-                    if (tmp[2] != "") //아이템
+                    if (!string.IsNullOrEmpty(tmp[2]))                                                          //아이템
                     {
                         rewards_Item.gameObject.SetActive(true);
-                        string[] item = tmp[2].Split('#');                        
-                        List<string> iteminfo = ResourceManager.resource.GetTable_Index("ItemTable", int.Parse(item[0]));
-                        Item newitem = new Item(int.Parse(iteminfo[0]), int.Parse(iteminfo[1]), iteminfo[2], iteminfo[3], iteminfo[4], iteminfo[5], int.Parse(iteminfo[6]), int.Parse(iteminfo[7]));
-                        if (item[1] != null) // 여러개일때
+                        string[] item = tmp[2].Split('#');                                  
+                        
+                        Item newitem = new Item(int.Parse(item[0]));                      // 아이템 획득
+                        Character.Player.inven.PushItem(newitem);
+
+                        if (item[1] != null)                                                                   // 여러개일때
                         {
                             newitem.ItemCount = int.Parse(item[1]);
-                            rewards_Item.text = newitem.ItemName + " " + newitem.ItemCount + " 개";
+                            rewards_Item.text = newitem.itemName + " " + newitem.ItemCount + " 개";
                         }
 
                         else
                         {
                             newitem.ItemCount = 1;
-                            rewards_Item.text = newitem.ItemName;
+                            rewards_Item.text = newitem.itemName;
                         }
                     }
                     else
@@ -314,12 +331,12 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
                         rewards_Item.gameObject.SetActive(false);
                     }
                 }
-                if (choice != "")  // 선택지가 있으면
+                if (!string.IsNullOrEmpty(choice))                                                           // 선택지
                 {
                     AddChoice(choice);
                     nextDilogNum = -3;
                 }
-                else
+                else                                                                                        // 선택지가 없을경우
                 {
                     nextDilogNum = int.Parse(nextDialog); 
                     isDoneTexting = true;
@@ -328,30 +345,4 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
             yield return new WaitForSeconds(0.05f);
         }
     }
-
-
-
-
-    ////public  Choice  ChoicePooling()
-    ////{
-    ////    foreach(Choice one in Choice_list)
-    ////    {
-    ////        if (one.gameObject.activeSelf == false)
-    ////        {
-    ////            one.gameObject.SetActive(true);
-    ////            return one;
-
-    ////        }
-
-    ////    }
-
-
-    ////    Choice tmp = Instantiate(choice);
-    ////    tmp.transform.localScale = new Vector3(1f, 1f, 1f);
-    ////    tmp.transform.SetParent(NotUse.transform);
-    ////    Choice_list.Add(tmp);
-    ////    return tmp;
-    ////}
-
-
 }

@@ -62,15 +62,15 @@ public class Boss_Attack : StateMachineBehaviour
                 dir = BressDir(mob.gameObject, vr) - breath.transform.localPosition;
                 breath.transform.rotation = Quaternion.LookRotation(dir.normalized);
 
-                if (breathrange.bounds.Intersects(Character.Player.Character_bounds.bounds) && Damage == false)
-                {
-                    Damage = true;
-                    mob.StartCoroutine(DamageOn());
-                    SoundManager.soundmanager.soundsPlay("Icestate", Character.Player.gameObject);
-                    //Character.Player.Stat.HP -= mob.Atk;
-                    Character.Player.icestateOn();
-                    //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, mob.Atk, Color.red, 1);
-                }
+                //if (breathrange.bounds.Intersects(Character.Player.Character_bounds.bounds) && Damage == false)
+                //{
+                //    Damage = true;
+                //    mob.StartCoroutine(DamageOn());
+                //    SoundManager.soundmanager.soundsPlay("Icestate", Character.Player.gameObject);
+                //    //Character.Player.Stat.HP -= mob.Atk;
+                //    Character.Player.icestateOn();
+                //    //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, mob.Atk, Color.red, 1);
+                //}
 
 
 

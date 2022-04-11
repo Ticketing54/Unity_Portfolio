@@ -37,7 +37,7 @@ public class Charater_Run : StateMachineBehaviour
         runsounds.transform.position = Character.Player.transform.position;
 
 
-        if(Player.STAT.isIce == true &&runsounds.name !="IceRun")
+        if(Player.stat.isIce == true &&runsounds.name !="IceRun")
         {
             runsounds.name = "IceRun";
             audiosource.Stop();
@@ -45,7 +45,7 @@ public class Charater_Run : StateMachineBehaviour
             audiosource.clip = _clip;            
             audiosource.Play();
         }
-        else if (Player.STAT.isIce == false && runsounds.name != "Run")
+        else if (Player.stat.isIce == false && runsounds.name != "Run")
         {
             runsounds.name = "Run";
             audiosource.Stop();

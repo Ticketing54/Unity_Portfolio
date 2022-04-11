@@ -31,7 +31,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
         UIManager.uimanager.itemoveEnd -= this.LeftClickUp;
         UIManager.uimanager.updateUiSlot -= this.UpdateSlot;
     }
-    
+
     public void UpdateAllSlot()
     {
         Item getitem;
@@ -44,7 +44,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
             }
             else
             {
-                itemSlots[itemSlotNum].Add(getitem.itemSpriteName, getitem.ItemCount);
+                itemSlots[itemSlotNum].Add(getitem.itemSpriteName, getitem.ItemCount,getitem.index);
             }
             
             getitem = null;
@@ -64,7 +64,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
             itemSlots[_index].Clear();
             return;
         }
-        itemSlots[_index].Add(getitem.itemSpriteName, getitem.ItemCount);
+        itemSlots[_index].Add(getitem.itemSpriteName, getitem.ItemCount,getitem.index);
     }
 
     protected void LeftClickDown(Vector2 _ClickPos)

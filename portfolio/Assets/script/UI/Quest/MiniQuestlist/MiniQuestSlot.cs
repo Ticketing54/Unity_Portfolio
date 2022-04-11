@@ -17,7 +17,7 @@ public class MiniQuestSlot : MonoBehaviour
 
     public void TextingQuestSlot()
     {
-        if(quest.goal_Need == 0)
+        if(quest.Goal_Need == 0)
         {
             quest_Name.text = quest.Name;
             quest_Explain.text = quest.Explain;
@@ -26,13 +26,13 @@ public class MiniQuestSlot : MonoBehaviour
         }
         quest_Name.text = quest.Name;
         quest_Explain.text = quest.Explain;
-        quest_Prograss.text = "( " + quest.goal_Current + " / " + quest.goal_Need + " )";
+        quest_Prograss.text = "( " + quest.Goal_Current + " / " + quest.Goal_Need + " )";
 
     }
 
     public void UpdatePrograss()   
     {
-        quest_Prograss.text = "( " + quest.goal_Need + " / " + quest.goal_Current + " )";
+        quest_Prograss.text = "( " + quest.Goal_Need + " / " + quest.Goal_Current + " )";
     }
 
     public void finishQuest()   //퀘스트 완료

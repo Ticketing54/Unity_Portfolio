@@ -6,9 +6,31 @@ using System;
 [System.Serializable]
 public class Inventory : ItemMove
 {    
-    Item[] inven = new Item[18];    
+    [SerializeField]
+    Item[] inven = new Item[18];
+
+    public int gold { get; set; }
     
-    
+    public void BuyItem(int _price,int _itemIndex,int _itemCount =1)
+    {
+        gold -= _price;
+        PushItem(new Item(_itemIndex,_itemCount));
+    }
+    public void SellItem(int _index, int _sellcount)
+    {
+        Item sellitem = GetItem(_index);
+
+        gold += sellitem.SellPrice * _sellcount;
+
+        if(sellitem.ItemCount == _sellcount)
+        {
+            inven[_index] = null;
+        }
+        else
+        {
+            inven[_index].ItemCount -= _sellcount;
+        }
+    }
     public  Item GetItem(int _SlotNum)
     {
         return  inven[_SlotNum];
@@ -18,9 +40,7 @@ public class Inventory : ItemMove
         Item PopItem = GetItem(_SlotNum);
         inven[_SlotNum] = null;
         return PopItem;
-    }
-
-    
+    }        
     public bool PushItem(Item _NewItem)
     {
         for(int slotNum = 0; slotNum < inven.Length; slotNum++)
@@ -59,7 +79,7 @@ public class Inventory : ItemMove
     {
         Item OldItem = inven[_Index];
 
-        if(OldItem != null && OldItem.Index == _NewItem.Index )
+        if(OldItem != null && OldItem.index == _NewItem.index )
         {
             OldItem.ItemCount += _NewItem.ItemCount;
             return null;
@@ -88,10 +108,10 @@ public class Inventory : ItemMove
                 {
                     Data += "/";
                 }
-                Data += inven[i].Index + "," + i + "," + inven[i].ItemCount ;
+                Data += inven[i].index + "," + i + "," + inven[i].ItemCount ;
             }
         }
-        return Data;
-        
+        return Data;        
     }
+   
 }

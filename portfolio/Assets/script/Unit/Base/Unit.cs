@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
-{
+{    
     protected string    unitName;
     protected string    sound;
     protected float     nick_YPos;
-    protected bool      usingUi    = false;
-    public bool USINGUI { get => usingUi; set => usingUi = value; }
-    public string NICKNAME { get=> unitName; }
-    public float NICK_YPOS { get => nick_YPos; }
+    protected bool      isTarget    = false;
+    protected bool      usingUi     = false;
+    public string NickName { get=> unitName; }
+    public float Nick_YPos { get => nick_YPos; }
+    public bool IsTarget { get => isTarget; }    
     public float DISTANCE
     {
         get
@@ -39,6 +40,6 @@ public class Unit : MonoBehaviour
             }
         }
     }
-
+   
 }
 

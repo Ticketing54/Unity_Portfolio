@@ -37,8 +37,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect
-  - m_GUID: 58cbf78e4e102b641a2e502e698deefe
-    m_Address: Clear
+  - m_GUID: f6d7e1db2fa4c334c8f27dc915b5971f
+    m_Address: QuestNotClear
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect
@@ -83,8 +83,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect
-  - m_GUID: c4ac1750b132dd946aa9b3fe2506ad08
-    m_Address: Quest
+  - m_GUID: 58cbf78e4e102b641a2e502e698deefe
+    m_Address: QuestClear
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect
@@ -123,8 +123,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect
-  - m_GUID: f6d7e1db2fa4c334c8f27dc915b5971f
-    m_Address: NoClear
+  - m_GUID: c4ac1750b132dd946aa9b3fe2506ad08
+    m_Address: QuestBegin
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effect
+  - m_GUID: 1a938a5ebf177b448ad1bec6e308d040
+    m_Address: ClickFriend
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effect
+  - m_GUID: 7daa6ff60da7b414d8e281685d0569b7
+    m_Address: ClickEnermy
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effect
+  - m_GUID: f9cb385722a0e3048b0b70ce85a39d7d
+    m_Address: ClickNomal
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect

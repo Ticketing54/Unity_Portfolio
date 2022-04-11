@@ -23,14 +23,14 @@ public class Bottom_Character_Info : MonoBehaviour
 
     public void InfoUpdate()
     {
-        Hp_bar.fillAmount = Character.Player.STAT.HP / Character.Player.STAT.MAXHP;
-        Hp_text.text = ((int)Character.Player.STAT.HP).ToString() + " / " + ((int)Character.Player.STAT.HP).ToString();
-        Mp_bar.fillAmount = Character.Player.STAT.MP / Character.Player.STAT.MAXMP;
-        Mp_text.text = ((int)Character.Player.STAT.MP).ToString() + " / " + ((int)Character.Player.STAT.MAXMP).ToString();        
+        Hp_bar.fillAmount = Character.Player.stat.HP / Character.Player.stat.MAXHP;
+        Hp_text.text = ((int)Character.Player.stat.HP).ToString() + " / " + ((int)Character.Player.stat.HP).ToString();
+        Mp_bar.fillAmount = Character.Player.stat.MP / Character.Player.stat.MAXMP;
+        Mp_text.text = ((int)Character.Player.stat.MP).ToString() + " / " + ((int)Character.Player.stat.MAXMP).ToString();        
 
-        Lev.text = "Level : " + Character.Player.STAT.LEVEL.ToString();
-        Exp_Text.text = Character.Player.STAT.EXP.ToString() + " / " + Character.Player.STAT.MAXEXP.ToString();
-        Exp_bar.fillAmount = Character.Player.STAT.EXP / Character.Player.STAT.MAXEXP;
+        Lev.text = "Level : " + Character.Player.stat.LEVEL.ToString();
+        Exp_Text.text = Character.Player.stat.EXP.ToString() + " / " + Character.Player.stat.MAXEXP.ToString();
+        Exp_bar.fillAmount = Character.Player.stat.EXP / Character.Player.stat.MAXEXP;
     }
 
 }

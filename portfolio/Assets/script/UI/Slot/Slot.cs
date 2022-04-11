@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-
-public class Slot : MonoBehaviour
+public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {   
     [SerializeField]
-    protected Image icon;   
+    protected Image icon;
+    public int itemIndex;
     public Sprite ICON { get { return icon.sprite; } set { icon.sprite = value; } }
     public RectTransform tr;
     Rect rc;
@@ -37,13 +38,13 @@ public class Slot : MonoBehaviour
         }
         return false;
     }        
-    public void ClickedSlot_Start()
+    public virtual void ClickedSlot_Start()
     {
         Color alpacontrol = icon.color;
         alpacontrol.a = 0.25f;
         icon.color = alpacontrol;
     }
-    public void ClickedSlot_End()
+    public virtual void ClickedSlot_End()
     {
         Color alpacontrol = icon.color;
         alpacontrol.a = 1;
@@ -67,9 +68,24 @@ public class Slot : MonoBehaviour
         icon.gameObject.SetActive(true);
         icon.sprite = ResourceManager.resource.GetImage(_SpriteName);
     }
+    public void OnPointerEnter(PointerEventData eventData)
+    {        
+        if (itemIndex > 0)
+        {
+            UIManager.uimanager.OpenMiniInfo(itemIndex, eventData.position);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (itemIndex > 0)
+        {
+            UIManager.uimanager.CloseMiniInfo();
+        }
+    }
     //IEnumerator buf_character(string _bufimagename,float buf_num_max, float _buf_num, float Max_Time) //버프이미지 // 총 버프하는 양 // 초당 버프하는 양// 총 버프되는시간
     //{
-        
+
     //    //float Maxbuf = buf_num_max; //총 버프양
     //    //float buf_s = _buf_num; //초당 버프되는양
     //    //float buf_timer = 0f; // 타이머
@@ -78,7 +94,7 @@ public class Slot : MonoBehaviour
     //    ////bufimage bufimage = ObjectPoolManager.objManager.PoolingbufControl();  // 버프이미지
     //    ////GameObject bufEffect = ObjectPoolManager.objManager.EffectPooling(_bufimagename);   //버프 이펙트     
     //    ////bufimage.bufsprite.sprite = ResourceManager.resource.GetImage(_bufimagename);
-        
+
 
     //    //if(_bufimagename == "Hp")
     //    //{
@@ -87,8 +103,8 @@ public class Slot : MonoBehaviour
     //    //    {
     //    //        if (Maxbuf <= 0)
     //    //        {
-                    
-                    
+
+
     //    //            bufimage.gameObject.SetActive(false);
     //    //            bufEffect.SetActive(false);
     //    //            Character.Player.isrecovery_Hp = false;
@@ -106,7 +122,7 @@ public class Slot : MonoBehaviour
     //    //        {
     //    //            buf_timer -= 1f;
 
-                    
+
 
 
     //    //            Maxbuf -= _buf_num;
@@ -135,7 +151,7 @@ public class Slot : MonoBehaviour
     //    //    {
     //    //        if (Maxbuf <= 0)
     //    //        {
-                    
+
     //    //            bufimage.gameObject.SetActive(false);
     //    //            bufEffect.SetActive(false);
     //    //            Character.Player.isrecovery_Mp = false;
@@ -174,7 +190,7 @@ public class Slot : MonoBehaviour
     //    //        yield return null;
     //    //    }
 
-           
+
 
     //    //}
 
@@ -185,12 +201,12 @@ public class Slot : MonoBehaviour
 
 
 
-       
-    //}
-   
-    //// 아이템 개수 조정
-    
 
-   
-   
+    //}
+
+    //// 아이템 개수 조정
+
+
+
+
 }

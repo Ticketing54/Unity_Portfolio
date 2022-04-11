@@ -15,7 +15,7 @@ public class Character_Skill : StateMachineBehaviour
         //if (nav == null)
         //    nav = Character.Player.nav;
         //Character.Player.DontMove = true;
-        Character.Player.Target = null;
+        
         Skill_num = animator.GetFloat("SkillNum");
 
         if(Skill_num == 1)

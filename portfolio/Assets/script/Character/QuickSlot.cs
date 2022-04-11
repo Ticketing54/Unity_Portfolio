@@ -68,7 +68,7 @@ public class QuickSlot :ItemMove
     {
         Item popItem =PopItem(_Index);
 
-        if(popItem != null && popItem.Index == _NewItem.Index)
+        if(popItem != null && popItem.index == _NewItem.index)
         {
             _NewItem.ItemCount += popItem.ItemCount;
             popItem = null;
@@ -177,7 +177,7 @@ public class QuickSlot :ItemMove
         quickSkill = SkillSlot[SkillSlotNum];
         if (quickSkill[_SlotNum] == null)
             return;
-        else quickItem[_SlotNum].itemType = ITEMTYPE.NONE;
+        
     }
     public string QuickItemInfo()
     {
@@ -192,7 +192,7 @@ public class QuickSlot :ItemMove
                 {
                     Data += "/";
                 }
-                Data += activeQuick[i].Index + "," + i+","+activeQuick[i].ItemCount;
+                Data += activeQuick[i].index + "," + i+","+activeQuick[i].ItemCount;
             }
         }
         return Data;

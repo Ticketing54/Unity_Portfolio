@@ -10,7 +10,7 @@ public class UIManager : MonoBehaviour
 
     #region Ui_Effect
 
-    public UiEffectControl uieffect;
+    
     [SerializeField]
     GameObject baseUi;
     #endregion
@@ -101,6 +101,17 @@ public class UIManager : MonoBehaviour
     #region ClickMove
     [SerializeField]                // 클릭시 아이템 정보
     MiniInfo miniInfo;
+
+
+    public void OpenMiniInfo(int _itemIndex,Vector2 _Pos)
+    {
+        miniInfo.gameObject.SetActive(true);
+        miniInfo.SetMiniInfo(_itemIndex,_Pos);
+    }
+    public void CloseMiniInfo()
+    {
+        miniInfo.gameObject.SetActive(false);
+    }
     [SerializeField]
     MoveIcon moveicon;              // 드래그 아이콘
     [SerializeField]
@@ -164,7 +175,7 @@ public class UIManager : MonoBehaviour
 
         if(startListIndex == _EndListIndex && startListType == _EndListType)                // 같은곳을 클릭 했을때
         {
-            LeftClick(Character.Player.ItemList_GetItem(startListType,startListIndex));
+            OpenMiniInfo(Character.Player.ItemList_GetItem(startListType,startListIndex).index,Input.mousePosition);
             ClickMoveReset();
             return;
         }
@@ -179,12 +190,7 @@ public class UIManager : MonoBehaviour
         moveicon.gameObject.SetActive(true);
         moveicon.ActiveMoveIcon(_image);
     }
-    void LeftClick(Item _Miniinfoitem)
-    {
-        miniInfo.gameObject.SetActive(true);
-        Vector2 Pos = Input.mousePosition;
-        miniInfo.SetMiniInfo(_Miniinfoitem, Pos);
-    }   
+   
     void ClickMoveReset()
     {
         DontClick.gameObject.SetActive(false);        
@@ -205,7 +211,6 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
-
     #region Fade
     [SerializeField]
     Image fadeInout;
@@ -215,14 +220,17 @@ public class UIManager : MonoBehaviour
    
     public void FadeInOut(FadeInTurnOnOffUi _middleFuc)
     {
-        StartCoroutine(Fade(_middleFuc));
+        
+        StartCoroutine(CoFade(_middleFuc));
     }
     
-    IEnumerator Fade(FadeInTurnOnOffUi _middleFuc)
+    IEnumerator CoFade(FadeInTurnOnOffUi _middleFuc)
     {
         fadeInout.gameObject.SetActive(true);
-        Color controlColor = fadeInout.color;                
-
+        
+        Color controlColor = fadeInout.color;
+        controlColor.a = 0;
+        fadeInout.color = controlColor;
         float timer = 0;
         bool isFadein = true;
         while(true)
@@ -246,9 +254,11 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        fadeInout.gameObject.SetActive(false);        
+        fadeInout.gameObject.SetActive(false);
+        
     }
     #endregion
+
     #region Dialog
     [SerializeField]
     DialogueUi dialog;
@@ -257,7 +267,7 @@ public class UIManager : MonoBehaviour
     public void OpenDialog(NpcUnit _npc)
     {
         npc = _npc;
-        StartCoroutine(Fade(SetDialog));        
+        StartCoroutine(CoFade(SetDialog));        
     }
     void SetDialog()
     {
@@ -273,7 +283,29 @@ public class UIManager : MonoBehaviour
     public void CloseDialog()
     {
         npc = null;
-        StartCoroutine(Fade(QuitDialog));        
+        StartCoroutine(CoFade(QuitDialog));        
+    }
+    #endregion
+
+    #region Shop
+    [SerializeField]
+    Shop shop;
+    List<int> itemList;
+
+    public void OpenShop(List<int> _itemList)
+    {
+        shop.gameObject.SetActive(true);
+        shop.StartShopSetting(_itemList);
+    }
+    public void OpenShopfromDialog(List<int> _itemList)
+    {
+        itemList = _itemList;
+        StartCoroutine(CoFade(DialogtoShop));
+    }
+    void DialogtoShop()
+    {
+        QuitDialog();
+        OpenShop(itemList);
     }
     #endregion
 
@@ -336,6 +368,8 @@ public class UIManager : MonoBehaviour
     #region Option
     public Option option;
     #endregion
+
+    public UiEffectManager uiEffectManager;
 
     private void Awake()
     {

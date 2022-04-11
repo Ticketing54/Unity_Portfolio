@@ -6,10 +6,9 @@ public class Status
 {
     List<string> Table;
     
-    public Status(string _Name, int _Gold, int _Level,float _Hp_c, float _Mp_C, int _Exp_C, int _SkillPoint)
+    public Status(string _Name, int _Level,float _Hp_c, float _Mp_C, int _Exp_C, int _SkillPoint)
     {
-        NAME = _Name;
-        GOLD = _Gold;
+        NAME = _Name;        
         Level = _Level;
         Cur_Hp = _Hp_c;
         Cur_Mp = _Mp_C;
@@ -18,8 +17,7 @@ public class Status
     }
 
     public string NAME { get; set; }
-    public int LEVEL { get { return Level; } }
-    public int GOLD { get; set; }
+    public int LEVEL { get { return Level; } }    
     public int CRI { get; set; }
     public float ATK_RANGE { get { return Attack_Range; } set{ Attack_Range = value; } }
     public float HP { get { return Cur_Hp; } set { Cur_Hp = value; } }
@@ -107,7 +105,7 @@ public class Status
             return;
 
 
-        string[] tmp = _item.ItemProperty.Split('/');
+        string[] tmp = _item.itemProperty.Split('/');
         switch (tmp[0])
         {
             case "Defend":
@@ -126,7 +124,7 @@ public class Status
             return;
 
 
-        string[] tmp = _item.ItemProperty.Split('/');
+        string[] tmp = _item.itemProperty.Split('/');
         switch (tmp[0])
         {
             case "Defend":

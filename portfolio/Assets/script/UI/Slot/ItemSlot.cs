@@ -7,8 +7,9 @@ public class ItemSlot : Slot
 {
     [SerializeField]
     Text ItemCount;
-    public void Add(string _SpriteName, int _ItemCount)
+    public void Add(string _SpriteName, int _ItemCount,int _itemIndex)
     {
+        itemIndex = _itemIndex;
         if (_SpriteName == string.Empty)
         {
             Clear();
@@ -33,6 +34,7 @@ public class ItemSlot : Slot
     {        
         icon.sprite = null;
         icon.gameObject.SetActive(false);
+        itemIndex = -1;
 
         if(ItemCount.gameObject.activeSelf==true)
             ItemCount.gameObject.SetActive(false);

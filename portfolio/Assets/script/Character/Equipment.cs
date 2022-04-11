@@ -7,11 +7,8 @@ public class Equipment : ItemMove
 {    
     [SerializeField]
     Status Stat= null;    
-
-    Item[] Equip = new Item[5];
-    Item item;
-
-    Item ITEM { get { return item; } }
+    [SerializeField]
+    Item[] Equip = new Item[5];   
     
     public Equipment(Status _Stat)
     {        
@@ -49,7 +46,7 @@ public class Equipment : ItemMove
     public Item Exchange(int _index, Item _NewItem)
     {
         Item popItem = PopItem(_index);
-        AddItem((int)_NewItem.EquipType,_NewItem);
+        AddItem((int)_NewItem.equipType,_NewItem);
         return popItem;        
     }
 
@@ -65,7 +62,7 @@ public class Equipment : ItemMove
             {
                 return false;
             }
-            else if((int)_MoveItem.EquipType != _index)
+            else if((int)_MoveItem.equipType != _index)
             {
                 return false;
             }
@@ -87,7 +84,7 @@ public class Equipment : ItemMove
                 {
                     Data += "/";
                 }
-                Data += Equip[i].Index + "," + i;
+                Data += Equip[i].index + "," + i;
             }
         }
         return Data;

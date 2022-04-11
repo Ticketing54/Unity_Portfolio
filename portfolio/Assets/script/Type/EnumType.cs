@@ -2,6 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum STATUSEFFECT
+{
+    NOMAL,
+    STURN,
+    KNOCKBACK
+}
+public enum STATUS
+{
+    HP,
+    MP,
+    ATK,
+}
+public enum CHARACTERANIMATION
+{
+    STOP,
+    MOVE,
+    ATTACK,
+    SKILL,
+}
 public enum DAMAGE
 {
     NOMAL,
@@ -83,5 +102,10 @@ public enum EQUIPTYPE
     NONE
 
 }
-
+public enum BUSINESSTYPE
+{    
+    BUY,
+    SELL,
+    NONE,
+}
 

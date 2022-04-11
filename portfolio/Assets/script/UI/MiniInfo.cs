@@ -17,7 +17,7 @@ public class MiniInfo : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI ExPlain;
     [SerializeField]
-    TextMeshProUGUI Property;
+    TextMeshProUGUI property;
 
 
     Vector2 Preset_Up;
@@ -33,9 +33,11 @@ public class MiniInfo : MonoBehaviour
         Preset_Down = new Vector2(width, height);
         
     }
-    public void SetMiniInfo(Item _item, Vector2 Pos)    //정보 표시
+    public void SetMiniInfo(int _itemIndex, Vector2 Pos)    //정보 표시
     {
-        if (_item == null)
+
+        Item item = new Item(_itemIndex);
+        if (item == null)
             return;
         if(Pos.y <= Rect.rect.height)
         {
@@ -46,19 +48,54 @@ public class MiniInfo : MonoBehaviour
             transform.position = Pos + Preset_Up;
         }
         
-        ItemImage.sprite = ResourceManager.resource.GetImage(_item.itemSpriteName);
-        ItemName.text = _item.ItemName;
-        ItemType.text = _item.itemType.ToString();
-        ExPlain.text = _item.ItemExplain;
+        ItemImage.sprite = ResourceManager.resource.GetImage(item.itemSpriteName);
+        ItemName.text = item.itemName;
+        ItemType.text = item.itemType.ToString();
+        ExPlain.text = item.itemExplain;
 
-        if (_item.ItemProperty == "")
+        if (string.IsNullOrEmpty(item.itemProperty))
         {
-            Property.text = "";
+            property.text = "";
         }            
         else
-        {
-            string[] tmp = _item.ItemProperty.Split('/');
-            Property.text = _item.ItemProperty;
+        {            
+            string[] arrProperty = item.itemProperty.Split(',');
+            string propertyText = string.Empty;
+            property.text = propertyText;
+            switch (item.itemType)
+            {
+                case ITEMTYPE.EQUIPMENT:
+                    {
+                        for (int i = 0; i < arrProperty.Length; i++)
+                        {
+                            string[] subProperty = arrProperty[i].Split('/');
+                            string name = subProperty[0];
+                            string ability = subProperty[1];
+                            property.text += name + " "+"<color=red>"+ ability + "</color>" + '\n';                            
+                        }                         
+                    }
+                    break;
+                case ITEMTYPE.USED:
+                    {
+                        for (int i = 0; i < arrProperty.Length; i++)
+                        {
+                            string[] subProperty = arrProperty[i].Split('/');
+                            string name     = subProperty[0];
+                            string duration = subProperty[1];
+                            string ability  = subProperty[2];
+                            property.text += name + " " + "<color=red>" + ability + "</color>" + '\n';
+                        }                         
+                    }
+                    break;
+                case ITEMTYPE.ETC:
+                    property.text = item.itemProperty;
+                    break;
+                default:
+                    break;
+            }
+            
+            
+            
         }
     }
     private void Update()

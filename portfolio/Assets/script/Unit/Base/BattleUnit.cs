@@ -19,7 +19,7 @@ public class BattleUnit : Unit
         if (Character.Player == null)
             return false;
 
-        if (Character.Player.STAT.LEVEL < this.lev)
+        if (Character.Player.stat.LEVEL < this.lev)
         {
             return true;
         }

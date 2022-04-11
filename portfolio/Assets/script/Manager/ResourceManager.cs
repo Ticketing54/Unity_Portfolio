@@ -53,14 +53,18 @@ public class ResourceManager: MonoBehaviour
 
     IList<IResourceLocation> tableList;                 // 테이블 주소
     IList<IResourceLocation> imageList;                 // 이미지 주소
-    IList<IResourceLocation> dialogList;                 // 이미지 주소
+    IList<IResourceLocation> dialogList;                // 이미지 주소
+    IList<IResourceLocation> effectList;                // 이펙트 주소
+
     bool tableSetting       = false;                          // 세팅 체크
     bool imageSetting       = false;                          // 세팅 체크
     bool dialogueSetting    = false;
-    bool characterSetting = false;
+    bool characterSetting   = false;
+    bool effectSetting      = false;
     Dictionary<string, Sprite> imageRes = new Dictionary<string, Sprite>();
     Dictionary<string, List<string>> tableRes = new Dictionary<string, List<string>>();          // 배열 인덱스가 각각의 인덱스
     Dictionary<string, List<string>> dialogueRes = new Dictionary<string, List<string>>();
+    Dictionary<string, GameObject> effectRes = new Dictionary<string, GameObject>();
     public void StartResourceSetting()
     {
         StartCoroutine(IsSettingBasicRes());
@@ -88,11 +92,7 @@ public class ResourceManager: MonoBehaviour
 
         Addressables.LoadAssetAsync<GameObject>("PlayerCharacter").Completed +=
             (player) =>
-            {
-                if (player.Result == null)
-                {
-                    Debug.Log("캐릭터가 없습니다.");
-                }
+            {               
                 
                 character = player.Result;
                 characterSetting = true;
@@ -105,30 +105,27 @@ public class ResourceManager: MonoBehaviour
                Addressables.LoadAssetsAsync<TextAsset>(dialogList, SaveDialogAsset).Completed +=
                (ReadyToStart) =>
                {
-                   if (ReadyToStart.Status == AsyncOperationStatus.Failed)
-                   {
-                       Debug.Log(ReadyToStart.DebugName);
-                       return;
-
-                   }
+                   
                    Addressables.Release<IList<TextAsset>>(ReadyToStart.Result);
                    dialogueSetting = true;
                };
            };
-        LoadClickEffect();
+        Addressables.LoadResourceLocationsAsync("Effect").Completed +=
+          (dialogLocation) =>
+          {
+              effectList = dialogLocation.Result;
+              Addressables.LoadAssetsAsync<GameObject>(effectList, SaveEffectAsset).Completed +=
+              (ReadyToStart) =>
+              {
+                  EffectManager.effectManager.ClickEffectRes();
+                  effectSetting = true;
+              };
+          };
     }
-    public void LoadClickEffect()
-    {
-        GameObject[] obj = Resources.LoadAll<GameObject>("ClickEffect/");
-        List<GameObject> clickEffect = new List<GameObject>();
-        for (int i = 0; i < obj.Length; i++)
-        {
-            clickEffect.Add(obj[i]);
-        }
-    }
+    
     IEnumerator IsSettingBasicRes()
     {
-        while (!(tableSetting || imageSetting || dialogueSetting|| characterSetting))
+        while (!(tableSetting&& imageSetting && dialogueSetting && characterSetting  && effectSetting))
         {
             yield return null;
         }
@@ -139,7 +136,7 @@ public class ResourceManager: MonoBehaviour
     {
         if (!tableRes.ContainsKey(_result.name))
         {
-            string[] line = _result.text.Split('\n');
+            string[] line = _result.text.Split(Environment.NewLine.ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
             List<String> info = new List<string>();
             for (int i = 1; i < line.Length; i++)
             {
@@ -152,7 +149,7 @@ public class ResourceManager: MonoBehaviour
     {
         if (!dialogueRes.ContainsKey(_result.name))
         {
-            string[] line = _result.text.Split('\n');
+            string[] line = _result.text.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             List<String> info = new List<string>();
             for (int i = 1; i < line.Length; i++)
             {
@@ -166,6 +163,13 @@ public class ResourceManager: MonoBehaviour
         if (!imageRes.ContainsKey(_result.name))
         {
             imageRes.Add(_result.name, _result);
+        }
+    }
+    void SaveEffectAsset(GameObject _result)
+    {
+        if (!effectRes.ContainsKey(_result.name))
+        {
+            effectRes.Add(_result.name, _result);
         }
     }
 
@@ -225,7 +229,7 @@ public class ResourceManager: MonoBehaviour
                                     npcObj.gameObject.transform.position = pos;
                                     npcObj.gameObject.transform.rotation = rotate;
                                     npcObj.gameObject.transform.localScale = scale;
-                                    SettingNpc(npcObj, npcTable_index);                                    
+                                    SettingNpc(npcObj, npcTable_index);     
                                 };
                             break;
                         }                        
@@ -287,7 +291,7 @@ public class ResourceManager: MonoBehaviour
             return;
         }
         newMonster.name = _table[3];
-        if (_table[7] != "")
+        if (!string.IsNullOrEmpty(_table[7]))
         {
             string[] dropItemsInfo = _table[7].Split('/');
             List<int[]> items = new List<int[]>();
@@ -303,7 +307,7 @@ public class ResourceManager: MonoBehaviour
             newMonster.SetMonster(_table[3], int.Parse(_table[4]), float.Parse(_table[5]), float.Parse(_table[6]), int.Parse(_table[7]), int.Parse(_table[8]), float.Parse(_table[10]), _table[11]);
         }
 
-        runningMonster.Add(newMonster);        
+        ObjectManager.objManager.mobList.Add(newMonster);
     }
     void SettingNpc(GameObject _obj,List<string>_table)                                                     // 차후 추가하게될경우 추가
     {
@@ -330,7 +334,7 @@ public class ResourceManager: MonoBehaviour
 
         List<int> npcitems = null;
         List<int> npcQuest = null;
-        if (_table[4] != "")
+        if (!string.IsNullOrEmpty(_table[4]))
         {
             string[] items = _table[4].Split('/');
             npcitems = new List<int>();
@@ -339,7 +343,7 @@ public class ResourceManager: MonoBehaviour
                 npcitems.Add(int.Parse(items[i]));
             }            
         }
-        if (_table[5] != "")
+        if (!string.IsNullOrEmpty(_table[5]))
         {
             string[] quests = _table[5].Split('/');
             npcQuest = new List<int>();
@@ -350,7 +354,8 @@ public class ResourceManager: MonoBehaviour
         }
         
         newNpc.SetNpc(_table[3], float.Parse(_table[6]), npcQuest, npcitems,_table[7]);
-        runningNpc.Add(newNpc);
+
+        ObjectManager.objManager.npcDic.Add(int.Parse(_table[0]), newNpc);        
     }
     #endregion
 
@@ -420,7 +425,16 @@ public class ResourceManager: MonoBehaviour
             return dialog;
         }
         return null;
+    }   
+    public GameObject GetEffect(string _effectName)
+    {
+        GameObject effect;
+        if (effectRes.TryGetValue(_effectName, out effect))
+        {
+            
+            return Instantiate(effect);
+        }
+        return null;
     }
     #endregion
-
 }

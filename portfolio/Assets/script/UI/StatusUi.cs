@@ -29,13 +29,13 @@ public class StatusUi : MonoBehaviour
     {
         
         NickName.text = Character.Player.name;
-        Lv.text = Character.Player.STAT.LEVEL.ToString();
-        Exp.text = Character.Player.STAT.EXP.ToString() + " / " + Character.Player.STAT.MAXEXP.ToString();        
-        Hp.text = ((int)Character.Player.STAT.HP).ToString() + " / " + Character.Player.STAT.MAXHP.ToString();
-        Mp.text = ((int)Character.Player.STAT.MP).ToString() + " / " + Character.Player.STAT.MAXMP.ToString();
-        Atk.text = Character.Player.STAT.ATK.ToString() + "<color=#0000ffff> + " + Character.Player.STAT.ATK.ToString() + "</color>"//장비 능력치 추가 할 것
-            + " ( " + ((int)((Character.Player.STAT.ATK + Character.Player.STAT.ATK) * 0.8)).ToString() + " ~ " +
-            ((int)((Character.Player.STAT.ATK + Character.Player.STAT.ATK) * 1.2)).ToString()+" ) ";        
+        Lv.text = Character.Player.stat.LEVEL.ToString();
+        Exp.text = Character.Player.stat.EXP.ToString() + " / " + Character.Player.stat.MAXEXP.ToString();        
+        Hp.text = ((int)Character.Player.stat.HP).ToString() + " / " + Character.Player.stat.MAXHP.ToString();
+        Mp.text = ((int)Character.Player.stat.MP).ToString() + " / " + Character.Player.stat.MAXMP.ToString();
+        Atk.text = Character.Player.stat.ATK.ToString() + "<color=#0000ffff> + " + Character.Player.stat.ATK.ToString() + "</color>"//장비 능력치 추가 할 것
+            + " ( " + ((int)((Character.Player.stat.ATK + Character.Player.stat.ATK) * 0.8)).ToString() + " ~ " +
+            ((int)((Character.Player.stat.ATK + Character.Player.stat.ATK) * 1.2)).ToString()+" ) ";        
         
     }
 }

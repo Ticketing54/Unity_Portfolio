@@ -64,7 +64,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
     }
     public void QuestInfoUpdate(int _Index)
     {
-        quest = Character.Player.QUEST.GetQuest(_Index);
+        quest = new Quest(_Index, Character.Player.quest.ChracterState_Quest(_Index));
         if(quest == null)
         {
             Debug.LogError("퀘스트를 찾을수 없습니다.");

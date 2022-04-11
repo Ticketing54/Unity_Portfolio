@@ -7,9 +7,9 @@ public class EffectManager : MonoBehaviour
     public static EffectManager effectManager;
     PoolingManager_Resource EffectRes;
     Dictionary<string, GameObject> effectParent;
-    List<GameObject> ClickEffect;
+    List<GameObject> clickList;
+    Vector3 effectPreset = new Vector3(0f, 0.1f, 0f);
 
-    
 
     private void Awake()
     {
@@ -25,16 +25,38 @@ public class EffectManager : MonoBehaviour
 
         EffectRes = new PoolingManager_Resource(this.gameObject);
         effectParent = new Dictionary<string, GameObject>();
-        ClickEffect = new List<GameObject>();
-        ClickEffectRes();
+        clickList = new List<GameObject>();
+        
     }
-
+    
     #region ClickEffect
-    void ClickEffectRes()
+    public void ClickEffectRes()
     {
-        //ClickEffect.Add(GameManager.gameManager.resource.Instantiate("ClickEffect"));
-        //ClickEffect.Add(GameManager.gameManager.resource.Instantiate("ClickEffect"));
-        //ClickEffect.Add(GameManager.gameManager.resource.Instantiate("ClickEffect"));
+        GameObject clickNomal = ResourceManager.resource.GetEffect("Click_Nomal");
+        clickNomal.transform.SetParent(this.transform);
+        clickNomal.gameObject.SetActive(false);
+        GameObject clickEnermy = ResourceManager.resource.GetEffect("Click_Enermy");
+        clickEnermy.transform.SetParent(this.transform);
+        clickEnermy.gameObject.SetActive(false);
+        GameObject clickFriend = ResourceManager.resource.GetEffect("Click_Friend");
+        clickFriend.transform.SetParent(this.transform);
+        clickFriend.gameObject.SetActive(false);
+
+        clickList.Add(clickNomal);
+        clickList.Add(clickEnermy);
+        clickList.Add(clickFriend);
+    }
+    public void ClickEffectAllReset()
+    {
+        foreach(GameObject click in clickList)
+        {
+            if (click.gameObject.activeSelf == true)
+            {
+                click.gameObject.transform.SetParent(this.transform);
+                click.gameObject.SetActive(false);
+            }
+                
+        }
     }
 
     public void ClickEffectOn(CLICKEFFECT _ClickEffect, Transform _Target)                      // 대상이 있음
@@ -42,18 +64,18 @@ public class EffectManager : MonoBehaviour
         GameObject clickEffect = ClickEffectCheck(_ClickEffect);
         clickEffect.transform.SetParent(_Target);
         clickEffect.gameObject.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-        clickEffect.gameObject.transform.localPosition = new Vector3(0f, 0f, 0f);
+        clickEffect.gameObject.transform.localPosition = effectPreset;
     }
-    public void ClickEffectOn(CLICKEFFECT _ClickEffect, Vector3 _Pos)                           // 바닥
+    public void ClickEffectOn(Vector3 _Pos)                           // 바닥
     {
-        GameObject clickEffect = ClickEffectCheck(_ClickEffect);
-        clickEffect.gameObject.transform.position = _Pos + new Vector3(0f, 1f, 0f);
+        GameObject clickEffect = ClickEffectCheck(CLICKEFFECT.NORMAL);
+        clickEffect.gameObject.transform.position = _Pos + effectPreset;
     }
     GameObject ClickEffectCheck(CLICKEFFECT _ClickEffect)                                       // 클릭 대상에 따라 하나만 켜져있게함
     {
-        GameObject SeletClickEffect = ClickEffect[(int)_ClickEffect];
+        GameObject SeletClickEffect = clickList[(int)_ClickEffect];
 
-        foreach (GameObject one in ClickEffect)
+        foreach (GameObject one in clickList)
         {
             if (one == SeletClickEffect)
             {
@@ -66,16 +88,16 @@ public class EffectManager : MonoBehaviour
             {
                 if (one.gameObject.activeSelf == true)
                 {
-                    one.gameObject.SetActive(true);
-                }
-                one.gameObject.SetActive(false);
+                    one.gameObject.transform.SetParent(this.transform);
+                    one.gameObject.SetActive(false);                    
+                }                
             }
         }
 
         return SeletClickEffect;
     }
     #endregion
-
+    
     GameObject LoadResourceEffect(string _EffectName)                       // 리소스에서 받아오기
     {
         //GameManager.gameManager.resource.Instantiate(_EffectName);

@@ -6,17 +6,27 @@ using UnityEngine.UI;
 using TMPro;
 
 public abstract class Monster : BattleUnit
-{    
-        
-    
-    
-
+{   
     NavMeshAgent nav;
-    
-    private void Start()
+    public Collider hitBox;
+    bool isstrun = false;
+    public virtual void Start()
     {
+        UIManager.uimanager.uiEffectManager.ActiveMonsterUi(this);
         nav = GetComponent<NavMeshAgent>();
+        hitBox = GetComponent<Collider>();
     }
+
+    private void OnEnable()
+    {
+        
+    }
+    private void OnDisable()
+    {
+               
+
+    }
+   
     public void SetMonster(string _mobName, int _lev, float _hpMax,float _atk, int _gold, int _exp, float _nickYPos,string _sound,List<int[]>_items = null)
     {
         unitName = _mobName;
@@ -30,21 +40,88 @@ public abstract class Monster : BattleUnit
         sound = _sound;
         items = _items;
     }   
-    
+    public void Damaged(float _dmg)
+    {        
+        this.hp_Cur -= _dmg;        
+    }
+    public void StatusEffect(STATUSEFFECT _state, float _duration)
+    {
+        switch (_state)
+        {
+            case STATUSEFFECT.KNOCKBACK:
+                {
+                    KnockBack(_duration);
+                }
+                break;
+            case STATUSEFFECT.STURN:
+                {
+                    Sturn(_duration);
+                }
+                break;
+            default:
+                break;                
+        }
+    }
 
-    //public float Hp_max, Hp,Atk;
-    //public int Lev,Gold;
+    void Sturn(float _duration)
+    {
+        // 스턴 애니메이션
+        StartCoroutine(CoStrun(_duration));
+    }
+    IEnumerator CoStrun(float _duration)
+    {
+        isstrun = true;
+        Debug.Log("스턴");
+        yield return new WaitForSeconds(_duration);
+        Debug.Log("스턴해제");
+        isstrun = false;
+    }
+    void KnockBack(float _duration)
+    {
+        // 넉백 애니메이션
+        StartCoroutine(CoKnockBack(_duration));
+    }
+    IEnumerator CoKnockBack(float _duration)
+    {
+        float timer = 0f;
+        nav.ResetPath();
+        while (timer <= _duration)
+        {
+            timer += Time.deltaTime;
+            nav.velocity = -transform.forward * 8;
+            yield return null;
+        }
+    }
+    IEnumerator CoApproachChracter()
+    {
+        yield return null;
+        bool approachChracter = false;
+        
+        while (true)
+        {
+            if(Character.Player != null)
+            {
+                if (this.DISTANCE < 4f && approachChracter == false)
+                {
+                    approachChracter = true;                    
+                    Character.Player.nearMonster.AddLast(this);
+                }
 
-    //public string MobName,Item,soundsName;
-    //public int Index,Exp;
-    //public float Nick_y ;    
-    //public  bool isQuestMob = false;
+                if(this.DISTANCE >= 4f && approachChracter == true)
+                {
+                    approachChracter = false;
+                    Character.Player.nearMonster.Remove(this);
+                }
+            }
+            yield return null;
+        }
+    }
 
 
-
+   
     //public NavMeshAgent nav;
     //public Animator anim;
-    //public Vector3 startPos = Vector3.zero;
+    
     //public GameObject HitBox;
     //public SkinnedMeshRenderer MobBounds;
     //public SkinnedMeshRenderer hitboxBounds;
@@ -66,29 +143,7 @@ public abstract class Monster : BattleUnit
     //    return (int)(Random.Range((float)(Atk * 0.8), (float)(Atk * 1.2)));
     //}
 
-    //private void Start()
-    //{
-    //    nav = this.GetComponent<NavMeshAgent>();
-    //    MobBounds = this.transform.Find("Render").GetComponent<SkinnedMeshRenderer>();
-    //    if (nav != null)
-    //        nav.Warp(startPos);
-    //    HitBox = transform.Find("Hitbox").gameObject;
-    //    if (HitBox != null)
-    //        hitboxBounds = HitBox.GetComponent<SkinnedMeshRenderer>();
-
-
-    //    anim = this.GetComponent<Animator>();
-    //    StartCoroutine(NickUpdate());
-    //    StartCoroutine(Mini_Dot());
-    //}
-
-
-    //void Update()
-    //{
-    //    Damaged();       
-
-    //}
-
+  
     //public void ItemDropState()
     //{
     //    if(MiniMap_Dot != null)

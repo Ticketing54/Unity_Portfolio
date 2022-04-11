@@ -27,10 +27,7 @@ public class Charater_Combat : StateMachineBehaviour
         //    animator.SetTrigger("Attack");
         //    return;
         //}
-        if (Character.Player.isMove == true)
-        {
-            animator.SetBool("Move", true);
-        }
+       
 
     }
 

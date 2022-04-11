@@ -22,6 +22,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Npc
+    - Patch
   - m_GUID: 096bafb892fdf0247835de85df748bf8
     m_Address: BeginnerBlacksmith
     m_ReadOnly: 0
@@ -72,12 +73,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Npc
-  - m_GUID: 950430d29cc1ab149a41d3be494239e4
+  - m_GUID: d75bc9f6cfbd4d645ba2b86fcd81aaae
     m_Address: PlayerCharacter
     m_ReadOnly: 0
     m_SerializedLabels:
     - Player
-    - Patch
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6defd24f3161a494192e121d10f7c432, type: 2}
   m_SchemaSet:
