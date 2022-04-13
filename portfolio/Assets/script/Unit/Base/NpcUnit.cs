@@ -10,6 +10,7 @@ public class NpcUnit : Unit
     protected List<int> items;
     [SerializeField]
     protected string dialogue;
+    protected int npcIndex;
     public List<int> QUEST { get => quests; }
     public List<int> ITEMS { get => items; }    
     public string DIALOGUE { get => dialogue; }

@@ -1,7 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+public enum QUESTMARKTYPE
+{
+    EXCLAMATION,
+    QUESTION,
+}
 public enum STATUSEFFECT
 {
     NOMAL,

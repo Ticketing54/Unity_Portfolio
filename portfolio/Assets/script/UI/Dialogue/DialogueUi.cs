@@ -277,7 +277,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
         if (!string.IsNullOrEmpty(quest))                                                                       // 퀘스트
         {
-            Character.Player.quest.AddQuest(int.Parse(quest));
+            Character.Player.quest.AddQuest(int.Parse(quest));            
             addQuestEffect.gameObject.SetActive(true);
         }
 

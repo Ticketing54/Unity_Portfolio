@@ -11,14 +11,64 @@ public class Npc :NpcUnit
     
     protected NavMeshAgent nav;   
 
-    public void SetNpc(string _npcName, float _nickYPos,List<int> _quests,List<int> _items,string _dialogue)
-    {        
-        unitName = _npcName;
-        quests = _quests;
-        items = _items;
+    public void SetNpc(int _index,string _npcName, float _nickYPos,List<int> _quests,List<int> _items,string _dialogue)
+    {
+        npcIndex = _index;
+        unitName = _npcName;        
         nick_YPos = _nickYPos;        
-        items = _items;
-        dialogue = _dialogue;        
+        items = _items;                 
+        dialogue = _dialogue;
+        quests = _quests;
+        SetQuestMark();
+    }
+
+    public void SetQuestMark()
+    {
+        if (quests == null)
+        {
+            return;
+        }
+        else
+        {
+            
+            for (int i = 0; i < quests.Count; i++)
+            {
+                Quest quest = Character.Player.quest.GetQuest(quests[i]);
+                if(quest == null)
+                {
+                    List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable", quests[i]);
+                    int startNpcIndex ;
+
+                    if(int.TryParse(questTable[8],out startNpcIndex))
+                    {
+                        if (Character.Player.quest.ClearPrecedQuest(quests[i]) && startNpcIndex == npcIndex)
+                        {
+                            EffectManager.effectManager.UpdateQuestMark(this, QUESTMARKTYPE.EXCLAMATION, QUESTSTATE.NONE);
+                            return;
+                        }
+                    }
+                                                        
+                }
+                else
+                {
+                    switch (quest.State)
+                    {
+                        case QUESTSTATE.PLAYING:
+                            EffectManager.effectManager.UpdateQuestMark(this, QUESTMARKTYPE.QUESTION, QUESTSTATE.PLAYING);
+                            return;
+                        case QUESTSTATE.COMPLETE:
+                            EffectManager.effectManager.UpdateQuestMark(this, QUESTMARKTYPE.QUESTION, QUESTSTATE.COMPLETE);
+                            return;
+                        case QUESTSTATE.DONE:
+                            continue;
+                        default:
+                            Debug.LogError("npc 퀘스트 마크 생성 오류");
+                            break;
+                    }
+                }
+                
+            }
+        }            
     }
     public bool HasQuest(int _questIndex)
     {

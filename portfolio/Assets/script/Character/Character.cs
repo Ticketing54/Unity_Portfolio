@@ -323,7 +323,7 @@ public class Character : MonoBehaviour
             {
                 if (hitinfo.collider.gameObject.layer == 9)
                 {
-                    //EffectManager.effectManager.ClickEffectOn(hitinfo.point);
+                    EffectManager.effectManager.ClickEffectOn(hitinfo.point);
                     MovetoEmpty(hitinfo.point);
                     return;
                 }

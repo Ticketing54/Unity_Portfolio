@@ -13,11 +13,16 @@ public class PoolData<Type> where Type : Component
     {
         Pool = new Queue<Type>();
         Prefab = _Prefab;
+
+        GameObject NewParent = new GameObject(Key + " : " + count);
+        NewParent.transform.SetParent(_Parent.transform);
+        
+        _Prefab.gameObject.transform.SetParent(NewParent.transform);
         _Prefab.gameObject.SetActive(false);
         count = 0;
         Key = _Key;
-        GameObject NewParent = new GameObject(Key+" : "+count);        
-        NewParent.transform.SetParent(_Parent.transform);
+        
+        
 
         Parent = NewParent;
     }

@@ -117,7 +117,7 @@ public class ResourceManager: MonoBehaviour
               Addressables.LoadAssetsAsync<GameObject>(effectList, SaveEffectAsset).Completed +=
               (ReadyToStart) =>
               {
-                  EffectManager.effectManager.ClickEffectRes();
+                  EffectManager.effectManager.BasicEffectAdd();
                   effectSetting = true;
               };
           };
@@ -353,7 +353,7 @@ public class ResourceManager: MonoBehaviour
             }            
         }
         
-        newNpc.SetNpc(_table[3], float.Parse(_table[6]), npcQuest, npcitems,_table[7]);
+        newNpc.SetNpc(int.Parse(_table[0]),_table[3], float.Parse(_table[6]), npcQuest, npcitems,_table[7]);
 
         ObjectManager.objManager.npcDic.Add(int.Parse(_table[0]), newNpc);        
     }

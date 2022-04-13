@@ -6,7 +6,6 @@ using System;
 [System.Serializable]
 public class Quest
 {
-    
     public int Index { get; }
     public string Name { get; }
     public QUESTTYPE Type { get; }      
@@ -17,6 +16,8 @@ public class Quest
     public int Goal_Current { get; set; }
     public QUESTSTATE State { get; set; }
     public List<int> PrecedeQuest { get; }
+    public int Start_Npc { get; }
+    public int Goal_Npc { get; }
 
     public Quest(int _index, string _questState)
     {
@@ -28,7 +29,7 @@ public class Quest
         }
 
         int t_Index;
-        if(int.TryParse(questTable[0],out t_Index))                                                 // 인덱스
+        if(int.TryParse(questTable[0],out t_Index))                                                
         {
             Index = t_Index;
         }
@@ -38,9 +39,9 @@ public class Quest
             return;
         }
 
-        Name = questTable[0];
+        Name = questTable[1];
         QUESTTYPE t_Type;
-        if(Enum.TryParse(questTable[2],out t_Type))                                                 // 퀘스트타입
+        if(Enum.TryParse(questTable[2],out t_Type))                                                 
         {
             Type = t_Type;
         }
@@ -69,7 +70,7 @@ public class Quest
         }
         else
         {
-            Debug.LogError("퀘스트 테이블 목표인덱스 오류");
+            //Debug.LogError("퀘스트 테이블 목표인덱스 오류");
             return;
         }
 
@@ -108,14 +109,37 @@ public class Quest
         if (!string.IsNullOrEmpty(q_PrecedQuest))
         {
             List<int> precedQuestList = new List<int>();
-            string[] arrayPreced = questTable[1].Split('/');
+            string[] arrayPreced = questTable[7].Split('/');
             for (int i = 0; i < arrayPreced.Length; i++)
             {
                 precedQuestList.Add(int.Parse(arrayPreced[i]));
             }
             PrecedeQuest = precedQuestList;
         }
-  
+
+        int t_StartNpc;
+        if (int.TryParse(questTable[8], out t_StartNpc))
+        {
+            Start_Npc = t_StartNpc;
+        }
+        else
+        {
+            Debug.LogError("퀘스트 테이블 목표npc 오류");
+            return;
+        }
+
+        int t_goalNpc;
+        if (int.TryParse(questTable[9], out t_goalNpc))
+        {
+            Goal_Npc = t_goalNpc;
+        }
+        else
+        {
+            Debug.LogError("퀘스트 테이블 목표npc 오류");
+            return;
+        }
+           
+
     }
     public Quest(int _index, QUESTSTATE _questState)
     {
@@ -202,19 +226,28 @@ public class Quest
             }
             PrecedeQuest = precedQuestList;
         }
-
-    }
-    public void QuestUpdate(int _need)
-    {
-        Goal_Current += _need;
-        if(Goal_Current >= Goal_Need)
+        int t_StartNpc;
+        if (int.TryParse(questTable[8], out t_StartNpc))
         {
-            State = QUESTSTATE.COMPLETE;
+            Start_Npc = t_StartNpc;
+        }
+        else
+        {
+            Debug.LogError("퀘스트 테이블 목표npc 오류");
+            return;
         }
 
-    }
-    public void QuestDone()
-    {
-        State = QUESTSTATE.DONE;
+        int t_goalNpc;
+        if (int.TryParse(questTable[9], out t_goalNpc))
+        {
+            Goal_Npc = t_goalNpc;
+        }
+        else
+        {
+            Debug.LogError("퀘스트 테이블 목표npc 오류");
+            return;
+        }
+
+
     }
 }
