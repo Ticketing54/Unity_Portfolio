@@ -7,8 +7,8 @@ public class ObjectManager : MonoBehaviour
 
     public static ObjectManager objManager;
 
-    public List<Monster> mobList = new List<Monster>();
-    public Dictionary<int, Npc> npcDic = new Dictionary<int, Npc>();        
+    List<Monster> mobList = new List<Monster>();
+    Dictionary<int, Npc> npcDic = new Dictionary<int, Npc>();        
     private void Awake()
     {
         if(objManager == null)
@@ -21,7 +21,33 @@ public class ObjectManager : MonoBehaviour
             Destroy(gameObject);
         }        
     }
-
+    public void AddMobList(Monster _mob)
+    {
+        mobList.Add(_mob);
+    }
+    public void AddnpcDic(int _index,Npc _npc)
+    {
+        if (npcDic.ContainsKey(_index))
+        {
+            Debug.LogError("이미 있는 Npc 를 추가하려 합니다.");
+        }
+        else
+        {
+            npcDic.Add(_index, _npc);
+        }
+        
+    }
+    public Npc GetNpc(int _index)
+    {
+        if (npcDic.ContainsKey(_index))
+        {
+            return npcDic[_index];
+        }
+        else
+        {
+            return null;
+        }
+    }
 
     public void UpdateQuestMark(int _npcIndex)
     {
@@ -38,8 +64,7 @@ public class ObjectManager : MonoBehaviour
     }
 
     public void MoveOtherMap()
-    {
-        StopAllCoroutines();
+    {        
         mobList.Clear();
         npcDic.Clear();        
     }

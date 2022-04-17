@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Nomal_Monster : Monster
 {
-    private void Start()
+    public override void Start()
     {
         base.Start();
         Character.Player.AddNearMonster(this);

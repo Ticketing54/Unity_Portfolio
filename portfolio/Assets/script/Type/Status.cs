@@ -56,7 +56,11 @@ public class Status
         }
     }
     public int MAXEXP { get { return Need_Exp; } }
-    public int EXP { get { return Cur_Exp; } set { Cur_Exp = value; } }
+    public int EXP { get { return Cur_Exp; } set { Cur_Exp = value; } }                 // LevelUp 구현\
+    public void Damaged(float _dmg)
+    {
+
+    }
     //public float returnAtk()
     //{
     //    float tmp = Atk + Equip_Atk;

@@ -277,7 +277,22 @@ public class ResourceManager: MonoBehaviour
         {
             case "Nomal":
                 {
-                     newMonster= (Monster)_obj.AddComponent<Nomal_Monster>();
+                    newMonster= (Monster)_obj.AddComponent<Nomal_Monster>();
+                    break;
+                }
+            case "Tutorial":
+                {
+                    newMonster = (Monster)_obj.AddComponent<Tutorial_Monster>();
+                    break;
+                }
+            case "Offensive":
+                {
+                    newMonster = (Monster)_obj.AddComponent<Tutorial_Monster>();        //
+                    break;
+                }
+            case "Mimic":
+                {
+                    newMonster = (Monster)_obj.AddComponent<Tutorial_Monster>();        //
                     break;
                 }
             default:
@@ -300,14 +315,14 @@ public class ResourceManager: MonoBehaviour
                 int[] iteminfo = Array.ConvertAll(dropItemsInfo[i].Split('#'), index => int.Parse(index));
                 items.Add(iteminfo);
             }
-            newMonster.SetMonster(_table[3], int.Parse(_table[4]), float.Parse(_table[5]), float.Parse(_table[6]), int.Parse(_table[7]), int.Parse(_table[8]), float.Parse(_table[10]), _table[11], items);
+            newMonster.SetMonster(int.Parse(_table[0]),_table[3], int.Parse(_table[4]), float.Parse(_table[5]), float.Parse(_table[6]), int.Parse(_table[7]), int.Parse(_table[8]), float.Parse(_table[10]), _table[11], items);
         }
         else
         {
-            newMonster.SetMonster(_table[3], int.Parse(_table[4]), float.Parse(_table[5]), float.Parse(_table[6]), int.Parse(_table[7]), int.Parse(_table[8]), float.Parse(_table[10]), _table[11]);
+            newMonster.SetMonster(int.Parse(_table[0]),_table[3], int.Parse(_table[4]), float.Parse(_table[5]), float.Parse(_table[6]), int.Parse(_table[7]), int.Parse(_table[8]), float.Parse(_table[10]), _table[11]);
         }
 
-        ObjectManager.objManager.mobList.Add(newMonster);
+        ObjectManager.objManager.AddMobList(newMonster);
     }
     void SettingNpc(GameObject _obj,List<string>_table)                                                     // 차후 추가하게될경우 추가
     {
@@ -317,6 +332,21 @@ public class ResourceManager: MonoBehaviour
             case "Nomal":
                 {
                     newNpc = (Npc)_obj.AddComponent<Nomal_Npc>();                   
+                    break;
+                }
+            case "Tutorial":
+                {
+                    newNpc = (Npc)_obj.AddComponent<Tutorial_Npc>();
+                    break;
+                }
+            case "Passerby":
+                {
+                    newNpc = (Npc)_obj.AddComponent<Tutorial_Npc>();            //
+                    break;
+                }
+            case "NoneDialog":
+                {
+                    newNpc = (Npc)_obj.AddComponent<Tutorial_Npc>();            //
                     break;
                 }
             default:
@@ -355,7 +385,7 @@ public class ResourceManager: MonoBehaviour
         
         newNpc.SetNpc(int.Parse(_table[0]),_table[3], float.Parse(_table[6]), npcQuest, npcitems,_table[7]);
 
-        ObjectManager.objManager.npcDic.Add(int.Parse(_table[0]), newNpc);        
+        ObjectManager.objManager.AddnpcDic(int.Parse(_table[0]), newNpc);        
     }
     #endregion
 

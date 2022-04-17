@@ -19,6 +19,13 @@ public class Quest
     public int Start_Npc { get; }
     public int Goal_Npc { get; }
 
+    public int StartDialogIndex { get; }
+    public int PlayingDialogIndex { get; }
+    public int EndDialogIndex { get; }
+
+    public int Reward_Gold { get; }
+    public int Reward_Exp { get; }
+    public List<List<int>> Reward_Item { get; }
     public Quest(int _index, string _questState)
     {
         List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable", _index);
@@ -138,8 +145,75 @@ public class Quest
             Debug.LogError("퀘스트 테이블 목표npc 오류");
             return;
         }
-           
+        int t_StartDialog;
+        if (int.TryParse(questTable[10], out t_StartDialog))
+        {
+            StartDialogIndex = t_StartDialog;
+        }
+        else
+        {
+            Debug.Log("퀘스트 dialognpc 오류");
+            return;
+        }
+        int t_PlayingDialog;
+        if (int.TryParse(questTable[11], out t_PlayingDialog))
+        {
+            PlayingDialogIndex = t_PlayingDialog;
+        }
+        else
+        {
+            Debug.Log("퀘스트 dialognpc 오류");
+            return;
+        }
+        int t_EndDialog;
+        if (int.TryParse(questTable[12], out t_EndDialog))
+        {
+            EndDialogIndex = t_EndDialog;
+        }
+        else
+        {
+            Debug.Log("퀘스트 dialognpc 오류");
+            return;
+        }
 
+        int t_Reward_Exp;
+        if (int.TryParse(questTable[13], out t_Reward_Exp))
+        {
+            Reward_Exp = t_Reward_Exp;
+        }
+        else
+        {
+            Reward_Exp = 0;            
+        }
+
+        int t_Reward_Gold;
+        if (int.TryParse(questTable[14], out t_Reward_Gold))
+        {
+            Reward_Gold = t_Reward_Gold;
+        }
+        else
+        {
+            Reward_Gold = 0;            
+        }
+
+
+        if (!string.IsNullOrEmpty(questTable[15]))
+        {
+            string[] itemArray = questTable[15].Split("/");
+            List<List<int>> reward_Items = new List<List<int>>();
+            for (int i = 0; i < itemArray.Length; i++)
+            {
+                string[] subitem = itemArray[i].Split("#");
+                List<int> itemInfo = new List<int>();
+                for (int iteminfo_index = 0; iteminfo_index < subitem.Length; iteminfo_index++)
+                {
+                    itemInfo.Add(int.Parse(subitem[iteminfo_index]));
+                }
+                reward_Items.Add(itemInfo);
+            }
+
+            Reward_Item = reward_Items;
+        }
     }
     public Quest(int _index, QUESTSTATE _questState)
     {
@@ -219,7 +293,7 @@ public class Quest
         if (!string.IsNullOrEmpty(q_PrecedQuest))
         {
             List<int> precedQuestList = new List<int>();
-            string[] arrayPreced = questTable[1].Split('/');
+            string[] arrayPreced = questTable[7].Split('/');
             for (int i = 0; i < arrayPreced.Length; i++)
             {
                 precedQuestList.Add(int.Parse(arrayPreced[i]));
@@ -247,7 +321,73 @@ public class Quest
             Debug.LogError("퀘스트 테이블 목표npc 오류");
             return;
         }
+        int t_StartDialog;
+        if (int.TryParse(questTable[10], out t_StartDialog))
+        {
+            StartDialogIndex = t_StartDialog;
+        }
+        else
+        {
+            Debug.Log("퀘스트 dialognpc 오류");
+            return;
+        }
+        int t_PlayingDialog;
+        if (int.TryParse(questTable[11], out t_PlayingDialog))
+        {
+            PlayingDialogIndex = t_PlayingDialog;
+        }
+        else
+        {
+            Debug.Log("퀘스트 dialognpc 오류");
+            return;
+        }
+        int t_EndDialog;
+        if (int.TryParse(questTable[12], out t_EndDialog))
+        {
+            EndDialogIndex = t_EndDialog;
+        }
+        else
+        {
+            Debug.Log("퀘스트 dialognpc 오류");
+            return;
+        }
+        int t_Reward_Exp;
+        if (int.TryParse(questTable[13], out t_Reward_Exp))
+        {
+            Reward_Exp = t_Reward_Exp;
+        }
+        else
+        {
+            Reward_Exp = 0;
+        }
+
+        int t_Reward_Gold;
+        if (int.TryParse(questTable[14], out t_Reward_Gold))
+        {
+            Reward_Gold = t_Reward_Gold;
+        }
+        else
+        {
+            Reward_Gold = 0;
+        }
 
 
+        if (!string.IsNullOrEmpty(questTable[15]))
+        {
+            string[] itemArray = questTable[15].Split("/");
+            List<List<int>> reward_Items = new List<List<int>>();
+            for (int i = 0; i < itemArray.Length; i++)
+            {
+                string[] subitem = itemArray[i].Split("#");
+                List<int> itemInfo = new List<int>();
+                for (int iteminfo_index = 0; iteminfo_index < subitem.Length; iteminfo_index++)
+                {
+                    itemInfo.Add(int.Parse(subitem[iteminfo_index]));
+                }
+                reward_Items.Add(itemInfo);
+            }
+
+            Reward_Item = reward_Items;
+        }
     }
 }

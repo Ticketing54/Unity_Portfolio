@@ -10,11 +10,13 @@ public abstract class Monster : BattleUnit
     NavMeshAgent nav;
     public Collider hitBox;
     bool isstrun = false;
+    protected int index = -1;
     public virtual void Start()
     {
         UIManager.uimanager.uiEffectManager.ActiveMonsterUi(this);
         nav = GetComponent<NavMeshAgent>();
         hitBox = GetComponent<Collider>();
+        StartCoroutine(CoApproachChracter());
     }
 
     private void OnEnable()
@@ -27,8 +29,9 @@ public abstract class Monster : BattleUnit
 
     }
    
-    public void SetMonster(string _mobName, int _lev, float _hpMax,float _atk, int _gold, int _exp, float _nickYPos,string _sound,List<int[]>_items = null)
+    public void SetMonster(int _index,string _mobName, int _lev, float _hpMax,float _atk, int _gold, int _exp, float _nickYPos,string _sound,List<int[]>_items = null)
     {
+        index = _index;
         unitName = _mobName;
         hp_Max = _hpMax;
         hp_Cur = _hpMax;
@@ -40,7 +43,7 @@ public abstract class Monster : BattleUnit
         sound = _sound;
         items = _items;
     }   
-    public void Damaged(float _dmg)
+    public virtual void Damaged(float _dmg)
     {        
         this.hp_Cur -= _dmg;        
     }
@@ -103,14 +106,14 @@ public abstract class Monster : BattleUnit
             {
                 if (this.DISTANCE < 4f && approachChracter == false)
                 {
-                    approachChracter = true;                    
-                    Character.Player.nearMonster.AddLast(this);
+                    approachChracter = true;
+                    Character.Player.AddNearMonster(this);
                 }
 
                 if(this.DISTANCE >= 4f && approachChracter == true)
                 {
                     approachChracter = false;
-                    Character.Player.nearMonster.Remove(this);
+                    Character.Player.RemoveNearMonster(this);
                 }
             }
             yield return null;

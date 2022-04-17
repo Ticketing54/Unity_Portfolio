@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 public class AddQuestText_Ui : MonoBehaviour
 {
     [SerializeField]
     CanvasGroup addQuestText;
     [SerializeField]
     RectTransform rectTrans;
-
+    [SerializeField]
+    TextMeshProUGUI text;
     Vector2 StartPos = new Vector2(0, -330);    
     float timer = 0f;
     bool isActive = false;
@@ -18,7 +19,17 @@ public class AddQuestText_Ui : MonoBehaviour
         timer = 0f;
         isActive = false;
     }
-
+    public void SetQuestEffect(bool _isAdd)
+    {        
+        if (_isAdd == true)
+        {
+            text.text = "퀘스트를 수락 하셨습니다.";
+        }
+        else
+        {
+            text.text = "퀘스트를 완료 하셨습니다.";
+        }
+    }
     private void Update()
     {
         if (isActive == true)

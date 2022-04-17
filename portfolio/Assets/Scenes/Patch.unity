@@ -1615,6 +1615,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   addQuestText: {fileID: 463877116}
   rectTrans: {fileID: 463877119}
+  text: {fileID: 463877117}
 --- !u!225 &463877116
 CanvasGroup:
   m_ObjectHideFlags: 0

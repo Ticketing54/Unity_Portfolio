@@ -358,8 +358,8 @@ public class Character : MonoBehaviour
                     }
                         
                     if (mob.DISTANCE <= 2f)//stat.ATK_RANGE
-                    {                        
-                        anim.SetTrigger("Attack");                        
+                    {
+                        Attack();
                         break;
                     }
                     else
@@ -379,9 +379,8 @@ public class Character : MonoBehaviour
                     }
                     if (npc.DISTANCE <= stat.ATK_RANGE)
                     {
-                        nav.SetDestination(transform.position);                        
-                        UIManager.uimanager.OpenDialog(npc);
-                        isCantMove = true;
+                        nav.SetDestination(transform.position);
+                        npc.Interact();                        
                         break;
                     }
                     else
@@ -403,7 +402,10 @@ public class Character : MonoBehaviour
     {
         StartCoroutine(CoKnockBack());
     }
-
+    public void Attack()
+    {
+        anim.SetTrigger("Attack");
+    }
     IEnumerator CoKnockBack()
     {
         float timer = 0f;
@@ -421,7 +423,7 @@ public class Character : MonoBehaviour
         {
             if (weapons[_num].bounds.Intersects(one.hitBox.bounds))
             {
-                Debug.Log("5f");                
+                one.Damaged(5f);       
             }
         }
        

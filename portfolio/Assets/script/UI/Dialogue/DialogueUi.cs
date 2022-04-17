@@ -37,7 +37,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
     AddQuestText_Ui addQuestEffect;     // 퀘스트를 수락하셨습니다. << 메세지
 
     List<int> items;
-    List<int> quests;
+    List<int> questList;
     List<List<string>> npc_DialogData;
 
     bool isDoneTexting = false;
@@ -54,7 +54,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         addQuestEffect.gameObject.SetActive(false);             // 퀘스트 등록 이벤트 
         ChoiceReset();
         npc_DialogData = null;
-        quests = null;
+        questList = null;
         DialogTextReset();
         Character.Player.isCantMove = false;
     }
@@ -110,7 +110,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         }
         if(_npc.QUEST != null)
         {
-            quests = _npc.QUEST;
+            questList = _npc.QUEST;
         }
         List<string> dialogResData = ResourceManager.resource.GetDialogue(_npc.DIALOGUE);
         List<List<string>> dialogData = new List<List<string>>();
@@ -126,73 +126,86 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         }
         npc_DialogData = dialogData;
         npc_name.text = _npc.NickName;
-        FirstDialog();
+        FirstDialog(_npc);
     }
 
-    void QuestStateToChoice()
+    void CheckQuest(NpcUnit _npc)
     {
-        if (quests == null)
-            return;
-
-        List<string> questToChoice = new List<string>();
-        string[] arrQuesttoChoice = npc_DialogData[0][3].Split('/');
-        for (int i = 0; i < quests.Count; i++)
+        if (questList == null)
         {
-            string[] arrchoiceData = arrQuesttoChoice[i].Split('#');    // 퀘스트받기전 # 퀘스트 진행중(미완료) # 퀘스트 진행중(완료시) # 말
-            QUESTSTATE state = Character.Player.quest.ChracterState_Quest(quests[i]);
-            Choice choice = choicePool.GetData();
-            choice.transform.SetParent(scrollect.content.transform);
-            choice.Text.text = arrchoiceData[3];
-            switch (state)
+            Npc_Texting(1);
+            return;
+        }
+        else
+        {
+            for (int i = 0; i < questList.Count; i++)
             {
-                case QUESTSTATE.READY:
+                Quest quest = Character.Player.quest.GetQuest(questList[i]);
+                if (quest == null)
+                {
+                    List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable", questList[i]);
+                    int startNpcIndex;
+
+                    if (int.TryParse(questTable[8], out startNpcIndex))
                     {
-                        choice.moveToDialogNum = int.Parse(arrchoiceData[0]);
-                        choice_List.Add(choice);
-                        break;
+                        if (Character.Player.quest.ClearPrecedQuest(questList[i]) && startNpcIndex == _npc.NpcIndex)
+                        {
+                            Npc_Texting(int.Parse(questTable[10]));
+                            return;
+                        }
+                        else
+                        {
+                            continue;
+                        }
                     }
-                case QUESTSTATE.PLAYING:
+
+                }
+                else
+                {
+                    switch (quest.State)
                     {
-                        choice.moveToDialogNum = int.Parse(arrchoiceData[1]);
-                        choice_List.Add(choice);
-                        break;
+                        case QUESTSTATE.PLAYING:
+                            {
+                                Npc_Texting(quest.PlayingDialogIndex);
+                                return;
+                            }
+                            
+                        case QUESTSTATE.COMPLETE:
+                            {
+                                if(quest.Goal_Npc == _npc.NpcIndex)
+                                {
+                                    Npc_Texting(quest.EndDialogIndex);
+                                    return;
+                                }
+                                else
+                                {
+                                    Npc_Texting(quest.PlayingDialogIndex);
+                                    return;
+                                }
+                            }                            
+                        case QUESTSTATE.DONE:
+                            continue;
+                        default:
+                            Debug.LogError("npc 퀘스트 마크 생성 오류");
+                            return;
                     }
-                case QUESTSTATE.COMPLETE:
-                    {
-                        choice.moveToDialogNum = int.Parse(arrchoiceData[2]);
-                        choice_List.Add(choice);
-                        break;
-                    }
-                default:
-                    {
-                        choice.ResetChoice();
-                        choicePool.Add(choice);
-                        break;
-                    }
+                }
 
             }
-
+            Npc_Texting(1);
+            return;
         }
+
+
     }
 
-    void FirstDialog()
-    {                                                                        
-        QuestStateToChoice();
-        List<string> subDialogData = npc_DialogData[1];
-        if (items !=null)
-        {
-            AddShop();
-        }
-        if (subDialogData[3] != "")
-        {
-            AddChoice(subDialogData[3]);
-        }
-        npc_dialog.text = subDialogData[2];
-
-        if(reward.gameObject.activeSelf == true)
+    void FirstDialog(NpcUnit _npc)
+    {
+        if (reward.gameObject.activeSelf == true)
         {
             reward.gameObject.SetActive(false);
         }
+        CheckQuest(_npc);        
     }
 
     
@@ -262,23 +275,33 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
             return;
         }
         
-        List<string> dialogData = npc_DialogData[_dialog_Index];
+        List<string> dialogData = npc_DialogData[_dialog_Index-1];
         StartCoroutine(CoDialog_Texting(dialogData)); // 대화 입력
     }
 
 
     IEnumerator CoDialog_Texting(List<string> _dialogData)
     {
-        string quest        = _dialogData[1];           // 퀘스트
-        string dialog       = _dialogData[2];           // 대화
-        string choice       = _dialogData[3];           // 선택지
-        string nextDialog   = _dialogData[4];           // 다음 대화
-        string rewards      = _dialogData[5];                                                                   // 보상
+        string questStartIndex    = _dialogData[1];           // 퀘스트 시작 Index
+        string questEndIndex      = _dialogData[2];           // 퀘스트 종료 Index
+        string dialog             = _dialogData[3];           // 대화
+        string choice             = _dialogData[4];           // 선택지
+        string nextDialog         = _dialogData[5];           // 다음 대화
+        bool npcReward               = false;
 
-        if (!string.IsNullOrEmpty(quest))                                                                       // 퀘스트
+        if (!string.IsNullOrEmpty(questStartIndex))                                                                       // 퀘스트
         {
-            Character.Player.quest.AddQuest(int.Parse(quest));            
+            Character.Player.quest.AddQuest(int.Parse(questStartIndex));            
             addQuestEffect.gameObject.SetActive(true);
+            addQuestEffect.SetQuestEffect(true);
+        }
+
+        if (!string.IsNullOrEmpty(questEndIndex))                                                                       // 퀘스트
+        {
+            Character.Player.quest.QuestComplete(int.Parse(questEndIndex));
+            npcReward = true;
+            addQuestEffect.gameObject.SetActive(true);
+            addQuestEffect.SetQuestEffect(false);
         }
 
 
@@ -289,42 +312,36 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
             if (i == dialog.Length)
             {
                
-                if (!string.IsNullOrEmpty(rewards))                                                             // 보상
+                if (npcReward == true)        
                 {
-                    reward.gameObject.SetActive(true);
-                    string[] tmp = rewards.Split('/');
-                    rewards_Exp.text = tmp[0] + "EXP"; //경험치
-                    Character.Player.stat.EXP += int.Parse(tmp[0]);
-                    if (!string.IsNullOrEmpty(tmp[1]))                                                          //골드
+                    Quest quest = new Quest(int.Parse(questEndIndex), QUESTSTATE.NONE);
+
+                    reward.gameObject.SetActive(true);                    
+                    rewards_Exp.text = quest.Reward_Exp + "EXP";                                             //경험치          
+                    
+                    if (quest.Reward_Gold != 0)                                                              
                     {
                         reward_Gold.gameObject.SetActive(true);
-                        reward_Gold.text = tmp[1] + "GOLD";
-                        Character.Player.inven.gold += int.Parse(tmp[1]);
+                        reward_Gold.text = quest.Reward_Gold + "GOLD";                                       //골드
                     }
                     else
                     {
                         reward_Gold.gameObject.SetActive(false);
                     }
 
-                    if (!string.IsNullOrEmpty(tmp[2]))                                                          //아이템
+                    if (quest.Reward_Item != null)                                                           //아이템
                     {
                         rewards_Item.gameObject.SetActive(true);
-                        string[] item = tmp[2].Split('#');                                  
-                        
-                        Item newitem = new Item(int.Parse(item[0]));                      // 아이템 획득
-                        Character.Player.inven.PushItem(newitem);
-
-                        if (item[1] != null)                                                                   // 여러개일때
+                        List<List<int>> rewardsItem = quest.Reward_Item;
+                        string rewardsStr = string.Empty;
+                        for (int items = 0; items < rewardsItem.Count; items++)
                         {
-                            newitem.ItemCount = int.Parse(item[1]);
-                            rewards_Item.text = newitem.itemName + " " + newitem.ItemCount + " 개";
+                            List<int> itemList = rewardsItem[items];
+                            Item item = new Item(itemList[0]);
+                            rewardsStr += item.itemName + " " + itemList[1] + " 개"+"\n";                            
                         }
+                        rewards_Item.text = rewardsStr;
 
-                        else
-                        {
-                            newitem.ItemCount = 1;
-                            rewards_Item.text = newitem.itemName;
-                        }
                     }
                     else
                     {

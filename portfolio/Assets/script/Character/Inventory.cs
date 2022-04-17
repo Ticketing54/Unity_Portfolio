@@ -41,6 +41,10 @@ public class Inventory : ItemMove
         inven[_SlotNum] = null;
         return PopItem;
     }        
+    public void GetRewards(List<List<int>> _rewards)
+    {
+
+    }
     public bool PushItem(Item _NewItem)
     {
         for(int slotNum = 0; slotNum < inven.Length; slotNum++)
