@@ -127,7 +127,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af7b365747eebb74ba911d250c2ea2fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isnewGame: 0
+  tableProgress: 0
+  imageProgress: 0
   canvasGroup: {fileID: 4378838338379235966}
   progressBar: {fileID: 5241847255561228889}
 --- !u!1 &3835519349140987243
@@ -342,7 +343,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 20a438d244058b94c8cb980ea68dd4ec, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4f033cdd2b09f9a43b139729d09d002c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

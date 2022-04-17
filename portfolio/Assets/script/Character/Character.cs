@@ -6,311 +6,527 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using TMPro;
 
+
 public class Character : MonoBehaviour
 {
     public static Character Player;
-    public Status Stat = null;
-    public Equipment Equip = null;
-    
-    public CharacterSkill Skill = null;    
-    public CharacterQuest Quest = null;    
-    public Inventory Inven = null;
 
+    public Character(){}
+    public float HP_CURENT => stat.HP;
+    public float Hp_Max => stat.MAXHP;
+    public string NICKNAME => stat.NAME;
 
-    public QuickSlot Quick = null;
-
-    public List<SkinnedMeshRenderer> Weapon = new List<SkinnedMeshRenderer>();
-    public SkinnedMeshRenderer Character_bounds;
-    public List<Monster> MobList = new List<Monster>();
-    public List<Npc> npcList = new List<Npc>();
-    
-    
-    
-    
-
-    public GameObject Target;
-
-    
-    public NavMeshAgent nav;
-    public Animator anim;
-    
-    
-    // 상호작용
-    public bool Interaction_B = false;
-    public bool Interaction_T = false;   
-    public bool Interaction_L = false;
-
-    //클릭
-    public bool ClickObj = false;
-
-    //상태
-    public bool isMove = false;
-    public bool DontMove = false;
-    public bool isCombo = false;          
-    public bool isrecovery_Hp = false;
-    public bool isrecovery_Mp = false;
-
-
-    public bool OpenLootingbox = false; // 루팅박스 
-    public Vector3 StartPos;
-
-    public delegate void ITemUiSetting(ItemListType _Type,int _SlotNum);
+    public List<Collider> weapons;    
+    Animator anim;    
+  
     
 
 
-
-    #region MoveItemControl
-
-    
-    public void ItemMove(ItemListType _StartType,int _S_Num,ItemListType _EndType,int _E_Num, ITemUiSetting _Setting)
+    private void Awake()
     {
-        Item Start = ItemMoveStart(_StartType,_S_Num);
-
-        if (Start == null)
-            return;
-
-        Item End = ItemMoveEnd(_EndType,_E_Num, Start);
-        if (End != null)
+        if (Player == null)
         {
-            Item Temp = ItemMoveEnd(_StartType, _S_Num, End);
-            if(Temp != null)
-                Debug.LogError("아이템 장착 오류");
+            Player = this;
+            DontDestroyOnLoad(gameObject);
         }
-        _Setting(_StartType, _S_Num);
-        _Setting(_EndType, _E_Num);
-    }    
-    public void ItemMove(ItemListType _Type, int _SlotNum, ITemUiSetting _Setting)
-    {
-        Item Start = ItemMoveStart(_Type,_SlotNum);
-
-        if (Start == null)
-            return;
-        Item End;
-
-        if (Start.itemType != Item.ItemType.Equipment)
-        {
-            End = ItemMoveEnd(_Type,_SlotNum, Start);
-            _Setting(_Type, _SlotNum);
-            if (End != null)
-                Debug.LogError("아이템 장착 오류");
-            return;
-        }            
         else
         {
-            switch (_Type)
+            if(GameManager.gameManager.character != this)
             {
-                case ItemListType.EQUIP:
-                    int EmptySlotNum = Inven.EmptySlot();                    
-                    if(EmptySlotNum <0)         // 가득 찼을 때
-                    {
-                        End = ItemMoveEnd(_Type,_SlotNum, Start);
-                        _Setting(_Type, _SlotNum);
-                        if (End != null)
-                            Debug.LogError("아이템 장착 오류");
-                        return;
-                    }
-                    End = ItemMoveEnd(ItemListType.INVEN, EmptySlotNum, Start);
-                    _Setting(_Type, _SlotNum);
-                    _Setting(ItemListType.INVEN, EmptySlotNum);
-                    if (End != null)
-                        Debug.LogError("아이템 장착 오류");
-                    return;                    
-                case ItemListType.INVEN:
-                    End = Equip.PushEquip((int)Start.EquipType, Start);
-                    if (End != null)
-                    {
-                        Item Temp;
-                        Temp =ItemMoveEnd(_Type,_SlotNum, End);
-                        if(Temp != null)
-                            Debug.LogError("아이템 장착 오류 ");                        
-                    }
-                    _Setting(_Type, _SlotNum);
-                    _Setting(ItemListType.EQUIP, (int)Start.EquipType);
-                    return;
-                default:
-                    return;
-                    
+                Destroy(gameObject);
+            }            
+        }
+        skill = new CharacterSkill();
+        quest = new CharacterQuest();
+        inven = new Inventory();
+        quickSlot = new QuickSlot();
+        quickQuest = new Quest[4];
+        
+        //stat = new Status();
+        //equip = new Equipment();        
+    }
+    private void Start()
+    {
+        if (nav == null)
+        {
+            nav = GetComponent<NavMeshAgent>();
+        }
+        nav.updateRotation = false;
+        anim = GetComponent<Animator>();
+        
+        HitBoxSetting();
+    }
+    
+    void Update()
+    {
+        Click();
 
+
+    }
+
+
+    public LinkedList<Monster> nearMonster = new LinkedList<Monster>();    
+
+    public void AddNearMonster(Monster _mob)
+    {
+        if(_mob is Monster)
+        {
+            nearMonster.AddLast((Monster)_mob);
+        }
+    }
+    public void RemoveNearMonster(Monster _mob)
+    {
+        if(_mob is Monster)
+        {
+            nearMonster.Remove((Monster)_mob);
+        }
+    }
+
+
+    public Monster ClosestMonster()
+    {
+        if (nearMonster.Count == 0)
+        {
+            return null;
+        }            
+        Monster nearMob = nearMonster.First.Value;
+        foreach(Monster one in nearMonster)
+        {
+            if (one.DISTANCE < nearMob.DISTANCE)
+                nearMob = one;
+        }
+        return nearMob;
+    }
+    NavMeshAgent nav;
+    [Header("스텟")]
+    public Status stat;
+    [Header("장비")]
+    public Equipment equip;
+    [Header("스킬")]
+    public CharacterSkill skill;
+    [Header("퀘스트")]    
+    public CharacterQuest quest;
+    [Header("인벤토리")]
+    public Inventory inven;
+    [Header("퀵슬롯")]
+    public QuickSlot quickSlot;
+
+
+    public Quest[] quickQuest;
+
+    
+    #region UiControl
+
+    bool isUsingUi = false;
+    public bool USINGUI
+    {
+        get
+        {
+            return isUsingUi;
+        }
+        set
+        {
+            isUsingUi = value;
+        }
+    }
+    
+  
+   
+
+    #endregion
+    #region MoveItemControl   
+    Item itemMoveItem;
+    Item ITEMMOVEITEM { get { return itemMoveItem; } }
+  
+    ItemMove ChangeITemMove(ITEMLISTTYPE _itemListType)
+    {
+        
+        switch (_itemListType)
+        {
+            case ITEMLISTTYPE.INVEN:
+                return inven;
+            case ITEMLISTTYPE.EQUIP:
+                return equip;
+            case ITEMLISTTYPE.QUICK:
+                return quickSlot;
+
+            default:
+                Debug.LogError("존재하지 않는 ITEMLISTTYPE 입니다.");
+                return null;
+        }
+    }
+    
+    public Item ItemList_GetItem(ITEMLISTTYPE _ListType, int _Index)
+    {        
+        itemMoveItem = ChangeITemMove(_ListType).GetItem(_Index);
+
+        if(itemMoveItem== null)
+        {
+            return null;
+        }
+            
+        return ITEMMOVEITEM;
+    }
+
+
+
+    public void ItemMove(ITEMLISTTYPE _StartListType, ITEMLISTTYPE _EndListType, int _StartListIndex, int _EndListIndex)
+    {
+        ItemMove start_ItemMove = ChangeITemMove(_StartListType);
+        ItemMove end_ItemMove   = ChangeITemMove(_EndListType);
+
+        Item startItem = start_ItemMove.GetItem(_StartListIndex);
+        Item endItem   = end_ItemMove.GetItem(_EndListIndex);
+
+
+        if(startItem == null && endItem == null)
+        {
+            Debug.LogError("빈 두아이템을 옮기려합니다.");            
+        }
+        else if(start_ItemMove.PossableMoveItem(_StartListIndex,endItem) && end_ItemMove.PossableMoveItem(_EndListIndex, startItem))
+        {
+            Item popItem = start_ItemMove.PopItem(_StartListIndex);  // 시작지점 아이템을 Pop 하여
+            start_ItemMove.AddItem(_StartListIndex, end_ItemMove.Exchange(_EndListIndex, popItem));     // 목적지점 아이템과 교환
+            
+
+
+            UIManager.uimanager.updateUiSlot(_StartListType, _StartListIndex);
+            UIManager.uimanager.updateUiSlot(_EndListType, _EndListIndex);
+
+                     
+        }
+        
+    }
+
+    public void ItemMove_Auto(ITEMLISTTYPE _StartListType, int _StartListIndex)
+    {
+        ItemMove start_ItemMove = ChangeITemMove(_StartListType);        
+
+        switch (_StartListType)
+        {
+            case ITEMLISTTYPE.EQUIP:
+                {
+                    ItemMove(_StartListType, ITEMLISTTYPE.INVEN, _StartListIndex, inven.Empty_SlotNum());
+                    break;
+                }
+            case ITEMLISTTYPE.INVEN:
+                {
+                    Item rightClickitem = start_ItemMove.GetItem(_StartListIndex);
+                    if(rightClickitem!= null&& rightClickitem.itemType == ITEMTYPE.EQUIPMENT)
+                    {
+                        ItemMove(_StartListType, ITEMLISTTYPE.EQUIP, _StartListIndex, (int)rightClickitem.equipType);
+                        break;
+                        
+                    }
+                    break;
+                }
+            case ITEMLISTTYPE.QUICK:
+                {
+                    break;
+                }
+            default:
+                break;
+
+        }        
+    }  
+    #endregion
+
+    public string GetChracterInfo()
+    {        
+        string Data = string.Empty;
+        Data += Character.Player.stat.NAME + ",";
+        Data += GameManager.gameManager.MapName + ",";
+        Data += Character.Player.transform.position.x + ",";
+        Data += Character.Player.transform.position.y + ",";
+        Data += Character.Player.transform.position.z + ",";
+        Data += Character.Player.stat.LEVEL + ",";
+        Data += Character.Player.stat.HP + ",";
+        Data += Character.Player.stat.MP + ",";
+        Data += Character.Player.stat.EXP + ",";
+        Data += Character.Player.stat.SkillPoint + ",";
+        
+
+        string invenInfo = inven.InvenInfo();
+        string equipInfo = equip.EqipInfo();
+        string quickInfo = quickSlot.QuickItemInfo();
+        Data += invenInfo+"\n";
+        Data += equipInfo+"\n";
+        Data += quickInfo+"\n";
+
+        return Data;
+    }
+
+    public bool isCantMove = false;              
+    public bool OpenLootingbox = false; // 루팅박스 
+    
+  
+    #region Move
+    bool isMove = false;
+    Coroutine move;
+    public void MovetoEmpty(Vector3 _dest)
+    {
+        if (move != null)
+        {
+            StopCoroutine(move);
+        }
+
+        anim.SetBool("IsMove", true);
+        move =StartCoroutine(Move(_dest));        
+    }    
+    public void MovetoObject(GameObject _Target)
+    {
+        if(move != null)
+        {
+            StopCoroutine(move);
+        }
+        isMove = true;        
+        float dis = Vector3.Distance(this.transform.position, _Target.transform.position);
+        Vector3 stopPos = Vector3.MoveTowards(this.transform.position, _Target.transform.position,(dis-2f));//stat.ATK_RANGE
+        nav.SetDestination(stopPos);
+        move = StartCoroutine(Move(stopPos));
+    }
+    IEnumerator Move(Vector3 _dest)
+    {
+        nav.SetDestination(_dest);
+        isMove = true;
+        while (isMove)
+        {            
+            Vector3 dir = (nav.steeringTarget - transform.position).normalized;
+            dir.y = 0;
+            Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, Time.deltaTime * 30f, Time.deltaTime * 30f);
+            transform.rotation = Quaternion.LookRotation(newdir);
+            yield return null;
+
+            if (nav.remainingDistance <=0.02&&nav.velocity.magnitude == 0f)
+            {
+                anim.SetBool("IsMove", false);
+                isMove = false;
+            }
+            
+        }
+    }
+   
+    #endregion
+    #region Click / interact
+    void Click()
+    {
+        if (isCantMove == true)
+        {
+            return;
+        }
+            
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hitinfo;
+            if (Physics.Raycast(ray, out hitinfo))
+            {
+                if (hitinfo.collider.gameObject.layer == 9)
+                {
+                    EffectManager.effectManager.ClickEffectOn(hitinfo.point);
+                    MovetoEmpty(hitinfo.point);
+                    return;
+                }
+                else if (hitinfo.collider.gameObject.tag == "Item" ||
+                    hitinfo.collider.gameObject.tag == "Npc"
+                    || hitinfo.collider.gameObject.tag == "Monster")
+                {
                     
-                
+                    interact(hitinfo.collider.gameObject);
+                }
+
+            }
+            //if (!EventSystem.current.IsPointerOverGameObject())
+            //{
+               
+
+            //}
+        }
+    }
+    void interact(GameObject _target)
+    {
+        switch (_target.tag)
+        {
+            case "Monster":
+                {
+                    EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.ENERMY, _target.transform);
+                    Monster mob = _target.GetComponent<Monster>();
+                    if (mob == null)
+                    {
+                        Debug.LogError("잘못된 대상입니다 : Monster");
+                        break;
+                    }
+                        
+                    if (mob.DISTANCE <= 2f)//stat.ATK_RANGE
+                    {
+                        Attack();
+                        break;
+                    }
+                    else
+                    {
+                        MovetoObject(mob.gameObject);
+                        break;
+                    }
+                }                
+            case "Npc":
+                {
+                    EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.FRIEND, _target.transform);
+                    Npc npc = _target.GetComponent<Npc>();
+                    if(npc == null)
+                    {
+                        Debug.LogError("잘못된 대상입니다 : Monster");
+                        break;
+                    }
+                    if (npc.DISTANCE <= stat.ATK_RANGE)
+                    {
+                        nav.SetDestination(transform.position);
+                        npc.Interact();                        
+                        break;
+                    }
+                    else
+                    {
+                        MovetoObject(npc.gameObject);
+                        break;
+                    }
+                }                
+            case "Item":
+                break;
+            default:
+                break;
+        }
+    }
+    #endregion
+
+    #region Attack 
+    public void KnockBack() 
+    {
+        StartCoroutine(CoKnockBack());
+    }
+    public void Attack()
+    {
+        anim.SetTrigger("Attack");
+    }
+    IEnumerator CoKnockBack()
+    {
+        float timer = 0f;
+        nav.ResetPath();
+        while (timer <= 4)
+        {
+            timer += Time.deltaTime;
+            nav.velocity = - transform.forward * 8;
+            yield return null;
+        }
+    }
+    public void meleeDamageMob(int _num)
+    {        
+        foreach(Monster one in nearMonster)
+        {
+            if (weapons[_num].bounds.Intersects(one.hitBox.bounds))
+            {
+                one.Damaged(5f);       
             }
         }
-    }   
-    Item ItemMoveStart(ItemListType _Start, int _SlotNum)
+       
+    }
+    public bool DamageMob(int _num,Monster _target)
     {
-        switch (_Start)
+        if (weapons[_num].bounds.Intersects(_target.hitBox.bounds))
         {
-            case ItemListType.INVEN:
-                return Inven.PopItem(_SlotNum);
-            case ItemListType.EQUIP:
-                return Equip.PopEquip(_SlotNum);
-            case ItemListType.QUICK:
-                return Quick.PopItem(_SlotNum);
-            default:
-                return null;                
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
-    Item ItemMoveEnd(ItemListType _End, int SlotNum, Item _StartITem)
+    void HitBoxSetting()
     {
-        switch (_End)
+        List<Collider> weaponList = new List<Collider>();
+        GameObject[] obj = GameObject.FindGameObjectsWithTag("Weapon");
+        for (int i = 0; i < obj.Length; i++)
         {
-            case ItemListType.INVEN:
-                return Inven.AddItem(SlotNum,_StartITem);
-            case ItemListType.EQUIP:
-                return Equip.PushEquip(SlotNum, _StartITem);
-            case ItemListType.QUICK:
-                return Quick.AddItem(SlotNum, _StartITem);
-            default:
-                Debug.LogError("잘못된 리스트 타입 입니다.");
-                return null;
+            weaponList.Add(obj[i].GetComponent<Collider>());
         }
+        weapons = weaponList;
     }
-    public Item GetItem(ItemListType _Type, int _SlotNum)
-    {
-        switch (_Type)
-        {
-            case ItemListType.INVEN:
-                return Inven.GetItem(_SlotNum);
-            case ItemListType.EQUIP:
-                return Equip.GetItem(_SlotNum);
-            case ItemListType.QUICK:
-                return Quick.GetItem(_SlotNum);
-            default:
-                return null;
-        }
-    }
-
     #endregion
 
 
 
-    private void Awake()
-    {        
-        if(Player == null)
-        {
-            Player = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(GameObject.FindGameObjectWithTag("Player"));
-            Player = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        GameObject [] obj = GameObject.FindGameObjectsWithTag("Weapon");
-        for(int i = 0; i < obj.Length; i++)
-        {
-            Weapon.Add(obj[i].GetComponent<SkinnedMeshRenderer>());
-        }
-        Character_bounds = transform.Find("Render").GetComponent<SkinnedMeshRenderer>();
-
-        nav = GetComponent<NavMeshAgent>();
-        anim = GetComponent<Animator>();
-        nav.updateRotation = false;        
-    }
-
-
-    //public void QuestUpdate(int _index,int _completenum)
-    //{
-    //    foreach(Quest one in myQuest)
-    //    {
-    //        if(one.Index == _index)
-    //        {
-    //            one.QuestComplete = _completenum;
-    //        }
-    //    }
-    //}
-    private void Start()
+    #region Skill
+    public delegate void UpdateBuffUi(string _skillSpriteName, float _amount);
+    UpdateBuffUi updateBufUi;
+    public void TakeDownSword() // 애니메이션 이벤트                                     //skill 0번
     {
-        if (nav != null)
-            nav.Warp(StartPos);        
+        isCantMove = true;
+        //이펙트 연출
+        StartCoroutine(CoTakeDownSword());
+        anim.SetFloat("SkillNum", 0);
+        anim.SetTrigger("Skill");
+        
     }
+    public void RushSkill()                                                              //skill 1번
+    {
+        // 이펙트 추가 할 것
+        anim.SetFloat("SkillNum", 1);
+        anim.SetTrigger("Skill");        
+        Monster closestMob = ClosestMonster();
+        if (nearMonster != null)
+        {
+            transform.LookAt(closestMob.transform);
+        }
+        StartCoroutine(CoRushSkill());
+    }
+    public void BuffSkill(int _skillIndex, int _count)                                     //skill 2번
+    {
+        anim.SetFloat("SkillNum", 2);
 
-    void Update()
-    {        
-        if (UIManager.uimanager.FadeUi.alpha == 0)
-            return;
-        Click();             
-        Interation();
-        Move();        
-    }   
+    }
+    public void SkillEffectOn(string _effectName)
+    {
+
+    }
+    public void RangeDamageMob() 
+    {
+        foreach (Monster _mob in nearMonster)
+        {
+            if (_mob.DISTANCE <= 2f)
+            {
+                _mob.StatusEffect(STATUSEFFECT.KNOCKBACK, 2f);
+                _mob.StatusEffect(STATUSEFFECT.STURN, 2f);
+                _mob.Damaged(5f);
+            }
+        }
+    }
+    IEnumerator CoTakeDownSword()
+    {
+        yield return new WaitForSeconds(2f);
+        isCantMove = false;
+    }
     
-    public void SetDestination(Vector3 dest)
-    {
-        if (DontMove == true)
-            return;
-
-        nav.SetDestination(dest);
-        isMove = true;
-
-    }
-    void Click()
-    {
-        if (Input.GetMouseButton(0))
-        {
-            if (!EventSystem.current.IsPointerOverGameObject())
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hitinfo;
-                if (Physics.Raycast(ray, out hitinfo))
-                {
-                    if (hitinfo.collider.gameObject.layer == 9)
-                    {
-                        SetDestination(hitinfo.point);
-                        ObjectPoolManager.objManager.ClickMove("Click", hitinfo.point);                        
-                        Target = null;
-                        return;
-                    }
-                    else if (hitinfo.collider.gameObject.tag == "Item" ||
-                        hitinfo.collider.gameObject.tag == "Npc")
-                    {
-                        Target = hitinfo.collider.gameObject;
-                        ObjectPoolManager.objManager.ClickEffect("Friend", Target.transform);
-                        ClickObj = true;
-                    }
-                    else if (hitinfo.collider.gameObject.tag == "Monster")
-                    {
-                        Target = hitinfo.collider.gameObject;
-                        ObjectPoolManager.objManager.ClickEffect("Enermy", Target.transform);
-                        ClickObj = true;
-                    }
-                    else
-                    {
-                        Target = null;
-                    }
-                }
-
-            }
-        }
-        else
-        {
-            ClickObj = false;
-
-        }
-    }
-    void Move()
+    IEnumerator CoRushSkill()
     {        
-        if (isMove )
+        isCantMove = true;
+        nav.ResetPath();        
+        float timer = 0f;        
+        DamageList list = new DamageList();
+        foreach(Monster mob in nearMonster)
         {
-            if (nav.velocity.magnitude == 0f)
-            {
-                isMove = false;                
-                return;
-            }
-            Vector3 dir = new Vector3 (nav.steeringTarget.x,transform.position.y,nav.steeringTarget.z) - transform.position;
-            dir.y = 0;
-            Vector3 newdir = Vector3.RotateTowards(transform.forward, dir.normalized, Time.deltaTime * 30f, Time.deltaTime * 30f);
-            transform.rotation = Quaternion.LookRotation(newdir);           
+            list.Add(mob);
         }
+        while (timer <= 1.2)
+        {
+            timer += Time.deltaTime;
+            nav.velocity = transform.forward * 2;
+            list.DamedMonster(5f,STATUSEFFECT.STURN,1f);
+            yield return null;
+        }
+        isCantMove = false;
     }
-    void LevelUp()
-    {
-        Stat.LevelUp();
-        GameObject LvEffect = ObjectPoolManager.objManager.EffectPooling("LevUp");
-        TextMeshProUGUI LvString = ObjectPoolManager.objManager.stringEffect();
-        StartCoroutine(LevUpMove(LvEffect, LvString));
-        StartCoroutine(WaitForItLev(LvEffect, LvString.gameObject));
-    }
+
+
+    #endregion
+
     IEnumerator LevUpMove(GameObject obj, TextMeshProUGUI _string)  //레벨업 
     {
 
@@ -338,94 +554,22 @@ public class Character : MonoBehaviour
         _string.SetActive(false);
     }
 
-    void Interation()
-    {
-        if (Target != null)
-        {
-            float dis = Vector3.Distance(transform.position, Target.transform.position);
-
-            if (Target.tag == "Monster" && dis < Stat.ATK_RANGE)
-            {
-                Interaction_B = true;
-                SetDestination(transform.position);
-                Vector3 dir = new Vector3(Target.transform.position.x, transform.position.y, Target.transform.position.z) - transform.position;
-                transform.forward = dir;
-                return;
-            }
-            else if (Target.tag == "Npc" && dis < 1.5f)
-            {
-                Interaction_T = true;
-                SetDestination(transform.position);
-                Vector3 dir = new Vector3(Target.transform.position.x, transform.position.y, Target.transform.position.z) - transform.position;
-                transform.forward = dir;
-                return;
-            }
-            else if (Target.tag == "Item" && dis < 1.5f)
-            {
-                Interaction_L = true;
-                SetDestination(transform.position);
-                Vector3 dir = new Vector3(Target.transform.position.x, transform.position.y, Target.transform.position.z) - transform.position;
-                transform.forward = dir;
-                return;
-            }
-            else
-            {
-                Interaction_B = false;
-                Interaction_T = false;
-                Interaction_L = false;
-                if (Target.activeSelf == true)
-                {
-                    SetDestination(Target.transform.position);
-                }
-
-            }
-
-        }
-        else
-        {
-            Interaction_B = false;
-            Interaction_T = false;
-            Interaction_L = false;
-        }
-
-    }
-
-    public void Attack_Combo()
-    {
-        isCombo = true;
-    }
-    public void Attack_Reset()
-    {
-        isCombo = false;        
-    }
-
    
-    public Monster GetMonster(GameObject _Target)
-    {
-        if(Target.tag == "Monster")
-        {
-            foreach (Monster one in MobList)
-            {
-                if (one.gameObject.Equals(_Target))
-                    return one;
-
-            }
-        }
-        return null;
-    }
+   
+   
   
     public void EffectEvent(string _name)
     {
-        GameObject obj = ObjectPoolManager.objManager.EffectPooling(_name);        
-        obj.name = _name;
-        Vector3 Priset;
-        if (ObjectPoolManager.objManager.EffectPos_Dic.TryGetValue(obj,out Priset))
-        {
-            obj.transform.position = transform.position + Priset;            
-            obj.transform.rotation = transform.rotation;           
+        //GameObject obj = ObjectPoolManager.objManager.EffectPooling(_name);        
+        //obj.name = _name;
+        //Vector3 Priset;
+        //if (ObjectPoolManager.objManager.EffectPos_Dic.TryGetValue(obj,out Priset))
+        //{
+        //    obj.transform.position = transform.position + Priset;            
+        //    obj.transform.rotation = transform.rotation;           
             
-        }        
-        StartCoroutine(WaitForIt(obj));
+        //}        
+        //StartCoroutine(WaitForIt(obj));
         
         
     }
@@ -435,52 +579,35 @@ public class Character : MonoBehaviour
         obj.SetActive(false);
         
     }
-    public void IntersectsMob(int _num)
-    {
-        for (int j = 0; j < MobList.Count; j++)
-        {
-            if (Player.Weapon[_num].bounds.Intersects(MobList[j].MobBounds.bounds))
-            {
-                MobList[j].isDamage = true;
-                float Dmg = Stat.ATK;
-                MobList[j].Hp -= Stat.ATK;
-                ObjectPoolManager.objManager.LoadDamage(MobList[j].gameObject, Dmg, Color.yellow, 1);
-                
-            }
-        }
-    }
+   
     public void  RangeMob()
     {
-        for (int i = 0; i < MobList.Count; i++)
-        {
-            if (MobList[i].DiSTANCE <=2f)
-            {
-                MobList[i].isDamage = true;
-                float Dmg = Stat.ATK * 3f;
-                MobList[i].Hp -= Dmg;                
-                ObjectPoolManager.objManager.LoadDamage(MobList[i].gameObject, Dmg, Color.yellow, 1);
-            }
-        }
+        //for (int i = 0; i < MobList.Count; i++)
+        //{
+        //    if (MobList[i].DiSTANCE <=2f)
+        //    {
+        //        MobList[i].isDamage = true;
+        //        float Dmg = Stat.ATK * 3f;
+        //        MobList[i].Hp -= Dmg;                
+        //        ObjectPoolManager.objManager.LoadDamage(MobList[i].gameObject, Dmg, Color.yellow, 1);
+        //    }
+        //}
     }
-    public void ListReset()
-    {
-        MobList.RemoveAll(x => true);
-        npcList.RemoveAll(x => true);
-    }
-    public Monster FindNearEnermy()
-    {
-        Monster mob = MobList[0];
-        for(int i =0; i < MobList.Count; i++)
-        {
-            if (mob.DiSTANCE > MobList[i].DiSTANCE)
-                mob = MobList[i];
-        }
+  
+    //public Monster FindNearEnermy()
+    //{
+    //    Monster mob = MobList[0];
+    //    for(int i =0; i < MobList.Count; i++)
+    //    {
+    //        if (mob.DiSTANCE > MobList[i].DiSTANCE)
+    //            mob = MobList[i];
+    //    }
 
-        return mob;
-    }    
+    //    return mob;
+    //}    
     public void burnStateOn()  // 화상
     {
-        if(Stat.isburn == false)
+        if(stat.isburn == false)
         {
             StartCoroutine(BurnDamage());
         }
@@ -489,7 +616,7 @@ public class Character : MonoBehaviour
     }
     public void icestateOn()     // 빙결
     {
-        if(Stat.isIce == false)
+        if(stat.isIce == false)
         {
             StartCoroutine(IceState());
         }
@@ -497,10 +624,10 @@ public class Character : MonoBehaviour
     IEnumerator BurnDamage()
     {
         GameObject Effect;
-        Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Burn");
+        //Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Burn");
         float timer = 0;
         float holdTime = 5;
-        Stat.isburn = true;
+        stat.isburn = true;
         while (true)
         {
             timer += Time.deltaTime;
@@ -508,18 +635,18 @@ public class Character : MonoBehaviour
             {
                 timer -= 1;
                 holdTime -= 1;
-                Stat.HP -= 5;
-                ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, 10f, Color.red, 1);
+                stat.HP -= 5;
+                //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, 10f, Color.red, 1);
             }
-            Effect.transform.position = Character.Player.transform.position;
+            //Effect.transform.position = Character.Player.transform.position;
             
 
 
             if(holdTime <= 0)
             {
-                Effect.SetActive(false);
+                //Effect.SetActive(false);
                 Effect = null;
-                Stat.isburn = false;
+                stat.isburn = false;
                 yield break;
             }
             yield return null;
@@ -528,9 +655,9 @@ public class Character : MonoBehaviour
     IEnumerator IceState()
     {
         GameObject Effect;
-        Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Ice");
+        //Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Ice");
         float timer = 0;
-        Stat.isIce = true;        
+        stat.isIce = true;        
         Character.Player.nav.speed -= 4f;
         Character.Player.anim.speed = 0.5f;
         while (true)
@@ -538,15 +665,15 @@ public class Character : MonoBehaviour
             timer += Time.deltaTime;
             if (timer >=5)
             {
-                Effect.SetActive(false);
+                //Effect.SetActive(false);
                 Effect = null;
-                Stat.isIce = false;
+                stat.isIce = false;
                 Character.Player.nav.speed += 4f;
                 Character.Player.anim.speed = 1f;
 
                 yield break;
             }
-            Effect.transform.position = Character.Player.transform.position;
+            //Effect.transform.position = Character.Player.transform.position;
 
 
 
@@ -559,5 +686,5 @@ public class Character : MonoBehaviour
         SoundManager.soundmanager.soundsPlay(_Name, Character.Player.gameObject);    
     }
 
-
+   
 }

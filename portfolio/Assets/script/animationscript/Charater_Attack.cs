@@ -21,26 +21,26 @@ public class Charater_Attack : StateMachineBehaviour
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (Player.isMove)
-        {
-            AttackNum = 0;
-            animator.SetBool("Move", true);
-            return;            
-        }
+        //if (Player.isMove)
+        //{
+        //    AttackNum = 0;
+        //    animator.SetBool("Move", true);
+        //    return;            
+        //}
             
         
-        if (Player.ClickObj == true && Player.Interaction_B == true && Player.isCombo == true && Attack == true)
-        {
-            AttackNum++;
-            if (AttackNum > 1)
-                AttackNum = 0;
-            animator.SetFloat("atkNum", AttackNum);            
-            Character.Player.isCombo = false;                        
-            Attack = false;
-            animator.SetTrigger("Attack");
+        //if (Player.ClickObj == true && Player.Interaction_B == true && Player.isCombo == true && Attack == true)
+        //{
+        //    AttackNum++;
+        //    if (AttackNum > 1)
+        //        AttackNum = 0;
+        //    animator.SetFloat("atkNum", AttackNum);            
+        //    Character.Player.isCombo = false;                        
+        //    Attack = false;
+        //    animator.SetTrigger("Attack");
             
 
-        }
+        //}
         
     }
 

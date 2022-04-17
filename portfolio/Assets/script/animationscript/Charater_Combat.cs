@@ -13,24 +13,21 @@ public class Charater_Combat : StateMachineBehaviour
         Attack = false;
         animator.SetFloat("atkNum", 0);        
         animator.SetBool("SkillDone", false);        
-        Character.Player.DontMove = false;
+        
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {        
 
-        if (Player.ClickObj == true && Player.Interaction_B == true && Attack == false)
-        {
-            if (Character.Player.Target != null && Character.Player.Target.tag != "Monster")
-                return;
-            Attack = true;
-            animator.SetTrigger("Attack");
-            return;
-        }
-        if (Character.Player.isMove == true)
-        {
-            animator.SetBool("Move", true);
-        }
+        //if (Player.ClickObj == true && Player.Interaction_B == true && Attack == false)
+        //{
+        //    if (Character.Player.Target != null && Character.Player.Target.tag != "Monster")
+        //        return;
+        //    Attack = true;
+        //    animator.SetTrigger("Attack");
+        //    return;
+        //}
+       
 
     }
 

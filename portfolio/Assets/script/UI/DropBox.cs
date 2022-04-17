@@ -7,8 +7,7 @@ using UnityEngine.EventSystems;
 public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointerUpHandler
 {
     public List<Slot> DropSlotlist = new List<Slot>();   
-    public MiniInfo miniinfo;    
-    public ITemUiManager Inven;
+    public MiniInfo miniinfo;        
 
 
     public MoveWindow moveWindow;
@@ -24,9 +23,9 @@ public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointe
 
         if (this.gameObject.activeSelf == true)
         {
-            UIManager.uimanager.InventoryActive = true;
-            if (UIManager.uimanager.Inven.gameObject.activeSelf == false)
-                UIManager.uimanager.Inven.gameObject.SetActive(true);
+            //UIManager.uimanager.InventoryActive = true;
+            //if (UIManager.uimanager.Inven.gameObject.activeSelf == false)
+            //    UIManager.uimanager.Inven.gameObject.SetActive(true);
 
         }
             

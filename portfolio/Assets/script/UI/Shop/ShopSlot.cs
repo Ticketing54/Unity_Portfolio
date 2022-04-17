@@ -3,70 +3,107 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class ShopSlot : MonoBehaviour
-{
-    public Image ItemImage;
-    public TextMeshProUGUI ItemName;
-    public TextMeshProUGUI ItemPrice;
-    public Image TouchItem;
-    public RectTransform tr;
-
-    public Item item = null;
-    Rect rc;
-    public Rect RC
-    {
-        get
-        {
-            rc.x = tr.position.x - tr.rect.width * 0.5f;
-            rc.y = tr.position.y + tr.rect.height * 0.5f;
-            return rc;
-        }
-    }
-
-
-    void Start()
-    {
-        rc.x = tr.transform.position.x - tr.rect.width / 2;
-        rc.y = tr.transform.position.y + tr.rect.height / 2;
-        rc.xMax = tr.rect.width;
-        rc.yMax = tr.rect.height;
-        rc.width = tr.rect.width;
-        rc.height = tr.rect.height;
-    }
-
-    public void AddItem(Item _item)
-    {
-        item = _item;
-        ItemImage.sprite = GameManager.gameManager.GetSprite(_item.itemSpriteName);
-        ItemName.gameObject.SetActive(true);
-        ItemName.text = item.ItemName;
-        ItemPrice.gameObject.SetActive(true);
-        ItemPrice.text = item.ItemPrice.ToString();
-        ItemImage.gameObject.SetActive(true);        
-
-    }
-
-
-    public void SlotClear()
-    {
-        ItemImage.sprite = null;
-        ItemImage.gameObject.SetActive(false);
-        ItemName.text = string.Empty;
-        ItemName.gameObject.SetActive(false);
-        ItemPrice.text = string.Empty;
-        ItemPrice.gameObject.SetActive(false);
-        
-    }
-    public bool isInRect(Vector2 pos)
-    {
-        if (pos.x >= RC.x && pos.x <= RC.x + RC.width && pos.y >= RC.y - RC.height && pos.y <= RC.y)
-        {
-            
-            return true;
-        }
-        return false;
-    }
-
+public class ShopSlot : Slot
+{   
+    [SerializeField]  
+    TextMeshProUGUI itemName_Text;
+    [SerializeField]
+    TextMeshProUGUI itemPrice_Text;
+    [SerializeField]
+    Image touchItem;
+    [SerializeField]
+    Text itemCount_Text;
     
+    public int itemCount;
+    public string itemName;
+    public int itemPrice;
+
+   
+    public void SetShopSlot(int _itemIndex)
+    {
+        itemIndex = _itemIndex;
+        List<string> itemInfo = ResourceManager.resource.GetTable_Index("ItemTable", _itemIndex);
+        if(itemInfo == null)
+        {
+            Debug.LogError("테이블에 없는 아이템을 상정에 올릴려 합니다.");
+        }
+        itemName = itemInfo[2];
+        icon.gameObject.SetActive(true);
+        icon.sprite = ResourceManager.resource.GetImage(itemInfo[3]);
+        itemName_Text.gameObject.SetActive(true);
+        itemName_Text.text = itemInfo[2];
+
+        if(!int.TryParse(itemInfo[6],out itemPrice))
+        {
+            itemPrice = -1;
+        }
+        itemPrice_Text.gameObject.SetActive(true);
+        itemPrice_Text.text = itemInfo[6];
+    }
+    public void SetShopSlot_Inven(int _itemIndex,string _itemName,string _itemSpriteName,int _itemPrice,int _itemCount)
+    {
+        itemIndex = _itemIndex;
+        itemName = _itemName;
+        icon.gameObject.SetActive(true);
+        icon.sprite = ResourceManager.resource.GetImage(_itemSpriteName);
+        itemPrice = _itemPrice;
+        itemCount = _itemCount;
+        if(_itemCount > 1)
+        {
+            itemCount_Text.gameObject.SetActive(true);
+            itemCount_Text.text = _itemCount.ToString();
+        }
+    }
+    public void ResetSlot_Inven()
+    {
+        if (icon.gameObject.activeSelf == true)
+        {
+            icon.gameObject.SetActive(false);
+        }
+        if (touchItem.gameObject.activeSelf == true)
+        {
+            touchItem.gameObject.SetActive(false);
+        }
+        itemIndex = -1;
+        itemPrice = -1;
+        itemName = string.Empty;
+        if(itemCount_Text.gameObject.activeSelf == true)
+        {
+            itemCount_Text.gameObject.SetActive(false);
+        }    
+    }
+    public void ResetSlot()
+    {
+        if(icon.gameObject.activeSelf == true)
+        {
+            icon.gameObject.SetActive(false);
+        }
+        if(itemName_Text.gameObject.activeSelf == true)
+        {
+            itemName_Text.gameObject.SetActive(false);
+        }
+        if(itemPrice_Text.gameObject.activeSelf == true)
+        {
+            itemPrice_Text.gameObject.SetActive(false);
+        }
+        if(touchItem.gameObject.activeSelf == true)
+        {
+            touchItem.gameObject.SetActive(false);
+        }        
+        itemIndex = -1;
+        itemPrice = -1;
+        itemName = string.Empty;
+    }
+    public void ClickedEffectOn()
+    {
+        touchItem.gameObject.SetActive(true);
+    }
+    public void ClickedEffectOff()
+    {
+        touchItem.gameObject.SetActive(false);
+    }
+
+   
 }

@@ -18,11 +18,7 @@ public class StatusUi : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI Mp;
     [SerializeField]
-    TextMeshProUGUI Atk;
-    [SerializeField]
-    TextMeshProUGUI Gold;
-    
-
+    TextMeshProUGUI Atk;   
 
     private void Update()
     {
@@ -33,14 +29,13 @@ public class StatusUi : MonoBehaviour
     {
         
         NickName.text = Character.Player.name;
-        Lv.text = Character.Player.Stat.LEVEL.ToString();
-        Exp.text = Character.Player.Stat.EXP.ToString() + " / " + Character.Player.Stat.MAXEXP.ToString();        
-        Hp.text = ((int)Character.Player.Stat.HP).ToString() + " / " + Character.Player.Stat.MAXHP.ToString();
-        Mp.text = ((int)Character.Player.Stat.MP).ToString() + " / " + Character.Player.Stat.MAXMP.ToString();
-        Atk.text = Character.Player.Stat.ATK.ToString() + "<color=#0000ffff> + " + Character.Player.Stat.ATK.ToString() + "</color>"//장비 능력치 추가 할 것
-            + " ( " + ((int)((Character.Player.Stat.ATK + Character.Player.Stat.ATK) * 0.8)).ToString() + " ~ " +
-            ((int)((Character.Player.Stat.ATK + Character.Player.Stat.ATK) * 1.2)).ToString()+" ) ";
-        Gold.text = Character.Player.Stat.GOLD.ToString() + " G";
+        Lv.text = Character.Player.stat.LEVEL.ToString();
+        Exp.text = Character.Player.stat.EXP.ToString() + " / " + Character.Player.stat.MAXEXP.ToString();        
+        Hp.text = ((int)Character.Player.stat.HP).ToString() + " / " + Character.Player.stat.MAXHP.ToString();
+        Mp.text = ((int)Character.Player.stat.MP).ToString() + " / " + Character.Player.stat.MAXMP.ToString();
+        Atk.text = Character.Player.stat.ATK.ToString() + "<color=#0000ffff> + " + Character.Player.stat.ATK.ToString() + "</color>"//장비 능력치 추가 할 것
+            + " ( " + ((int)((Character.Player.stat.ATK + Character.Player.stat.ATK) * 0.8)).ToString() + " ~ " +
+            ((int)((Character.Player.stat.ATK + Character.Player.stat.ATK) * 1.2)).ToString()+" ) ";        
         
     }
 }

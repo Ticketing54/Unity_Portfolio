@@ -5,417 +5,565 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
-public class Shop : MonoBehaviour// IPointerDownHandler, IPointerUpHandler, IDragHandler
+public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDragHandler, IEndDragHandler,IBeginDragHandler
 {
-    //슬롯 모음
-    public List<Slot> list = new List<Slot>();      // 인벤토리
-    public List<ShopSlot> shop_list = new List<ShopSlot>(); // 상점   
 
+    [Header("상점 슬롯")]
+    [SerializeField]
+    List<ShopSlot> shop_List;
+    [Header("인벤 슬롯")]
+    [SerializeField]
+    List<ShopSlot> inven_List;
 
-    public ShopSlot buyitem;   //상점 영역
-    public Vector2 OldClickPos; // 클릭조건
-    public int WorkingSlot = -1; // 운용중인 슬롯
-    // 드래그 클릭 관련 오브젝트
-    public Image MoveIcon = null;
-    public Item Moveitem = null;
-    public Item Clickitem = null;
-    public Image ClickitemImage = null;
-
-
-        
-    public MiniInfo miniinfo; // 정보창
-
-    public bool isdrag = false;
-    public bool isbuy = false;
-    public bool issell = false;
-    public bool ItemInfo = false;
-    public bool isinventory = false;
-
-
-    public int Price = 0;
-    //판매
-    public int sellItem_num = -1; // 판매할 슬롯 번호
-    public int buyItem_num = -1; // 판매할 슬롯 번호
-    public TextMeshProUGUI sellitem_name; // 판매할 아이템 이름
-    public TextMeshProUGUI sell_Price;
-    public Image sellMessage; // 판매 메세지    
-    // 구매
-    public TextMeshProUGUI buyitem_name; // 구매할 아이템 이름
-    public TextMeshProUGUI buy_Price;
-    public Image buyMessage; // 구매 메세지
-    public Image CantBuy; // 금액부족 메세지
-
-
-
-    //온오프
-
-    public GameObject Inventory;    
+    [Header("판매 영역")]
+    [SerializeField]
+    Slot buyItemArea;
+    [Header("메세지 윈도우")]
+    [SerializeField]
+    GameObject businessMessage;    
     
-   
-
-
-
-
-    //public void OnPointerDown(PointerEventData data)
-    //{        
-    //    OldClickPos = data.position; // 클릭 포인트        
-    //    if (miniinfo.gameObject.activeSelf == true)
-    //        miniinfo.gameObject.SetActive(false);
-
-
-        
-
-
-    //    if (Input.GetMouseButton(0))
-    //    {                    
-            
-    //        for (int i = 0; i < list.Count; i++)
-    //        {
-    //            if (list[i].isInRect(data.position) && list[i].Icon.gameObject.activeSelf == true)
-    //            {
-    //                Clickitem = list[i].item;
-    //                ClickitemImage = list[i].Icon;
-    //                ItemInfo = true;
-    //                Begin_DragSlot(i);
-    //                MoveIcon.transform.position = data.position;
-    //                isinventory = true;
-    //                return;
-    //            }
-                
-
-    //        }
-
-
-
-    //        for(int j = 0; j < shop_list.Count; j++)
-    //        {
-    //            if (shop_list[j].isInRect(data.position) && shop_list[j].ItemImage.gameObject.activeSelf == true)
-    //            {
-    //                Clickitem = shop_list[j].item;
-    //                ClickitemImage = shop_list[j].ItemImage;
-    //                ItemInfo = true;
-    //                WorkingSlot = j;
-    //                OldClickPos = data.position;                    
-    //                return;
-    //            }
-    //        }
-
-    //    }
-    //    if (Input.GetMouseButtonDown(1))
-    //    {
-    //        for (int i = 0; i < list.Count; i++)
-    //        {
-    //            if (list[i].isInRect(data.position) && list[i].Icon.gameObject.activeSelf == true)
-    //            {
-    //                Clickitem = list[i].item;
-    //                ClickitemImage = list[i].Icon;
-    //                issell = true;
-    //                OldClickPos = data.position;
-    //                WorkingSlot = i;
-
-    //                return;
-    //            }
-
-    //        }
-
-    //        for (int j = 0; j < shop_list.Count; j++)
-    //        {
-    //            if (shop_list[j].isInRect(data.position) && shop_list[j].ItemImage.gameObject.activeSelf == true)
-    //            {
-    //                Clickitem = shop_list[j].item;
-    //                ClickitemImage = shop_list[j].ItemImage;
-    //                isbuy = true;
-    //                OldClickPos = data.position;
-    //                WorkingSlot = j;
-    //                return;
-    //            }
-    //        }
-
-
-    //    }
-
-    //}
-    //public void OnPointerUp(PointerEventData data)
-    //{
-    //    if (Input.GetMouseButtonUp(0) && OldClickPos == data.position && ItemInfo == true)   // 좌 클릭 시
-    //    {
-    //        if (WorkingSlot < 0)
-    //            return;
-    //        if(isinventory == true)
-    //        {
-    //            isinventory = false;
-    //            End_Drag_Empty(WorkingSlot);
-    //        }
-    //        Vector3 Pos;
-    //        Pos = new Vector3(data.position.x + 75f, data.position.y - 100f, 0);           
-            
-    //        ItemInfo = false;
-    //        End_Click_L(Pos);
-    //        return;
-
-    //    }
-    //    if (Input.GetMouseButtonUp(1) && OldClickPos == data.position && isbuy == true) // 우 클릭 시 // 구매
-    //    {
-    //        if (WorkingSlot < 0)
-    //            return;
-    //        isbuy = false;
-    //        buy_item_message();
-
-    //        return;
-
-
-
-    //    }
-    //    else if(Input.GetMouseButtonUp(1) && OldClickPos == data.position && issell) // 판매
-    //    {
-    //        if (WorkingSlot < 0)
-    //            return;
-    //        issell = false;
-    //        sell_Item_message(WorkingSlot);
-
-
-    //        return;
-
-    //    }
-
-    //    if (WorkingSlot < 0 || isinventory == false)
-    //        return;
-    //    if (Input.GetMouseButtonUp(0))
-    //    {
-
-    //        if (buyitem.isInRect(data.position) )
-    //        {
-    //            sell_Item_message(WorkingSlot);
-    //            return;
-    //        }
-
-
-
-    //        for (int i = 0; i < list.Count; i++)
-    //        {
-    //            if (list[i].isInRect(data.position) && list[i].Icon.gameObject.activeSelf == false)
-    //            {
-    //                End_Drag_Empty(i);
-    //                return;
-    //            }
-    //            else if (list[i].isInRect(data.position) && list[i].item.Index == Moveitem.Index)
-    //            {
-    //                End_Drag_Same(i);
-    //                return;
-    //            }
-    //            else if (list[i].isInRect(data.position) && list[i].Icon.gameObject.activeSelf == true)
-    //            {
-    //                End_Drag_Different(i);
-    //                return;
-    //            }
-
-    //        }           
-    //        if (WorkingSlot >= 0 && MoveIcon.gameObject.activeSelf == true)
-    //        {
-
-    //            End_Drag_Empty(WorkingSlot);
-    //            return;
-
-    //        }
-    //    }
-    //}
-
-    ////
-
- 
-    //public void OnDrag(PointerEventData data)
-    //{        
-    //    MoveIcon.rectTransform.position = data.position;
-    //}
-   
- 
-    //public void End_Click_L(Vector3 Pos)
-    //{
-    //    if (Clickitem != null && ClickitemImage != null)
-    //    {
-    //        miniinfo.gameObject.SetActive(true);
-    //        miniinfo.gameObject.transform.position = Pos;
-    //        miniinfo.ItemImage.sprite = ClickitemImage.sprite;
-    //        miniinfo.ItemName.text = Clickitem.ItemName;
-    //        miniinfo.ItemType.text = Clickitem.itemType.ToString();
-    //        miniinfo.ExPlain.text = Clickitem.ItemExplain;
-
-    //        string[] tmp = Clickitem.ItemProperty.Split('/');
-    //        miniinfo.Property.text = tmp[0] + " + " + tmp[1];
-    //    }
-
-    //}
-
-
-
     
+    [Header("구매/판매 버튼")]
+    [SerializeField]
+    GameObject businessButton;
+    [SerializeField]
+    TextMeshProUGUI businessButtonText;
+    [Header("수량 메세지 오브젝트들")]
+    [SerializeField]
+    GameObject countMessage;
+    [SerializeField]
+    TextMeshProUGUI countMessage_Text;
+    [SerializeField]
+    TextMeshProUGUI countText;
+    [SerializeField]
+    TextMeshProUGUI countPriceText;
+    [SerializeField]
+    TextMeshProUGUI countOkButton_Text;
+    [Header("마지막 거래 확인")]
+    [SerializeField]
+    GameObject finallyMessage;
+    [SerializeField]
+    TextMeshProUGUI finally_itemName;
+    [SerializeField]
+    TextMeshProUGUI finally_Price;
+    [SerializeField]
+    TextMeshProUGUI finally_Text;
+    [Header("드래그 관련")]
+    [SerializeField]
+    Image dragImage;
+
+    // 클릭정보
+    BUSINESSTYPE businessType   = BUSINESSTYPE.NONE;         
+    bool         activeMessage  = false;
+    int          clickIndex     = -1;
+    int          activeIndex    = -1;
+    int          count          = 1;
 
 
+    private void OnEnable()
+    {
+        Character.Player.isCantMove = true;
+    }
 
-
-
-    ////상점
-    //public void ShopUpdate(Npc _npc)
-    //{
-
-    //    for(int i = 0; i < _npc.item_list.Count; i++)
-    //    {
-    //        shop_list[i].AddItem(_npc.item_list[i]);
-    //    }
-    //}
-
-    //public void sell_Item_message(int _num) // 물건판매 메세지
-    //{
-    //    if (buyMessage.gameObject.activeSelf == true)
-    //    {
-    //        buyMessage.gameObject.SetActive(false);
-    //    }
-
-    //    sellItem_num = WorkingSlot;
-    //    if(isdrag == true)
-    //        End_Drag_Empty(_num);
-
-    //    sellMessage.gameObject.SetActive(true);
-    //    sellitem_name.text = list[sellItem_num].item.ItemName;
-    //    Price = (int)(list[sellItem_num].item.ItemPrice / 2);
-    //    sell_Price.text = "+ "+Price+" G";
-         
-    //} // 판매 메세지
-    //public void sell_item()
-    //{        
-    //    sellMessage.gameObject.SetActive(false);
-    //    Character.Player.Stat.GOLD += Price;
-    //    Price = 0;
-    //    list[sellItem_num].Clear();
-    //    sellItem_num = -1;
+    private void OnDisable()
+    {
+        ResetShop();
         
-    //}  //물건을 판매
-    //public void Cancle_sell_item()// 물건을 판매 취소
-    //{
-    //    sellItem_num = -1;
-    //    sellMessage.gameObject.SetActive(false);
-        
-    //} 
-    //public void CantbuyItem()   // 금액부족
-    //{
-        
-    //    sellItem_num = -1;
-    //    CantBuy.gameObject.SetActive(false);
-        
-    //}
-    //public void buy_item_message() // 물건구매 메세지
-    //{
-    //    if (sellMessage.gameObject.activeSelf== true)
-    //    {
-    //        sellMessage.gameObject.SetActive(false);
-    //    }
-    //    buyItem_num = WorkingSlot;        
-    //    buyMessage.gameObject.SetActive(true);
-    //    buyitem_name.text = shop_list[buyItem_num].item.ItemName;
-    //    Price = shop_list[buyItem_num].item.ItemPrice;
-    //    buy_Price.text = "- " + Price+" G";
-    //    WorkingSlot = -1;
+        if(businessMessage.gameObject.activeSelf == true)
+        {
+            businessMessage.gameObject.SetActive(false);
+        }
+        Character.Player.isCantMove = false;
+    }
+    public void OnPointerDown(PointerEventData _data)
+    {
+        if (activeMessage == true)
+        {
+            return;
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
+            Click_LeftDown(_data.position);
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            Click_RightDown(_data.position);
+        }
+    }
 
-    //}
+    public void OnPointerUp(PointerEventData _data)
+    {
+        if (activeMessage == true)
+        {
+            return;
+        }
 
-    //public void buy_item()
-    //{
-    //    buyMessage.gameObject.SetActive(false);
-    //    if(Character.Player.Stat.GOLD >= Price) // 돈이 있다면
-    //    {
-    //        Character.Player.Stat.GOLD-= Price;
-    //        for(int i = 0; i < list.Count; i++)
-    //        {
-    //            if (list[i].Icon.gameObject.activeSelf == false)
-    //            {
-    //                list[i].Add(shop_list[buyItem_num].item);
-    //                break;
-    //            }
+        if (Input.GetMouseButtonUp(0))
+        {
+            Click_LeftUp(_data.position);
+        }
+        if (Input.GetMouseButtonUp(1))
+        {
+            Click_RightUp(_data.position);
+        }
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (dragImage.IsActive())
+        {
+            dragImage.rectTransform.position = eventData.position;
+        }
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (dragImage.IsActive())
+        {
+            dragImage.gameObject.SetActive(false);
+
+
+            if (buyItemArea.isInRect(eventData.position))
+            {
+                OpenBusinessWindow(true);
+            }
+
+        }
+    }
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (businessType == BUSINESSTYPE.SELL && clickIndex >= 0)
+        {
+            dragImage.gameObject.SetActive(true);
+            dragImage.sprite = inven_List[clickIndex].ICON;
+            dragImage.rectTransform.position = eventData.position;
+        }
+    }
+
+
+
+    #region CountMessage
+    public void OpenCountButton()
+    {
+        businessButton.SetActive(true);
+
+        switch (businessType)
+        {
+            case BUSINESSTYPE.BUY:
+                businessButtonText.text = "구매";
+                countPriceText.text = " - " + (shop_List[activeIndex].itemPrice * count).ToString();
+                countPriceText.color = Color.red;
+                break;
+            case BUSINESSTYPE.SELL:
+                businessButtonText.text = "판매";
+                countPriceText.text = " + " + (inven_List[activeIndex].itemPrice * count).ToString();    //
+                countPriceText.color = Color.white;
+                break;
+            default:
+                businessButton.SetActive(false);
+                Debug.Log("잘못된 접근방식 : businessButton");
+                break;
+        }
+    }
+    void SetCountMessage(BUSINESSTYPE _Type)
+    {
+        switch (_Type)
+        {
+            case BUSINESSTYPE.BUY:
+                countMessage_Text.text = "몇개를 구매 하시겠습니까?";
+                countOkButton_Text.text = "구매";
+                countPriceText.text = " - " + (shop_List[activeIndex].itemPrice * count).ToString();
+                countPriceText.color = Color.red;
+                break;
+            case BUSINESSTYPE.SELL:
+                countMessage_Text.text = "몇개를 판매 하시겠습니까?";
+                countOkButton_Text.text = "판매";
+                countPriceText.text = " + " + (shop_List[activeIndex].itemPrice * count).ToString();
+                countPriceText.color = Color.white;
+                break;
+            default:
+                Debug.LogError("판매에러");
+                break;
+        }
+    }
+    public void OkButton_Count()
+    {
+        countMessage.gameObject.SetActive(false);        
+        finallyMessage.gameObject.SetActive(true);
+        SetFinallyMessage();
+    }
+    public void NoButton_Count()
+    {
+        countMessage.gameObject.SetActive(false);
+        businessMessage.gameObject.SetActive(false);
+        activeMessage = false;
+    }
+
+    public void CountUp()
+    {
+        switch (businessType)
+        {
+            case BUSINESSTYPE.BUY:
+            {
+                if (isPossableBuy())
+                {
+                    count++;
+                }
+                    countPriceText.text = " - " + (shop_List[activeIndex].itemPrice * count).ToString();
+                    countPriceText.color = Color.red;
                     
+                    break;
+            }
+            case BUSINESSTYPE.SELL:
+                {
+                    if (count < inven_List[activeIndex].itemCount)
+                    {
+                        count++;
+                    }
+                    countPriceText.text = " + " + (shop_List[activeIndex].itemPrice * count).ToString();
+                    countPriceText.color = Color.white;
+                    break;
+                }
+            default:
+                Debug.Log("잘못된 접근방식 : countUp");
+                break;
+        }
+        
+        countText.text = count.ToString();
+        
+    }
+    public void CountDown()
+    {
+        if (count > 1)
+        {
+            count--;
+        }
+
+        switch (businessType)
+        {
+            case BUSINESSTYPE.BUY:
+                {                   
+                    countPriceText.text = " - "+(shop_List[activeIndex].itemPrice * count).ToString();
+                    countPriceText.color = Color.red;
+                    break;
+                }
+            case BUSINESSTYPE.SELL:
+                {
+                    //countPriceText.text = " + "+(shop_List[activeIndex].itemPrice * count).ToString();
+                    countPriceText.color = Color.white;
+                    break;
+                }
+            default:
+                Debug.Log("잘못된 접근방식 : countUp");
+                break;
+        }
+
+        countText.text = count.ToString();
+    }
+    bool isPossableBuy()
+    {
+        if (Character.Player.inven.gold < (shop_List[activeIndex].itemPrice * count + 1))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    #endregion
+
+    #region FinallyMessage
+    public void SetFinallyMessage()
+    {
+        switch (businessType)
+        {
+            case BUSINESSTYPE.BUY:
+                {
+                    finally_itemName.text = shop_List[activeIndex].itemName + " ( "+count+" ) ";
+                    finally_Price.text = " - " + (shop_List[activeIndex].itemPrice * count).ToString();
+                    finally_Price.color = Color.red;
+                    finally_Text.text = "구매 하시겠습니까?";
+                }
+                break;
+            case BUSINESSTYPE.SELL:
+                {
+                    finally_itemName.text = shop_List[activeIndex].itemName + " ( " + count + " ) ";
+                    finally_Price.text = " + " + (shop_List[activeIndex].itemPrice * count).ToString();
+                    finally_Price.color = Color.white;
+                    finally_Text.text = "판매 하시겠습니까?";
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    public void OkButton_Finally()
+    {
+        switch (businessType)
+        {
+            case BUSINESSTYPE.BUY:
+                Character.Player.inven.BuyItem(shop_List[activeIndex].itemPrice * count, shop_List[activeIndex].itemIndex, count);
+                BusinessReset();
+                updateInven();
+                
+                break;
+            case BUSINESSTYPE.SELL:
+                Character.Player.inven.SellItem(activeIndex, count);
+                BusinessReset();
+                updateInven();
+                break;
+            default:
+                break;
+        }
+    }
+    public void NoButton_Finally()
+    {
+        finallyMessage.gameObject.SetActive(false);
+        businessMessage.gameObject.SetActive(false);
+    }
+    void BusinessReset()
+    {
+        finallyMessage.gameObject.SetActive(false);
+        switch (businessType)
+        {
+            case BUSINESSTYPE.BUY:
+                ResetClickinfo();
+                NoButton_Finally();
+                break;
+            case BUSINESSTYPE.SELL:
+                ResetClickinfo();
+                NoButton_Finally();
+                break;
+            default:
+                break;
+        }
+        activeMessage = false;
+        businessMessage.gameObject.SetActive(false);
+    }
+    #endregion
+
+    #region LeftClick
+    void Click_LeftDown(Vector2 _clickPos)
+    {
+        ResetClickinfo();
+
+        for (int shopIndex = 0; shopIndex < shop_List.Count; shopIndex++)
+        {
+            if (shop_List[shopIndex].isInRect(_clickPos) && shop_List[shopIndex].itemIndex > 0)
+            {
+
+                clickIndex = shopIndex;
+                businessType = BUSINESSTYPE.BUY;
+                shop_List[shopIndex].ClickedEffectOn();
+                return;
+            }
+        }
+
+        for (int invenIndex = 0; invenIndex < inven_List.Count; invenIndex++)
+        {
+            if (inven_List[invenIndex].isInRect(_clickPos) && inven_List[invenIndex].itemIndex>0)
+            {
+                clickIndex = invenIndex;
+                businessType = BUSINESSTYPE.SELL;
+                inven_List[invenIndex].ClickedEffectOn();
+                return;
+            }
+        }
+    }
+    void Click_LeftUp(Vector2 _clickPos)
+    {
+        if (clickIndex < 0)
+        {
+            return;
+        }
+        switch (businessType)
+        {
+            case BUSINESSTYPE.BUY:
+                {
+                    if (shop_List[clickIndex].isInRect(_clickPos))
+                    {
+                        activeIndex = clickIndex;
+                        OpenCountButton();
+                        return;
+                    }
+                }
+                break;
+            case BUSINESSTYPE.SELL:
+                {
+                    if (inven_List[clickIndex].isInRect(_clickPos))
+                    {
+                        activeIndex = clickIndex;
+                        OpenCountButton();
+                        return;
+                    }
+                }
+                break;
+            default:
+                break;
+        }      
+    }
+    void ResetClickinfo()
+    {
+        switch (businessType)
+        {
+            case BUSINESSTYPE.BUY:
+                {
+                    shop_List[clickIndex].ClickedEffectOff();
+                }
+                break;
+            case BUSINESSTYPE.SELL:
+                {
+                    inven_List[clickIndex].ClickedEffectOff();
+                }
+                break;
+            default:
+                break;
+        }        
+        clickIndex = -1;
+        activeIndex = -1;
+        count = 1;
+        businessType = BUSINESSTYPE.NONE;
+    }
 
 
-    //        }
+    #endregion
 
-    //        Price = 0;
-    //        buyItem_num = -1;
-    //    }
-    //    else // 돈이없다면
-    //    {
-    //        CantBuy.gameObject.SetActive(true);            
-    //        Price = 0;
-    //    }
-    //}
-    //public void Cancle_buy_item()
-    //{
-    //    buyItem_num = -1;
-    //    buyMessage.gameObject.SetActive(false);
-    //}
+    #region RightClick
+    void Click_RightDown(Vector2 _clickPos)
+    {
+        ResetClickinfo();
 
+        for (int shopIndex = 0; shopIndex < shop_List.Count; shopIndex++)
+        {
+            if (shop_List[shopIndex].isInRect(_clickPos) && shop_List[shopIndex].itemIndex > 0)
+            {
 
+                clickIndex = shopIndex;
+                businessType = BUSINESSTYPE.BUY;
+                shop_List[shopIndex].ClickedEffectOn();
+                return;
+            }
+        }
 
-    ////드래그
-    //public void Begin_DragSlot(int _num)  // 드래그 시작
-    //{       
-    //    MoveIcon.gameObject.SetActive(true);
-    //    MoveIcon.sprite = list[_num].Icon.sprite;
-    //    Moveitem = list[_num].item;
-    //    list[_num].Clear();        
-    //    WorkingSlot = _num;
-    //    isdrag = true;
-    //}
-    //public void End_Drag_Same(int _num)  // 드래그 목표가 같을 때
-    //{
-    //    if (list[_num].item.itemType == Item.ItemType.Equipment)
-    //    {
-
-    //        End_Drag_Different(_num);
-
-    //        return;
-    //    }
-
-
-    //    list[_num].item.ItemCount += Moveitem.ItemCount;
-    //    list[_num].SetSlotCount();
-    //    Moveitem = null;
-    //    MoveIcon.gameObject.SetActive(false);
-    //    WorkingSlot = -1;
-    //    isdrag = false;
-    //    isinventory = false;
-    //}
-    //public void End_Drag_Different(int _num) // 드래그 목표가 다를 때
-    //{     
-    //    list[WorkingSlot].item = list[_num].item;
-    //    list[WorkingSlot].item.SlotNum = WorkingSlot;
-    //    list[WorkingSlot].Icon.gameObject.SetActive(true);
-    //    list[WorkingSlot].Icon.sprite = list[_num].Icon.sprite;
-    //    list[WorkingSlot].SetSlotCount();
-
-
-    //    list[_num].item = Moveitem;
-    //    list[_num].item.SlotNum = _num;
-    //    list[_num].Icon.sprite = MoveIcon.sprite;
-    //    list[_num].SetSlotCount();
-    //    Moveitem = null;
-    //    MoveIcon.gameObject.SetActive(false);
-    //    WorkingSlot = -1;
-    //    isdrag = false;
-    //    isinventory = false;
-    //}
-    //public void End_Drag_Empty(int _num) // 빈곳에 드래그 했을때 
-    //{
-
-    //    list[_num].item = Moveitem;
-    //    list[_num].item.SlotNum = _num;
-    //    list[_num].Icon.gameObject.SetActive(true);
-    //    list[_num].Icon.sprite = MoveIcon.sprite;
-
-    //    list[_num].SetSlotCount();
-    //    Moveitem = null;
-    //    MoveIcon.gameObject.SetActive(false);
-    //    WorkingSlot = -1;
-    //    isdrag = false;
-    //    isinventory = false;
-    //}
+        for (int invenIndex = 0; invenIndex < inven_List.Count; invenIndex++)
+        {
+            if (inven_List[invenIndex].isInRect(_clickPos) && inven_List[invenIndex].itemIndex > 0)
+            {
+                clickIndex = invenIndex;
+                businessType = BUSINESSTYPE.SELL;
+                inven_List[invenIndex].ClickedEffectOn();
+                return;
+            }
+        }
+    }
+    void Click_RightUp(Vector2 _clickPos)
+    {
+        if (clickIndex < 0)
+        {
+            return;
+        }
+        switch (businessType)
+        {
+            case BUSINESSTYPE.BUY:
+                {
+                    if (shop_List[clickIndex].isInRect(_clickPos))
+                    {
+                        activeIndex = clickIndex;
+                        OpenBusinessWindow();
+                        return;
+                    }
+                }
+                break;
+            case BUSINESSTYPE.SELL:
+                {
+                    if (inven_List[clickIndex].isInRect(_clickPos))
+                    {
+                        activeIndex = clickIndex;
+                        OpenBusinessWindow();
+                        return;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    #endregion
 
 
+    public void StartShopSetting(List<int> _items)
+    {
+        for (int i = 0; i < _items.Count; i++)
+        {
+            shop_List[i].SetShopSlot(_items[i]);
+        }
+        for (int shopSlotIndex = _items.Count; shopSlotIndex < shop_List.Count; shopSlotIndex++)
+        {
+            shop_List[shopSlotIndex].ResetSlot();
+        }
+        updateInven();
+    }
+    public void OpenBusinessWindow(bool _isDrag = false)      // 드래그 시 activeIndex가 없으므로 확정
+    {
+        if (_isDrag == true)
+        {
+            activeIndex = clickIndex;
+        }
+        activeMessage = true;
+        if (businessType == BUSINESSTYPE.BUY)
+        {
+            if (Character.Player.inven.gold < shop_List[activeIndex].itemPrice)
+            {
+                Debug.Log("돈이 없습니다.");
+                return;
+            }
+
+        }
+        businessMessage.gameObject.SetActive(true);
+        countMessage.gameObject.SetActive(true);
+        SetCountMessage(businessType);
+    }
+    public void ExitShop()
+    {
+        this.gameObject.SetActive(false);
+    }
+
+    public void Cancle()
+    {
+        businessMessage.gameObject.SetActive(false);
+        activeMessage = false;
+    }
+
+
+
+
+    void updateInven()
+    {
+        Item getitem;
+        for (int itemSlotNum = 0; itemSlotNum < inven_List.Count; itemSlotNum++)
+        {
+            getitem = Character.Player.ItemList_GetItem(ITEMLISTTYPE.INVEN, itemSlotNum);
+            if (getitem == null)
+            {
+                inven_List[itemSlotNum].ResetSlot_Inven();
+            }
+            else
+            {
+                inven_List[itemSlotNum].SetShopSlot_Inven(getitem.index, getitem.itemName, getitem.itemSpriteName, getitem.itemPrice, getitem.ItemCount);
+            }
+            getitem = null;
+        }
+    }
+    void ResetShop()
+    {
+        ResetClickinfo();
+
+        foreach (ShopSlot slot in shop_List)
+        {
+            slot.ResetSlot();
+        }
+    }
+
+    
 }
