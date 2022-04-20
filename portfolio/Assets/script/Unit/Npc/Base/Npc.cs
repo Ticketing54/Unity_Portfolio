@@ -33,7 +33,7 @@ public class Npc :NpcUnit
             
             for (int i = 0; i < quests.Count; i++)
             {
-                Quest quest = Character.Player.quest.GetQuest(quests[i]);
+                Quest quest = GameManager.gameManager.character.quest.GetQuest(quests[i]);
                 if(quest == null)
                 {
                     List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable", quests[i]);
@@ -41,7 +41,7 @@ public class Npc :NpcUnit
 
                     if(int.TryParse(questTable[8],out startNpcIndex))
                     {
-                        if (Character.Player.quest.ClearPrecedQuest(quests[i]) && startNpcIndex == npcIndex)
+                        if (GameManager.gameManager.character.quest.ClearPrecedQuest(quests[i]) && startNpcIndex == npcIndex)
                         {
                             EffectManager.effectManager.UpdateQuestMark(this, QUESTMARKTYPE.EXCLAMATION, QUESTSTATE.NONE);
                             return;
@@ -82,7 +82,7 @@ public class Npc :NpcUnit
     }
     public virtual void Interact()
     {
-        Character.Player.isCantMove = true;
+        GameManager.gameManager.character.isCantMove = true;
         UIManager.uimanager.OpenDialog(this);        
     }
     public virtual void EtcQuest(int _questIndex)

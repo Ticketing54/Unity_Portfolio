@@ -53,7 +53,7 @@ public class UiEffectManager : MonoBehaviour
     {
         while (true)
         {
-            if (Character.Player != null)
+            if (GameManager.gameManager.character != null)
             {
                 if (_mob.DISTANCE < 4f || _mob.IsTarget == true)
                 {
@@ -82,7 +82,7 @@ public class UiEffectManager : MonoBehaviour
         yield return null;
         while (true)
         {
-            if (Character.Player != null)
+            if (GameManager.gameManager.character != null)
             {
                 if (_npc.DISTANCE < 4f || _npc.IsTarget == true)
                 {

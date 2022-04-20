@@ -175,12 +175,12 @@ public class UIManager : MonoBehaviour
 
         if(startListIndex == _EndListIndex && startListType == _EndListType)                // 같은곳을 클릭 했을때
         {
-            OpenMiniInfo(Character.Player.ItemList_GetItem(startListType,startListIndex).index,Input.mousePosition);
+            OpenMiniInfo(GameManager.gameManager.character.ItemList_GetItem(startListType,startListIndex).index,Input.mousePosition);
             ClickMoveReset();
             return;
         }
 
-        Character.Player.ItemMove(startListType, _EndListType, startListIndex, _EndListIndex);
+        GameManager.gameManager.character.ItemMove(startListType, _EndListType, startListIndex, _EndListIndex);
             
         ClickMoveReset();
     }
@@ -390,7 +390,7 @@ public class UIManager : MonoBehaviour
     {       
 
 
-        if(Character.Player != null )
+        if(GameManager.gameManager.character != null )
         {            
             
             if (Input.GetKeyDown(KeyCode.I))

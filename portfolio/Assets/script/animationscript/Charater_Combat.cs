@@ -9,7 +9,7 @@ public class Charater_Combat : StateMachineBehaviour
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        Player = Character.Player;
+        
         Attack = false;
         animator.SetFloat("atkNum", 0);        
         animator.SetBool("SkillDone", false);        

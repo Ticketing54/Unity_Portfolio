@@ -7,52 +7,83 @@ using System;
 
 [System.Serializable]
 public class Skill
-{   
-    public int Index;
-    
-    public SkillType skillType;
-    public string skillName;
-    public string Mana;
-    public string skillExplain;        
-    public string skillSpriteName;
-    public int needLevel;
-    public int cooltime;
-    public int HoldTime;
-    public string skill_ability;
+{
+    public int index{ get; }    
+    public SKILLTYPE skillType { get; }
+    public string name { get; }
+    public float mana { get; }
+    public string explain { get; }      
+    public string spriteName { get; }
+    public int needLevel { get; }
+    public int coolTime { get; }
+    public int holdTime { get; }
+    public string ability { get; }
 
 
-    
-
-
-
-
-    public Skill(int _Index, string _SkillType, string _SkillName, string _SkillSpriteName,string _mana ,string _SkillExplain,string _needLevel,string _cooltime,string _holdTime, string _ablity)
+    public Skill(int _Index)
     {
-        Index = _Index;
-        skillType = (SkillType)Enum.Parse(typeof(SkillType), _SkillType);
-        skillName = _SkillName;
-        skillSpriteName = _SkillSpriteName;
-        Mana = _mana;
-        skillExplain = _SkillExplain;
-        needLevel = int.Parse(_needLevel);
-        cooltime = int.Parse(_cooltime);
-        HoldTime = int.Parse(_holdTime);
-        skill_ability = _ablity;        
-    }
+        List<string> table = ResourceManager.resource.GetTable("SkillTable");
 
-    public enum SkillType
-    {
-        None,
-        Passive,
-        Active,
-        Buff,
+        index = _Index;
+
+        SKILLTYPE t_Type;
+        if(Enum.TryParse(table[1],out t_Type))
+        {
+            skillType = t_Type;
+        }
+        else
+        {
+            Debug.LogError("Create Skill : SkillType Error");
+        }
+
+        name = table[2];
+
+        spriteName = table[3];
+
+        float t_Mana;
+        if(float.TryParse(table[4],out t_Mana))
+        {
+            mana = t_Mana;
+        }
+        else
+        {
+            Debug.LogError("Create Skill : SkillMana Error");
+        }
+
+        explain = table[5];
+
+        int t_NeedLevel;
+        if(int.TryParse(table[6],out t_NeedLevel))
+        {
+            needLevel = t_NeedLevel;
+        }
+        else
+        {
+            Debug.LogError("Create Skill : SkillNeedLevel Error");
+        }
+
+        int t_CoolTime;
+        if (int.TryParse(table[7], out t_CoolTime))
+        {
+            coolTime = t_CoolTime;
+        }
+        else
+        {
+            Debug.LogError("Create Skill : SkillCoolTime Error");
+        }
+
+        int t_HoldTime;
+        if (int.TryParse(table[8], out t_HoldTime))
+        {
+            holdTime = t_HoldTime;
+        }
+        else
+        {
+            Debug.LogError("Create Skill : SkillHoldTime Error");
+        }
         
+        ability = table[9];        
     }
-
-
-
-
-
 
 
 

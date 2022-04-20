@@ -17,8 +17,8 @@ public class Potal : MonoBehaviour
     {
         get
         {
-            if(Character.Player != null)
-                dis = Vector3.Distance(transform.position, Character.Player.transform.position);
+            if(GameManager.gameManager.character != null)
+                dis = Vector3.Distance(transform.position, GameManager.gameManager.character.transform.position);
 
             return dis;
                 
@@ -34,7 +34,7 @@ public class Potal : MonoBehaviour
     {
         while (true)
         {
-            if (UIManager.uimanager.minimap.MiniMap_MActive == true && Character.Player != null)
+            if (UIManager.uimanager.minimap.MiniMap_MActive == true && GameManager.gameManager.character != null)
             {
                 if (MiniMap_Dot_M == null)
                 {
@@ -78,7 +78,7 @@ public class Potal : MonoBehaviour
 
     void Update()
     {
-        if (DISTANCE < 1 && isWarp == false && Character.Player !=null)
+        if (DISTANCE < 1 && isWarp == false && GameManager.gameManager.character !=null)
         {
             isWarp = true;            
             GameManager.gameManager.MapName = MapName;            

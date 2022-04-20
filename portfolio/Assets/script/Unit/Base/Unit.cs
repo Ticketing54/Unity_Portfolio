@@ -16,13 +16,13 @@ public class Unit : MonoBehaviour
     {
         get
         {
-            if (Character.Player == null)
+            if (GameManager.gameManager.character == null)
             {
                 return 0;
             }
             else
             {
-                return Vector3.Distance(Character.Player.transform.position, this.gameObject.transform.position);
+                return Vector3.Distance(GameManager.gameManager.character.transform.position, this.gameObject.transform.position);
             }
         }
     }
@@ -30,13 +30,13 @@ public class Unit : MonoBehaviour
     {
         get
         {
-            if (Character.Player == null)
+            if (GameManager.gameManager.character == null)
             {
                 return Vector3.zero;
             }
             else
             {
-                return Character.Player.transform.position - this.transform.position;
+                return GameManager.gameManager.character.transform.position - this.transform.position;
             }
         }
     }

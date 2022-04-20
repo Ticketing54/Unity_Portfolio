@@ -1,6 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+public enum SKILLTYPE
+{
+    NONE,
+    PASSIVE,
+    ACTIVE,
+    BUFF
+}
+
+
+
+public enum QuickButton
+{
+    Q,
+    W,
+    E,
+    R
+}
+
+public enum RECOVERY
+{
+    HP,
+    MP
+}
 public enum QUESTMARKTYPE
 {
     EXCLAMATION,

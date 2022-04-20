@@ -150,9 +150,9 @@ public class CharacterQuest
         Quest popQuest;
         if (playingQuest.TryGetValue(_index,out popQuest))
         {
-            Character.Player.inven.gold += popQuest.Reward_Gold;
-            Character.Player.stat.EXP += popQuest.Reward_Exp;
-            Character.Player.inven.GetRewards(popQuest.Reward_Item);
+            GameManager.gameManager.character.inven.gold += popQuest.Reward_Gold;
+            GameManager.gameManager.character.stat.EXP += popQuest.Reward_Exp;
+            GameManager.gameManager.character.inven.GetRewards(popQuest.Reward_Item);
 
             switch (popQuest.Type)
             {

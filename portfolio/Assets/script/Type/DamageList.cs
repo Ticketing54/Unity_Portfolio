@@ -58,7 +58,7 @@ public class DamageList
 
         while (target != null)
         {
-            if (Character.Player.DamageMob(0, target.monster))
+            if (GameManager.gameManager.character.DamageMob(0, target.monster))
             {
                 target.monster.Damaged(_damage);
                 target.monster.StatusEffect(_statusEffect, _duration);

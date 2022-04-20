@@ -16,10 +16,10 @@ public class BattleUnit : Unit
 
     public bool MightyEnermy()
     {
-        if (Character.Player == null)
+        if (GameManager.gameManager.character == null)
             return false;
 
-        if (Character.Player.stat.LEVEL < this.lev)
+        if (GameManager.gameManager.character.stat.LEVEL < this.lev)
         {
             return true;
         }

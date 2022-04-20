@@ -62,7 +62,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
 
     private void OnEnable()
     {
-        Character.Player.isCantMove = true;
+        GameManager.gameManager.character.isCantMove = true;
     }
 
     private void OnDisable()
@@ -73,7 +73,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
         {
             businessMessage.gameObject.SetActive(false);
         }
-        Character.Player.isCantMove = false;
+        GameManager.gameManager.character.isCantMove = false;
     }
     public void OnPointerDown(PointerEventData _data)
     {
@@ -262,7 +262,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
     }
     bool isPossableBuy()
     {
-        if (Character.Player.inven.gold < (shop_List[activeIndex].itemPrice * count + 1))
+        if (GameManager.gameManager.character.inven.gold < (shop_List[activeIndex].itemPrice * count + 1))
         {
             return false;
         }
@@ -303,13 +303,13 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
         switch (businessType)
         {
             case BUSINESSTYPE.BUY:
-                Character.Player.inven.BuyItem(shop_List[activeIndex].itemPrice * count, shop_List[activeIndex].itemIndex, count);
+                GameManager.gameManager.character.inven.BuyItem(shop_List[activeIndex].itemPrice * count, shop_List[activeIndex].itemIndex, count);
                 BusinessReset();
                 updateInven();
                 
                 break;
             case BUSINESSTYPE.SELL:
-                Character.Player.inven.SellItem(activeIndex, count);
+                GameManager.gameManager.character.inven.SellItem(activeIndex, count);
                 BusinessReset();
                 updateInven();
                 break;
@@ -513,7 +513,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
         activeMessage = true;
         if (businessType == BUSINESSTYPE.BUY)
         {
-            if (Character.Player.inven.gold < shop_List[activeIndex].itemPrice)
+            if (GameManager.gameManager.character.inven.gold < shop_List[activeIndex].itemPrice)
             {
                 Debug.Log("돈이 없습니다.");
                 return;
@@ -543,7 +543,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
         Item getitem;
         for (int itemSlotNum = 0; itemSlotNum < inven_List.Count; itemSlotNum++)
         {
-            getitem = Character.Player.ItemList_GetItem(ITEMLISTTYPE.INVEN, itemSlotNum);
+            getitem = GameManager.gameManager.character.ItemList_GetItem(ITEMLISTTYPE.INVEN, itemSlotNum);
             if (getitem == null)
             {
                 inven_List[itemSlotNum].ResetSlot_Inven();

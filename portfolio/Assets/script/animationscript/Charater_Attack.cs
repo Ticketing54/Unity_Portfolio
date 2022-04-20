@@ -10,7 +10,7 @@ public class Charater_Attack : StateMachineBehaviour
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        Player = Character.Player;
+        
         Attack = true;
         AttackNum = animator.GetFloat("atkNum");
         

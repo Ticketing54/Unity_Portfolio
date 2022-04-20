@@ -60,7 +60,7 @@ public class CameraManager : MonoBehaviour
     }
     public void CameraTargetOnCharacter()
     {
-        target = Character.Player.gameObject;
+        target = GameManager.gameManager.character.gameObject;
         isTargetCharacter = true;       
     }
     public void CamearaTargetOff()

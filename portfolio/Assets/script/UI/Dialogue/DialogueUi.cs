@@ -56,7 +56,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         npc_DialogData = null;
         questList = null;
         DialogTextReset();
-        Character.Player.isCantMove = false;
+        GameManager.gameManager.character.isCantMove = false;
     }
     
    
@@ -140,7 +140,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         {
             for (int i = 0; i < questList.Count; i++)
             {
-                Quest quest = Character.Player.quest.GetQuest(questList[i]);
+                Quest quest = GameManager.gameManager.character.quest.GetQuest(questList[i]);
                 if (quest == null)
                 {
                     List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable", questList[i]);
@@ -148,7 +148,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
                     if (int.TryParse(questTable[8], out startNpcIndex))
                     {
-                        if (Character.Player.quest.ClearPrecedQuest(questList[i]) && startNpcIndex == _npc.NpcIndex)
+                        if (GameManager.gameManager.character.quest.ClearPrecedQuest(questList[i]) && startNpcIndex == _npc.NpcIndex)
                         {
                             Npc_Texting(int.Parse(questTable[10]));
                             return;
@@ -291,14 +291,14 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
         if (!string.IsNullOrEmpty(questStartIndex))                                                                       // 퀘스트
         {
-            Character.Player.quest.AddQuest(int.Parse(questStartIndex));            
+            GameManager.gameManager.character.quest.AddQuest(int.Parse(questStartIndex));            
             addQuestEffect.gameObject.SetActive(true);
             addQuestEffect.SetQuestEffect(true);
         }
 
         if (!string.IsNullOrEmpty(questEndIndex))                                                                       // 퀘스트
         {
-            Character.Player.quest.QuestComplete(int.Parse(questEndIndex));
+            GameManager.gameManager.character.quest.QuestComplete(int.Parse(questEndIndex));
             npcReward = true;
             addQuestEffect.gameObject.SetActive(true);
             addQuestEffect.SetQuestEffect(false);

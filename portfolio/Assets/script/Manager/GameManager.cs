@@ -61,21 +61,20 @@ public class GameManager : MonoBehaviour
     }
    
     public void MainMenu()
-    {
-        
-        
-        
+    {   
 //        ObjectPoolManager.objManager.PoolingReset_Load();        
-        Destroy(Character.Player.gameObject);          
-
-
     }
     public void New_C_Data(string _nickName)
     {
-        character = null;
+        if(character == null)
+        {
+            GameObject obj = Instantiate(ResourceManager.resource.character);
+            obj.transform.SetParent(this.transform);
+            character = obj.AddComponent<Character>();
+
+        }
+
         
-        GameObject obj = Instantiate(ResourceManager.resource.character);        
-        character = obj.AddComponent<Character>();
         Status NewStat = new Status("New",1, 0, 0, 0, 0);       
 
         NewStat.LevelSetting(1);
@@ -111,7 +110,7 @@ public class GameManager : MonoBehaviour
 
 
 
-        character.quickSlot = new QuickSlot();
+        
         character.quest = new CharacterQuest();
         Equipment newEquip = new Equipment(NewStat);
         character.equip = newEquip;
@@ -138,9 +137,7 @@ public class GameManager : MonoBehaviour
         ChangeLayerObj(character.gameObject.transform, 8);
         MapName = info[1];        
         Inventory NewInven = new Inventory();
-        character.inven = NewInven;
-        QuickSlot NewQuick = new QuickSlot();
-        character.quickSlot = NewQuick;
+        character.inven = NewInven;        
         Equipment newEquip = new Equipment(NewStat);
         character.equip = newEquip;
 

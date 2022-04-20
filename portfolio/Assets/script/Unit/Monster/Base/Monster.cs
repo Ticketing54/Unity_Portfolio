@@ -102,18 +102,18 @@ public abstract class Monster : BattleUnit
         
         while (true)
         {
-            if(Character.Player != null)
+            if(GameManager.gameManager.character != null)
             {
                 if (this.DISTANCE < 4f && approachChracter == false)
                 {
                     approachChracter = true;
-                    Character.Player.AddNearMonster(this);
+                    GameManager.gameManager.character.AddNearMonster(this);
                 }
 
                 if(this.DISTANCE >= 4f && approachChracter == true)
                 {
                     approachChracter = false;
-                    Character.Player.RemoveNearMonster(this);
+                    GameManager.gameManager.character.RemoveNearMonster(this);
                 }
             }
             yield return null;

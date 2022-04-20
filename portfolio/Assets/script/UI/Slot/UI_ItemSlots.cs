@@ -37,7 +37,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
         Item getitem;
         for (int itemSlotNum=0; itemSlotNum < itemSlots.Length; itemSlotNum++)
         {
-            getitem = Character.Player.ItemList_GetItem(itemListType, itemSlotNum);
+            getitem = GameManager.gameManager.character.ItemList_GetItem(itemListType, itemSlotNum);
             if(getitem == null)
             {
                 itemSlots[itemSlotNum].Clear();
@@ -58,7 +58,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
             return;
         }
 
-        Item getitem = Character.Player.ItemList_GetItem(itemListType, _index);
+        Item getitem = GameManager.gameManager.character.ItemList_GetItem(itemListType, _index);
         if (getitem == null)
         {
             itemSlots[_index].Clear();
@@ -103,7 +103,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
         int index = isInSlots_Up(_ClickPos);
         if (index >= 0 && rightClickindex == index)
         {
-            Character.Player.ItemMove_Auto(itemListType, index);
+            GameManager.gameManager.character.ItemMove_Auto(itemListType, index);
         }
 
     }

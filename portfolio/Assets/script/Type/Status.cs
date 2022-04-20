@@ -4,63 +4,61 @@ using UnityEngine;
 
 public class Status
 {
-    List<string> Table;
+    
+    Character character;            // 설정 시 지정
     
     public Status(string _Name, int _Level,float _Hp_c, float _Mp_C, int _Exp_C, int _SkillPoint)
     {
         NAME = _Name;        
-        Level = _Level;
-        Cur_Hp = _Hp_c;
-        Cur_Mp = _Mp_C;
-        Cur_Exp = _Exp_C;
+        level = _Level;
+        cur_Hp = _Hp_c;
+        cur_Mp = _Mp_C;
+        cur_Exp = _Exp_C;
         SkillPoint = _SkillPoint;
     }
 
     public string NAME { get; set; }
-    public int LEVEL { get { return Level; } }    
+    public int LEVEL { get { return level; } }    
     public int CRI { get; set; }
-    public float ATK_RANGE { get { return Attack_Range; } set{ Attack_Range = value; } }
-    public float HP { get { return Cur_Hp; } set { Cur_Hp = value; } }
-    public float MP { get { return Cur_Mp; } set { Cur_Mp = value; } }
+    public float ATK_RANGE { get { return attack_Range; } set{ attack_Range = value; } }
+    public float HP { get { return cur_Hp; } set { cur_Hp = value; } }
+    public float MP { get { return cur_Mp; } set { cur_Mp = value; } }
     public float MAXHP
     {
         get
         {
-            return Hp + Equip_Hp;
+            return hp + equip_Hp;
         }
         set
         {
-            Equip_Hp = value;
+            equip_Hp = value;
         }
     }
     public float MAXMP
     {
         get
         {
-            return Mp + Equip_Mp;
+            return mp + equip_Mp;
         }
         set
         {
-            Equip_Mp = value;
+            equip_Mp = value;
         }
     }
-    public float ATK
+    public float AttackDamage
     {
         get
         {
-            return Atk + Equip_Atk;
+            return atk + equip_Atk;
         }
         set
         {
-            Equip_Atk = value;
+            equip_Atk = value;
         }
     }
     public int MAXEXP { get { return Need_Exp; } }
-    public int EXP { get { return Cur_Exp; } set { Cur_Exp = value; } }                 // LevelUp 구현\
-    public void Damaged(float _dmg)
-    {
-
-    }
+    public int EXP { get { return cur_Exp; } set { cur_Exp = value; } }                 // LevelUp 구현\
+   
     //public float returnAtk()
     //{
     //    float tmp = Atk + Equip_Atk;
@@ -80,27 +78,28 @@ public class Status
     //}
     public void GetExp(int Exp)
     {
-        Cur_Exp += Exp;
-        if (Cur_Exp >= Need_Exp)
+        cur_Exp += Exp;
+        if (cur_Exp >= Need_Exp)
             LevelUp();
     }
     public void LevelUp()
     {
-        Cur_Exp -= Need_Exp;
-        Level++;
+        cur_Exp -= Need_Exp;
+        level++;
         SkillPoint++;
-        LevelSetting(Level);
+        LevelSetting(level);
+        // 레벨업 모션 
     }
     public void LevelSetting(int _Level)
     {        
-        Table = ResourceManager.resource.GetTable_Index("LevelTable", _Level);            
+        List<string> Table = ResourceManager.resource.GetTable_Index("LevelTable", _Level);            
         
-        Level = int.Parse(Table[0]);
-        Hp = float.Parse(Table[1]);
-        Mp = float.Parse(Table[2]);
+        level = int.Parse(Table[0]);
+        hp = float.Parse(Table[1]);
+        mp = float.Parse(Table[2]);
         Need_Exp = int.Parse(Table[3]);        
-        Cur_Hp = Hp;
-        Cur_Mp = Mp;
+        cur_Hp = hp;
+        cur_Mp = mp;
     }  
     public void EquipStatus(Item _item)
     {
@@ -113,10 +112,10 @@ public class Status
         switch (tmp[0])
         {
             case "Defend":
-                Equip_Hp += float.Parse(tmp[1]);
+                equip_Hp += float.Parse(tmp[1]);
                 break;
             case "Atk":
-                Equip_Atk += float.Parse(tmp[1]);
+                equip_Atk += float.Parse(tmp[1]);
                 break;
             default:
                 break;
@@ -132,34 +131,91 @@ public class Status
         switch (tmp[0])
         {
             case "Defend":
-                Equip_Hp -= float.Parse(tmp[1]);
+                equip_Hp -= float.Parse(tmp[1]);
                 break;
             case "Atk":
-                Equip_Atk -= float.Parse(tmp[1]);
+                equip_Atk -= float.Parse(tmp[1]);
                 break;
             default:
                 break;
         }
     }
+
+
     // 캐릭터 레벨
-    int Level;
+    int level;
     // 캐릭터 능력치
-    float Hp, Mp, Atk;
+    float hp, mp, atk;
     int Need_Exp;
     // 장비 능력치
-    float Equip_Hp, Equip_Mp, Equip_Atk=0;
+    float equip_Hp, equip_Mp, equip_Atk=0;
     // 현재 능력치
-    float Cur_Hp, Cur_Mp=0;
-    int Cur_Exp = 0;        
+    float cur_Hp, cur_Mp=0;
+    int cur_Exp = 0;        
     // 스킬 포인트
     
     // 공격 범위
-    float Attack_Range = 1.5f;
+    float attack_Range = 1.5f;
 
     // 수정할 것
     public bool isburn = false;
     public bool isIce = false;
-    public int SkillPoint = 0; 
+    public int SkillPoint = 0;
+
+    bool usingPotion_Hp = false;  
+    bool usingPotion_Mp = false;
+    public bool UsingPotion_Hp { get => usingPotion_Hp; }
+    public bool UsingPotion_Mp { get => usingPotion_Mp; }
+    public void RecoveryHp(float _rehp, float _duration)
+    {
+        usingPotion_Hp = true;        
+        character.StartCoroutine(CoRecoveryHp(_rehp, _duration));
+    }
+    public void RecoveryMp(float _reMp, float _duration)
+    {
+        usingPotion_Mp = true;
+        character.StartCoroutine(CoRecoveryMp(_reMp, _duration));
+    }
+    IEnumerator CoRecoveryHp(float _rehp, float _duration)
+    {
+        float timer = 0f;
+        while (timer <= _duration)
+        {
+            HP += _rehp;
+            timer += Time.deltaTime;
+
+            if (HP >= MAXHP)
+            {
+                HP = MAXHP;
+            }
+
+            //update Ui Hp;
+            yield return null;
+        }
+        usingPotion_Hp = false;
+    }
+    IEnumerator CoRecoveryMp(float _remp, float _duration)
+    {
+        float timer = 0f;
+        while (timer <= _duration)
+        {
+            MP += _remp;
+            timer += Time.deltaTime;
+
+            if (MP >= MAXMP)
+            {
+                MP = MAXMP;
+            }
+
+            //update Ui Hp;
+            yield return null;
+        }
+        usingPotion_Mp = false;
+    }
+
+
+
+
 
 
 

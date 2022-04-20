@@ -34,7 +34,7 @@ public class Charater_Run : StateMachineBehaviour
     
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        runsounds.transform.position = Character.Player.transform.position;
+        runsounds.transform.position = GameManager.gameManager.character.transform.position;
 
 
         if(Player.stat.isIce == true &&runsounds.name !="IceRun")

@@ -70,8 +70,8 @@ public class MiniMap : MonoBehaviour
     }
     public void MovePosition()      //좌상단 캐릭터의 위치
     {
-        float x = Character.Player.transform.position.x / MapSize_X;
-        float y = Character.Player.transform.position.z/ MapSize_Y;
+        float x = GameManager.gameManager.character.transform.position.x / MapSize_X;
+        float y = GameManager.gameManager.character.transform.position.z/ MapSize_Y;
 
         
         Pos.Set(x, y);
@@ -82,7 +82,7 @@ public class MiniMap : MonoBehaviour
     }
     public void MovePosition_M()      //중앙 미니맵 위치
     {
-        Player_Dot.rectTransform.anchoredPosition = MoveDotPosition(Character.Player.transform.position,700f);
+        Player_Dot.rectTransform.anchoredPosition = MoveDotPosition(GameManager.gameManager.character.transform.position,700f);
 
     }
     public Vector2 MoveDotPosition(Vector3 Pos, float Measure=900)     //좌상단 미니맵상 위치

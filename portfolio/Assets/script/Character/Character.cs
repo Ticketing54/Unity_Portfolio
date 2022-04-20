@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using System;
 using TMPro;
 
 
 public class Character : MonoBehaviour
-{
-    public static Character Player;
+{    
 
     public Character(){}
     public float HP_CURENT => stat.HP;
@@ -17,55 +17,55 @@ public class Character : MonoBehaviour
     public string NICKNAME => stat.NAME;
 
     public List<Collider> weapons;    
-    Animator anim;    
-  
-    
+    Animator anim;
 
+    public LinkedList<Monster> nearMonster = new LinkedList<Monster>();
+    NavMeshAgent nav;
+
+    public delegate void KeyAction();
+    public Dictionary<KeyCode, KeyAction> keyboardShorcut;
 
     private void Awake()
     {
-        if (Player == null)
-        {
-            Player = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            if(GameManager.gameManager.character != this)
-            {
-                Destroy(gameObject);
-            }            
-        }
-        skill = new CharacterSkill();
+        keyboardShorcut = new Dictionary<KeyCode, KeyAction>();
+
+        nav = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
+
+
+        skill = new CharacterSkill(this,nav,anim);
         quest = new CharacterQuest();
         inven = new Inventory();
-        quickSlot = new QuickSlot();
+        quickSlot = new QuickSlot(this);
         quickQuest = new Quest[4];
-        
+
         //stat = new Status();
         //equip = new Equipment();        
-    }
-    private void Start()
-    {
-        if (nav == null)
-        {
-            nav = GetComponent<NavMeshAgent>();
-        }
         nav.updateRotation = false;
-        anim = GetComponent<Animator>();
-        
         HitBoxSetting();
     }
-    
+  
     void Update()
     {
         Click();
-
-
+        Inputkeyboard();
     }
 
 
-    public LinkedList<Monster> nearMonster = new LinkedList<Monster>();    
+   public void Inputkeyboard()
+    {
+        if (Input.anyKey)
+        {
+            foreach(KeyValuePair<KeyCode,KeyAction> input in keyboardShorcut)
+            {
+                if (Input.GetKeyDown(input.Key))
+                {
+                    input.Value();
+                }
+            }
+        }
+    }
+
 
     public void AddNearMonster(Monster _mob)
     {
@@ -97,7 +97,7 @@ public class Character : MonoBehaviour
         }
         return nearMob;
     }
-    NavMeshAgent nav;
+    
     [Header("스텟")]
     public Status stat;
     [Header("장비")]
@@ -134,6 +134,7 @@ public class Character : MonoBehaviour
    
 
     #endregion
+
     #region MoveItemControl   
     Item itemMoveItem;
     Item ITEMMOVEITEM { get { return itemMoveItem; } }
@@ -232,28 +233,28 @@ public class Character : MonoBehaviour
     #endregion
 
     public string GetChracterInfo()
-    {        
-        string Data = string.Empty;
-        Data += Character.Player.stat.NAME + ",";
-        Data += GameManager.gameManager.MapName + ",";
-        Data += Character.Player.transform.position.x + ",";
-        Data += Character.Player.transform.position.y + ",";
-        Data += Character.Player.transform.position.z + ",";
-        Data += Character.Player.stat.LEVEL + ",";
-        Data += Character.Player.stat.HP + ",";
-        Data += Character.Player.stat.MP + ",";
-        Data += Character.Player.stat.EXP + ",";
-        Data += Character.Player.stat.SkillPoint + ",";
-        
+    {
+        //string Data = string.Empty;
+        //Data += Character.Player.stat.NAME + ",";
+        //Data += GameManager.gameManager.MapName + ",";
+        //Data += Character.Player.transform.position.x + ",";
+        //Data += Character.Player.transform.position.y + ",";
+        //Data += Character.Player.transform.position.z + ",";
+        //Data += Character.Player.stat.LEVEL + ",";
+        //Data += Character.Player.stat.HP + ",";
+        //Data += Character.Player.stat.MP + ",";
+        //Data += Character.Player.stat.EXP + ",";
+        //Data += Character.Player.stat.SkillPoint + ",";
 
-        string invenInfo = inven.InvenInfo();
-        string equipInfo = equip.EqipInfo();
-        string quickInfo = quickSlot.QuickItemInfo();
-        Data += invenInfo+"\n";
-        Data += equipInfo+"\n";
-        Data += quickInfo+"\n";
 
-        return Data;
+        //string invenInfo = inven.InvenInfo();
+        //string equipInfo = equip.EqipInfo();
+        //string quickInfo = quickSlot.QuickItemInfo();
+        //Data += invenInfo+"\n";
+        //Data += equipInfo+"\n";
+        //Data += quickInfo+"\n";
+
+        return null;
     }
 
     public bool isCantMove = false;              
@@ -452,112 +453,18 @@ public class Character : MonoBehaviour
     #endregion
 
 
-
-    #region Skill
-    public delegate void UpdateBuffUi(string _skillSpriteName, float _amount);
-    UpdateBuffUi updateBufUi;
-    public void TakeDownSword() // 애니메이션 이벤트                                     //skill 0번
-    {
-        isCantMove = true;
-        //이펙트 연출
-        StartCoroutine(CoTakeDownSword());
-        anim.SetFloat("SkillNum", 0);
-        anim.SetTrigger("Skill");
-        
-    }
-    public void RushSkill()                                                              //skill 1번
-    {
-        // 이펙트 추가 할 것
-        anim.SetFloat("SkillNum", 1);
-        anim.SetTrigger("Skill");        
-        Monster closestMob = ClosestMonster();
-        if (nearMonster != null)
-        {
-            transform.LookAt(closestMob.transform);
-        }
-        StartCoroutine(CoRushSkill());
-    }
-    public void BuffSkill(int _skillIndex, int _count)                                     //skill 2번
-    {
-        anim.SetFloat("SkillNum", 2);
-
-    }
-    public void SkillEffectOn(string _effectName)
-    {
-
-    }
-    public void RangeDamageMob() 
-    {
-        foreach (Monster _mob in nearMonster)
-        {
-            if (_mob.DISTANCE <= 2f)
-            {
-                _mob.StatusEffect(STATUSEFFECT.KNOCKBACK, 2f);
-                _mob.StatusEffect(STATUSEFFECT.STURN, 2f);
-                _mob.Damaged(5f);
-            }
-        }
-    }
-    IEnumerator CoTakeDownSword()
-    {
-        yield return new WaitForSeconds(2f);
-        isCantMove = false;
-    }
-    
-    IEnumerator CoRushSkill()
-    {        
-        isCantMove = true;
-        nav.ResetPath();        
-        float timer = 0f;        
-        DamageList list = new DamageList();
-        foreach(Monster mob in nearMonster)
-        {
-            list.Add(mob);
-        }
-        while (timer <= 1.2)
-        {
-            timer += Time.deltaTime;
-            nav.velocity = transform.forward * 2;
-            list.DamedMonster(5f,STATUSEFFECT.STURN,1f);
-            yield return null;
-        }
-        isCantMove = false;
-    }
-
-
-    #endregion
-
-    IEnumerator LevUpMove(GameObject obj, TextMeshProUGUI _string)  //레벨업 
-    {
-
-        Vector3 Pos = transform.position;
-        Pos.y += 1f;
-        _string.fontSize = 33;
-        while (obj.activeSelf == true)
-        {
-                        
-            obj.transform.position = gameObject.transform.position;
-            _string.transform.position = Camera.main.WorldToScreenPoint(new Vector3(Pos.x,Pos.y+=Time.deltaTime*0.6f,Pos.z));
-            _string.fontSize += Time.deltaTime* 20f;
-            _string.alpha -= Time.deltaTime *0.6f;
-            yield return null;
-
-        }
-
-        yield return null;
-        
-    }
-    IEnumerator WaitForItLev(GameObject obj,GameObject _string) // 레벨업
-    {
-        yield return new WaitForSeconds(2.5f);        
-        obj.SetActive(false);
-        _string.SetActive(false);
-    }
-
    
    
+
+    public void Damaged(float _dmg)
+   {
+        stat.HP -= _dmg;
+        if(stat.HP <= 0)
+        {
+            // 죽음
+        }
+   }
    
-  
     public void EffectEvent(string _name)
     {
         //GameObject obj = ObjectPoolManager.objManager.EffectPooling(_name);        
@@ -579,7 +486,40 @@ public class Character : MonoBehaviour
         obj.SetActive(false);
         
     }
-   
+
+
+
+
+
+
+    IEnumerator LevUpMove(GameObject obj, TextMeshProUGUI _string)  //레벨업 
+    {
+
+        Vector3 Pos = transform.position;
+        Pos.y += 1f;
+        _string.fontSize = 33;
+        while (obj.activeSelf == true)
+        {
+
+            obj.transform.position = gameObject.transform.position;
+            _string.transform.position = Camera.main.WorldToScreenPoint(new Vector3(Pos.x, Pos.y += Time.deltaTime * 0.6f, Pos.z));
+            _string.fontSize += Time.deltaTime * 20f;
+            _string.alpha -= Time.deltaTime * 0.6f;
+            yield return null;
+
+        }
+
+        yield return null;
+
+    }
+    IEnumerator WaitForItLev(GameObject obj, GameObject _string) // 레벨업
+    {
+        yield return new WaitForSeconds(2.5f);
+        obj.SetActive(false);
+        _string.SetActive(false);
+    }
+
+
     public void  RangeMob()
     {
         //for (int i = 0; i < MobList.Count; i++)
@@ -652,38 +592,40 @@ public class Character : MonoBehaviour
             yield return null;
         }
     }
+
     IEnumerator IceState()
     {
-        GameObject Effect;
-        //Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Ice");
-        float timer = 0;
-        stat.isIce = true;        
-        Character.Player.nav.speed -= 4f;
-        Character.Player.anim.speed = 0.5f;
-        while (true)
-        {
-            timer += Time.deltaTime;
-            if (timer >=5)
-            {
-                //Effect.SetActive(false);
-                Effect = null;
-                stat.isIce = false;
-                Character.Player.nav.speed += 4f;
-                Character.Player.anim.speed = 1f;
+        yield return null;
+        //GameObject Effect;
+        ////Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Ice");
+        //float timer = 0;
+        //stat.isIce = true;        
+        //Character.Player.nav.speed -= 4f;
+        //Character.Player.anim.speed = 0.5f;
+        //while (true)
+        //{
+        //    timer += Time.deltaTime;
+        //    if (timer >=5)
+        //    {
+        //        //Effect.SetActive(false);
+        //        Effect = null;
+        //        stat.isIce = false;
+        //        Character.Player.nav.speed += 4f;
+        //        Character.Player.anim.speed = 1f;
 
-                yield break;
-            }
-            //Effect.transform.position = Character.Player.transform.position;
+        //        yield break;
+        //    }
+        //    //Effect.transform.position = Character.Player.transform.position;
 
 
 
             
-            yield return null;
-        }
+        //    yield return null;
+        //}
     }
     public void soundPlayer(string _Name) 
     {
-        SoundManager.soundmanager.soundsPlay(_Name, Character.Player.gameObject);    
+        //SoundManager.soundmanager.soundsPlay(_Name, Character.Player.gameObject);    
     }
 
    

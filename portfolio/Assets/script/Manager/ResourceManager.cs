@@ -186,10 +186,10 @@ public class ResourceManager: MonoBehaviour
         List<string> mapInfo;
         
 
-        if (Character.Player == null)
+        if (GameManager.gameManager.character == null)
         {
             Character player = Instantiate(character).AddComponent<Character>();
-            GameManager.gameManager.character = player;
+            GameManager.gameManager.character = player;            
         }
        
         if (tableRes.TryGetValue(_mapTableName, out mapInfo))
