@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MAINLOADING
+{
+    NEW,
+    LOAD1,
+    LOAD2,
+    LOAD3,
+    LOAD4
+}
 public enum SKILLTYPE
 {
     NONE,

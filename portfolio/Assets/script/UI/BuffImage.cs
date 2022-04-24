@@ -5,15 +5,28 @@ using UnityEngine.UI;
 using TMPro;
 public class BuffImage : Image
 {
-    public Image bufsprite;
-    public Image cooltime_image;
-    public TextMeshProUGUI cooltime_num;
+    [SerializeField]
+    Image bufImage;
+    [SerializeField]
+    Image cooltimeImage;
+    [SerializeField]
+    TextMeshProUGUI cooltimeText;
 
+    public void OnBuffImage(string _spriteName)
+    {
+        cooltimeImage.fillAmount = 1;
+        cooltimeText.text = "0";
+    }
 
+    public void SetBuff(float _fillamount,int _holdTime)
+    {
+        cooltimeImage.fillAmount = _fillamount;
+        cooltimeText.text = _holdTime.ToString();
+    }
     public void Clear()
     {
-        bufsprite = null;
-        cooltime_image = null;
-        cooltime_num.text = "0";
+        bufImage = null;
+        cooltimeImage = null;
+        cooltimeText.text = "0";
     }
 }

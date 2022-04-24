@@ -33,14 +33,14 @@ public class Character : MonoBehaviour
         anim = GetComponent<Animator>();
 
 
-        skill = new CharacterSkill(this,nav,anim);
-        quest = new CharacterQuest();
-        inven = new Inventory();
-        quickSlot = new QuickSlot(this);
-        quickQuest = new Quest[4];
+        skill       = new CharacterSkill(this,nav,anim);
+        quest       = new CharacterQuest(this);        
+        quickSlot   = new QuickSlot(this);
+        stat        = new Status(this);
+        equip       = new Equipment(this);
+        inven       = new Inventory();
 
-        //stat = new Status();
-        //equip = new Equipment();        
+        quickQuest = new Quest[4];
         nav.updateRotation = false;
         HitBoxSetting();
     }
@@ -66,7 +66,10 @@ public class Character : MonoBehaviour
         }
     }
 
-
+    public void SetPosition(Vector3 _Pos)
+    {
+        nav.Warp(_Pos);
+    }
     public void AddNearMonster(Monster _mob)
     {
         if(_mob is Monster)
@@ -450,11 +453,25 @@ public class Character : MonoBehaviour
         }
         weapons = weaponList;
     }
+
+
+    public void RangeDamageMob()
+    {
+        foreach (Monster _mob in nearMonster)
+        {
+            if (_mob.DISTANCE <= 2f)
+            {
+                _mob.StatusEffect(STATUSEFFECT.KNOCKBACK, 2f);
+                _mob.StatusEffect(STATUSEFFECT.STURN, 2f);
+                _mob.Damaged(5f);
+            }
+        }
+    }
     #endregion
 
 
-   
-   
+
+
 
     public void Damaged(float _dmg)
    {

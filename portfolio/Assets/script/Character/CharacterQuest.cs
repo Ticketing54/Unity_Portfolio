@@ -9,10 +9,20 @@ public class QuestDic : SerializableDictionary<int, Quest> { }
 [System.Serializable]
 public class CharacterQuest 
 {
+    Character character;
+
+
+    public CharacterQuest(Character _character)
+    {
+        character = _character;
+        allQuestDic = new QuestStateDic();
+        playingQuest = new QuestDic();
+        doneQuest = new QuestDic();
+    }
     [SerializeField]
-    QuestStateDic allQuestDic = new QuestStateDic();
-    QuestDic playingQuest = new QuestDic();
-    QuestDic doneQuest = new QuestDic();
+    QuestStateDic allQuestDic;
+    QuestDic playingQuest;
+    QuestDic doneQuest;
 
 
 
@@ -150,9 +160,9 @@ public class CharacterQuest
         Quest popQuest;
         if (playingQuest.TryGetValue(_index,out popQuest))
         {
-            GameManager.gameManager.character.inven.gold += popQuest.Reward_Gold;
-            GameManager.gameManager.character.stat.EXP += popQuest.Reward_Exp;
-            GameManager.gameManager.character.inven.GetRewards(popQuest.Reward_Item);
+            character.inven.gold += popQuest.Reward_Gold;
+            character.stat.EXP += popQuest.Reward_Exp;
+            character.inven.GetRewards(popQuest.Reward_Item);
 
             switch (popQuest.Type)
             {

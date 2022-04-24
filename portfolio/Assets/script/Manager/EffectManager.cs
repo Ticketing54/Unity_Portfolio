@@ -8,7 +8,7 @@ public class EffectManager : MonoBehaviour
     PoolingManager_Resource effectRes;
     PoolingManager<QuestMark> questMarkRes;
     Dictionary<GameObject, string> runningEffect;
-    Dictionary<Npc, QuestMark> runningQuestMark;
+    Dictionary<Npc, QuestMark> runningQuestMark;    
     
 
     List<GameObject> clickList;
@@ -33,6 +33,7 @@ public class EffectManager : MonoBehaviour
 
         runningEffect = new Dictionary<GameObject, string>();
         runningQuestMark = new Dictionary<Npc, QuestMark>();        
+        
         clickList = new List<GameObject>();
 
     }
@@ -214,31 +215,48 @@ public class EffectManager : MonoBehaviour
     #endregion
     
    
-    GameObject GetEffect(string _effectName)                                // Effect 이름별로 꺼내오기
+    public GameObject GetEffect(string _effectName)                                // Effect 이름별로 꺼내오기
     {
         GameObject effectObj = effectRes.GetData(_effectName);
         if (effectObj == null)
         {
-            GameObject NewEffect = ResourceManager.resource.GetEffect(_effectName);         // 리소스 수정후 수정할 것
-            AddEfect(_effectName,NewEffect);
+            GameObject newEffect = ResourceManager.resource.GetEffect(_effectName);         // 리소스 수정후 수정할 것
+            AddEffect(_effectName,newEffect);
             return GetEffect(_effectName);
         }
         else
-        {
-            effectObj.gameObject.SetActive(true);
+        {            
             return effectObj;
         }
-
     }
-    void AddEfect(string _effectName,GameObject _effect)                                       // Effect 사용 후 저장
+    public GameObject GetBuffEffect(string _effectName)
+    {
+        GameObject effectObj = effectRes.GetData(_effectName);
+        if(effectObj == null)
+        {
+            GameObject newBuffEffect = ResourceManager.resource.GetEffect(_effectName);
+            effectRes.Add(_effectName, newBuffEffect);
+            return GetBuffEffect(_effectName);
+        }
+        else
+        {
+            return effectObj;
+        }
+    }
+    public void PushBuffEffect(string _effectName, GameObject _effect)
+    {
+        effectRes.Add(_effectName, _effect);
+    }
+    void AddEffect(string _effectName,GameObject _effect)                                       // Effect 사용 후 저장
     {
         string effectName;
         if(runningEffect.TryGetValue(_effect,out effectName))
         {
             runningEffect.Remove(_effect);
             effectRes.Add(effectName, _effect);
+            return;
         }
-        effectRes.Add(_effect.name, _effect);
+        effectRes.Add(_effectName, _effect);
     }
     void RunningEffectAdd(GameObject _effect)
     {
@@ -263,7 +281,7 @@ public class EffectManager : MonoBehaviour
     IEnumerator TurnoffEffect(string _effectName,GameObject _effect, float _holdingtime)
     {
         yield return new WaitForSeconds(_holdingtime);
-        AddEfect(_effectName,_effect);
+        AddEffect(_effectName,_effect);
     }
 
 

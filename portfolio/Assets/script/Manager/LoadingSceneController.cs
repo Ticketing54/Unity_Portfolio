@@ -62,6 +62,7 @@ public class LoadingSceneController : MonoBehaviour
     string loadScenenName = string.Empty;
     SceneInstance prevScene;
     public bool resourceSetting = false;
+        
 
     public void LoadScene(string sceneName)
     {        
@@ -69,18 +70,18 @@ public class LoadingSceneController : MonoBehaviour
         loadSceneName = sceneName;
         Fade(true);
         
-        // 씬 불러오기 
+        
         StartCoroutine(LoadSceneProcess());        
         Addressables.LoadSceneAsync(loadSceneName+ "Scene").Completed += OnSceneLoaded;       
 
     }
-
     private void OnSceneLoaded(AsyncOperationHandle<SceneInstance> obj)
     {
 
         if(obj.Status == AsyncOperationStatus.Succeeded)
         {
-            prevScene = obj.Result;            
+            Addressables.LoadSceneAsync(loadSceneName + "Scene").Completed -= OnSceneLoaded;
+            prevScene = obj.Result;
             ResourceManager.resource.LoadSceneResource(loadSceneName + "Table");
         }
         else
@@ -102,7 +103,7 @@ public class LoadingSceneController : MonoBehaviour
             {
                 if(resourceSetting == true)
                 {
-                    CameraManager.cameraManager.CameraTargetOnCharacter();
+                    CameraManager.cameraManager.CameraTargetOnCharacter();                    
                     progressBar.fillAmount = 1;
                     resourceSetting=false;
                     break;
@@ -114,12 +115,12 @@ public class LoadingSceneController : MonoBehaviour
         }        
         StartCoroutine(Fade(false));
     }
-   
+
     //private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
     //{   
     //    if(arg0.name == loadSceneName)
     //    {
-            
+
     //        StartCoroutine(Fade(false));            
     //        SceneManager.sceneLoaded -= OnSceneLoaded;      
     //    }

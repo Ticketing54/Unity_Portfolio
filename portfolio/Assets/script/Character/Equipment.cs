@@ -8,11 +8,14 @@ public class Equipment : ItemMove
     [SerializeField]
     Status Stat= null;    
     [SerializeField]
-    Item[] Equip = new Item[5];   
+    Item[] Equip = new Item[5];
+
+    Character character;
     
-    public Equipment(Status _Stat)
-    {        
-        Stat = _Stat;
+    public Equipment(Character _character)
+    {
+        character = _character;
+        Stat = character.stat;
     }
     public Item GetItem(int _equipType)
     {

@@ -18,10 +18,10 @@ public class GameManager : MonoBehaviour
     public Potal potal = null;
     public string Character_Name = string.Empty;
 
-    List<Monster> mob_list = new List<Monster>();        
+    List<Monster> mob_list = new List<Monster>();
 
+    public bool sceneSetting = false;
 
-    
 
     public delegate void ReadyToStart();
     public ReadyToStart readyToStart;   
@@ -46,42 +46,41 @@ public class GameManager : MonoBehaviour
     
 
     public void LoadGame(int _index)    // 저장된 데이터 로드
-    {       
-        
-        
-        Load_C_Data(_index);                                                   
+    {
+        if(character != null)
+        {
+            Destroy(character);
+            character = null;
+        }
+        character = Instantiate(ResourceManager.resource.character).AddComponent<Character>();
+        character.transform.SetParent(this.transform);
+        Load_C_Data(_index);
+        UIManager.uimanager.OnBaseUI();
         //UIManager.uimanager.minimap.MapSetting();   //미니맵 변경        
-        
+
 
     }
     public void NewGame(string _nickName)       // 새로운 게임시작 
-    {   
-        LoadingSceneController.Instance.LoadScene("Village");
+    {
+        if (character != null)
+        {
+            Destroy(character);
+            character = null;
+        }
+        character = Instantiate(ResourceManager.resource.character).AddComponent<Character>();
+        character.transform.SetParent(this.transform);        
         New_C_Data(_nickName);
+        UIManager.uimanager.OnBaseUI();
+        LoadingSceneController.Instance.LoadScene("Village");        
     }
    
-    public void MainMenu()
-    {   
-//        ObjectPoolManager.objManager.PoolingReset_Load();        
-    }
     public void New_C_Data(string _nickName)
     {
-        if(character == null)
-        {
-            GameObject obj = Instantiate(ResourceManager.resource.character);
-            obj.transform.SetParent(this.transform);
-            character = obj.AddComponent<Character>();
 
-        }
-
-        
-        Status NewStat = new Status("New",1, 0, 0, 0, 0);       
-
-        NewStat.LevelSetting(1);
-        character.stat = NewStat;
+        character.stat.LevelSetting(5);
         character.tag = "Player";
         character.gameObject.layer = 8;        
-        character.name = "Player";        
+        character.name = _nickName;        
         Character_Name = string.Empty;
         MapName = "Village";        
         character.inven = new Inventory();
@@ -89,8 +88,7 @@ public class GameManager : MonoBehaviour
 
 
         // Test
-
-
+       
         Item test1 = new Item(1,1);
         Item test2 = new Item(1,3);
         Item test3 = new Item(1,2);
@@ -103,18 +101,20 @@ public class GameManager : MonoBehaviour
         character.inven.PushItem(test4);
         character.inven.PushItem(test5);
         character.inven.PushItem(test6);
-
-
-
-
-
-
-
         
-        character.quest = new CharacterQuest();
-        Equipment newEquip = new Equipment(NewStat);
-        character.equip = newEquip;
-        character.transform.position = new Vector3(31f,0f,17f);        
+        
+        StartCoroutine(SceneSetting(new Vector3(31f, 0f, 17f)));        
+    }
+    
+
+    IEnumerator SceneSetting(Vector3 _pos)
+    {
+        while (!sceneSetting)
+        {
+            yield return null;
+        }
+        sceneSetting = false;
+        character.SetPosition(_pos);        
     }
     public void Load_C_Data(int _num)
     {           
@@ -131,15 +131,13 @@ public class GameManager : MonoBehaviour
         character.tag = "Player";
         character.gameObject.layer = 8;
         string []info = DATA[0].Split(',');
-        character.name = info[0];
-        Status NewStat = new Status(info[0], int.Parse(info[5]), float.Parse(info[6]), float.Parse(info[7]), int.Parse(info[8]), int.Parse(info[9]));
-        character.stat = NewStat;
+        character.name = info[0];  
+        
         ChangeLayerObj(character.gameObject.transform, 8);
         MapName = info[1];        
-        Inventory NewInven = new Inventory();
-        character.inven = NewInven;        
-        Equipment newEquip = new Equipment(NewStat);
-        character.equip = newEquip;
+        
+        
+              
 
         if(DATA[1] != "")
         {

@@ -7,8 +7,7 @@ public class UI_QuickSlot : UI_ItemSlots
 {
     public override void OnEnable()
     {
-        UIManager.uimanager.itemoveEnd += this.LeftClickUp;
-        UIManager.uimanager.updateUiSlot += this.UpdateSlot;
+        base.OnEnable();
     }
 
     public override void OnDisable()

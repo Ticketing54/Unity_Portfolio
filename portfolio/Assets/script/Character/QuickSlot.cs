@@ -158,22 +158,37 @@ public class QuickSlot :ItemMove
             return;
         }
 
-        string[] propertys = item.itemProperty.Split('/');
+        string[] propertys = item.itemProperty.Split('#');
 
         for (int i = 0; i < propertys.Length; i++)
         {
-            string[] itemproperty = propertys[i].Split('#');
+            string[] itemproperty = propertys[i].Split('/');
             switch (itemproperty[0])
             {
                 case "Hp":
                     {
-                        character.stat.RecoveryHp(float.Parse(itemproperty[1]), float.Parse(itemproperty[2]));
-                        break;
+
+                        if (character.stat.UsingPotion_Hp)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            character.stat.RecoveryHp(float.Parse(itemproperty[1]), float.Parse(itemproperty[2]));
+                            break;
+                        }
                     }
                 case "Mp":
                     {
-                        character.stat.RecoveryMp(float.Parse(itemproperty[1]), float.Parse(itemproperty[2]));
-                        break;
+                        if (character.stat.UsingPotion_Mp)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            character.stat.RecoveryMp(float.Parse(itemproperty[1]), float.Parse(itemproperty[2]));
+                            break;
+                        }
                     }
                 default:
                     return;
@@ -226,18 +241,14 @@ public class QuickSlot :ItemMove
 
         return true;
     }
-
-    public void AddItem(int _listNum, int _SlotNum, Item _NewItem)
-    {
-        List<Item> quickItem = itemSlots[_listNum];
-        quickItem[_SlotNum] = _NewItem;
-        quickItem = null;
-    }
-    public void AddItem(int _SlotNum, Item _NewItem)
+    
+    public void AddItem(int _slotNum, Item _NewItem)
     {
         List<Item> quickItem = itemSlots[ITEMSLOTNUM];
-        quickItem[_SlotNum] = _NewItem;
+        quickItem[_slotNum] = _NewItem;
         quickItem = null;
+        UIManager.uimanager.updateUiSlot(ITEMLISTTYPE.QUICK, _slotNum);
+
     }
     public bool IsEmpty_Item(int _Num)
     {

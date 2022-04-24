@@ -181,17 +181,11 @@ public class ResourceManager: MonoBehaviour
 
     #region Loading[Obg/Map]
     
+
     public void LoadSceneResource(string _mapTableName)
     {
         List<string> mapInfo;
         
-
-        if (GameManager.gameManager.character == null)
-        {
-            Character player = Instantiate(character).AddComponent<Character>();
-            GameManager.gameManager.character = player;            
-        }
-       
         if (tableRes.TryGetValue(_mapTableName, out mapInfo))
         {
             ReleaseAddressable();
@@ -262,7 +256,9 @@ public class ResourceManager: MonoBehaviour
                         }                        
                 }
             }
-            LoadingSceneController.instance.resourceSetting = true;            
+            LoadingSceneController.instance.resourceSetting = true;
+            GameManager.gameManager.sceneSetting = true;         
+            
         }
         else
         {

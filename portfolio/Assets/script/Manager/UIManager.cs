@@ -6,14 +6,59 @@ using UnityEngine.UI;
 using System;
 public class UIManager : MonoBehaviour
 {
-    public static UIManager uimanager;    
+    public static UIManager uimanager;
 
-    #region Ui_Effect
-
-    
     [SerializeField]
     GameObject baseUi;
-    #endregion
+
+    private void Awake()
+    {
+        if (uimanager == null)
+        {
+            uimanager = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        updateUiSlot += OnBaseUi;
+    }
+
+    public void OnBaseUI()
+    {
+        baseUi.gameObject.SetActive(true);
+        AddkeyboardShorcut();
+    }
+    public void OffBaseUI()
+    {
+        baseUi.gameObject.SetActive(false);
+        RemovekeyboardShorcut();
+    }
+    void AddkeyboardShorcut()
+    {
+        GameManager.gameManager.character.keyboardShorcut.Add(KeyCode.I, TryOpenInventory);
+        GameManager.gameManager.character.keyboardShorcut.Add(KeyCode.N, TryOpenMiniMap_n);
+        GameManager.gameManager.character.keyboardShorcut.Add(KeyCode.M, TryOpenMiniMap_M);
+        GameManager.gameManager.character.keyboardShorcut.Add(KeyCode.L, TryOpenQuest);
+    }
+    void RemovekeyboardShorcut()
+    {
+        GameManager.gameManager.character.keyboardShorcut.Remove(KeyCode.I);
+        GameManager.gameManager.character.keyboardShorcut.Remove(KeyCode.N);
+        GameManager.gameManager.character.keyboardShorcut.Remove(KeyCode.M);
+        GameManager.gameManager.character.keyboardShorcut.Remove(KeyCode.L);
+    }
+    public void OnBaseUi(ITEMLISTTYPE _itemListType, int _Index)
+    {
+        if (baseUi.gameObject.activeSelf == false)
+        {
+            return;
+        }
+    }
+    
+    
 
     #region Middle_Top_HpBar    
     [SerializeField]
@@ -102,12 +147,13 @@ public class UIManager : MonoBehaviour
     [SerializeField]                // 클릭시 아이템 정보
     MiniInfo miniInfo;
 
-
+ 
     public void OpenMiniInfo(int _itemIndex,Vector2 _Pos)
     {
         miniInfo.gameObject.SetActive(true);
         miniInfo.SetMiniInfo(_itemIndex,_Pos);
     }
+    
     public void CloseMiniInfo()
     {
         miniInfo.gameObject.SetActive(false);
@@ -365,62 +411,33 @@ public class UIManager : MonoBehaviour
     public GameObject Minimap_M;
     #endregion
 
+    #region BuffUi
+    [SerializeField]
+    UI_Buff uibuff;
+    public delegate void UpdateBuffUi(string _buffName, float _fillAmount, int _holdTime);
+    public UpdateBuffUi updateBuffUi;
+
+    public void UpdateBuffUISetting(string _buffName, float _fillAmount, int _holdTime)         // 쿨타임도 똑같이 만들 것!
+    {
+        if (updateBuffUi == null)
+        {
+            return;
+        }            
+        else
+        {
+            updateBuffUi(_buffName, _fillAmount, _holdTime);
+        }
+    }
+
+    #endregion
+
     #region Option
     public Option option;
     #endregion
 
     public UiEffectManager uiEffectManager;
 
-    private void Awake()
-    {
-        if (uimanager == null)
-        {
-            uimanager = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
-  
-
-    void Update()
-    {       
-
-
-        if(GameManager.gameManager.character != null )
-        {            
-            
-            if (Input.GetKeyDown(KeyCode.I))
-            {
-                //TryOpenInventory();
-            }          
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-
-            }
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                TryOpenMiniMap_n();
-            }
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                TryOpenMiniMap_M();
-            }
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                TryOpenQuest();
-            }
-
-            
-        }
-
-
-
-
-    }
+   
     public void TryOpenMiniMap_M()
     {
         minimap.miniMap_M_Max_Min();
@@ -480,15 +497,12 @@ public class UIManager : MonoBehaviour
     {
         questlist_M.ClearInfo();        
         QuestList_M.SetActive(false);
-
     }
     
 
     public void OpenOtion()
     {
         option.gameObject.SetActive(true);
-
-
     }
 
    

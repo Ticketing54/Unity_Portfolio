@@ -5,9 +5,13 @@ using System;
 
 [System.Serializable]
 public class Inventory : ItemMove
-{    
+{
     [SerializeField]
-    Item[] inven = new Item[18];
+    Item[] inven;
+    public Inventory()
+    {
+        inven =new Item[18];
+    }
 
     public int gold { get; set; }
     
@@ -43,7 +47,16 @@ public class Inventory : ItemMove
     }        
     public void GetRewards(List<List<int>> _rewards)
     {
-
+        if(_rewards == null)
+        {
+            return;
+        }
+        for (int i = 0; i < _rewards.Count; i++)
+        {
+            List<int> reward = _rewards[i];
+            Item rewardItem = new Item(reward[0], reward[1]);
+            PushItem(rewardItem);
+        }
     }
     public bool PushItem(Item _NewItem)
     {
@@ -51,12 +64,9 @@ public class Inventory : ItemMove
         {
             if (inven[slotNum] == null)
             {
-                inven[slotNum] = _NewItem;                
+                inven[slotNum] = _NewItem;
 
-                if(UIManager.uimanager.InventoryActive == true)
-                {   
-                    UIManager.uimanager.updateInven();
-                }
+                UIManager.uimanager.updateUiSlot(ITEMLISTTYPE.INVEN, slotNum);               
 
                 return true;
             }

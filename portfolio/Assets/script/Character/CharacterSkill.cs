@@ -26,17 +26,17 @@ public class CharacterSkill
         if (!skillDic.TryGetValue(_skillIndex,out skill))
         {
             return;
-        }
-
-        if (skill.mana > character.stat.MP)               // 마나 소모
-        {
-            Debug.Log("마나가 부족합니다.");
-            return;
-        }
-        else
-        {
-            character.stat.MP -= skill.mana;
-        }
+        }        
+        
+        //if (skill.mana > character.stat.MP)               // 마나 소모
+        //{
+        //    Debug.Log("마나가 부족합니다.");
+        //    return;
+        //}
+        //else
+        //{
+        //    character.stat.MP -= skill.mana;
+        //}
 
 
         switch (skill.index)
@@ -79,18 +79,6 @@ public class CharacterSkill
    
 
 
-    public void RangeDamageMob()
-    {
-        foreach (Monster _mob in character.nearMonster)
-        {
-            if (_mob.DISTANCE <= 2f)
-            {
-                _mob.StatusEffect(STATUSEFFECT.KNOCKBACK, 2f);
-                _mob.StatusEffect(STATUSEFFECT.STURN, 2f);
-                _mob.Damaged(5f);
-            }
-        }
-    }
     IEnumerator CoTakeDownSword()
     {
         yield return new WaitForSeconds(2f);
@@ -107,10 +95,11 @@ public class CharacterSkill
         {
             list.Add(mob);
         }
+        Vector3 des = nav.transform.forward;
         while (timer <= 1.2)
         {
             timer += Time.deltaTime;
-            nav.velocity = character.transform.forward * 2;
+            nav.velocity = des * 2;
             list.DamedMonster(5f, STATUSEFFECT.STURN, 1f);
             yield return null;
         }
@@ -134,15 +123,17 @@ public class CharacterSkill
         anim.SetFloat("SkillNum", 1);
         anim.SetTrigger("Skill");
         Monster closestMob = character.ClosestMonster();
-        if (character.nearMonster != null)
+        if (character.nearMonster.Count != 0)
         {
             character.transform.LookAt(closestMob.transform);
         }
         character.StartCoroutine(CoRushSkill());
     }
-    public void BuffSkill(Skill _skill)                                     //skill 2번
+    public void BuffSkill(Skill _skillIndex)                                     //skill 2번
     {
-        anim.SetFloat("SkillNum", 2);
+        anim.SetFloat("SkillNum", 2);        
+        character.stat.BuffSkill(_skillIndex);
+        
     }
     public void SkillEffectOn(string _effectName)
     {

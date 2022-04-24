@@ -18,11 +18,12 @@ public class Skill
     public int coolTime { get; }
     public int holdTime { get; }
     public string ability { get; }
+    public string effectName { get; }
 
 
     public Skill(int _Index)
     {
-        List<string> table = ResourceManager.resource.GetTable("SkillTable");
+        List<string> table = ResourceManager.resource.GetTable_Index("SkillTable",_Index);
 
         index = _Index;
 
@@ -82,7 +83,16 @@ public class Skill
             Debug.LogError("Create Skill : SkillHoldTime Error");
         }
         
-        ability = table[9];        
+        ability = table[9];
+        effectName = spriteName;
+        //if (!string.IsNullOrEmpty(table[10]))
+        //{
+        //    effectName = table[10]);
+        //}
+        //else
+        //{
+        //    effectName = string.Empty;
+        //}
     }
 
 

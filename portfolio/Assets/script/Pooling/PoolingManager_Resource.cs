@@ -40,7 +40,7 @@ public class PoolingManager_Resource
         }
         else
         {
-            Debug.LogError("존재하지 않는 데이터 입니다.");
+            Debug.Log("존재하지 않는 데이터 입니다.");
             return null;
         }
     }
