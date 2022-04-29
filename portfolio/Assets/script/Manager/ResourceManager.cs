@@ -138,7 +138,7 @@ public class ResourceManager: MonoBehaviour
         {
             string[] line = _result.text.Split(Environment.NewLine.ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
             List<String> info = new List<string>();
-            for (int i = 1; i < line.Length; i++)
+            for (int i = 0; i < line.Length; i++)
             {
                 info.Add(line[i]);
             }
@@ -151,7 +151,7 @@ public class ResourceManager: MonoBehaviour
         {
             string[] line = _result.text.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             List<String> info = new List<string>();
-            for (int i = 1; i < line.Length; i++)
+            for (int i = 0; i < line.Length; i++)
             {
                 info.Add(line[i]);
             }
@@ -193,7 +193,7 @@ public class ResourceManager: MonoBehaviour
             // 시작 시 로드할 오브젝트의 수 세팅            
 
             string[] sInfo;
-            for (int i = 0; i < mapInfo.Count-1; i++)
+            for (int i = 1; i < mapInfo.Count; i++)
             {
                 sInfo = mapInfo[i].Split(',');
                
@@ -413,7 +413,7 @@ public class ResourceManager: MonoBehaviour
     }
     public List<string> GetTable(List<string> _table,int _index)
     {
-        string[] getTable = _table[_index-1].Split(',');
+        string[] getTable = _table[_index].Split(',');
         List<string> getList = new List<string>();
 
         for (int i = 0; i < getTable.Length; i++)
@@ -432,7 +432,7 @@ public class ResourceManager: MonoBehaviour
             return null;
         }
 
-        string[] getTable = table[_index-1].Split(',');
+        string[] getTable = table[_index].Split(',');
         List<string> getList = new List<string>();
 
         for (int i = 0; i < getTable.Length; i++)

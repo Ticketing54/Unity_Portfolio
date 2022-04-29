@@ -42,22 +42,27 @@ public class CharacterQuest
         {
             case QUESTTYPE.DIALOG:
                 {
-                    quest.State = QUESTSTATE.COMPLETE;                    
+                    quest.State = QUESTSTATE.COMPLETE;
+                    UIManager.uimanager.OnQuestEffect(QUESTSTATE.COMPLETE);
                     break;
                 }
             case QUESTTYPE.BATTLE:
                 {
                     questMonster.Add(quest.Goal_Index,quest.Index);
+                    UIManager.uimanager.OnQuestEffect(QUESTSTATE.PLAYING);
                     break;
                 }
             case QUESTTYPE.COLLECT:
                 {
                     questItem.Add(quest.Goal_Index,quest.Index);
+                    UIManager.uimanager.OnQuestEffect(QUESTSTATE.PLAYING);
                     break;
                 }
             case QUESTTYPE.ETC:
                 {
-                    ObjectManager.objManager.GetNpc(quest.Goal_Index).EtcQuest(quest.Index);
+                    Npc targetNpc = ObjectManager.objManager.GetNpc(quest.Goal_Index);
+                    targetNpc.EtcQuest(quest.Index);
+                    UIManager.uimanager.OnQuestEffect(QUESTSTATE.PLAYING);
                     break;
                 }
             default:
@@ -67,6 +72,7 @@ public class CharacterQuest
         playingQuest.Add(_index, quest);
         ObjectManager.objManager.UpdateQuestMark(quest.Start_Npc);
         ObjectManager.objManager.UpdateQuestMark(quest.Goal_Npc);
+        
     }
     public void UpdatePlayingQuest(int _index, int _addCount)
     {
@@ -94,7 +100,7 @@ public class CharacterQuest
                     default:
                         break;
                 }
-
+                UIManager.uimanager.OnQuestEffect(QUESTSTATE.COMPLETE);
                 ObjectManager.objManager.UpdateQuestMark(quest.Start_Npc);
                 ObjectManager.objManager.UpdateQuestMark(quest.Goal_Npc);
             }
@@ -161,7 +167,7 @@ public class CharacterQuest
         if (playingQuest.TryGetValue(_index,out popQuest))
         {
             character.inven.gold += popQuest.Reward_Gold;
-            character.stat.EXP += popQuest.Reward_Exp;
+            character.stat.GetExp(popQuest.Reward_Exp);
             character.inven.GetRewards(popQuest.Reward_Item);
 
             switch (popQuest.Type)
@@ -189,8 +195,13 @@ public class CharacterQuest
             else
             {
                 doneQuest.Add(_index, popQuest);
+
+                UIManager.uimanager.OnQuestEffect(QUESTSTATE.DONE);
+                ObjectManager.objManager.UpdateQuestMark(popQuest.Start_Npc);
+                ObjectManager.objManager.UpdateQuestMark(popQuest.Goal_Npc);
             }
             allQuestDic[_index] = QUESTSTATE.DONE;
+
         }
         else
         {

@@ -22,43 +22,54 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        updateUiSlot += OnBaseUi;
+        
     }
-
+    public void UpdateUISlots(ITEMLISTTYPE _type,int index)
+    {
+        if(updateUiSlot == null)
+        {
+            return;
+        }
+        else
+        {
+            updateUiSlot(_type, index);
+        }
+    }
     public void OnBaseUI()
     {
         baseUi.gameObject.SetActive(true);
-        AddkeyboardShorcut();
+        AddkeyboardShortcut();
     }
     public void OffBaseUI()
     {
         baseUi.gameObject.SetActive(false);
-        RemovekeyboardShorcut();
+        RemovekeyboardShortcut();
     }
-    void AddkeyboardShorcut()
+    void AddkeyboardShortcut()
     {
-        GameManager.gameManager.character.keyboardShorcut.Add(KeyCode.I, TryOpenInventory);
-        GameManager.gameManager.character.keyboardShorcut.Add(KeyCode.N, TryOpenMiniMap_n);
-        GameManager.gameManager.character.keyboardShorcut.Add(KeyCode.M, TryOpenMiniMap_M);
-        GameManager.gameManager.character.keyboardShorcut.Add(KeyCode.L, TryOpenQuest);
+        GameManager.gameManager.character.keyboardShortcut.Add(KeyCode.I, TryOpenInventory);        
+        GameManager.gameManager.character.keyboardShortcut.Add(KeyCode.L, TryOpenQuest);
     }
-    void RemovekeyboardShorcut()
+    void RemovekeyboardShortcut()
     {
-        GameManager.gameManager.character.keyboardShorcut.Remove(KeyCode.I);
-        GameManager.gameManager.character.keyboardShorcut.Remove(KeyCode.N);
-        GameManager.gameManager.character.keyboardShorcut.Remove(KeyCode.M);
-        GameManager.gameManager.character.keyboardShorcut.Remove(KeyCode.L);
+        GameManager.gameManager.character.keyboardShortcut.Remove(KeyCode.I);
+        GameManager.gameManager.character.keyboardShortcut.Remove(KeyCode.N);
+        GameManager.gameManager.character.keyboardShortcut.Remove(KeyCode.M);
+        GameManager.gameManager.character.keyboardShortcut.Remove(KeyCode.L);
     }
-    public void OnBaseUi(ITEMLISTTYPE _itemListType, int _Index)
+
+
+    #region QuestEffect
+
+    [SerializeField]
+    AddQuestText_Ui questAddEffect;
+
+    public void OnQuestEffect(QUESTSTATE _state)
     {
-        if (baseUi.gameObject.activeSelf == false)
-        {
-            return;
-        }
+        questAddEffect.gameObject.SetActive(true);
+        questAddEffect.SetQuestEffect(_state);
     }
-    
-    
+    #endregion
 
     #region Middle_Top_HpBar    
     [SerializeField]
@@ -70,11 +81,15 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    #region Middle_Bottom_HpBar        
+    #region Middle_Bottom_Status      
     [SerializeField]
     Bottom_Character_Info bottom_Character_Info;
     public void Update_CharacterInfo_Ui()
     {
+        if(bottom_Character_Info.gameObject.activeSelf == false)
+        {
+            return;
+        }
         bottom_Character_Info.InfoUpdate();
     }
     #endregion
@@ -176,8 +191,8 @@ public class UIManager : MonoBehaviour
     public EndClicItemMove itemoveEnd;
 
     // 각각의 아이템슬롯 업데이트
-    public delegate void UpdateUiSlot(ITEMLISTTYPE _itemListType, int _Index);                      //
-    public UpdateUiSlot updateUiSlot;                                                               // 따로 자료형을 만들어서 제작하면 여러개를 한번에 할수 있을듯
+    public delegate void UpdateUiSlot(ITEMLISTTYPE _itemListType, int _Index);                      
+    public UpdateUiSlot updateUiSlot;                                                               
     
     public void StartDragItem(ItemSlot _itemSlot,ITEMLISTTYPE _startListType, int _startListIndex)
     {
@@ -406,7 +421,7 @@ public class UIManager : MonoBehaviour
     #endregion    
 
     #region MiniMap
-    public MiniMap minimap;
+    public Minimap minimap;
     public GameObject Minimap_n;
     public GameObject Minimap_M;
     #endregion
@@ -436,48 +451,11 @@ public class UIManager : MonoBehaviour
     #endregion
 
     public UiEffectManager uiEffectManager;
-
+    public delegate void OnUiControl(Unit _unit);
+    public OnUiControl uicontrol_On;
+    public OnUiControl uicontrol_Off;
    
-    public void TryOpenMiniMap_M()
-    {
-        minimap.miniMap_M_Max_Min();
-    }
-   
-    public void TryOpenMiniMap_n()
-    {
-        minimap.miniMap_n_Max_Min();
-    }
-   
-   
-
-    //public void OpenShop(Npc _npc) // 상점열기
-    //{
-    //    if (InventoryActive == false)
-    //    {
-    //        TryOpenInventory();            
-    //    }
-            
-    //    Inven.transform.position = shop.gameObject.transform.position + new Vector3(325f, 0, 0);
-
-    //    shop.gameObject.SetActive(true);
-    //    //shop.ShopUpdate(_npc);
-        
-    //}
-    //public void CloseDialog(Npc _npc) // 대화창 닫기
-    //{
-    //    _npc.dialog_Done = false;
-    //    _npc.Dialog_num = 1;
-    //    _npc.NextDialog = -1;
-    //    dialog.ChoiceReset();
-    //    //UIManager.uimanager.DialogControl();
-
-    //    if (shop.gameObject.activeSelf == true)
-    //    {
-    //        shop.gameObject.SetActive(false);
-    //        //TryOpenInventory();
-    //    }
-        
-    //}
+    
     public void TryOpenQuest()
     {
         QuestActive = !QuestActive;

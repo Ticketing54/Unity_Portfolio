@@ -74,11 +74,10 @@ public class Npc :NpcUnit
     {
         
     }
-    public virtual void Start()
+    public override void Start()
     {
-        UIManager.uimanager.uiEffectManager.ActiveNpcUi(this);
-        nav = this.GetComponent<NavMeshAgent>();        
-       
+        base.Start();
+        nav = this.GetComponent<NavMeshAgent>();
     }
     public virtual void Interact()
     {
@@ -87,10 +86,11 @@ public class Npc :NpcUnit
     }
     public virtual void EtcQuest(int _questIndex)
     {
-        
+        Debug.Log("기타 퀘스트");
     }
-    
-    
+
+  
+
 
     //IEnumerator Mini_DotMove()
     //{

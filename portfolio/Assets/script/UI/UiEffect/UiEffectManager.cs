@@ -9,7 +9,7 @@ public class UiEffectManager : MonoBehaviour
     PoolingManager<TextMeshProUGUI> textPool;           // UI Effect 텍스트 풀링
     PoolingManager<Image> imagePool;                    // UI Effect 이미지 풀링 // 이모티콘 때 사용    
 
-    // Samples    
+    #region Samples
     [SerializeField]
     TextMeshProUGUI sampleDamageEffect;                 // 데미지 이펙트   
     [SerializeField]
@@ -18,85 +18,243 @@ public class UiEffectManager : MonoBehaviour
     TextMeshProUGUI sampleLevelup;                      // 레벨업 텍스트
     [SerializeField]
     Image sampleHpBar;                                  // Hpbar
+    #endregion
+    Dictionary<GameObject, Coroutine> runningCo;
+    Dictionary<GameObject, TextMeshProUGUI> runningNickName;
+    Dictionary<GameObject, Image>       runningHpBar;
 
-    LinkedList<TextMeshProUGUI>   activeNicNameList   = new LinkedList<TextMeshProUGUI>();
-    LinkedList<Image>             activeHpBarList     = new LinkedList<Image>();
-    LinkedList<Coroutine>         activeCoList        = new LinkedList<Coroutine>();
+
+
+
+    
     private void Awake()
-    {
-        
-        textPool = new PoolingManager<TextMeshProUGUI>(this.gameObject);
-        imagePool = new PoolingManager<Image>(this.gameObject);
+    {        
+        textPool        = new PoolingManager<TextMeshProUGUI>(this.gameObject);
+        imagePool       = new PoolingManager<Image>(this.gameObject);
+        runningCo       = new Dictionary<GameObject, Coroutine>();
+        runningHpBar    = new Dictionary<GameObject, Image>();
+        runningNickName = new Dictionary<GameObject, TextMeshProUGUI>();
 
         textPool.Add("DamageEffect", sampleDamageEffect);
         textPool.Add("NickName", sampleNicName);
         imagePool.Add("HpBar", sampleHpBar);
         textPool.Add("LevelUp", sampleLevelup);        
-    }    
-
-    public void ActiveMonsterUi(Monster _mob)
-    {        
-        TextMeshProUGUI nickName = textPool.GetData("NickName");
-        nickName.text = _mob.NickName;
-        Image hpBar = imagePool.GetData("HpBar");
-        Coroutine activeCoroutine = StartCoroutine(CoMonsterNicName(_mob, nickName, hpBar));
-
-        hpBar.transform.SetParent(nickName.transform);
-        hpBar.rectTransform.anchoredPosition = new Vector2(0, -45f);
-
-        activeNicNameList.AddLast(nickName);
-        activeHpBarList.AddLast(hpBar);
-        activeCoList.AddLast(activeCoroutine);
     }
 
+    private void Start()
+    {
+        UIManager.uimanager.uicontrol_On += OnUiControl;
+        UIManager.uimanager.uicontrol_Off += OffUiControl;
+
+    }
+
+    void OnUiControl(Unit _unit)
+    {
+        switch (_unit)
+        {
+            case Monster:
+                {
+                    OnMonsterUi((Monster)_unit);
+                    break;
+                }                
+            case Npc:
+                {
+                    OnNpcUi((Npc)_unit);
+                    break;
+                }                
+            default:
+                {
+                    Debug.LogError("알수 없는 형태의 Unit형태입니다.");
+                }
+                break;
+        }
+    }
+    void OffUiControl(Unit _unit)
+    {
+        switch (_unit)
+        {
+            case Monster:
+                {
+                    OffMonsterUi(_unit.gameObject);
+                    break;
+                }                
+            case Npc:
+                {
+                    OffNpcUi(_unit.gameObject);
+                    break;
+                }                
+            default:
+                {
+                    Debug.LogError("알수 없는 형태의 Unit형태입니다.");
+                }
+                break;
+        }
+    }
+    public void MoveToNextScene()
+    {
+        StopAllCoroutines();
+        List<GameObject> runningList_Hp = new List<GameObject>(runningHpBar.Keys);
+        List<GameObject> runningList_Nick = new List<GameObject>(runningNickName.Keys);
+
+        foreach(GameObject hp in runningList_Hp)
+        {
+            RemoveRunningHpBar(hp);
+        }
+        foreach (GameObject hp in runningList_Nick)
+        {
+            RemoveRunningNickName(hp);
+        }
+    }
+    void AddRunningCO(GameObject _parent,Coroutine _co)
+    {
+        if (runningCo.ContainsKey(_parent))
+        {
+            Debug.LogError("이미 있는 코루틴입니다.");
+        }
+        else
+        {
+            runningCo.Add(_parent, _co);
+        }
+    }
+    void RemoveRunningCo(GameObject _parent)
+    {
+        if (runningCo.ContainsKey(_parent))
+        {
+            Coroutine popCo = runningCo[_parent];
+            runningCo.Remove(_parent);
+            StopCoroutine(popCo);
+        }
+        else
+        {
+            Debug.LogError("없는 코루틴을 정지하려 합니다.");
+        }
+    }
+    void AddRunningNickName(GameObject _parent,TextMeshProUGUI _nickName)
+    {
+        if (runningNickName.ContainsKey(_parent))
+        {
+            Debug.LogError("이미 있는 닉네임입니다.");
+        }
+        else
+        {
+            runningNickName.Add(_parent, _nickName);
+        }
+    }
+    void AddRunningHpBar(GameObject _parent,Image _hpbar)
+    {
+        if (runningHpBar.ContainsKey(_parent))
+        {
+            Debug.LogError("이미있는 hpbar 입니다");
+        }
+        else
+        {
+            runningHpBar.Add(_parent, _hpbar);
+        }
+    }
+
+    void RemoveRunningNickName(GameObject _parent)
+    {
+        if (runningNickName.ContainsKey(_parent))
+        {
+            TextMeshProUGUI popNick = runningNickName[_parent];
+            textPool.Add("NickName", popNick);
+            runningNickName.Remove(_parent);
+        }
+        else
+        {
+            Debug.LogError("없는 닉네임을 풀로 되돌리려합니다.");
+        }
+    }
+    void RemoveRunningHpBar(GameObject _parent)
+    {
+        if (runningHpBar.ContainsKey(_parent))
+        {
+            Image popImage = runningHpBar[_parent];
+            imagePool.Add("HpBar", popImage);
+            runningHpBar.Remove(_parent);
+        }
+        else
+        {
+            Debug.LogError("없는 HpBar를 풀로 되돌리려합니다.");
+        }
+    }
+    void OnMonsterUi(Monster _mob)
+    {        
+        TextMeshProUGUI nickName  = textPool.GetData("NickName");
+        Image           hpBar     = imagePool.GetData("HpBar");
+        
+
+        AddRunningHpBar(_mob.gameObject, hpBar);
+        AddRunningNickName(_mob.gameObject, nickName);
+        
+
+        nickName.text = _mob.NickName;        
+        
+        hpBar.transform.SetParent(nickName.transform);
+        hpBar.rectTransform.anchoredPosition = new Vector2(0, -120f);
+
+        Coroutine activeCoroutine = StartCoroutine(CoMonsterNicName(_mob, nickName, hpBar));
+        AddRunningCO(_mob.gameObject, activeCoroutine);
+
+    }
+    void OffMonsterUi(GameObject _parent)
+    {
+        RemoveRunningCo(_parent);
+        RemoveRunningHpBar(_parent);
+        RemoveRunningNickName(_parent);
+    }
     IEnumerator CoMonsterNicName(Monster _mob,TextMeshProUGUI _nickName,Image _hpbar)
     {
         while (true)
         {
-            if (GameManager.gameManager.character != null)
+            if (_mob.MightyEnermy())
             {
-                if (_mob.DISTANCE < 4f || _mob.IsTarget == true)
-                {
-                    _nickName.gameObject.SetActive(true);
-                    _nickName.color = Color.white;
-                    _nickName.rectTransform.anchoredPosition = Camera.main.WorldToScreenPoint(_mob.transform.position + new Vector3(0f, _mob.Nick_YPos, 0f));
-                }
-                else
-                {
-                    _nickName.gameObject.SetActive(false);
-                }
+                _nickName.color = Color.red;
             }
+            else
+            {
+                _nickName.color = Color.white;
+            }           
+            _nickName.rectTransform.anchoredPosition = Camera.main.WorldToScreenPoint(_mob.transform.position + new Vector3(0f, _mob.Nick_YPos, 0f));
+
+
+            if (_mob.HP_CURENT <= 0)
+            {
+                _hpbar.gameObject.SetActive(false);
+            }
+            else
+            {
+                _hpbar.fillAmount = _mob.HP_CURENT / _mob.Hp_Max;
+            }
+            
+
             yield return null;
         }
     }
-    public void ActiveNpcUi(Npc _npc)
+    void OnNpcUi(Npc _npc)
     {
-        TextMeshProUGUI nickName    = textPool.GetData("NickName");        
-        Coroutine activeCoroutine   = StartCoroutine(CoNpcNicName(_npc,nickName));       
+        TextMeshProUGUI nickName    = textPool.GetData("NickName");
 
-        activeNicNameList.AddLast(nickName);        
-        activeCoList.AddLast(activeCoroutine);
+        AddRunningNickName(_npc.gameObject, nickName);
+
+        Coroutine activeCoroutine   = StartCoroutine(CoNpcNicName(_npc,nickName));
+
+        AddRunningCO(_npc.gameObject, activeCoroutine);
+
+        nickName.text = _npc.NickName;
+        nickName.color = Color.green;
+    }
+    void OffNpcUi(GameObject _parent)
+    {
+        RemoveRunningCo(_parent);
+        RemoveRunningNickName(_parent);
     }
     IEnumerator CoNpcNicName(Npc _npc,TextMeshProUGUI _nickName)
     {
-        yield return null;
+        
         while (true)
-        {
-            if (GameManager.gameManager.character != null)
-            {
-                if (_npc.DISTANCE < 4f || _npc.IsTarget == true)
-                {
-                    _nickName.gameObject.SetActive(true);
-                    _nickName.color = Color.white;
-                    _nickName.text = _npc.NickName;
-                    _nickName.rectTransform.anchoredPosition = Camera.main.WorldToScreenPoint(_npc.transform.position + new Vector3(0f, _npc.Nick_YPos, 0f));
-                }
-                else
-                {
-                    _nickName.gameObject.SetActive(false);
-                    
-                }
-            }
+        {            
+            _nickName.rectTransform.anchoredPosition = Camera.main.WorldToScreenPoint(_npc.transform.position + new Vector3(0f, _npc.Nick_YPos, 0f));
             yield return null;
         }
     }
@@ -109,26 +267,26 @@ public class UiEffectManager : MonoBehaviour
         TextMeshProUGUI LevelupText = textPool.GetData("LevelUp");
         StartCoroutine(LevelupMotion(LevelupText, _Target));
     }
-    IEnumerator LevelupMotion(TextMeshProUGUI _LevelUpText, GameObject _Target)
+    IEnumerator LevelupMotion(TextMeshProUGUI _levelUpText, GameObject _Target)
     {
+        Vector3 targetPos = _Target.transform.position;
         float timer = 0f;
-        float Moveto_Y = 0;
-        float Preset_Y = 0;
-        while (timer <= 2f)
-        {
-            Vector3 TargetPos = _Target.transform.position;
-            Moveto_Y += Time.deltaTime;
+        float presetY = targetPos.y+1f;
+        _levelUpText.fontSize = 50;
+        _levelUpText.alpha = 1f;
 
-            Preset_Y = _Target.transform.position.y + 1f;
-            _LevelUpText.transform.position = Camera.main.WorldToScreenPoint(new Vector3(TargetPos.x, Preset_Y += Moveto_Y, TargetPos.z));
-            _LevelUpText.fontSize += Time.deltaTime * 20f;
+        while (timer <= 2f)
+        {   
+            _levelUpText.transform.position = Camera.main.WorldToScreenPoint(new Vector3(targetPos.x, presetY += Time.deltaTime*2f, targetPos.z));
+            _levelUpText.fontSize += Time.deltaTime * 20f;
+            _levelUpText.alpha -= Time.deltaTime * 2f;
             timer += Time.deltaTime;
             yield return null;
         }
 
-        _LevelUpText.fontSize = 50;
+        
 
-        textPool.Add("LevelUp", _LevelUpText);
+        textPool.Add("LevelUp", _levelUpText);
 
         yield break;
     }
@@ -136,35 +294,39 @@ public class UiEffectManager : MonoBehaviour
     #endregion
     #region DamageEffect
 
-    void LoadDamageEffect(float _Damage, GameObject _Target, DAMAGE _DamageState = DAMAGE.NOMAL)
+    public void LoadDamageEffect(float _Damage, GameObject _Target, DAMAGE _DamageState = DAMAGE.NOMAL)
     {
         TextMeshProUGUI DmgEffect = textPool.GetData("DamageEffect");
-        DmgEffect.gameObject.SetActive(true);
+        DmgEffect.gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
+        DmgEffect.fontSize = 100;
         DmgEffect.text = _Damage.ToString();
 
         if (_DamageState == DAMAGE.CRITICAL)
         {
             DmgEffect.color = Color.red;
-            DmgEffect.fontSize = 100;
+            DmgEffect.fontSize = 200;
         }
 
         StartCoroutine(DamageEffecting(DmgEffect, _Target));
     }
 
-    IEnumerator DamageEffecting(TextMeshProUGUI _Text, GameObject _Target)
+    IEnumerator DamageEffecting(TextMeshProUGUI _text, GameObject _target)
     {
         float timer = 0f;
-        Vector3 TargetPos = _Target.transform.position;
-
-        while (timer <= 3f)
+        Vector3 targetPos = _target.transform.position;
+        float preset = targetPos.y + 1f;
+        while (timer <= 1f)
         {
-            _Text.transform.position = Camera.main.WorldToScreenPoint(new Vector3(TargetPos.x, TargetPos.y += Time.deltaTime, TargetPos.z));
+            timer += Time.deltaTime;
+            
+            _text.transform.position = Camera.main.WorldToScreenPoint(new Vector3(targetPos.x, preset += Time.deltaTime*2f, targetPos.z));
+            _text.alpha -= Time.deltaTime*2;
             yield return null;
         }
 
-        TextReset(_Text);
+        TextReset(_text);
 
-        textPool.Add("DamageEffect", _Text);
+        textPool.Add("DamageEffect", _text);
 
         yield break;
     }
@@ -172,8 +334,9 @@ public class UiEffectManager : MonoBehaviour
 
     void TextReset(TextMeshProUGUI _Effect)
     {
-        _Effect.fontSize = 50;
-        _Effect.color = Color.white;        
+        _Effect.fontSize = 100;
+        _Effect.color = Color.white;
+        _Effect.alpha = 1;
     }
     
 }

@@ -11,7 +11,11 @@ public class Unit : MonoBehaviour
     protected bool      usingUi     = false;
     public string NickName { get=> unitName; }
     public float Nick_YPos { get => nick_YPos; }
-    public bool IsTarget { get => isTarget; }    
+    public bool IsTarget { get => isTarget; }
+    public virtual void Start()
+    {
+        StartCoroutine(CoApproachChracter());
+    }
     public float DISTANCE
     {
         get
@@ -40,6 +44,33 @@ public class Unit : MonoBehaviour
             }
         }
     }
-   
+    IEnumerator CoApproachChracter()
+    {
+        yield return null;
+        bool approachChracter = false;
+
+        while (true)
+        {
+            if (GameManager.gameManager.character != null)
+            {
+                if (this.DISTANCE < 4f && approachChracter == false)
+                {
+                    approachChracter = true;
+                    GameManager.gameManager.character.addNearUnit(this);
+
+                }
+
+                if (this.DISTANCE >= 4f && approachChracter == true)
+                {
+                    approachChracter = false;
+                    GameManager.gameManager.character.removeNearUnit(this);
+
+                }
+            }
+            yield return null;
+        }
+    }
+
+
 }
 

@@ -22,10 +22,10 @@ public class StatusUi : MonoBehaviour
 
     private void Update()
     {
-        GetCharacterData();
+        CharacterInfoSetting();
     }
 
-    public void GetCharacterData()
+    public void CharacterInfoSetting()
     {
         
         NickName.text = GameManager.gameManager.character.name;

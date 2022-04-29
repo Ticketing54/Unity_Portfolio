@@ -17,7 +17,7 @@ public class UserDataManager :MonoBehaviour
     }
     public void SaveData(int _num)
     {        
-        PlayerPrefs.SetString(_num.ToString(), GameManager.gameManager.character.GetChracterInfo());
+        
     }
     public string LoadData(int _num)
     {

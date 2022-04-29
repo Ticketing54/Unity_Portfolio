@@ -19,15 +19,32 @@ public class Character : MonoBehaviour
     public List<Collider> weapons;    
     Animator anim;
 
-    public LinkedList<Monster> nearMonster = new LinkedList<Monster>();
+    public HashSet<Unit>        nearUnit;
+    public LinkedList<Monster>  nearMonster; 
+
     NavMeshAgent nav;
 
     public delegate void KeyAction();
-    public Dictionary<KeyCode, KeyAction> keyboardShorcut;
+    public Dictionary<KeyCode, KeyAction> keyboardShortcut;
+
+    public delegate void NearUnit(Unit _unit);
+    public NearUnit addNearUnit;
+    public NearUnit removeNearUnit;
+
+
 
     private void Awake()
     {
-        keyboardShorcut = new Dictionary<KeyCode, KeyAction>();
+        nearUnit = new HashSet<Unit>();
+        nearMonster = new LinkedList<Monster>();
+
+        keyboardShortcut = new Dictionary<KeyCode, KeyAction>();
+
+        addNearUnit    += AddNearMonster;
+        addNearUnit    += AddNearUnit;
+        removeNearUnit += RemoveNearMonster;
+        removeNearUnit += RemoveNearUnit;
+
 
         nav = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
@@ -48,15 +65,14 @@ public class Character : MonoBehaviour
     void Update()
     {
         Click();
-        Inputkeyboard();
+        Inputkeyboard();        
     }
-
 
    public void Inputkeyboard()
     {
         if (Input.anyKey)
         {
-            foreach(KeyValuePair<KeyCode,KeyAction> input in keyboardShorcut)
+            foreach(KeyValuePair<KeyCode,KeyAction> input in keyboardShortcut)
             {
                 if (Input.GetKeyDown(input.Key))
                 {
@@ -65,42 +81,14 @@ public class Character : MonoBehaviour
             }
         }
     }
-
+    
     public void SetPosition(Vector3 _Pos)
     {
         nav.Warp(_Pos);
     }
-    public void AddNearMonster(Monster _mob)
-    {
-        if(_mob is Monster)
-        {
-            nearMonster.AddLast((Monster)_mob);
-        }
-    }
-    public void RemoveNearMonster(Monster _mob)
-    {
-        if(_mob is Monster)
-        {
-            nearMonster.Remove((Monster)_mob);
-        }
-    }
 
-
-    public Monster ClosestMonster()
-    {
-        if (nearMonster.Count == 0)
-        {
-            return null;
-        }            
-        Monster nearMob = nearMonster.First.Value;
-        foreach(Monster one in nearMonster)
-        {
-            if (one.DISTANCE < nearMob.DISTANCE)
-                nearMob = one;
-        }
-        return nearMob;
-    }
     
+
     [Header("스텟")]
     public Status stat;
     [Header("장비")]
@@ -117,7 +105,51 @@ public class Character : MonoBehaviour
 
     public Quest[] quickQuest;
 
-    
+    #region ApproachUnit
+    void AddNearUnit(Unit _unit)
+    {
+        nearUnit.Add(_unit);
+        UIManager.uimanager.uicontrol_On(_unit);
+    }
+
+    void RemoveNearUnit(Unit _unit)
+    {
+        nearUnit.Remove(_unit);
+        UIManager.uimanager.uicontrol_Off(_unit);
+    }
+
+    void AddNearMonster(Unit _mob)
+    {
+        if (_mob is Monster)
+        {
+            nearMonster.AddLast((Monster)_mob);
+        }
+    }
+
+    void RemoveNearMonster(Unit _mob)
+    {
+        if (_mob is Monster)
+        {
+            nearMonster.Remove((Monster)_mob);
+        }
+    }
+
+    public Monster ClosestMonster()
+    {
+        if (nearMonster.Count == 0)
+        {
+            return null;
+        }
+        Monster nearMob = nearMonster.First.Value;
+        foreach (Monster one in nearMonster)
+        {
+            if (one.DISTANCE < nearMob.DISTANCE)
+                nearMob = one;
+        }
+        return nearMob;
+    }
+    #endregion
+
     #region UiControl
 
     bool isUsingUi = false;
@@ -194,8 +226,8 @@ public class Character : MonoBehaviour
             
 
 
-            UIManager.uimanager.updateUiSlot(_StartListType, _StartListIndex);
-            UIManager.uimanager.updateUiSlot(_EndListType, _EndListIndex);
+            UIManager.uimanager.UpdateUISlots(_StartListType, _StartListIndex);
+            UIManager.uimanager.UpdateUISlots(_EndListType, _EndListIndex);
 
                      
         }
@@ -234,31 +266,6 @@ public class Character : MonoBehaviour
         }        
     }  
     #endregion
-
-    public string GetChracterInfo()
-    {
-        //string Data = string.Empty;
-        //Data += Character.Player.stat.NAME + ",";
-        //Data += GameManager.gameManager.MapName + ",";
-        //Data += Character.Player.transform.position.x + ",";
-        //Data += Character.Player.transform.position.y + ",";
-        //Data += Character.Player.transform.position.z + ",";
-        //Data += Character.Player.stat.LEVEL + ",";
-        //Data += Character.Player.stat.HP + ",";
-        //Data += Character.Player.stat.MP + ",";
-        //Data += Character.Player.stat.EXP + ",";
-        //Data += Character.Player.stat.SkillPoint + ",";
-
-
-        //string invenInfo = inven.InvenInfo();
-        //string equipInfo = equip.EqipInfo();
-        //string quickInfo = quickSlot.QuickItemInfo();
-        //Data += invenInfo+"\n";
-        //Data += equipInfo+"\n";
-        //Data += quickInfo+"\n";
-
-        return null;
-    }
 
     public bool isCantMove = false;              
     public bool OpenLootingbox = false; // 루팅박스 
@@ -427,7 +434,7 @@ public class Character : MonoBehaviour
         {
             if (weapons[_num].bounds.Intersects(one.hitBox.bounds))
             {
-                one.Damaged(5f);       
+                one.Damaged(stat.DamageType(), stat.AttackDamage);
             }
         }
        
@@ -463,7 +470,7 @@ public class Character : MonoBehaviour
             {
                 _mob.StatusEffect(STATUSEFFECT.KNOCKBACK, 2f);
                 _mob.StatusEffect(STATUSEFFECT.STURN, 2f);
-                _mob.Damaged(5f);
+                _mob.Damaged(stat.DamageType(), stat.AttackDamage);
             }
         }
     }

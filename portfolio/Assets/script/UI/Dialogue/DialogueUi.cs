@@ -32,9 +32,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
     [SerializeField]
     TextMeshProUGUI reward_Gold;    
     [SerializeField]
-    TextMeshProUGUI rewards_Item;
-    [SerializeField]
-    AddQuestText_Ui addQuestEffect;     // 퀘스트를 수락하셨습니다. << 메세지
+    TextMeshProUGUI rewards_Item;    
 
     List<int> items;
     List<int> questList;
@@ -50,8 +48,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
     }
 
     private void OnDisable()
-    {        
-        addQuestEffect.gameObject.SetActive(false);             // 퀘스트 등록 이벤트 
+    {   
         ChoiceReset();
         npc_DialogData = null;
         questList = null;
@@ -275,7 +272,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
             return;
         }
         
-        List<string> dialogData = npc_DialogData[_dialog_Index-1];
+        List<string> dialogData = npc_DialogData[_dialog_Index];
         StartCoroutine(CoDialog_Texting(dialogData)); // 대화 입력
     }
 
@@ -291,17 +288,13 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
         if (!string.IsNullOrEmpty(questStartIndex))                                                                       // 퀘스트
         {
-            GameManager.gameManager.character.quest.AddQuest(int.Parse(questStartIndex));            
-            addQuestEffect.gameObject.SetActive(true);
-            addQuestEffect.SetQuestEffect(true);
+            GameManager.gameManager.character.quest.AddQuest(int.Parse(questStartIndex));
         }
 
         if (!string.IsNullOrEmpty(questEndIndex))                                                                       // 퀘스트
         {
             GameManager.gameManager.character.quest.QuestComplete(int.Parse(questEndIndex));
-            npcReward = true;
-            addQuestEffect.gameObject.SetActive(true);
-            addQuestEffect.SetQuestEffect(false);
+            npcReward = true;            
         }
 
 

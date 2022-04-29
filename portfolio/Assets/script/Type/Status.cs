@@ -17,8 +17,61 @@ public class Status
     public int LEVEL { get { return level; } }    
     public int CRI { get; set; }
     public float ATK_RANGE { get { return attack_Range; } set{ attack_Range = value; } }
-    public float HP { get { return cur_Hp; } set { cur_Hp = value; } }
-    public float MP { get { return cur_Mp; } set { cur_Mp = value; } }
+
+    public DAMAGE DamageType()
+    {
+        int count = CRI;
+
+        int probabillity = Random.Range(count, 101);
+
+        if(probabillity <= count)
+        {
+            return DAMAGE.CRITICAL;
+        }
+        else
+        {
+            return DAMAGE.NOMAL;
+        }
+    }
+    public float HP
+    {
+        get=> cur_Hp;
+        set
+        {
+            if(value <= 0)
+            {
+                cur_Hp = 0;
+            }
+            else if(value >= MAXHP)
+            {
+                cur_Hp = MAXHP;
+            }
+            else
+            {
+                cur_Hp = value;
+            }
+        }
+    }
+    public float MP
+    {
+        get => cur_Mp;
+        set
+        {
+            if(cur_Mp <= 0)
+            {
+                cur_Mp = 0;
+            }
+            else if (cur_Mp>= MAXMP)
+            {
+                cur_Mp = MAXMP;
+            }
+            else
+            {
+                cur_Mp = value;
+            }
+        }
+    }
+
     public float MAXHP
     {
         get
@@ -27,7 +80,7 @@ public class Status
         }
         set
         {
-            equip_Hp = value;
+            hp = value;
         }
     }
     public float MAXMP
@@ -38,14 +91,15 @@ public class Status
         }
         set
         {
-            equip_Mp = value;
+            mp = value;
         }
     }
     public float AttackDamage
     {
         get
-        {
-            return atk + equip_Atk;
+        {            
+            float attackdamage = atk + equip_Atk;            
+            return (int)Random.Range((float)(attackdamage * 0.8), (float)(attackdamage * 1.2));
         }
         set
         {
@@ -53,30 +107,36 @@ public class Status
         }
     }
     public int MAXEXP { get { return Need_Exp; } }
-    public int EXP { get { return cur_Exp; } set { cur_Exp = value; } }                 // LevelUp 구현\
+    public int EXP { get { return cur_Exp; } set { cur_Exp = value; } }            
    
-    //public float returnAtk()
-    //{
-    //    float tmp = Atk + Equip_Atk;
-    //    if (tmp == 1)
-    //        return 1;
-
-    //    float critical;
-    //    critical = Random.Range(0, 101);
-    //    if (critical <= CRI)
-    //    {
-    //        return (int)(Random.Range((float)(tmp * 0.8), (float)(tmp * 1.2)) * 2);
-    //    }
-    //    else
-    //    {
-    //        return (int)Random.Range((float)(tmp * 0.8), (float)(tmp * 1.2) * 2);
-    //    }
-    //}
+  
+    public void Damaged(DAMAGE _type, float _dmg)
+    {
+        switch (_type)
+        {
+            case DAMAGE.NOMAL:
+                {
+                    HP -= _dmg;
+                }
+                break;
+            case DAMAGE.CRITICAL:
+                {
+                    HP -= _dmg * 2;
+                }
+                break;
+        }        
+        UIManager.uimanager.uiEffectManager.LoadDamageEffect(_dmg, character.gameObject, _type);
+        UIManager.uimanager.Update_CharacterInfo_Ui();
+    }
     public void GetExp(int Exp)
     {
         cur_Exp += Exp;
-        if (cur_Exp >= Need_Exp)
+        
+        while(cur_Exp >= Need_Exp)
+        {
             LevelUp();
+        }
+            
     }
     public void LevelUp()
     {
@@ -84,7 +144,8 @@ public class Status
         level++;
         SkillPoint++;
         LevelSetting(level);
-        // 레벨업 모션 
+        UIManager.uimanager.Update_CharacterInfo_Ui();
+        UIManager.uimanager.uiEffectManager.LevelUpEffect(character.gameObject);
     }
     public void LevelSetting(int _Level)
     {        
@@ -96,6 +157,7 @@ public class Status
         Need_Exp = int.Parse(Table[3]);        
         cur_Hp = hp;
         cur_Mp = mp;
+        
     }  
     public void EquipStatus(Item _item)
     {
@@ -116,6 +178,7 @@ public class Status
             default:
                 break;
         }
+        // Ui 세팅
     }
     public void TakeOffStatus(Item _item)
     {
@@ -135,6 +198,7 @@ public class Status
             default:
                 break;
         }
+        // Ui 세팅
     }
 
 
@@ -237,7 +301,7 @@ public class Status
                 HP = MAXHP;
             }
 
-            //update Ui Hp;
+            UIManager.uimanager.Update_CharacterInfo_Ui();
             yield return null;
         }
         
@@ -260,7 +324,7 @@ public class Status
                 MP = MAXMP;
             }
 
-            //update Ui Hp;
+            UIManager.uimanager.Update_CharacterInfo_Ui();
             yield return null;
         }
         usingPotion_Mp = false;

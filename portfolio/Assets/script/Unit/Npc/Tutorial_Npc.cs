@@ -27,12 +27,12 @@ public class Tutorial_Npc : Npc
     }   
     IEnumerator CoTutorial_Recovery()
     {
-        GameManager.gameManager.character.Damaged(50f);
+        GameManager.gameManager.character.stat.Damaged(DAMAGE.CRITICAL,10);
         while (true)
         {
             if(GameManager.gameManager.character.stat.MAXHP == GameManager.gameManager.character.stat.HP)
             {
-                GameManager.gameManager.character.quest.QuestComplete(3);
+                GameManager.gameManager.character.quest.UpdatePlayingQuest(3, 1);
                 break;
             }
             yield return null;

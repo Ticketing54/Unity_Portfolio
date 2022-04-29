@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public Monster mob = null;
     public Npc npc = null;
     public Potal potal = null;
-    public string Character_Name = string.Empty;
+    
 
     List<Monster> mob_list = new List<Monster>();
 
@@ -68,7 +68,8 @@ public class GameManager : MonoBehaviour
             character = null;
         }
         character = Instantiate(ResourceManager.resource.character).AddComponent<Character>();
-        character.transform.SetParent(this.transform);        
+        character.transform.SetParent(this.transform);
+        character.gameObject.layer = 8;
         New_C_Data(_nickName);
         UIManager.uimanager.OnBaseUI();
         LoadingSceneController.Instance.LoadScene("Village");        
@@ -78,12 +79,9 @@ public class GameManager : MonoBehaviour
     {
 
         character.stat.LevelSetting(5);
-        character.tag = "Player";
-        character.gameObject.layer = 8;        
-        character.name = _nickName;        
-        Character_Name = string.Empty;
-        MapName = "Village";        
-        character.inven = new Inventory();
+        character.tag = "Player";         
+        character.name = _nickName;                
+        MapName = "Village";                
         character.inven.gold = 5000;
 
 

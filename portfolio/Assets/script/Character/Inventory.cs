@@ -66,7 +66,7 @@ public class Inventory : ItemMove
             {
                 inven[slotNum] = _NewItem;
 
-                UIManager.uimanager.updateUiSlot(ITEMLISTTYPE.INVEN, slotNum);               
+                UIManager.uimanager.UpdateUISlots(ITEMLISTTYPE.INVEN, slotNum);               
 
                 return true;
             }

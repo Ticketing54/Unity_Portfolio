@@ -20,6 +20,11 @@ public class Bottom_Character_Info : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI Lev;                // Lev_Text
 
+    private void OnEnable()
+    {
+        InfoUpdate();
+    }
+
 
     public void InfoUpdate()
     {

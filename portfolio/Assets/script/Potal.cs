@@ -24,42 +24,7 @@ public class Potal : MonoBehaviour
                 
         }
     }
-    private void Start()
-    {
-        StartCoroutine(Mini_Dot_MMove());
-    }
-
-
-    IEnumerator Mini_Dot_MMove()
-    {
-        while (true)
-        {
-            if (UIManager.uimanager.minimap.MiniMap_MActive == true && GameManager.gameManager.character != null)
-            {
-                if (MiniMap_Dot_M == null)
-                {
-                    //MiniMap_Dot_M = ObjectPoolManager.objManager.PoolingMiniDot_M();
-                    MiniMap_Dot_M.sprite = ResourceManager.resource.GetImage("Dot_P");
-                }
-                else
-                {
-                    MiniMap_Dot_M.rectTransform.anchoredPosition = UIManager.uimanager.minimap.MoveDotPosition(transform.position, 700);
-                }
-
-            }
-            else
-            {
-                if (MiniMap_Dot_M != null)
-                {
-                    MiniMap_Dot_M.gameObject.SetActive(false);
-                    MiniMap_Dot_M = null;
-                }
-
-            }
-
-            yield return null;
-        }
-    }
+   
 
 
 

@@ -11,24 +11,13 @@ public abstract class Monster : BattleUnit
     public Collider hitBox;
     bool isstrun = false;
     protected int index = -1;
-    public virtual void Start()
+    public override void Start()
     {
-        UIManager.uimanager.uiEffectManager.ActiveMonsterUi(this);
+        base.Start();
         nav = GetComponent<NavMeshAgent>();
-        hitBox = GetComponent<Collider>();
-        StartCoroutine(CoApproachChracter());
+        hitBox = GetComponent<Collider>();        
     }
 
-    private void OnEnable()
-    {
-        
-    }
-    private void OnDisable()
-    {
-               
-
-    }
-   
     public void SetMonster(int _index,string _mobName, int _lev, float _hpMax,float _atk, int _gold, int _exp, float _nickYPos,string _sound,List<int[]>_items = null)
     {
         index = _index;
@@ -43,9 +32,25 @@ public abstract class Monster : BattleUnit
         sound = _sound;
         items = _items;
     }   
-    public virtual void Damaged(float _dmg)
-    {        
-        this.hp_Cur -= _dmg;        
+    public virtual void Damaged(DAMAGE _type, float _dmg)
+    {
+        float finalyDmg = 0;
+        switch (_type)
+        {
+            case DAMAGE.NOMAL:
+                {
+                    finalyDmg = _dmg;
+                    this.hp_Cur -= finalyDmg;
+                }                
+                break;
+            case DAMAGE.CRITICAL:
+                {
+                    finalyDmg = _dmg * 2;
+                    this.hp_Cur -= finalyDmg;
+                }
+                break;
+        }
+        UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
     }
     public void StatusEffect(STATUSEFFECT _state, float _duration)
     {
@@ -94,33 +99,10 @@ public abstract class Monster : BattleUnit
             nav.velocity = -transform.forward * 8;
             yield return null;
         }
+
+
     }
-    IEnumerator CoApproachChracter()
-    {
-        yield return null;
-        bool approachChracter = false;
-        
-        while (true)
-        {
-            if(GameManager.gameManager.character != null)
-            {
-                if (this.DISTANCE < 4f && approachChracter == false)
-                {
-                    approachChracter = true;
-                    GameManager.gameManager.character.AddNearMonster(this);
-                }
-
-                if(this.DISTANCE >= 4f && approachChracter == true)
-                {
-                    approachChracter = false;
-                    GameManager.gameManager.character.RemoveNearMonster(this);
-                }
-            }
-            yield return null;
-        }
-    }
-
-
+   
    
     //public NavMeshAgent nav;
     //public Animator anim;

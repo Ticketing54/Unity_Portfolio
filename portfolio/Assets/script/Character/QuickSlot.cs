@@ -22,14 +22,14 @@ public class QuickSlot :ItemMove
     {
         character = _character;
         
-        character.keyboardShorcut.Add(KeyCode.Q, SkillSlot_Q);
-        character.keyboardShorcut.Add(KeyCode.W, SkillSlot_W);
-        character.keyboardShorcut.Add(KeyCode.E, SkillSlot_E);
-        character.keyboardShorcut.Add(KeyCode.R, SkillSlot_R);
-        character.keyboardShorcut.Add(KeyCode.Alpha1, ItemSlot_First);
-        character.keyboardShorcut.Add(KeyCode.Alpha2, ItemSlot_Second);
-        character.keyboardShorcut.Add(KeyCode.Alpha3, ItemSlot_Third);
-        character.keyboardShorcut.Add(KeyCode.Alpha4, ItemSlot_Fourth);
+        character.keyboardShortcut.Add(KeyCode.Q, SkillSlot_Q);
+        character.keyboardShortcut.Add(KeyCode.W, SkillSlot_W);
+        character.keyboardShortcut.Add(KeyCode.E, SkillSlot_E);
+        character.keyboardShortcut.Add(KeyCode.R, SkillSlot_R);
+        character.keyboardShortcut.Add(KeyCode.Alpha1, ItemSlot_First);
+        character.keyboardShortcut.Add(KeyCode.Alpha2, ItemSlot_Second);
+        character.keyboardShortcut.Add(KeyCode.Alpha3, ItemSlot_Third);
+        character.keyboardShortcut.Add(KeyCode.Alpha4, ItemSlot_Fourth);
 
         itemSlots = new Dictionary<int, List<Item>>()
         {
@@ -247,7 +247,7 @@ public class QuickSlot :ItemMove
         List<Item> quickItem = itemSlots[ITEMSLOTNUM];
         quickItem[_slotNum] = _NewItem;
         quickItem = null;
-        UIManager.uimanager.updateUiSlot(ITEMLISTTYPE.QUICK, _slotNum);
+        UIManager.uimanager.UpdateUISlots(ITEMLISTTYPE.QUICK, _slotNum);
 
     }
     public bool IsEmpty_Item(int _Num)

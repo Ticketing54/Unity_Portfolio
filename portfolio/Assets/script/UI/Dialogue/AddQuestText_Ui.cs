@@ -19,15 +19,25 @@ public class AddQuestText_Ui : MonoBehaviour
         timer = 0f;
         isActive = false;
     }
-    public void SetQuestEffect(bool _isAdd)
-    {        
-        if (_isAdd == true)
+    public void SetQuestEffect(QUESTSTATE _state)
+    {
+        switch (_state)
         {
-            text.text = "퀘스트를 수락 하셨습니다.";
-        }
-        else
-        {
-            text.text = "퀘스트를 완료 하셨습니다.";
+            case QUESTSTATE.PLAYING:
+                {
+                    text.text = "퀘스트를 수락 하셨습니다.";
+                    break;
+                }
+            case QUESTSTATE.COMPLETE:
+                {
+                    text.text = "퀘스트 완료 Npc를 찾아가세요!";
+                    break;
+                }
+            case QUESTSTATE.DONE:
+                {
+                    text.text = "퀘스트를 완료 하셨습니다.";
+                    break;
+                }
         }
     }
     private void Update()
