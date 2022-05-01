@@ -1,23 +1,3 @@
-<<<<<<< HEAD
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class MiniMap : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-=======
-ï»¿
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,8 +5,8 @@ using UnityEngine.UI;
 
 
 public class Minimap : MonoBehaviour
-{    
-    
+{
+
     [SerializeField]
     Minimap_Maximum miniMax;
     [SerializeField]
@@ -39,7 +19,7 @@ public class Minimap : MonoBehaviour
     [SerializeField]
     Image miniMinButton;
 
-    //ë¯¸ë‹ˆë§µë“¤ ìƒíƒœê´€ë¦¬    
+    //¹Ì´Ï¸Êµé »óÅÂ°ü¸®    
     bool miniMax_Active = false;
     bool miniMin_Active = false;
 
@@ -69,7 +49,7 @@ public class Minimap : MonoBehaviour
 
     void TryOpenMinimap_Maximum()
     {
-        if(miniMaxFade != null)
+        if (miniMaxFade != null)
         {
             StopCoroutine(miniMaxFade);
             miniMaxFade = null;
@@ -134,6 +114,4 @@ public class Minimap : MonoBehaviour
     }
 
     #endregion
-
->>>>>>> parent of 3ab9c3a (00)
 }

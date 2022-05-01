@@ -40,9 +40,8 @@ public class Character : MonoBehaviour
 
         keyboardShortcut = new Dictionary<KeyCode, KeyAction>();
 
-        addNearUnit    += AddNearMonster;
-        addNearUnit    += AddNearUnit;
-        removeNearUnit += RemoveNearMonster;
+        
+        addNearUnit    += AddNearUnit;        
         removeNearUnit += RemoveNearUnit;
 
 
@@ -108,32 +107,26 @@ public class Character : MonoBehaviour
     #region ApproachUnit
     void AddNearUnit(Unit _unit)
     {
+        if (_unit is Monster == true)
+        {
+            nearMonster.AddLast((Monster)_unit);
+        }
+
         nearUnit.Add(_unit);
         UIManager.uimanager.uicontrol_On(_unit);
     }
 
     void RemoveNearUnit(Unit _unit)
     {
+        if (_unit is Monster == true)
+        {
+            nearMonster.Remove((Monster)_unit);
+        }
+
         nearUnit.Remove(_unit);
         UIManager.uimanager.uicontrol_Off(_unit);
     }
-
-    void AddNearMonster(Unit _mob)
-    {
-        if (_mob is Monster)
-        {
-            nearMonster.AddLast((Monster)_mob);
-        }
-    }
-
-    void RemoveNearMonster(Unit _mob)
-    {
-        if (_mob is Monster)
-        {
-            nearMonster.Remove((Monster)_mob);
-        }
-    }
-
+   
     public Monster ClosestMonster()
     {
         if (nearMonster.Count == 0)
@@ -452,7 +445,7 @@ public class Character : MonoBehaviour
     }
     void HitBoxSetting()
     {
-        List<Collider> weaponList = new List<Collider>();
+        List<Collider> weaponList = new ();
         GameObject[] obj = GameObject.FindGameObjectsWithTag("Weapon");
         for (int i = 0; i < obj.Length; i++)
         {

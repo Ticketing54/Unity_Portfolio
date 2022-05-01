@@ -37,12 +37,12 @@ public class UIManager : MonoBehaviour
     }
     public void OnBaseUI()
     {
-        baseUi.gameObject.SetActive(true);
+        baseUi.SetActive(true);
         AddkeyboardShortcut();
     }
     public void OffBaseUI()
     {
-        baseUi.gameObject.SetActive(false);
+        baseUi.SetActive(false);
         RemovekeyboardShortcut();
     }
     void AddkeyboardShortcut()
@@ -332,13 +332,13 @@ public class UIManager : MonoBehaviour
     }
     void SetDialog()
     {
-        baseUi.gameObject.SetActive(false);
+        baseUi.SetActive(false);
         dialog.gameObject.SetActive(true);
         dialog.StartDialogue(npc);        
     }
     void QuitDialog()
     {        
-        baseUi.gameObject.SetActive(true);
+        baseUi.SetActive(true);
         dialog.gameObject.SetActive(false);
     }
     public void CloseDialog()
@@ -415,17 +415,10 @@ public class UIManager : MonoBehaviour
     #region Skill
     //스킬
     public SkillManager skillmanager;
-    public GameObject skill;
-     bool SkillActive = false;
+    public GameObject skill;     
     public bool QuestActive = false;
     #endregion    
-
-    #region MiniMap
-    public Minimap minimap;
-    public GameObject Minimap_n;
-    public GameObject Minimap_M;
-    #endregion
-
+   
     #region BuffUi
     [SerializeField]
     UI_Buff uibuff;

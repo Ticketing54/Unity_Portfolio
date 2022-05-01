@@ -15,10 +15,9 @@ public class GameManager : MonoBehaviour
     public Character character = null;
     public Monster mob = null;
     public Npc npc = null;
-    public Potal potal = null;
-    
+    public Potal potal = null;    
 
-    List<Monster> mob_list = new List<Monster>();
+    
 
     public bool sceneSetting = false;
 
@@ -87,12 +86,12 @@ public class GameManager : MonoBehaviour
 
         // Test
        
-        Item test1 = new Item(1,1);
-        Item test2 = new Item(1,3);
-        Item test3 = new Item(1,2);
-        Item test4 = new Item(2,1);
-        Item test5 = new Item(2,2);
-        Item test6 = new Item(3,1);
+        Item test1 = new (1,1);
+        Item test2 = new (1,3);
+        Item test3 = new (1,2);
+        Item test4 = new (2,1);
+        Item test5 = new (2,2);
+        Item test6 = new (3,1);
         character.inven.PushItem(test1);
         character.inven.PushItem(test2);
         character.inven.PushItem(test3);

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -15072,7 +15072,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8474249799753430527}
-  - component: {fileID: 8474249799753430528}
   m_Layer: 13
   m_Name: MiniMap
   m_TagString: Untagged
@@ -50918,9 +50917,6 @@ MonoBehaviour:
   skillmanager: {fileID: 0}
   skill: {fileID: 0}
   QuestActive: 0
-  minimap: {fileID: 0}
-  Minimap_n: {fileID: 0}
-  Minimap_M: {fileID: 0}
   uibuff: {fileID: 0}
   option: {fileID: 0}
   uiEffectManager: {fileID: 6102058873636419212}
@@ -57754,22 +57750,6 @@ Transform:
   m_Father: {fileID: 3493460693187958786}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8474249799753430528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1113678603404960675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 539ffda7d6f78ce41987f18f74ccc543, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  miniMax: {fileID: 1866582906}
-  miniMax_CG: {fileID: 1866582905}
-  miniMin: {fileID: 6869083167819491469}
-  miniMinButton: {fileID: 9011467620778585184}
 --- !u!222 &8474733925427825778
 CanvasRenderer:
   m_ObjectHideFlags: 0
