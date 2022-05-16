@@ -8,7 +8,7 @@ public class UiEffectManager : MonoBehaviour
     
     PoolingManager<TextMeshProUGUI> textPool;           // UI Effect 텍스트 풀링
     PoolingManager<Image> imagePool;                    // UI Effect 이미지 풀링 // 이모티콘 때 사용    
-
+    PoolData<MiniDialogue> miniDailog;
     #region Samples
     [SerializeField]
     TextMeshProUGUI sampleDamageEffect;                 // 데미지 이펙트   
@@ -17,11 +17,16 @@ public class UiEffectManager : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI sampleLevelup;                      // 레벨업 텍스트
     [SerializeField]
-    Image sampleHpBar;                                  // Hpbar
+    Image           sampleHpBar;                        // Hpbar    
+    [SerializeField]
+    MiniDialogue    sampleDialogText;                   // 텍스트
     #endregion
-    Dictionary<GameObject, Coroutine> runningCo;
+    Dictionary<GameObject, Coroutine>       runningCo;
     Dictionary<GameObject, TextMeshProUGUI> runningNickName;
-    Dictionary<GameObject, Image>       runningHpBar;
+    Dictionary<GameObject, Image>           runningHpBar;
+
+    Dictionary<Unit, MiniDialogue> runningMiniDialog;    
+    
 
 
 
@@ -29,23 +34,43 @@ public class UiEffectManager : MonoBehaviour
     
     private void Awake()
     {        
-        textPool        = new PoolingManager<TextMeshProUGUI>(this.gameObject);
-        imagePool       = new PoolingManager<Image>(this.gameObject);
-        runningCo       = new Dictionary<GameObject, Coroutine>();
-        runningHpBar    = new Dictionary<GameObject, Image>();
-        runningNickName = new Dictionary<GameObject, TextMeshProUGUI>();
+        textPool            = new PoolingManager<TextMeshProUGUI>(this.gameObject);
+        imagePool           = new PoolingManager<Image>(this.gameObject);
+        runningCo           = new Dictionary<GameObject, Coroutine>();
+        runningHpBar        = new Dictionary<GameObject, Image>();
+        runningNickName     = new Dictionary<GameObject, TextMeshProUGUI>();
+        runningMiniDialog   = new Dictionary<Unit, MiniDialogue>();        
+        miniDailog          = new PoolData<MiniDialogue>(sampleDialogText, this.gameObject, "MiniDialog");
 
         textPool.Add("DamageEffect", sampleDamageEffect);
         textPool.Add("NickName", sampleNicName);
         imagePool.Add("HpBar", sampleHpBar);
-        textPool.Add("LevelUp", sampleLevelup);        
+        textPool.Add("LevelUp", sampleLevelup);                
     }
 
+    
+
+    public void TextingMiniDialog(string _text, Unit _target)
+    {
+        MiniDialogue dialog = miniDailog.GetData();
+        dialog.transform.SetParent(this.gameObject.transform);
+        dialog.transform.position = Camera.main.WorldToScreenPoint(_target.transform.position + new Vector3(0f, 3f, 0f));
+        runningMiniDialog.Add(_target, dialog);
+        _target.UsingDialog = true;
+        StartCoroutine(CoDialogControl(dialog, _text,_target));       
+    }
+
+    IEnumerator CoDialogControl(MiniDialogue _dialog,string _text,Unit _target)
+    {
+        yield return StartCoroutine(_dialog.CoTextingDialog(_text));
+        RemoveRunningDialog(_target);
+        _target.UsingDialog = false;        
+        
+    }
     private void Start()
     {
         UIManager.uimanager.uicontrol_On += OnUiControl;
         UIManager.uimanager.uicontrol_Off += OffUiControl;
-
     }
 
     void OnUiControl(Unit _unit)
@@ -95,14 +120,18 @@ public class UiEffectManager : MonoBehaviour
         StopAllCoroutines();
         List<GameObject> runningList_Hp = new List<GameObject>(runningHpBar.Keys);
         List<GameObject> runningList_Nick = new List<GameObject>(runningNickName.Keys);
-
+        List<Unit> runningList_Dialog = new List<Unit>(runningMiniDialog.Keys);
         foreach(GameObject hp in runningList_Hp)
         {
             RemoveRunningHpBar(hp);
         }
-        foreach (GameObject hp in runningList_Nick)
+        foreach (GameObject nic in runningList_Nick)
         {
-            RemoveRunningNickName(hp);
+            RemoveRunningNickName(nic);
+        }
+        foreach (Unit dg in runningList_Dialog)
+        {
+            RemoveRunningDialog(dg);
         }
     }
     void AddRunningCO(GameObject _parent,Coroutine _co)
@@ -159,6 +188,19 @@ public class UiEffectManager : MonoBehaviour
             TextMeshProUGUI popNick = runningNickName[_parent];
             textPool.Add("NickName", popNick);
             runningNickName.Remove(_parent);
+        }
+        else
+        {
+            Debug.LogError("없는 닉네임을 풀로 되돌리려합니다.");
+        }
+    }
+    void RemoveRunningDialog(Unit _parent)
+    {
+        if (runningMiniDialog.ContainsKey(_parent))
+        {
+            MiniDialogue popDialog = runningMiniDialog[_parent];
+            miniDailog.Add(popDialog);
+            runningMiniDialog.Remove(_parent);
         }
         else
         {

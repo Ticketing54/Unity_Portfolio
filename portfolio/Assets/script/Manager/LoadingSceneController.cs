@@ -32,6 +32,11 @@ public class LoadingSceneController : MonoBehaviour
             return instance;
         }
     }
+
+
+    SceneInstance prevScene;
+
+
     private void Awake()
     {
         if(Instance != this)
@@ -59,60 +64,50 @@ public class LoadingSceneController : MonoBehaviour
     Image progressBar;
 
     private string loadSceneName;    
-    string loadScenenName = string.Empty;
-    SceneInstance prevScene;
-    public bool resourceSetting = false;
-        
-
+    
+    
+    
+    float loadingPercent = 0f;
+    Coroutine coUpdatePercent;
+    
     public void LoadScene(string sceneName)
     {        
         gameObject.SetActive(true);
         loadSceneName = sceneName;
         Fade(true);
-        
-        
-        StartCoroutine(LoadSceneProcess());        
-        Addressables.LoadSceneAsync(loadSceneName+ "Scene").Completed += OnSceneLoaded;       
-
+        AsyncOperationHandle<SceneInstance> Op = Addressables.LoadSceneAsync(loadSceneName + "Scene");        
+        Op.Completed += OnSceneLoaded;
     }
-    private void OnSceneLoaded(AsyncOperationHandle<SceneInstance> obj)
-    {
-
-        if(obj.Status == AsyncOperationStatus.Succeeded)
-        {
-            Addressables.LoadSceneAsync(loadSceneName + "Scene").Completed -= OnSceneLoaded;
-            prevScene = obj.Result;
-            ResourceManager.resource.LoadSceneResource(loadSceneName + "Table");
-        }
-        else
-        {
-            Debug.Log("씬 로드 실패");
-        }        
+    
+    void OnSceneLoaded (AsyncOperationHandle<SceneInstance> _handle)
+    {   
+        ResourceManager.resource.LoadSceneResource(loadSceneName);
     }
 
-    private IEnumerator LoadSceneProcess()
+    public void LoadingPercent(float _percent)
     {
-        progressBar.fillAmount = 0f;
-        while (true)
+        if(coUpdatePercent != null)
         {
-            if (progressBar.fillAmount < 0.9f)
-            {
-                progressBar.fillAmount += Time.deltaTime*0.5f;
-            }
-            else
-            {
-                if(resourceSetting == true)
-                {
-                    CameraManager.cameraManager.CameraTargetOnCharacter();                    
-                    progressBar.fillAmount = 1;
-                    resourceSetting=false;
-                    break;
-                }
+            StopCoroutine(coUpdatePercent);
+        }       
 
-            }
-            
+        coUpdatePercent = StartCoroutine(LoadSceneProcess(_percent));
+    }
+
+    private IEnumerator LoadSceneProcess(float _Percent)
+    {
+        float Timer = 0f;
+        while (progressBar.fillAmount < 1)
+        {
+
+            Timer += Time.deltaTime;
+            loadingPercent = Mathf.Lerp(loadingPercent, _Percent, Timer);
+
+            progressBar.fillAmount = loadingPercent;           
+
             yield return null;
         }        
+        
         StartCoroutine(Fade(false));
     }
 

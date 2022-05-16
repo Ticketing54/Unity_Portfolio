@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Village
+  m_EditorClassIdentifier: 
+  m_GroupName: Village
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 05af1c53ded05f843b8fc07d272d1485
+  m_SerializeEntries:
+  - m_GUID: 96e13d94e478b52408df20bbb12375bc
+    m_Address: Village_Potal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Patch
+    - Table
+  - m_GUID: bb9b5365d385bb944b34eb10eeea4923
+    m_Address: Village_Monster
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: e9c59e5725b180f439c7b9c2b7312afd
+    m_Address: Village_Npc
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: ba594c8d318602c45ac81420b0c3a8f5
+    m_Address: Village_WayPoint
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 6defd24f3161a494192e121d10f7c432, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 5d525521d356dc74dadff8f12d3e32bc, type: 2}
+    - {fileID: 11400000, guid: cf45617def193b74cafa28b21814e672, type: 2}

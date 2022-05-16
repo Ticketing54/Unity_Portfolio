@@ -5,53 +5,25 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Potal : MonoBehaviour
-{
-    float dis;
-    bool isWarp = false;
-    public string MapName;
-    public Vector3 Pos;
+{   
+    public string mapName { get; set; }
+    public Vector3 pos { get; set; }
 
 
     public Image MiniMap_Dot_M;
-    float DISTANCE
+    public float DISTANCE
     {
         get
         {
             if(GameManager.gameManager.character != null)
-                dis = Vector3.Distance(transform.position, GameManager.gameManager.character.transform.position);
-
-            return dis;
+            {
                 
+                return Vector3.Distance(transform.position, GameManager.gameManager.character.transform.position);
+            }
+            else
+            {
+                return 100;
+            }   
         }
     }
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    void Update()
-    {
-        if (DISTANCE < 1 && isWarp == false && GameManager.gameManager.character !=null)
-        {
-            isWarp = true;            
-            GameManager.gameManager.MapName = MapName;            
-            LoadingSceneController.instance.LoadScene(MapName);
-        }
-            
-
-        
-    }
-
 }

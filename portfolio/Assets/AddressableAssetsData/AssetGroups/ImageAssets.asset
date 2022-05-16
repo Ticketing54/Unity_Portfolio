@@ -48,7 +48,7 @@ MonoBehaviour:
     m_SerializedLabels:
     - Image
   - m_GUID: 49b910dea799b464fb4f2be33b4d543b
-    m_Address: Village
+    m_Address: VillageMap
     m_ReadOnly: 0
     m_SerializedLabels:
     - Image
@@ -187,6 +187,11 @@ MonoBehaviour:
     - Image
   - m_GUID: fe025e83f69d0b54f8a4fe3c7c128fd7
     m_Address: bag
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Image
+  - m_GUID: dc74a1be829465045a4a3b6a71f150fc
+    m_Address: BattleMap
     m_ReadOnly: 0
     m_SerializedLabels:
     - Image

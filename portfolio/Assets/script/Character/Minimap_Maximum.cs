@@ -42,30 +42,35 @@ public class Minimap_Maximum : MonoBehaviour
     {
         UIManager.uimanager.uicontrol_On += AddMiniDot;
         UIManager.uimanager.uicontrol_Off += RemoveMiniDot;
-        MapSetting();
+        UIManager.uimanager.miniMapSetting += SetStartMapInfo;
+        SetMapInfo();
         OpenDotSetting();
     }
     private void OnDisable()
     {
         UIManager.uimanager.uicontrol_On -= AddMiniDot;
         UIManager.uimanager.uicontrol_Off -= RemoveMiniDot;
+        UIManager.uimanager.miniMapSetting -= SetStartMapInfo;
         CloseDotSetting();
-    }
-    
-    void MapSetting()
+    }    
+    void SetMapInfo()
     {
-        if (mapName != GameManager.gameManager.MapName)
+        if (mapName != GameManager.gameManager.mapName)
         {
-            mapName = GameManager.gameManager.MapName;
+            mapName = GameManager.gameManager.mapName;
             mapImage.sprite = ResourceManager.resource.GetImage(mapName + "Map");
-            mapSize_X = GameObject.FindGameObjectWithTag("Floor").transform.localScale.x * 10;
-            mapSize_Y = GameObject.FindGameObjectWithTag("Floor").transform.localScale.z * 10;
+            mapSize_X = GameManager.gameManager.mapSizeX;
+            mapSize_Y = GameManager.gameManager.mapSizeY;
+            character = GameManager.gameManager.character;
         }
-        character = GameManager.gameManager.character;
-
-
     }
-
+    void SetStartMapInfo(string _mapName, float _xPos, float _yPos)
+    {
+        mapName = _mapName;
+        mapSize_X = _xPos;
+        mapSize_Y = _yPos;
+        character = GameManager.gameManager.character;
+    }
 
 
 

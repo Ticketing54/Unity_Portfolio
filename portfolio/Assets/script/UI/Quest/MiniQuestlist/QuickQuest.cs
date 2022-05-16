@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class QuickQuest : MonoBehaviour
 {     
-    public LinkedList<MiniQuestSlot> list = new LinkedList<MiniQuestSlot>();
+    public LinkedList<MiniQuestSlot> list = new ();
     public ScrollRect Mqlist;
     int Count = 0;    
         

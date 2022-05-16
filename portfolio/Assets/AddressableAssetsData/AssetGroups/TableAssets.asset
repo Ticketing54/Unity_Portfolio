@@ -22,11 +22,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Table
-  - m_GUID: 28af58e2c1a97474ba09a13a89b96743
-    m_Address: VillageTable
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Table
     - Patch
   - m_GUID: 2df6b677811f32d41a1dc46d2611ef80
     m_Address: QuestTable

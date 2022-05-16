@@ -13,22 +13,30 @@ public class GameManager : MonoBehaviour
    
     
     public Character character = null;
-    public Monster mob = null;
-    public Npc npc = null;
-    public Potal potal = null;    
-
-    
-
-    public bool sceneSetting = false;
-
-
-    public delegate void ReadyToStart();
-    public ReadyToStart readyToStart;   
-
-    
-    //정보    
-    public string MapName = string.Empty;    
   
+    //정보    
+    public string mapName { get; set; }
+    public float mapSizeX { get; set; }
+    public float mapSizeY { get; set; }
+
+    Dictionary<string, Vector3> wayPoint = new();
+
+    public void ClearWayPoint()
+    {
+        wayPoint.Clear();
+    }
+    public void AddWayPoint(string _key, Vector3 _pos)
+    {
+        if (wayPoint.ContainsKey(_key))
+        {
+            Debug.LogError("이미 있는 키를 더할려고 합니다.");
+        }
+        else
+        {
+            wayPoint.Add(_key, _pos);
+        }
+    }
+
     private void Awake()
     {        
         if (gameManager == null)
@@ -69,8 +77,7 @@ public class GameManager : MonoBehaviour
         character = Instantiate(ResourceManager.resource.character).AddComponent<Character>();
         character.transform.SetParent(this.transform);
         character.gameObject.layer = 8;
-        New_C_Data(_nickName);
-        UIManager.uimanager.OnBaseUI();
+        New_C_Data(_nickName);        
         LoadingSceneController.Instance.LoadScene("Village");        
     }
    
@@ -80,9 +87,9 @@ public class GameManager : MonoBehaviour
         character.stat.LevelSetting(5);
         character.tag = "Player";         
         character.name = _nickName;                
-        MapName = "Village";                
+        mapName = "Village";                
         character.inven.gold = 5000;
-
+        character.StartPos = new Vector3(32f,0f,20f);
 
         // Test
        
@@ -100,19 +107,10 @@ public class GameManager : MonoBehaviour
         character.inven.PushItem(test6);
         
         
-        StartCoroutine(SceneSetting(new Vector3(31f, 0f, 17f)));        
+        
     }
     
 
-    IEnumerator SceneSetting(Vector3 _pos)
-    {
-        while (!sceneSetting)
-        {
-            yield return null;
-        }
-        sceneSetting = false;
-        character.SetPosition(_pos);        
-    }
     public void Load_C_Data(int _num)
     {           
         string temp = UserDataManager.instance.LoadData(_num);
@@ -123,7 +121,7 @@ public class GameManager : MonoBehaviour
             
         
         string[] DATA = temp.Split('\n');
-        GameObject obj = Instantiate(ResourceManager.resource.Instantiate("Character"));        
+        GameObject obj = new();
         character = obj.AddComponent<Character>();        
         character.tag = "Player";
         character.gameObject.layer = 8;
@@ -131,7 +129,7 @@ public class GameManager : MonoBehaviour
         character.name = info[0];  
         
         ChangeLayerObj(character.gameObject.transform, 8);
-        MapName = info[1];        
+        mapName = info[1];        
         
         
               

@@ -36,15 +36,17 @@ public class Minimap_Minimum : MonoBehaviour
     }
     private void OnEnable()
     {
-        UIManager.uimanager.uicontrol_On += AddMiniDot;
-        UIManager.uimanager.uicontrol_Off += RemoveMiniDot;
-        MapSetting();
+        SetMapInfo();
+        UIManager.uimanager.uicontrol_On   += AddMiniDot;
+        UIManager.uimanager.uicontrol_Off  += RemoveMiniDot;
+        UIManager.uimanager.miniMapSetting += SetStartMapInfo;
         OpenDotSetting();
     }
     private void OnDisable()
     {
-        UIManager.uimanager.uicontrol_On -= AddMiniDot;
-        UIManager.uimanager.uicontrol_Off -= RemoveMiniDot;
+        UIManager.uimanager.uicontrol_On   -= AddMiniDot;
+        UIManager.uimanager.uicontrol_Off  -= RemoveMiniDot;
+        UIManager.uimanager.miniMapSetting -= SetStartMapInfo;
         CloseDotSetting();
     }
     private void Update()
@@ -52,8 +54,32 @@ public class Minimap_Minimum : MonoBehaviour
         MovePosition();
     }
 
+
+    void SetMapInfo()
+    {
+        if (mapName != GameManager.gameManager.mapName)
+        {
+            mapName = GameManager.gameManager.mapName;
+            mapImage.sprite = ResourceManager.resource.GetImage(mapName + "Map");
+            mapSize_X = GameManager.gameManager.mapSizeX;
+            mapSize_Y = GameManager.gameManager.mapSizeY;
+            character = GameManager.gameManager.character;
+        }
+    }
+
+    void SetStartMapInfo(string _mapName, float _xPos, float _yPos)
+    {
+        mapName = _mapName;
+        mapSize_X = _xPos;
+        mapSize_Y = _yPos;
+        character = GameManager.gameManager.character;
+    }
+
+
+
     void OpenDotSetting()
     {
+        character = GameManager.gameManager.character;
         HashSet<Unit> nearUnit = character.nearUnit;
 
         foreach(Unit dot in nearUnit)
@@ -63,7 +89,7 @@ public class Minimap_Minimum : MonoBehaviour
     }
     void CloseDotSetting()
     {
-        List<Unit> activeDots = new List<Unit>(runningCo.Keys);
+        List<Unit> activeDots = new (runningCo.Keys);
 
         foreach(Unit dot in activeDots)
         {
@@ -128,25 +154,14 @@ public class Minimap_Minimum : MonoBehaviour
         return null;
     }
    
-    void MapSetting()
-    {
-        if(mapName != GameManager.gameManager.MapName)
-        {
-            mapName = GameManager.gameManager.MapName;
-            mapImage.sprite = ResourceManager.resource.GetImage(mapName+"Map");
-            mapSize_X = GameObject.FindGameObjectWithTag("Floor").transform.localScale.x * 10;
-            mapSize_Y = GameObject.FindGameObjectWithTag("Floor").transform.localScale.z * 10;
-        }
-        character = GameManager.gameManager.character;
-
-        
-    }
-
     Vector2 MoveDotPosition(Vector3 Pos)     //ÁÂ»ó´Ü ¹Ì´Ï¸Ê»ó À§Ä¡
     {
         Vector2 End = Vector2.zero;
         float x = (Pos.x / mapSize_X) * 900;
         float y = (Pos.z / mapSize_Y) * 900;
+
+        x += 200;
+        y += 200;
         End.Set(x, y);
         return End;
 

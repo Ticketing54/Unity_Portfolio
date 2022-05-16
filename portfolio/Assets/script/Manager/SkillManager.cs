@@ -14,8 +14,8 @@ public class SkillManager : MonoBehaviour // IPointerUpHandler,IPointerDownHandl
     public TextMeshProUGUI SkillPoint;
     public TextMeshProUGUI NeedLev;    
 
-    public List<SkillSlot> list = new List<SkillSlot>();
-    public List<SkillSlot> q_list = new List<SkillSlot>();
+    public List<SkillSlot> list = new ();
+    public List<SkillSlot> q_list = new ();
   
     private void Awake()
     {

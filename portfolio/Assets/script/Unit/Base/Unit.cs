@@ -9,12 +9,19 @@ public class Unit : MonoBehaviour
     protected float     nick_YPos;
     protected bool      isTarget    = false;
     protected bool      usingUi     = false;
+    protected bool      usingDialog = false;
     public string NickName { get=> unitName; }
     public float Nick_YPos { get => nick_YPos; }
     public bool IsTarget { get => isTarget; }
+    public bool UsingDialog { get => usingDialog; set => usingDialog = value; }
+
+    public Vector3 startPos { get; set; }
+    public List<string> wayPoint { get; set; }
     public virtual void Start()
     {
         StartCoroutine(CoApproachChracter());
+        startPos = this.gameObject.transform.position;
+
     }
     public float DISTANCE
     {

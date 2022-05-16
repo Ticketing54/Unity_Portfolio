@@ -370,6 +370,25 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
+    #region MiniMap
+
+    public delegate void SetMinimapInfo(string _mapName, float _xSize, float _ySize);
+    public SetMinimapInfo miniMapSetting;
+
+    public void MiniMapSetting(string _mapName, float _xSize, float _ySize)
+    {
+        if(miniMapSetting == null)
+        {
+            return;
+        }
+        else
+        {
+            miniMapSetting(_mapName,_xSize,_ySize);
+        }
+    }
+    
+    #endregion
+
     #region UpdateMessage
     [SerializeField]
     PatchUi updateMessage;    

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class Minimap : MonoBehaviour
+public class MiniMap : MonoBehaviour
 {
 
     [SerializeField]

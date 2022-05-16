@@ -12,6 +12,9 @@ public class Character : MonoBehaviour
 {    
 
     public Character(){}
+
+    public Vector3 StartPos { get; set; }
+    
     public float HP_CURENT => stat.HP;
     public float Hp_Max => stat.MAXHP;
     public string NICKNAME => stat.NAME;
@@ -85,7 +88,10 @@ public class Character : MonoBehaviour
     {
         nav.Warp(_Pos);
     }
-
+    public void SetPosition()
+    {
+        nav.Warp(StartPos);
+    }
     
 
     [Header("스텟")]
@@ -318,33 +324,33 @@ public class Character : MonoBehaviour
         {
             return;
         }
-            
-        if (Input.GetMouseButtonDown(0))
+
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hitinfo;
-            if (Physics.Raycast(ray, out hitinfo))
+            if (Input.GetMouseButtonDown(0))
             {
-                if (hitinfo.collider.gameObject.layer == 9)
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hitinfo;
+                if (Physics.Raycast(ray, out hitinfo))
                 {
-                    EffectManager.effectManager.ClickEffectOn(hitinfo.point);
-                    MovetoEmpty(hitinfo.point);
-                    return;
-                }
-                else if (hitinfo.collider.gameObject.tag == "Item" ||
-                    hitinfo.collider.gameObject.tag == "Npc"
-                    || hitinfo.collider.gameObject.tag == "Monster")
-                {
-                    
-                    interact(hitinfo.collider.gameObject);
-                }
+                    if (hitinfo.collider.gameObject.layer == 9)
+                    {
+                        EffectManager.effectManager.ClickEffectOn(hitinfo.point);
+                        MovetoEmpty(hitinfo.point);
+                        return;
+                    }
+                    else if (hitinfo.collider.gameObject.tag.Equals("Item") ||
+                        hitinfo.collider.gameObject.tag.Equals("Npc")
+                        || hitinfo.collider.gameObject.tag.Equals("Npc"))
+                    {
 
+                        interact(hitinfo.collider.gameObject);
+                    }
+
+                }
             }
-            //if (!EventSystem.current.IsPointerOverGameObject())
-            //{
-               
-
-            //}
+            
+           
         }
     }
     void interact(GameObject _target)
