@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class ObjectManager : MonoBehaviour
 {
-
     public static ObjectManager objManager;
+    List<Monster> mobList;
+    Dictionary<int, Npc> npcDic;
 
-    List<Monster> mobList = new List<Monster>();
-    Dictionary<int, Npc> npcDic = new Dictionary<int, Npc>();        
+
     private void Awake()
     {
-        if(objManager == null)
+        if (objManager == null)
         {
             objManager = this;
             DontDestroyOnLoad(gameObject);
@@ -19,13 +19,20 @@ public class ObjectManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }        
+        }
+        mobList = new List<Monster>();
+        npcDic = new Dictionary<int, Npc>();
+    }
+
+    private void Start()
+    {
+        GameManager.gameManager.moveSceneReset += MoveOtherMap;
     }
     public void AddMobList(Monster _mob)
     {
         mobList.Add(_mob);
     }
-    public void AddnpcDic(int _index,Npc _npc)
+    public void AddnpcDic(int _index, Npc _npc)
     {
         if (npcDic.ContainsKey(_index))
         {
@@ -35,7 +42,7 @@ public class ObjectManager : MonoBehaviour
         {
             npcDic.Add(_index, _npc);
         }
-        
+
     }
     public Npc GetNpc(int _index)
     {
@@ -64,9 +71,8 @@ public class ObjectManager : MonoBehaviour
     }
 
     public void MoveOtherMap()
-    {        
+    {
         mobList.Clear();
-        npcDic.Clear();        
+        npcDic.Clear();
     }
-
 }

@@ -74,10 +74,10 @@ public class Npc :NpcUnit
     {
         
     }
-    public override void Start()
+    public override void Awake()
     {
-        base.Start();
-        nav = this.GetComponent<NavMeshAgent>();
+        base.Awake();
+        //nav = this.GetComponent<NavMeshAgent>();
     }
     public virtual void Interact()
     {

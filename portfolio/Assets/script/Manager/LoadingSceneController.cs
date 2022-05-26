@@ -61,43 +61,49 @@ public class LoadingSceneController : MonoBehaviour
     CanvasGroup canvasGroup;
 
     [SerializeField]
-    Image progressBar;
-
-    private string loadSceneName;    
+    Image progressBar; 
     
     
     
     float loadingPercent = 0f;
     Coroutine coUpdatePercent;
     
-    public void LoadScene(string sceneName)
+    public void LoadScene(string _sceneName)
     {        
         gameObject.SetActive(true);
-        loadSceneName = sceneName;
-        Fade(true);
-        AsyncOperationHandle<SceneInstance> Op = Addressables.LoadSceneAsync(loadSceneName + "Scene");        
-        Op.Completed += OnSceneLoaded;
+
+        StartCoroutine(CoLoadScene(_sceneName));
+        
+        
+        
     }
-    
-    void OnSceneLoaded (AsyncOperationHandle<SceneInstance> _handle)
-    {   
-        ResourceManager.resource.LoadSceneResource(loadSceneName);
-    }
+    IEnumerator CoLoadScene(string _sceneName)
+    {
+        yield return Fade(true);
+
+
+        AsyncOperationHandle<SceneInstance> loadscene = Addressables.LoadSceneAsync(_sceneName + "Scene");
+        yield return loadscene;
+
+        ResourceManager.resource.LoadSceneResource(_sceneName);
+    }   
 
     public void LoadingPercent(float _percent)
     {
         if(coUpdatePercent != null)
         {
             StopCoroutine(coUpdatePercent);
-        }       
+        }
 
-        coUpdatePercent = StartCoroutine(LoadSceneProcess(_percent));
+
+
+        coUpdatePercent = StartCoroutine(LoadSceneProcess(_percent));        
     }
 
     private IEnumerator LoadSceneProcess(float _Percent)
     {
         float Timer = 0f;
-        while (progressBar.fillAmount < 1)
+        while (progressBar.fillAmount < _Percent)
         {
 
             Timer += Time.deltaTime;
@@ -106,33 +112,26 @@ public class LoadingSceneController : MonoBehaviour
             progressBar.fillAmount = loadingPercent;           
 
             yield return null;
-        }        
-        
-        StartCoroutine(Fade(false));
+        }                
+
+        if(_Percent == 1)
+        {
+            coUpdatePercent = null;
+
+            yield return Fade(false);
+            gameObject.SetActive(false);
+        }
     }
-
-    //private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
-    //{   
-    //    if(arg0.name == loadSceneName)
-    //    {
-
-    //        StartCoroutine(Fade(false));            
-    //        SceneManager.sceneLoaded -= OnSceneLoaded;      
-    //    }
-    //}
+    
+  
     IEnumerator Fade(bool isFadeIn)
     {
         float timer = 0f;
         while (timer <= 1f)
-        {
-            yield return null;
-            timer += Time.unscaledDeltaTime * 3f;
+        {   
+            timer += Time.unscaledDeltaTime ;
             canvasGroup.alpha = isFadeIn ? Mathf.Lerp(0f, 1f, timer) : Mathf.Lerp(1f, 0f, timer);
-        }
-        if (!isFadeIn)
-        {
-            
-            gameObject.SetActive(false);
-        }
+            yield return null;
+        }        
     }
 }

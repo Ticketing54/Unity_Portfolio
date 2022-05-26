@@ -69,6 +69,7 @@ public class Minimap_Maximum : MonoBehaviour
         mapName = _mapName;
         mapSize_X = _xPos;
         mapSize_Y = _yPos;
+        mapImage.sprite = ResourceManager.resource.GetImage(mapName + "Map");
         character = GameManager.gameManager.character;
     }
 

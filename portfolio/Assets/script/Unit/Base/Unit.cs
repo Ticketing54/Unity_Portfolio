@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
-{    
+{
+    public Coroutine uiUpdate;
+
     protected string    unitName;
     protected string    sound;
     protected float     nick_YPos;
@@ -17,11 +19,14 @@ public class Unit : MonoBehaviour
 
     public Vector3 startPos { get; set; }
     public List<string> wayPoint { get; set; }
+    
+    public virtual void Awake()
+    {
+
+    }
     public virtual void Start()
     {
-        StartCoroutine(CoApproachChracter());
-        startPos = this.gameObject.transform.position;
-
+        uiUpdate = StartCoroutine(CoApproachChracter());        
     }
     public float DISTANCE
     {
@@ -51,7 +56,7 @@ public class Unit : MonoBehaviour
             }
         }
     }
-    IEnumerator CoApproachChracter()
+    protected IEnumerator CoApproachChracter()
     {
         yield return null;
         bool approachChracter = false;

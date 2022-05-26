@@ -7,7 +7,7 @@ using System;
 public class UIManager : MonoBehaviour
 {
     public static UIManager uimanager;
-
+    
     [SerializeField]
     GameObject baseUi;
 
@@ -74,7 +74,7 @@ public class UIManager : MonoBehaviour
     #region Middle_Top_HpBar    
     [SerializeField]
     TopEnermyInfoUi topEnermyInfoUi;
-    public void Open_Top_EnermyInfo(BattleUnit _Monster)              // 상단 중앙 적정보 UI
+    public void Open_Top_EnermyInfo(Monster _Monster)              // 상단 중앙 적정보 UI
     {
         topEnermyInfoUi.gameObject.SetActive(true);
         topEnermyInfoUi.Top_EnermyInfoUi(_Monster);
@@ -318,6 +318,33 @@ public class UIManager : MonoBehaviour
         fadeInout.gameObject.SetActive(false);
         
     }
+    #endregion
+
+    #region WaitForDoingUi
+    [SerializeField]
+    WaitForDoingUi waitForDoing;
+
+    public void RunningWaitForDoing(float _percent)
+    {
+
+        if(waitForDoing.gameObject.activeSelf == false)
+        {
+            Debug.LogError("대기화면창이 꺼져있습니다.");
+
+        }
+
+        waitForDoing.SetGauge(_percent);
+    }
+    public void OpenWaitForDoing(string _text)
+    {
+        waitForDoing.gameObject.SetActive(true);
+        waitForDoing.SetGauge(_text);
+    }
+    public void ExitWaitForDoing()
+    {
+        waitForDoing.gameObject.SetActive(false);
+    }
+
     #endregion
 
     #region Dialog

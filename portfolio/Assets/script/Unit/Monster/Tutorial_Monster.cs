@@ -1,15 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.AI;
 public class Tutorial_Monster : Monster
 {
+    public override void Awake()
+    {
+        anim = GetComponent<Animator>();
+        hitBox = GetComponent<Collider>();        
+    }
+
+    public override void Start()
+    {
+        uiUpdate = StartCoroutine(CoApproachChracter());
+    }
+
     public override void Damaged(DAMAGE _type,float _dmg)
     {
         if (GameManager.gameManager.character.quest.isQuestMonster(index))
         {
             GameManager.gameManager.character.quest.UpdatePlayingQuest(2,1);
         }
+        anim.SetTrigger("Damage");
         float finalyDmg = 0;
         switch (_type)
         {

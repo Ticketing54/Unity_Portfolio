@@ -45,7 +45,9 @@ public class UiEffectManager : MonoBehaviour
         textPool.Add("DamageEffect", sampleDamageEffect);
         textPool.Add("NickName", sampleNicName);
         imagePool.Add("HpBar", sampleHpBar);
-        textPool.Add("LevelUp", sampleLevelup);                
+        textPool.Add("LevelUp", sampleLevelup);
+
+        GameManager.gameManager.moveSceneReset += MoveToNextScene;
     }
 
     

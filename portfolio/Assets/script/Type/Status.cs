@@ -148,8 +148,13 @@ public class Status
         UIManager.uimanager.uiEffectManager.LevelUpEffect(character.gameObject);
     }
     public void LevelSetting(int _Level)
-    {        
-        List<string> Table = ResourceManager.resource.GetTable_Index("LevelTable", _Level);            
+    {
+        //List<string> Table = ResourceManager.resource.GetTable_Index("LevelTable", _Level);            
+        List<string> Table = new List<string>();
+        Table.Add("1");
+        Table.Add("1");
+        Table.Add("1");
+        Table.Add("1");
         
         level = int.Parse(Table[0]);
         hp = float.Parse(Table[1]);

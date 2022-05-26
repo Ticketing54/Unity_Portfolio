@@ -6,15 +6,19 @@ public class NonDialog_Npc : Npc
 {
 
     List<List<string>> dialog;
-    public override void Start()
+    public override void Awake()
     {
-        base.Start();
+        base.Awake();
 
         dialog = new List<List<string>>();
-        GetDialogData();
+        
 
     }
 
+    private void Start()
+    {
+        GetDialogData();
+    }
     void GetDialogData()
     {
         List<string> dialogResData = ResourceManager.resource.GetDialogue(DIALOGUE);

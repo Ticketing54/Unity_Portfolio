@@ -72,6 +72,7 @@ public class Minimap_Minimum : MonoBehaviour
         mapName = _mapName;
         mapSize_X = _xPos;
         mapSize_Y = _yPos;
+        mapImage.sprite = ResourceManager.resource.GetImage(mapName + "Map");
         character = GameManager.gameManager.character;
     }
 
@@ -160,8 +161,7 @@ public class Minimap_Minimum : MonoBehaviour
         float x = (Pos.x / mapSize_X) * 900;
         float y = (Pos.z / mapSize_Y) * 900;
 
-        x += 200;
-        y += 200;
+       
         End.Set(x, y);
         return End;
 

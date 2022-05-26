@@ -36,8 +36,18 @@ public class EffectManager : MonoBehaviour
         
         clickList = new List<GameObject>();
 
+        
     }
-    
+    private void Start()
+    {
+        GameManager.gameManager.moveSceneReset += MoveToSceneReset;
+    }
+
+    void MoveToSceneReset()
+    {
+        ClickEffectReset();
+    }
+
     public void UpdateQuestMark(Npc _npc, QUESTMARKTYPE _type,QUESTSTATE _state)
     {
         QuestMark mark;
@@ -149,7 +159,7 @@ public class EffectManager : MonoBehaviour
         questMarkRes.Add("EXCLAMATION", questMarkEx);
         questMarkRes.Add("QUESTION", questMarkQu);        
     }
-    public void EffectReset()               // 맵 이동 시 리셋
+    public void ClickEffectReset()               // 맵 이동 시 리셋
     {
         foreach(GameObject click in clickList)
         {
@@ -283,6 +293,5 @@ public class EffectManager : MonoBehaviour
         yield return new WaitForSeconds(_holdingtime);
         AddEffect(_effectName,_effect);
     }
-
 
 }

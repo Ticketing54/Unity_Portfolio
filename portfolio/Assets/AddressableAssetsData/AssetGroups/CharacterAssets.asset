@@ -84,6 +84,51 @@ MonoBehaviour:
     m_SerializedLabels:
     - Effect
     - Map
+  - m_GUID: 82c9b7e720ef52c46a01edce1da21e21
+    m_Address: Slime_B
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: 639ef5ec0ba89934b8326f5aeafa0f09
+    m_Address: Slime_G
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: 771bda840cf548c45aacb61e9b0b84db
+    m_Address: Slime_R
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: 95232083188abad4eb3e4dff1033c24e
+    m_Address: SlimeR_B
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: 781bc66bd76461c49b225451f62b6ecb
+    m_Address: SlimeR_G
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: 1a6bae2216da9564f880b5c3801d4586
+    m_Address: SlimeR_R
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: b618cde3b34940a41981e75c6f2a61d3
+    m_Address: Turtle_B
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: 228c7900585e6ac4696060908a1ea80f
+    m_Address: Turtle_G
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
+  - m_GUID: 05f8e5e3029edc54eb61f34fe2471d6b
+    m_Address: Turtle_R
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Monster
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6defd24f3161a494192e121d10f7c432, type: 2}
   m_SchemaSet:

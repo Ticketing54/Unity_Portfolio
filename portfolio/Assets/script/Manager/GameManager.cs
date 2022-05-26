@@ -14,12 +14,18 @@ public class GameManager : MonoBehaviour
     
     public Character character = null;
   
-    //정보    
+    //맵 정보    
+
     public string mapName { get; set; }
     public float mapSizeX { get; set; }
     public float mapSizeY { get; set; }
 
     Dictionary<string, Vector3> wayPoint = new();
+
+    void resetWayPoint()
+    {
+        wayPoint.Clear();
+    }
 
     public void ClearWayPoint()
     {
@@ -48,6 +54,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        moveSceneReset += resetWayPoint;
     }
 
     
@@ -79,6 +86,17 @@ public class GameManager : MonoBehaviour
         character.gameObject.layer = 8;
         New_C_Data(_nickName);        
         LoadingSceneController.Instance.LoadScene("Village");        
+    }
+
+
+    public delegate void MoveSceneReset();
+    public MoveSceneReset moveSceneReset;
+    public void MoveToScene(string _sceneName,Vector3 _Pos)
+    {
+        UIManager.uimanager.OffBaseUI();
+        character.StartPos = _Pos;
+        moveSceneReset();
+        LoadingSceneController.instance.LoadScene(_sceneName);
     }
    
     public void New_C_Data(string _nickName)

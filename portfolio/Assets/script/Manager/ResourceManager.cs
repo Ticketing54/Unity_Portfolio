@@ -238,21 +238,33 @@ public class ResourceManager: MonoBehaviour
         AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "_Monster");
 
         yield return mapRes;
-        List<string> npcInfo = LoadText(mapRes.Result);
+        List<string> mobInfo = LoadText(mapRes.Result);
         Addressables.Release<TextAsset>(mapRes);
 
 
         List<string> mobTable = GetTable("MonsterTable");
-        for (int i = 1; i < npcInfo.Count; i++)
+        for (int i = 1; i < mobInfo.Count; i++)
         {
-            string[] sInfo = npcInfo[i].Split(',');
-
-            List<string> mobTable_index = GetTable(mobTable, int.Parse(sInfo[1]));
-
-            AsyncOperationHandle<GameObject> mob = Addressables.InstantiateAsync(mobTable_index[1]);
-            yield return mob;
+            string[] sInfo = mobInfo[i].Split(',');            
             
-            SettingMonster(mob.Result, mobTable_index,sInfo);
+            AsyncOperationHandle<GameObject> mobHandle = Addressables.InstantiateAsync(sInfo[2]);
+            yield return mobHandle;
+
+
+            GameObject mob = mobHandle.Result;
+            Vector3 pos = new(float.Parse(sInfo[3]), float.Parse(sInfo[4]), float.Parse(sInfo[5]));
+            Quaternion rotate = Quaternion.Euler(float.Parse(sInfo[6]), float.Parse(sInfo[7]), float.Parse(sInfo[8]));
+            Vector3 scale = new(float.Parse(sInfo[9]), float.Parse(sInfo[10]), float.Parse(sInfo[11]));
+
+
+            mob.tag = "Monster";
+            mob.layer = 10;
+            mob.transform.position = pos;
+            mob.transform.rotation = rotate;
+            mob.transform.localScale = scale;
+            mob.name = sInfo[2];
+
+            SettingMonster(mob, int.Parse(sInfo[1]), sInfo[0],pos);            
         }
     }
 
@@ -271,7 +283,8 @@ public class ResourceManager: MonoBehaviour
             GameObject potalObj;
             yield return potalObj = Addressables.InstantiateAsync("Potal").Result;
             Potal potal = potalObj.AddComponent<Potal>();
-
+            potal.mapName = sInfo[0];
+            potal.pos = new Vector3(float.Parse(sInfo[4]), float.Parse(sInfo[5]), float.Parse(sInfo[6]));
 
             // 포탈 정보 입력            
         }
@@ -280,7 +293,7 @@ public class ResourceManager: MonoBehaviour
     {
         GameManager.gameManager.ClearWayPoint();       
 
-        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "_Potal");
+        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "_WayPoint");
         yield return mapRes;
 
         List<string> wayPointList = LoadText(mapRes.Result);
@@ -320,40 +333,29 @@ public class ResourceManager: MonoBehaviour
         StartCoroutine(CoLoadSceneResource(_mapName));
     }
     
-    void SettingMonster(GameObject _mob, List<string> _table,string [] _objInfo)
+    void SettingMonster(GameObject _mobObj,int _mobTableIndex,string _mobType,Vector3 _startPos)
     {
-
-        Vector3 pos = new(float.Parse(_objInfo[1]), float.Parse(_objInfo[2]), float.Parse(_objInfo[3]));
-        Quaternion rotate = Quaternion.Euler(float.Parse(_objInfo[4]), float.Parse(_objInfo[5]), float.Parse(_objInfo[6]));
-        Vector3 scale = new(float.Parse(_objInfo[7]), float.Parse(_objInfo[8]), float.Parse(_objInfo[9]));
-
-
-        _mob.tag = "Npc";
-        _mob.transform.position = pos;
-        _mob.transform.rotation = rotate;
-        _mob.transform.localScale = scale;
-
         Monster newMonster;
-        switch (_table[2])                                                  // 몬스터 타입별 스크립트 
+        switch (_mobType)                                                  // 몬스터 타입별 스크립트 
         {
             case "Nomal":
                 {
-                    newMonster= (Monster)_mob.AddComponent<Nomal_Monster>();
+                    newMonster= (Monster)_mobObj.AddComponent<Nomal_Monster>();
                     break;
                 }
             case "Tutorial":
                 {
-                    newMonster = (Monster)_mob.AddComponent<Tutorial_Monster>();
+                    newMonster = (Monster)_mobObj.AddComponent<Tutorial_Monster>();
                     break;
                 }
-            case "Offensive":
+            case "Hostile":
                 {
-                    newMonster = (Monster)_mob.AddComponent<Tutorial_Monster>();        //
+                    newMonster = (Monster)_mobObj.AddComponent<Hostile_Monster>();        //
                     break;
                 }
             case "Mimic":
                 {
-                    newMonster = (Monster)_mob.AddComponent<Tutorial_Monster>();        //
+                    newMonster = (Monster)_mobObj.AddComponent<Mimic>();        //
                     break;
                 }
             default:
@@ -361,39 +363,22 @@ public class ResourceManager: MonoBehaviour
                     return;
                 }
         }
+        
+
         if(newMonster == null)
         {
             Debug.Log("Monster 가 생성되지 않았습니다.");
             return;
         }
-        newMonster.name = _table[3];
-        if (!string.IsNullOrEmpty(_table[7]))
+        else 
         {
-            string[] dropItemsInfo = _table[7].Split('/');
-            List<int[]> items = new ();
-            for (int i = 0; i < dropItemsInfo.Length; i++)
-            {
-                int[] iteminfo = Array.ConvertAll(dropItemsInfo[i].Split('#'), index => int.Parse(index));
-                items.Add(iteminfo);
-            }
-            newMonster.SetMonster(int.Parse(_table[0]),_table[3], int.Parse(_table[4]), float.Parse(_table[5]), float.Parse(_table[6]), int.Parse(_table[7]), int.Parse(_table[8]), float.Parse(_table[10]), _table[11], items);
+            newMonster.SetMonster(_mobTableIndex,_startPos);
+            ObjectManager.objManager.AddMobList(newMonster);
         }
-        else
-        {
-            newMonster.SetMonster(int.Parse(_table[0]),_table[3], int.Parse(_table[4]), float.Parse(_table[5]), float.Parse(_table[6]), int.Parse(_table[7]), int.Parse(_table[8]), float.Parse(_table[10]), _table[11]);
-        }
-
-        if (!string.IsNullOrEmpty(_objInfo[10]))
-        {
-            string[] wayarr = _objInfo[10].Split('/');
-            List<string> wayList = new List<string>();
-            wayList.AddRange(wayarr);
-            newMonster.wayPoint = wayList;
-        }
-            
-        ObjectManager.objManager.AddMobList(newMonster);
+      
+        
     }
-    void SettingNpc(GameObject _npc,List<string>_table,string [] _objInfo)                                                     // 차후 추가하게될경우 추가
+    void SettingNpc(GameObject _npc,List<string>_table,string [] _objInfo)                                                     
     {
         Vector3 pos = new(float.Parse(_objInfo[1]), float.Parse(_objInfo[2]), float.Parse(_objInfo[3]));
         Quaternion rotate = Quaternion.Euler(float.Parse(_objInfo[4]), float.Parse(_objInfo[5]), float.Parse(_objInfo[6]));

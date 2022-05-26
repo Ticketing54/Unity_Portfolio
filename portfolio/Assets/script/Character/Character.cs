@@ -268,11 +268,12 @@ public class Character : MonoBehaviour
 
     public bool isCantMove = false;              
     public bool OpenLootingbox = false; // 루팅박스 
-    
+
   
     #region Move
     bool isMove = false;
     Coroutine move;
+  
     public void MovetoEmpty(Vector3 _dest)
     {
         if (move != null)
@@ -292,6 +293,7 @@ public class Character : MonoBehaviour
         isMove = true;        
         float dis = Vector3.Distance(this.transform.position, _Target.transform.position);
         Vector3 stopPos = Vector3.MoveTowards(this.transform.position, _Target.transform.position,(dis-2f));//stat.ATK_RANGE
+        anim.SetBool("IsMove", true);
         nav.SetDestination(stopPos);
         move = StartCoroutine(Move(stopPos));
     }
@@ -315,7 +317,57 @@ public class Character : MonoBehaviour
             
         }
     }
-   
+
+    Coroutine waitForDoing;
+    bool InteractSuccess = false;
+
+
+
+    void MoveToScene(string _sceneName, Vector3 _Pos)
+    {
+        if(waitForDoing != null)
+        {
+            return;
+        }
+
+        waitForDoing = StartCoroutine(CoMoveToScene(5f, _sceneName, _Pos));
+    }
+
+    IEnumerator CoMoveToScene(float _timer,string _sceneName,Vector3 _pos)
+    {
+        string waitForDoingText = _sceneName + " 으로 이동 하는중 입니다.";
+        yield return StartCoroutine(CoWaitForDoing(_timer,waitForDoingText));
+        
+
+        if(InteractSuccess == true)
+        {
+            GameManager.gameManager.MoveToScene(_sceneName, _pos);
+            InteractSuccess = false;
+        }
+        waitForDoing = null;
+    }
+
+    IEnumerator CoWaitForDoing(float _timerMax, string _text)
+    {
+        UIManager.uimanager.OpenWaitForDoing(_text);
+        
+        float timer = 0.01f;
+        while (timer<= _timerMax)
+        {
+            if (isMove == true)
+            {
+                InteractSuccess = false;
+                UIManager.uimanager.ExitWaitForDoing();
+                yield break;
+            }
+            UIManager.uimanager.RunningWaitForDoing(timer / _timerMax);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        InteractSuccess = true;
+        UIManager.uimanager.ExitWaitForDoing();
+    }
+
     #endregion
     #region Click / interact
     void Click()
@@ -324,6 +376,7 @@ public class Character : MonoBehaviour
         {
             return;
         }
+        
 
         if (!EventSystem.current.IsPointerOverGameObject())
         {
@@ -335,13 +388,14 @@ public class Character : MonoBehaviour
                 {
                     if (hitinfo.collider.gameObject.layer == 9)
                     {
-                        EffectManager.effectManager.ClickEffectOn(hitinfo.point);
+                        //EffectManager.effectManager.ClickEffectOn(hitinfo.point);
                         MovetoEmpty(hitinfo.point);
                         return;
                     }
                     else if (hitinfo.collider.gameObject.tag.Equals("Item") ||
                         hitinfo.collider.gameObject.tag.Equals("Npc")
-                        || hitinfo.collider.gameObject.tag.Equals("Npc"))
+                        || hitinfo.collider.gameObject.tag.Equals("Monster")
+                        || hitinfo.collider.gameObject.tag.Equals("Potal"))
                     {
 
                         interact(hitinfo.collider.gameObject);
@@ -349,8 +403,7 @@ public class Character : MonoBehaviour
 
                 }
             }
-            
-           
+
         }
     }
     void interact(GameObject _target)
@@ -384,7 +437,7 @@ public class Character : MonoBehaviour
                     Npc npc = _target.GetComponent<Npc>();
                     if(npc == null)
                     {
-                        Debug.LogError("잘못된 대상입니다 : Monster");
+                        Debug.LogError("잘못된 대상입니다 : Npc");
                         break;
                     }
                     if (npc.DISTANCE <= stat.ATK_RANGE)
@@ -400,7 +453,42 @@ public class Character : MonoBehaviour
                     }
                 }                
             case "Item":
-                break;
+                {
+                    if(_target.layer == 10)
+                    {
+                        Mimic mimic = _target.GetComponent<Mimic>();
+                        mimic.SetContect();
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    
+                    
+                }                
+            case "Potal":
+                {
+                    Potal potal = _target.GetComponent<Potal>();
+
+                    if(potal == null)
+                    {
+                        Debug.LogError("잘못된 대상입니다. : Potal");
+                        break;
+                    }
+
+                    if(potal.DISTANCE <= stat.ATK_RANGE)
+                    {
+                        nav.SetDestination(transform.position);
+                        MoveToScene(potal.mapName, potal.pos);
+                        break;
+                    }
+                    else
+                    {
+                        MovetoObject(potal.gameObject);
+                        break;
+                    }
+                }                
             default:
                 break;
         }
@@ -479,14 +567,26 @@ public class Character : MonoBehaviour
 
 
 
-    public void Damaged(float _dmg)
+    public void Damaged(DAMAGE _type,float _dmg)
    {
-        stat.HP -= _dmg;
-        if(stat.HP <= 0)
+        float finalyDmg = 0;
+        switch (_type)
         {
-            // 죽음
+            case DAMAGE.NOMAL:
+                {
+                    finalyDmg = _dmg;
+                    stat.HP -= finalyDmg;
+                }
+                break;
+            case DAMAGE.CRITICAL:
+                {
+                    finalyDmg = _dmg * 2;
+                    stat.HP-= finalyDmg;
+                }
+                break;
         }
-   }
+        UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
+    }
    
     public void EffectEvent(string _name)
     {
@@ -542,32 +642,7 @@ public class Character : MonoBehaviour
         _string.SetActive(false);
     }
 
-
-    public void  RangeMob()
-    {
-        //for (int i = 0; i < MobList.Count; i++)
-        //{
-        //    if (MobList[i].DiSTANCE <=2f)
-        //    {
-        //        MobList[i].isDamage = true;
-        //        float Dmg = Stat.ATK * 3f;
-        //        MobList[i].Hp -= Dmg;                
-        //        ObjectPoolManager.objManager.LoadDamage(MobList[i].gameObject, Dmg, Color.yellow, 1);
-        //    }
-        //}
-    }
   
-    //public Monster FindNearEnermy()
-    //{
-    //    Monster mob = MobList[0];
-    //    for(int i =0; i < MobList.Count; i++)
-    //    {
-    //        if (mob.DiSTANCE > MobList[i].DiSTANCE)
-    //            mob = MobList[i];
-    //    }
-
-    //    return mob;
-    //}    
     public void burnStateOn()  // 화상
     {
         if(stat.isburn == false)

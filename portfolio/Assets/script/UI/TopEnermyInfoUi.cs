@@ -13,7 +13,7 @@ public class TopEnermyInfoUi : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI enermy_Hp_Text;
 
-    public void Top_EnermyInfoUi(BattleUnit _Monster)
+    public void Top_EnermyInfoUi(Monster _Monster)
     {        
 
         if (_Monster.MightyEnermy())
@@ -33,7 +33,7 @@ public class TopEnermyInfoUi : MonoBehaviour
 
         StartCoroutine(Close_Top_EnermyInfoUi(_Monster));                                        // Ui On / Off 관리
     }
-    IEnumerator Close_Top_EnermyInfoUi(BattleUnit _Monster)
+    IEnumerator Close_Top_EnermyInfoUi(Monster _Monster)
     {
         this.gameObject.SetActive(false);
         yield break;

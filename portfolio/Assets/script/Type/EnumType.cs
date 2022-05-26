@@ -2,6 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MONSTERSTATE
+{    
+    IDLE,
+    COMBAT,
+    MOVE,
+    ATTACK,
+    DAMAGED,
+    DIE,
+}
 public enum MAINLOADING
 {
     NEW,
@@ -18,15 +27,6 @@ public enum SKILLTYPE
     BUFF
 }
 
-
-
-public enum QuickButton
-{
-    Q,
-    W,
-    E,
-    R
-}
 
 public enum RECOVERY
 {
@@ -50,13 +50,7 @@ public enum STATUS
     MP,
     ATK,
 }
-public enum CHARACTERANIMATION
-{
-    STOP,
-    MOVE,
-    ATTACK,
-    SKILL,
-}
+
 public enum DAMAGE
 {
     NOMAL,
@@ -69,24 +63,7 @@ public enum CLICKEFFECT
     FRIEND,
     NONE
 }
-public enum TABLETYPE
-{
-    ITEM,
-    LEVEL,
-    MONSTER,
-    QUEST,
-    SKILL,
-    USER,
-    NONE,
-}
 
-
-public enum RESTYPE
-{
-    GAMEOBJECT,
-    IMAGE,
-    NONE,
-}
 public enum HAVEQUESTSTATE
 {
     PLAYING,
