@@ -157,7 +157,7 @@ public class UiEffectManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("없는 코루틴을 정지하려 합니다.");
+            Debug.Log("없는 코루틴을 정지하려 합니다.");
         }
     }
     void AddRunningNickName(GameObject _parent,TextMeshProUGUI _nickName)
@@ -193,7 +193,7 @@ public class UiEffectManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("없는 닉네임을 풀로 되돌리려합니다.");
+            Debug.Log("없는 닉네임을 풀로 되돌리려합니다.");
         }
     }
     void RemoveRunningDialog(Unit _parent)
@@ -206,7 +206,7 @@ public class UiEffectManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("없는 닉네임을 풀로 되돌리려합니다.");
+            Debug.Log("없는 닉네임을 풀로 되돌리려합니다.");
         }
     }
     void RemoveRunningHpBar(GameObject _parent)
@@ -219,7 +219,7 @@ public class UiEffectManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("없는 HpBar를 풀로 되돌리려합니다.");
+            Debug.Log("없는 HpBar를 풀로 되돌리려합니다.");
         }
     }
     void OnMonsterUi(Monster _mob)
@@ -262,13 +262,13 @@ public class UiEffectManager : MonoBehaviour
             _nickName.rectTransform.anchoredPosition = Camera.main.WorldToScreenPoint(_mob.transform.position + new Vector3(0f, _mob.Nick_YPos, 0f));
 
 
-            if (_mob.HP_CURENT <= 0)
+            if (_mob.Hp_Curent <= 0)
             {
                 _hpbar.gameObject.SetActive(false);
             }
             else
             {
-                _hpbar.fillAmount = _mob.HP_CURENT / _mob.Hp_Max;
+                _hpbar.fillAmount = _mob.Hp_Curent / _mob.Hp_Max;
             }
             
 
@@ -351,13 +351,13 @@ public class UiEffectManager : MonoBehaviour
             DmgEffect.fontSize = 200;
         }
 
-        StartCoroutine(DamageEffecting(DmgEffect, _Target));
+        StartCoroutine(DamageEffecting(DmgEffect, _Target.transform.position));
     }
 
-    IEnumerator DamageEffecting(TextMeshProUGUI _text, GameObject _target)
+    IEnumerator DamageEffecting(TextMeshProUGUI _text, Vector3 _target)
     {
         float timer = 0f;
-        Vector3 targetPos = _target.transform.position;
+        Vector3 targetPos = _target;
         float preset = targetPos.y + 1f;
         while (timer <= 1f)
         {

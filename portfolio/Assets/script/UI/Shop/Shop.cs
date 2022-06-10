@@ -262,7 +262,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
     }
     bool isPossableBuy()
     {
-        if (GameManager.gameManager.character.inven.gold < (shop_List[activeIndex].itemPrice * count + 1))
+        if (GameManager.gameManager.character.inven.Gold < (shop_List[activeIndex].itemPrice * count + 1))
         {
             return false;
         }
@@ -513,7 +513,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
         activeMessage = true;
         if (businessType == BUSINESSTYPE.BUY)
         {
-            if (GameManager.gameManager.character.inven.gold < shop_List[activeIndex].itemPrice)
+            if (GameManager.gameManager.character.inven.Gold < shop_List[activeIndex].itemPrice)
             {
                 Debug.Log("돈이 없습니다.");
                 return;

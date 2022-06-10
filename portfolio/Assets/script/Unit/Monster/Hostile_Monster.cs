@@ -5,18 +5,23 @@ using UnityEngine;
 public class Hostile_Monster : Monster
 {
     bool contact = false;
-    public override void Start()
-    {
-        base.Start();
-        action = StartCoroutine(CoCombat());        
+    public override void OnEnable()
+    {   
+        base.OnEnable();
+        StartCoroutine(CoCombat());
     }
-
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        ResetInfo();
+    }
     public override void Damaged(DAMAGE _type, float _dmg)
     {
         if (action != null)
         {
             StopCoroutine(action);
         }
+        action = StartCoroutine(CoDamaged());
 
         float finalyDmg = 0;
         switch (_type)
@@ -24,28 +29,18 @@ public class Hostile_Monster : Monster
             case DAMAGE.NOMAL:
                 {
                     finalyDmg = _dmg;
-                    this.hp_Cur -= finalyDmg;
+                    Hp_Curent -= finalyDmg;
                 }
                 break;
             case DAMAGE.CRITICAL:
                 {
                     finalyDmg = _dmg * 2;
-                    this.hp_Cur -= finalyDmg;
+                    Hp_Curent -= finalyDmg;
                 }
                 break;
         }
         UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
-
-        if (hp_Cur > 0)
-        {   
-            action = StartCoroutine(CoDamaged());
-        }
-        else
-        {
-
-            StopCoroutine(action);
-            anim.SetTrigger("Die");
-        }
+        
     }
     
     protected override IEnumerator CoCombat()

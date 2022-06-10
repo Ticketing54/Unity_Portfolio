@@ -22,15 +22,15 @@ public class QuickSlot :ItemMove
     {
         character = _character;
         
-        character.keyboardShortcut.Add(KeyCode.Q, SkillSlot_Q);
-        character.keyboardShortcut.Add(KeyCode.W, SkillSlot_W);
-        character.keyboardShortcut.Add(KeyCode.E, SkillSlot_E);
-        character.keyboardShortcut.Add(KeyCode.R, SkillSlot_R);
-        character.keyboardShortcut.Add(KeyCode.Alpha1, ItemSlot_First);
-        character.keyboardShortcut.Add(KeyCode.Alpha2, ItemSlot_Second);
-        character.keyboardShortcut.Add(KeyCode.Alpha3, ItemSlot_Third);
-        character.keyboardShortcut.Add(KeyCode.Alpha4, ItemSlot_Fourth);
-
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Q, SkillSlot_Q);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.W, SkillSlot_W);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.E, SkillSlot_E);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.R, SkillSlot_R);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha1, ItemSlot_First);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha2, ItemSlot_Second);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha3, ItemSlot_Third);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha4, ItemSlot_Fourth);
+        
         itemSlots = new Dictionary<int, List<Item>>()
         {
             {0, new List<Item>()

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ObjectManager : MonoBehaviour
 {
-    public static ObjectManager objManager;
-    List<Monster> mobList;
+    public static ObjectManager objManager;    
     Dictionary<int, Npc> npcDic;
+    Dictionary<Monster, Coroutine> respawnMob;
 
 
     private void Awake()
@@ -20,18 +20,34 @@ public class ObjectManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        mobList = new List<Monster>();
+        
         npcDic = new Dictionary<int, Npc>();
+        respawnMob = new Dictionary<Monster, Coroutine>();
+
     }
 
     private void Start()
     {
         GameManager.gameManager.moveSceneReset += MoveOtherMap;
     }
-    public void AddMobList(Monster _mob)
+
+
+    public void StartRespawnMob(Monster _mob)
     {
-        mobList.Add(_mob);
+        Coroutine coRespawn = StartCoroutine(CoRespawn(_mob));
+        respawnMob.Add(_mob, coRespawn);    
     }
+    
+
+    IEnumerator CoRespawn(Monster _mob)
+    {
+        _mob.gameObject.SetActive(false);
+        yield return new WaitForSeconds(5f);
+        respawnMob.Remove(_mob);
+        _mob.gameObject.SetActive(true);
+        
+    }
+    
     public void AddnpcDic(int _index, Npc _npc)
     {
         if (npcDic.ContainsKey(_index))
@@ -72,7 +88,7 @@ public class ObjectManager : MonoBehaviour
 
     public void MoveOtherMap()
     {
-        mobList.Clear();
+        respawnMob.Clear();
         npcDic.Clear();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 [System.Serializable]
 public class Equipment : ItemMove
@@ -10,11 +11,13 @@ public class Equipment : ItemMove
     [SerializeField]
     Item[] Equip = new Item[5];
 
+    Action openEquip;
+
     Character character;
     
     public Equipment(Character _character)
     {
-        character = _character;
+        character = _character;        
         Stat = character.stat;
     }
     public Item GetItem(int _equipType)

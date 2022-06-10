@@ -19,26 +19,18 @@ public class Nomal_Monster : Monster
             case DAMAGE.NOMAL:
                 {
                     finalyDmg = _dmg;
-                    this.hp_Cur -= finalyDmg;
+                    Hp_Curent -= finalyDmg;
                 }
                 break;
             case DAMAGE.CRITICAL:
                 {
                     finalyDmg = _dmg * 2;
-                    this.hp_Cur -= finalyDmg;
+                    Hp_Curent -= finalyDmg;
                 }
                 break;
         }
         UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
-
-        if (hp_Cur > 0)
-        {
-            anim.SetTrigger("Damaged");
-        }
-        else
-        {
-            anim.SetTrigger("Die");
-        }
+        anim.SetTrigger("Damaged");
     }
 
    

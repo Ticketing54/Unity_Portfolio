@@ -9,22 +9,19 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
 {
     [SerializeField]
     protected ItemSlot[] itemSlots;
-    [SerializeField]
-    protected int Count;
-
+    
     protected ITEMLISTTYPE itemListType;
 
     public delegate Item GetItemInfo(int _Index);
-
+    protected Character character;
     int rightClickindex = -1;
   
     public virtual void OnEnable()
     {
+        character = GameManager.gameManager.character;
         UpdateAllSlot();
         UIManager.uimanager.itemoveEnd += this.LeftClickUp;
         UIManager.uimanager.updateUiSlot+= this.UpdateSlot;
-        
-       
     }
     public virtual void OnDisable()
     {
@@ -32,25 +29,9 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
         UIManager.uimanager.updateUiSlot -= this.UpdateSlot;
     }
 
-    public void UpdateAllSlot()
-    {
-        Item getitem;
-        for (int itemSlotNum=0; itemSlotNum < itemSlots.Length; itemSlotNum++)
-        {
-            getitem = GameManager.gameManager.character.ItemList_GetItem(itemListType, itemSlotNum);
-            if(getitem == null)
-            {
-                itemSlots[itemSlotNum].Clear();
-            }
-            else
-            {
-                itemSlots[itemSlotNum].Add(getitem.itemSpriteName, getitem.ItemCount,getitem.index);
-            }
-            
-            getitem = null;
-        }
-    }
-    public void UpdateSlot(ITEMLISTTYPE _itemListType, int _index)
+    public abstract void UpdateAllSlot();
+    
+    public virtual void UpdateSlot(ITEMLISTTYPE _itemListType, int _index)
     {
 
         if (_itemListType != itemListType)
@@ -77,7 +58,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
     }
 
     
-    protected void LeftClickUp(Vector2 _ClickPos)
+    protected  void LeftClickUp(Vector2 _ClickPos)
     {
         int index = isInSlots_Up(_ClickPos);
         if (index >= 0)

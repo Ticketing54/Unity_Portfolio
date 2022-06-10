@@ -8,6 +8,10 @@ public class Monster : Unit
     protected NavMeshAgent nav;
     protected Animator anim;
     protected Coroutine action;
+    [SerializeField]
+    public Material material;
+
+    
     
     public Collider hitBox;
 
@@ -19,27 +23,150 @@ public class Monster : Unit
     protected int lev;
     protected int gold;
     protected int exp;
+
+    protected List<List<int>> itemDropInfo;
+    protected List<Item> dropItem;
+
     
-    protected List<int[]> items = new List<int[]>();
-    public float HP_CURENT { get => hp_Cur; }
+    
+    public float Hp_Curent
+    {
+        get
+        {
+            return hp_Cur;
+        }
+
+        set
+        {
+            hp_Cur = value;
+            if (hp_Cur <= 0)
+            {
+                Die();
+            }
+        }
+    }
+
+    void Die()
+    {
+        StopCoroutine(action);
+        gameObject.tag = "Item";
+        anim.SetTrigger("IsDie");
+        GameManager.gameManager.character.GetReward_Monster(gold, exp);
+
+        SetItem();
+        if (dropItem == null)
+        {
+            gameObject.tag = "Untagged";
+            StartCoroutine(CoFadeOut());
+        }
+
+    }
+    IEnumerator CoFadeIn()
+    {
+        nav.Warp(startPos);
+        anim.SetTrigger("Respawn");
+
+        Color color = material.color;
+        float alpha = 0;
+        while (alpha <1)
+        {
+            alpha += Time.deltaTime;
+            color.a = alpha;
+            material.color = color;
+            yield return null;
+        }
+        gameObject.tag = "Monster";
+    }
+    IEnumerator CoFadeOut()
+    {        
+        Color color = material.color;
+        float alpha = 1;
+        while (alpha > 0)
+        {
+            alpha -= Time.deltaTime;
+            color.a = alpha;
+            material.color = color;
+            yield return null;
+        }
+        anim.SetBool("IsDie", false);
+        ObjectManager.objManager.StartRespawnMob(this);
+    }
     public float Hp_Max { get => hp_Max; }
 
 
-    public override void Awake()
+    public virtual void Awake()
     {
-        base.Awake();
         nav = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
         hitBox = GetComponent<Collider>();
-    }
+        material = transform.Find("Render").GetComponent<SkinnedMeshRenderer>().material;
+        
 
-    public override void Start()
+
+    }
+    public override void OnEnable()
     {
-        base.Start();
-        nav.Warp(startPos);
+        StartCoroutine(CoFadeIn());
+        base.OnEnable();        
+    }
+    public override void OnDisable()
+    {
+        ResetInfo();
+        base.OnDisable();        
+    }
+    public virtual void DropItem()
+    {
+        StartCoroutine(CoFadeOut());
+        GameManager.gameManager.character.OpenDropBox(dropItem);                      
     }
 
+    
+    public virtual void ResetInfo()
+    {
+        hp_Cur = hp_Max;        
+    }
+   
+    void SetItem()
+    {   
+        if(itemDropInfo == null)
+        {
+            return;
+        }
 
+        List<Item> newItems = new List<Item>();
+        for (int i = 0; i < itemDropInfo.Count; i++)
+        {
+            List<int> itemInfo = DropItemList(itemDropInfo[i]);
+
+            newItems.Add(new Item(itemInfo[0], itemInfo[1]));
+        }
+        
+        dropItem = newItems;
+    }
+    
+    List<int> DropItemList(List<int> _itemDropInfo)
+    {
+        int itemIndex       = _itemDropInfo[0];
+        int itemDropPercent = _itemDropInfo[1];
+        int itemMaxCount    = _itemDropInfo[2];
+
+        int dropcount = 1;
+        for(int itemcount = 1; itemcount < itemMaxCount; itemcount++)
+        {
+            int drop = Random.Range(0, 101);
+            if(drop <= itemDropPercent)
+            {
+                dropcount++;
+            }
+        }
+        List<int> dropList = new List<int>();
+        dropList.Add(itemIndex);
+        dropList.Add(dropcount);
+
+        return dropList;
+
+
+    }
     public void Attack(int _type)
     {
         switch (_type)
@@ -78,7 +205,7 @@ public class Monster : Unit
         if (GameManager.gameManager.character == null)
             return false;
 
-        if (GameManager.gameManager.character.stat.LEVEL < this.lev)
+        if (GameManager.gameManager.character.stat.Level < this.lev)
         {
             return true;
         }
@@ -90,7 +217,7 @@ public class Monster : Unit
 
 
 
-    public void SetMonster(int _index, Vector3 _startPos)
+    public virtual void SetMonster(int _index, Vector3 _startPos)
     {
         index = _index;
 
@@ -165,16 +292,28 @@ public class Monster : Unit
             Debug.LogError("Range 변환 오류");
         }
 
-        //
+        
         if (string.IsNullOrEmpty(tableInfo[9]))
         {
             Debug.Log("아이템 없음");
         }
         else
         {
-            string itemInfo = tableInfo[9];
+            string[] infoArr = tableInfo[9].Split('/');
+            List<List<int>> t_dropList = new List<List<int>>();
+            for (int i = 0; i < infoArr.Length; i++)
+            {
+                string[]iteminfo = infoArr[i].Split('#');
+
+                List<int> t_itemList = new List<int>();
+                t_itemList.Add(int.Parse(iteminfo[0]));
+                t_itemList.Add(int.Parse(iteminfo[1]));
+                t_itemList.Add(int.Parse(iteminfo[2]));
+                t_dropList.Add(t_itemList);
+            }
+            itemDropInfo = t_dropList;
         }
-        //
+        
 
 
         if (string.IsNullOrEmpty(tableInfo[10]))
@@ -213,6 +352,7 @@ public class Monster : Unit
         }
 
         startPos = _startPos;
+        nav.Warp(_startPos);
     }
 
     public virtual void Damaged(DAMAGE _type, float _dmg)
@@ -223,13 +363,13 @@ public class Monster : Unit
             case DAMAGE.NOMAL:
                 {
                     finalyDmg = _dmg;
-                    this.hp_Cur -= finalyDmg;
+                    Hp_Curent -= finalyDmg;
                 }
                 break;
             case DAMAGE.CRITICAL:
                 {
                     finalyDmg = _dmg * 2;
-                    this.hp_Cur -= finalyDmg;
+                    Hp_Curent -= finalyDmg;
                 }
                 break;
         }
@@ -304,8 +444,7 @@ public class Monster : Unit
         }
     }
     protected virtual IEnumerator CoResetMob()
-    {
-        gameObject.tag = "Item";
+    {   
         anim.SetBool("IsMove", true);
 
         nav.SetDestination(startPos);
@@ -315,7 +454,7 @@ public class Monster : Unit
             yield return null;
             if (hp_Cur != hp_Max)
             {
-                hp_Cur += recoveryHp;
+                Hp_Curent += recoveryHp;
             }
 
             if (nav.velocity.sqrMagnitude >= 0.2f * 0.2f && nav.remainingDistance <= 0.5f)

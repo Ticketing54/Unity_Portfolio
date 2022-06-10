@@ -114,11 +114,10 @@ public class Minimap_Minimum : MonoBehaviour
             Coroutine co = runningCo[_unit];
             StopCoroutine(co);
             runningCo.Remove(_unit);
-
         }
         else
         {
-            Debug.LogError("없는 코루틴을 찾고있습니다. : Minimap_MiniMum");
+            Debug.Log("없는 코루틴을 찾고있습니다. : Minimap_MiniMum");
         }
 
         if (runningDots.ContainsKey(_unit))
@@ -129,7 +128,7 @@ public class Minimap_Minimum : MonoBehaviour
         }
         else
         {
-            Debug.LogError("없는 Dot을 찾고있습니다. : Minimap_MiniMum");
+            Debug.Log("없는 Dot을 찾고있습니다. : Minimap_MiniMum");
         }
 
     }

@@ -43,7 +43,7 @@ public class Npc :NpcUnit
                     {
                         if (GameManager.gameManager.character.quest.ClearPrecedQuest(quests[i]) && startNpcIndex == npcIndex)
                         {
-                            EffectManager.effectManager.UpdateQuestMark(this, QUESTMARKTYPE.EXCLAMATION, QUESTSTATE.NONE);
+                            EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.NONE);
                             return;
                         }
                     }
@@ -54,10 +54,20 @@ public class Npc :NpcUnit
                     switch (quest.State)
                     {
                         case QUESTSTATE.PLAYING:
-                            EffectManager.effectManager.UpdateQuestMark(this, QUESTMARKTYPE.QUESTION, QUESTSTATE.PLAYING);
+                            EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.PLAYING);
                             return;
                         case QUESTSTATE.COMPLETE:
-                            EffectManager.effectManager.UpdateQuestMark(this, QUESTMARKTYPE.QUESTION, QUESTSTATE.COMPLETE);
+                            {
+                                if(quest.Start_Npc == NpcIndex && quest.Type == QUESTTYPE.DIALOG)
+                                {
+                                    EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.PLAYING);
+                                }
+                                else
+                                {
+                                    EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.COMPLETE);
+                                }
+                            }
+                            
                             return;
                         case QUESTSTATE.DONE:
                             continue;
@@ -69,15 +79,10 @@ public class Npc :NpcUnit
                 
             }
         }            
-    }   
-    private void OnEnable()
-    {
-        
     }
-    public override void Awake()
+    public override void OnEnable()
     {
-        base.Awake();
-        //nav = this.GetComponent<NavMeshAgent>();
+        base.OnEnable();
     }
     public virtual void Interact()
     {

@@ -166,7 +166,7 @@ public class CharacterQuest
         Quest popQuest;
         if (playingQuest.TryGetValue(_index,out popQuest))
         {
-            character.inven.gold += popQuest.Reward_Gold;
+            character.inven.GetGold(popQuest.Reward_Gold); 
             character.stat.GetExp(popQuest.Reward_Exp);
             character.inven.GetRewards(popQuest.Reward_Item);
 

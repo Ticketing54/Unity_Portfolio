@@ -91,7 +91,7 @@ public class SkillSlot : Slot
                 string[] buf = info[i].Split('/');
                 if (buf[0] == "Atk")
                 {
-                    GameManager.gameManager.character.stat.AttackDamage += int.Parse(buf[1]);
+                    //GameManager.gameManager.character.stat.AttckDamage += int.Parse(buf[1]);
 
                 }
                 else if (buf[0] == "Spd")
@@ -115,7 +115,7 @@ public class SkillSlot : Slot
                 string[] buf = info[i].Split('/');
                 if (buf[0] == "Atk")
                 {
-                    GameManager.gameManager.character.stat.AttackDamage -= int.Parse(buf[1]);
+                    //GameManager.gameManager.character.stat.AttckDamage -= int.Parse(buf[1]);
 
                 }
                 else if (buf[0] == "Spd")

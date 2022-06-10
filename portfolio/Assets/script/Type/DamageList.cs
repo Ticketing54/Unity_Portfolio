@@ -60,7 +60,7 @@ public class DamageList
         {
             if (GameManager.gameManager.character.DamageMob(0, target.monster))
             {
-                target.monster.Damaged(GameManager.gameManager.character.stat.DamageType(), GameManager.gameManager.character.stat.AttackDamage);
+                target.monster.Damaged(GameManager.gameManager.character.stat.DamageType(), GameManager.gameManager.character.stat.AttckDamage);
                 target.monster.StatusEffect(_statusEffect, _duration);
                 if(count == 1)
                 {

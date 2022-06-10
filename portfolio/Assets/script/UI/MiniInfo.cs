@@ -31,9 +31,23 @@ public class MiniInfo : MonoBehaviour
         height = (Rect.rect.height / 2);
         Preset_Up = new Vector2(width, -height);
         Preset_Down = new Vector2(width, height);
-        
+
+        UIManager.uimanager.OpenMiniInfo += OpenMiniInfo;
+        UIManager.uimanager.CloseMiniInfo += CloseMiniInfo;
     }
-    public void SetMiniInfo(int _itemIndex, Vector2 Pos)    //정보 표시
+
+
+
+    void OpenMiniInfo(int _itemIndex, Vector2 _Pos)
+    {
+        gameObject.SetActive(true);
+        SetMiniInfo(_itemIndex, _Pos);
+    }
+    void CloseMiniInfo()
+    {
+        gameObject.SetActive(false);
+    }
+    void SetMiniInfo(int _itemIndex, Vector2 Pos)    //정보 표시
     {
 
         Item item = new Item(_itemIndex);
@@ -98,11 +112,12 @@ public class MiniInfo : MonoBehaviour
             
         }
     }
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            this.gameObject.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 

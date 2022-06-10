@@ -27,9 +27,9 @@ public class TopEnermyInfoUi : MonoBehaviour
 
         enermy_Name.text = _Monster.NickName;                                                   // Name
 
-        enermy_Hp.fillAmount = (float)(_Monster.HP_CURENT / _Monster.Hp_Max);                  // Hpbar
+        enermy_Hp.fillAmount = (float)(_Monster.Hp_Curent / _Monster.Hp_Max);                  // Hpbar
 
-        enermy_Hp_Text.text = _Monster.HP_CURENT.ToString() + " / " + _Monster.ToString();     // Hpbar Text
+        enermy_Hp_Text.text = _Monster.Hp_Curent.ToString() + " / " + _Monster.ToString();     // Hpbar Text
 
         StartCoroutine(Close_Top_EnermyInfoUi(_Monster));                                        // Ui On / Off 관리
     }

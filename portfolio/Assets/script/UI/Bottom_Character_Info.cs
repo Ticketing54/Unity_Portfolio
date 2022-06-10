@@ -20,22 +20,45 @@ public class Bottom_Character_Info : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI Lev;                // Lev_Text
 
+    Character character;
+    private void Awake()
+    {
+        UIManager.uimanager.AUpdateHp    += SetHp;
+        UIManager.uimanager.AUpdateMp    += SetMp;
+        UIManager.uimanager.AUpdateLevel += SetLev;
+        UIManager.uimanager.AUpdateExp   += SetExp;
+
+    }
     private void OnEnable()
     {
-        InfoUpdate();
+        character = GameManager.gameManager.character;
+        UpdateBottom();
     }
-
-
-    public void InfoUpdate()
+    void UpdateBottom()
+    {   
+        SetHp();
+        SetMp();
+        SetLev();
+        SetExp();
+    }
+    void SetHp()
+    {   
+        Hp_bar.fillAmount = character.stat.Hp / character.stat.MaxHp;
+        Hp_text.text = ((int)character.stat.Hp).ToString() + " / " + ((int)character.stat.MaxHp).ToString();
+    }
+    void SetMp()
     {
-        Hp_bar.fillAmount = GameManager.gameManager.character.stat.HP / GameManager.gameManager.character.stat.MAXHP;
-        Hp_text.text = ((int)GameManager.gameManager.character.stat.HP).ToString() + " / " + ((int)GameManager.gameManager.character.stat.HP).ToString();
-        Mp_bar.fillAmount = GameManager.gameManager.character.stat.MP / GameManager.gameManager.character.stat.MAXMP;
-        Mp_text.text = ((int)GameManager.gameManager.character.stat.MP).ToString() + " / " + ((int)GameManager.gameManager.character.stat.MAXMP).ToString();        
-
-        Lev.text = "Level : " + GameManager.gameManager.character.stat.LEVEL.ToString();
-        Exp_Text.text = GameManager.gameManager.character.stat.EXP.ToString() + " / " + GameManager.gameManager.character.stat.MAXEXP.ToString();
-        Exp_bar.fillAmount = GameManager.gameManager.character.stat.EXP / GameManager.gameManager.character.stat.MAXEXP;
+        Mp_bar.fillAmount = character.stat.Mp / character.stat.MaxMp;
+        Mp_text.text = ((int)character.stat.Mp).ToString() + " / " + ((int)character.stat.MaxMp).ToString();
     }
-
+    void SetLev()
+    {
+        Lev.text = "Level : " + character.stat.Level.ToString();
+    }
+    void SetExp()
+    {
+        Exp_Text.text = character.stat.Exp.ToString() + " / " + character.stat.MaxExp.ToString();
+        Exp_bar.fillAmount = character.stat.Exp / character.stat.MaxExp;
+    }
+    
 }

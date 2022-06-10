@@ -5,20 +5,36 @@ using UnityEngine;
 public class Mimic : Monster
 {
     bool contact = false;
-    public override void Start()
+    
+    public override void OnEnable()
     {
-        nav.Warp(startPos);
-        gameObject.tag = "Item";        
+        base.OnEnable();
+        gameObject.tag = "Item";
+    }
+    public override void OnDisable()
+    {
+        base.OnDisable();
     }
     public void SetContect()
     {
-        anim.SetBool("IsContect", true);
+        gameObject.tag = "Monster";
         GameManager.gameManager.character.Damaged(DAMAGE.NOMAL,10f);
         action = StartCoroutine(CoStartCombat());
         uiUpdate = StartCoroutine(CoApproachChracter());
     }
 
-    
+    public override void DropItem()
+    {
+        if(Hp_Curent <= 0)
+        {
+            base.DropItem();
+        }
+        else
+        {
+            SetContect();
+        }
+    }
+
     public override void Damaged(DAMAGE _type, float _dmg)
     { 
         float finalyDmg = 0;
@@ -27,32 +43,23 @@ public class Mimic : Monster
             case DAMAGE.NOMAL:
                 {
                     finalyDmg = _dmg;
-                    this.hp_Cur -= finalyDmg;
+                    Hp_Curent -= finalyDmg;
                 }
                 break;
             case DAMAGE.CRITICAL:
                 {
                     finalyDmg = _dmg * 2;
-                    this.hp_Cur -= finalyDmg;
+                    Hp_Curent -= finalyDmg;
                 }
                 break;
         }
-
         UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
-
-        if (hp_Cur > 0)
-        {
-            anim.SetTrigger("Damage");
-        }
-        else
-        {
-            anim.SetTrigger("Die");
-        }                
+        anim.SetTrigger("Damage");
+        
     }
 
     IEnumerator CoStartCombat()
-    {
-        gameObject.tag = "Monster";
+    {   
         anim.SetBool("IsContect", true);
         yield return new WaitForSeconds(1f);
 

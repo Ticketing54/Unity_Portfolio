@@ -4,27 +4,176 @@ using UnityEngine;
 
 public class Status
 {
-    
+
     Character character;            // 설정 시 지정
-    
+
     public Status(Character _character)
     {
         LevelSetting(1);
-        character = _character;        
+        character = _character;
     }
 
-    public string NAME { get; set; }
-    public int LEVEL { get { return level; } }    
-    public int CRI { get; set; }
-    public float ATK_RANGE { get { return attack_Range; } set{ attack_Range = value; } }
+    // 캐릭터 레벨
+    int level;
 
+    // 캐릭터 능력치
+    float hp, mp, atk;
+    int need_Exp;
+
+    // 장비 능력치
+    float equip_Hp, equip_Mp, equip_Atk;
+
+    // 현재 능력치
+    float cur_Hp, cur_Mp = 0;
+    int cur_Exp = 0;
+
+    // 스킬 포인트
+    int skillPoint = 0;
+    public string NAME { get; set; }
+    public int Level
+    { 
+        get 
+        { 
+            return level;
+        }
+        set
+        {
+            level = value;
+            UIManager.uimanager.AUpdateLevel();
+        }
+    }
+    public float MaxHp { get => hp + equip_Hp; }
+    public float MaxMp { get => mp + equip_Hp; }    
+    
+    public int MaxExp
+    {
+        get => need_Exp;
+        set
+        {
+            need_Exp = value;
+            UIManager.uimanager.AUpdateExp();
+        }
+    }
+    public float Hp
+    {
+        get => cur_Hp;
+        set
+        {
+            if (value <= 0)
+            {
+                cur_Hp = 0;
+            }
+            else if (value >= MaxHp)
+            {
+                cur_Hp = MaxHp;
+            }
+            else
+            {
+                cur_Hp = value;
+            }
+            UIManager.uimanager.AUpdateHp();
+        }
+    }
+    public float Mp
+    {
+        get => cur_Mp;
+        set
+        {
+            if (cur_Mp <= 0)
+            {
+                cur_Mp = 0;
+            }
+            else if (cur_Mp >= MaxMp)
+            {
+                cur_Mp = MaxMp;
+            }
+            else
+            {
+                cur_Mp = value;
+            }
+
+            UIManager.uimanager.AUpdateMp();
+        }
+
+    }    
+    public float Atk
+    {
+        get => atk;
+        set
+        {
+            atk = value;
+            UIManager.uimanager.AUpdateAtk();
+        }
+    }
+    public int Exp
+    {
+        get
+        {
+            return cur_Exp;
+        }
+        set
+        {
+            cur_Exp = value;
+            UIManager.uimanager.AUpdateExp();
+        }
+    }
+    public float E_Hp
+    {
+        get => equip_Hp;
+        set
+        {
+            equip_Hp = value;
+            UIManager.uimanager.AUpdateHp();
+        }
+    }
+    public float E_Mp
+    {
+        get => equip_Mp;
+        set
+        {
+            equip_Mp = value;
+            UIManager.uimanager.AUpdateMp();
+        }
+    }
+    public float E_Atk
+    {
+        get => equip_Atk;
+        set
+        {
+            equip_Atk = value;
+            UIManager.uimanager.AUpdateAtk();
+        }
+    }
+    public int SkillPoint
+    {
+        get
+        {
+            return skillPoint;
+        }
+        set
+        {
+            skillPoint = value;
+            UIManager.uimanager.AUpdateSkillPoint();
+        }
+    }
+
+    public int CRI { get; set; }
+    public float ATK_RANGE { get { return attack_Range; } set { attack_Range = value; } }
+    public float AttckDamage
+    {
+        get
+        {
+            float attackdamage = atk + equip_Atk;
+            return (int)Random.Range((float)(attackdamage * 0.8), (float)(attackdamage * 1.2));
+        }        
+    }
     public DAMAGE DamageType()
     {
         int count = CRI;
 
         int probabillity = Random.Range(count, 101);
 
-        if(probabillity <= count)
+        if (probabillity <= count)
         {
             return DAMAGE.CRITICAL;
         }
@@ -33,136 +182,55 @@ public class Status
             return DAMAGE.NOMAL;
         }
     }
-    public float HP
-    {
-        get=> cur_Hp;
-        set
-        {
-            if(value <= 0)
-            {
-                cur_Hp = 0;
-            }
-            else if(value >= MAXHP)
-            {
-                cur_Hp = MAXHP;
-            }
-            else
-            {
-                cur_Hp = value;
-            }
-        }
-    }
-    public float MP
-    {
-        get => cur_Mp;
-        set
-        {
-            if(cur_Mp <= 0)
-            {
-                cur_Mp = 0;
-            }
-            else if (cur_Mp>= MAXMP)
-            {
-                cur_Mp = MAXMP;
-            }
-            else
-            {
-                cur_Mp = value;
-            }
-        }
-    }
-
-    public float MAXHP
-    {
-        get
-        {
-            return hp + equip_Hp;
-        }
-        set
-        {
-            hp = value;
-        }
-    }
-    public float MAXMP
-    {
-        get
-        {
-            return mp + equip_Mp;
-        }
-        set
-        {
-            mp = value;
-        }
-    }
-    public float AttackDamage
-    {
-        get
-        {            
-            float attackdamage = atk + equip_Atk;            
-            return (int)Random.Range((float)(attackdamage * 0.8), (float)(attackdamage * 1.2));
-        }
-        set
-        {
-            equip_Atk = value;
-        }
-    }
-    public int MAXEXP { get { return Need_Exp; } }
-    public int EXP { get { return cur_Exp; } set { cur_Exp = value; } }            
-   
-  
     public void Damaged(DAMAGE _type, float _dmg)
     {
         switch (_type)
         {
             case DAMAGE.NOMAL:
                 {
-                    HP -= _dmg;
+                    Hp -= _dmg;
                 }
                 break;
             case DAMAGE.CRITICAL:
                 {
-                    HP -= _dmg * 2;
+                    Hp -= _dmg * 2;
                 }
                 break;
         }        
-        UIManager.uimanager.uiEffectManager.LoadDamageEffect(_dmg, character.gameObject, _type);
-        UIManager.uimanager.Update_CharacterInfo_Ui();
+        UIManager.uimanager.uiEffectManager.LoadDamageEffect(_dmg, character.gameObject, _type);        
     }
-    public void GetExp(int Exp)
+    public void GetExp(int _exp)
     {
-        cur_Exp += Exp;
+        Exp += _exp;
         
-        while(cur_Exp >= Need_Exp)
+        if(Exp >= need_Exp)
         {
             LevelUp();
+            return;
         }
-            
     }
     public void LevelUp()
     {
-        cur_Exp -= Need_Exp;
-        level++;
+        Exp -= need_Exp;        
+        Level++;
         SkillPoint++;
-        LevelSetting(level);
-        UIManager.uimanager.Update_CharacterInfo_Ui();
+        LevelSetting(level);        
         UIManager.uimanager.uiEffectManager.LevelUpEffect(character.gameObject);
     }
+    
     public void LevelSetting(int _Level)
     {
-        //List<string> Table = ResourceManager.resource.GetTable_Index("LevelTable", _Level);            
-        List<string> Table = new List<string>();
-        Table.Add("1");
-        Table.Add("1");
-        Table.Add("1");
-        Table.Add("1");
+        List<string> Table = ResourceManager.resource.GetTable_Index("LevelTable", _Level);            
         
-        level = int.Parse(Table[0]);
+        level = int.Parse(Table[0]);        
         hp = float.Parse(Table[1]);
         mp = float.Parse(Table[2]);
-        Need_Exp = int.Parse(Table[3]);        
+        need_Exp = int.Parse(Table[3]);
+        // 임시
+        //
         cur_Hp = hp;
         cur_Mp = mp;
-        
+        // 
     }  
     public void EquipStatus(Item _item)
     {
@@ -175,15 +243,14 @@ public class Status
         switch (tmp[0])
         {
             case "Defend":
-                equip_Hp += float.Parse(tmp[1]);
+                E_Hp += float.Parse(tmp[1]);
                 break;
             case "Atk":
-                equip_Atk += float.Parse(tmp[1]);
+                E_Atk += float.Parse(tmp[1]);
                 break;
             default:
                 break;
-        }
-        // Ui 세팅
+        }        
     }
     public void TakeOffStatus(Item _item)
     {
@@ -207,26 +274,14 @@ public class Status
     }
 
 
-    // 캐릭터 레벨
-    int level;
-    // 캐릭터 능력치
-    float hp, mp, atk;
-    int Need_Exp;
-    // 장비 능력치
-    float equip_Hp, equip_Mp, equip_Atk=0;
-    // 현재 능력치
-    float cur_Hp, cur_Mp=0;
-    int cur_Exp = 0;        
-    // 스킬 포인트
-    
     // 공격 범위
     float attack_Range = 1.5f;
 
     // 수정할 것
     public bool isburn = false;
     public bool isIce = false;
-    public int SkillPoint = 0;
-
+    
+    
     bool usingPotion_Hp = false;  
     bool usingPotion_Mp = false;
     public bool UsingPotion_Hp { get => usingPotion_Hp; }
@@ -298,15 +353,13 @@ public class Status
         recoveryHpEffect.transform.localPosition = Vector3.zero;
         while (timer <= _duration)
         {
-            HP += _rehp;
+            Hp += _rehp;
             timer += Time.deltaTime;
 
-            if (HP >= MAXHP)
+            if (Hp >= MaxHp)
             {
-                HP = MAXHP;
-            }
-
-            UIManager.uimanager.Update_CharacterInfo_Ui();
+                Hp = MaxHp;
+            }            
             yield return null;
         }
         
@@ -321,15 +374,13 @@ public class Status
         recoveryMpEffect.transform.localPosition = Vector3.zero;
         while (timer <= _duration)
         {
-            MP += _remp;
+            Mp += _remp;
             timer += Time.deltaTime;
 
-            if (MP >= MAXMP)
+            if (Mp >= MaxMp)
             {
-                MP = MAXMP;
-            }
-
-            UIManager.uimanager.Update_CharacterInfo_Ui();
+                Mp = MaxMp;
+            }            
             yield return null;
         }
         usingPotion_Mp = false;

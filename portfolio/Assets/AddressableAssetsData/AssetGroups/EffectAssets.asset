@@ -38,7 +38,7 @@ MonoBehaviour:
     m_SerializedLabels:
     - Effect
   - m_GUID: f6d7e1db2fa4c334c8f27dc915b5971f
-    m_Address: QuestNotClear
+    m_Address: QUESTIONNOTCLEAR
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect

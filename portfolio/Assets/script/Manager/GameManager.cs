@@ -69,8 +69,7 @@ public class GameManager : MonoBehaviour
         character = Instantiate(ResourceManager.resource.character).AddComponent<Character>();
         character.transform.SetParent(this.transform);
         Load_C_Data(_index);
-        UIManager.uimanager.OnBaseUI();
-        //UIManager.uimanager.minimap.MapSetting();   //미니맵 변경        
+        UIManager.uimanager.OnBaseUI();        
 
 
     }
@@ -106,7 +105,7 @@ public class GameManager : MonoBehaviour
         character.tag = "Player";         
         character.name = _nickName;                
         mapName = "Village";                
-        character.inven.gold = 5000;
+        character.inven.Gold = 5000;
         character.StartPos = new Vector3(32f,0f,20f);
 
         // Test

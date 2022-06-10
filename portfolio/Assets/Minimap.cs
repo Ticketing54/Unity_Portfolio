@@ -22,31 +22,16 @@ public class MiniMap : MonoBehaviour
     //미니맵들 상태관리    
     bool miniMax_Active = false;
     bool miniMin_Active = false;
-
-    private void OnEnable()
+    private void Awake()
     {
-        AddKeyboardShorcut();
-    }
-    private void OnDisable()
-    {
-        RemoveKeyboardShorcut();
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.M, TryOpenMinimap_Maximum);
+        miniMax.gameObject.SetActive(false);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.N, TryOpenMinimap_Minimum);
+        miniMin.gameObject.SetActive(false);
     }
 
 
-    #region KeyboardShorcut
-
-    void AddKeyboardShorcut()
-    {
-        GameManager.gameManager.character.keyboardShortcut.Add(KeyCode.M, TryOpenMinimap_Maximum);
-        GameManager.gameManager.character.keyboardShortcut.Add(KeyCode.N, TryOpenMinimap_Minimum);
-    }
-
-    void RemoveKeyboardShorcut()
-    {
-        GameManager.gameManager.character.keyboardShortcut.Remove(KeyCode.N);
-        GameManager.gameManager.character.keyboardShortcut.Remove(KeyCode.M);
-    }
-
+    #region KeyboardShorcut    
     void TryOpenMinimap_Maximum()
     {
         if (miniMaxFade != null)

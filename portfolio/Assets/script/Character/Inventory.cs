@@ -8,13 +8,22 @@ public class Inventory : ItemMove
 {
     [SerializeField]
     Item[] inven;
+    int maxCount;
+    int currentCount;
     public Inventory()
     {
         inven =new Item[18];
+        maxCount = 18;
+        currentCount = 0;
     }
-
-    public int gold { get; set; }
+    int gold;
+    public int Gold { get => gold; set => gold = value; }
     
+    public void GetGold(int _gold)
+    {
+        gold += _gold;
+        UIManager.uimanager.AGetGoldUpdateUi(_gold);
+    }
     public void BuyItem(int _price,int _itemIndex,int _itemCount =1)
     {
         gold -= _price;
@@ -43,6 +52,7 @@ public class Inventory : ItemMove
     {
         Item PopItem = GetItem(_SlotNum);
         inven[_SlotNum] = null;
+        currentCount--;
         return PopItem;
     }        
     public void GetRewards(List<List<int>> _rewards)
@@ -62,11 +72,20 @@ public class Inventory : ItemMove
     {
         for(int slotNum = 0; slotNum < inven.Length; slotNum++)
         {
+            if(inven[slotNum]!= null&& inven[slotNum].index == _NewItem.index && _NewItem.itemType != ITEMTYPE.EQUIPMENT)
+            {
+                inven[slotNum].ItemCount += _NewItem.ItemCount;                
+                UIManager.uimanager.UpdateUISlots(ITEMLISTTYPE.INVEN, slotNum);
+                return true;
+            }
+        }
+        for (int slotNum = 0; slotNum < inven.Length; slotNum++)
+        {
             if (inven[slotNum] == null)
             {
                 inven[slotNum] = _NewItem;
-
-                UIManager.uimanager.UpdateUISlots(ITEMLISTTYPE.INVEN, slotNum);               
+                currentCount++;
+                UIManager.uimanager.UpdateUISlots(ITEMLISTTYPE.INVEN, slotNum);
 
                 return true;
             }
@@ -76,6 +95,7 @@ public class Inventory : ItemMove
     
     public void AddItem(int _Index, Item _NewItem)
     {
+        currentCount++;
         inven[_Index] = _NewItem;
     }   
     public int Empty_SlotNum()
@@ -101,11 +121,14 @@ public class Inventory : ItemMove
         inven[_Index] = _NewItem;
         return OldItem;
     }
-    public bool IsEmpty(int _Num)
+    public bool IsSlotEmpty(int _Num)
     {
         return inven[_Num] == null;
     }
-
+    public bool IsInvenFull()
+    {
+        return currentCount >= maxCount;
+    }
     public bool PossableMoveItem(int _index, Item _MoveItem)
     {
         return true;

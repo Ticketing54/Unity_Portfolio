@@ -30,7 +30,7 @@ public class Tutorial_Npc : Npc
         GameManager.gameManager.character.stat.Damaged(DAMAGE.CRITICAL,10);
         while (true)
         {
-            if(GameManager.gameManager.character.stat.MAXHP == GameManager.gameManager.character.stat.HP)
+            if(GameManager.gameManager.character.stat.MaxHp == GameManager.gameManager.character.stat.Hp)
             {
                 GameManager.gameManager.character.quest.UpdatePlayingQuest(3, 1);
                 break;

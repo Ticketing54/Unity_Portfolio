@@ -387,7 +387,7 @@ GameObject:
   - component: {fileID: 2527247184706330531}
   - component: {fileID: 2527247184706330528}
   m_Layer: 0
-  m_Name: mimic
+  m_Name: Render
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

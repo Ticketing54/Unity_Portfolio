@@ -20,13 +20,14 @@ public class Unit : MonoBehaviour
     public Vector3 startPos { get; set; }
     public List<string> wayPoint { get; set; }
     
-    public virtual void Awake()
+    public virtual void OnEnable()
     {
-
+        StartCoroutine(CoApproachChracter());
     }
-    public virtual void Start()
+    public virtual void OnDisable()
     {
-        uiUpdate = StartCoroutine(CoApproachChracter());        
+        StopCoroutine(CoApproachChracter());
+        GameManager.gameManager.character.removeNearUnit(this);
     }
     public float DISTANCE
     {

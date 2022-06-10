@@ -15,35 +15,89 @@ public class Character : MonoBehaviour
 
     public Vector3 StartPos { get; set; }
     
-    public float HP_CURENT => stat.HP;
-    public float Hp_Max => stat.MAXHP;
+    public float HP_CURENT => stat.Hp;
+    public float Hp_Max => stat.MaxHp;
     public string NICKNAME => stat.NAME;
 
-    public List<Collider> weapons;    
+    public List<Collider> weapons;
+    Coroutine action;
     Animator anim;
 
     public HashSet<Unit>        nearUnit;
-    public LinkedList<Monster>  nearMonster; 
+    public HashSet<Monster>     nearMonster;
+    
 
-    NavMeshAgent nav;
-
-    public delegate void KeyAction();
-    public Dictionary<KeyCode, KeyAction> keyboardShortcut;
+    NavMeshAgent nav;    
 
     public delegate void NearUnit(Unit _unit);
     public NearUnit addNearUnit;
     public NearUnit removeNearUnit;
 
+    public List<Item> dropBox;
 
+    public void OpenDropBox(List<Item> _dropBox)
+    {
+        dropBox = _dropBox;
+        UIManager.uimanager.AOpenDropBox();
+    }
+    public Action<string> RewardUpdate;
+    public void GetReward_Monster(int _gold, int _exp)
+    {
+       
+        if(_gold != 0)
+        {
+            inven.GetGold(_gold);
+        }
+
+        if(_exp != 0)
+        {
+            stat.GetExp(_exp);
+        }
+        // 인벤
+        // 스탯
+
+        
+        
+    }
+    public void DropBoxMoveToInven(int _index, int _count)
+    {
+        if (inven.IsInvenFull())
+        {
+            return;
+        }
+
+        Item targetItem = GetDropBoxItem(_index);
+
+        targetItem.ItemCount -= _count;
+        inven.PushItem(new Item(targetItem.index, _count));
+
+        if (targetItem.ItemCount <= 0)
+        {
+            dropBox.Remove(targetItem);
+        }
+
+        UIManager.uimanager.DropBoxUpdate();
+        
+
+
+    }
+    public Item GetDropBoxItem(int _index)
+    {
+        if(dropBox == null||_index<0 || _index > dropBox.Count-1)
+        {
+            return null;
+        }
+        else
+        {
+            return dropBox[_index];
+        }
+    }
 
     private void Awake()
     {
-        nearUnit = new HashSet<Unit>();
-        nearMonster = new LinkedList<Monster>();
+        nearUnit    = new HashSet<Unit>();
+        nearMonster = new HashSet<Monster>();
 
-        keyboardShortcut = new Dictionary<KeyCode, KeyAction>();
-
-        
         addNearUnit    += AddNearUnit;        
         removeNearUnit += RemoveNearUnit;
 
@@ -66,24 +120,10 @@ public class Character : MonoBehaviour
   
     void Update()
     {
-        Click();
-        Inputkeyboard();        
+        Click();        
     }
 
-   public void Inputkeyboard()
-    {
-        if (Input.anyKey)
-        {
-            foreach(KeyValuePair<KeyCode,KeyAction> input in keyboardShortcut)
-            {
-                if (Input.GetKeyDown(input.Key))
-                {
-                    input.Value();
-                }
-            }
-        }
-    }
-    
+  
     public void SetPosition(Vector3 _Pos)
     {
         nav.Warp(_Pos);
@@ -115,7 +155,13 @@ public class Character : MonoBehaviour
     {
         if (_unit is Monster == true)
         {
-            nearMonster.AddLast((Monster)_unit);
+            Monster unit = (Monster)_unit;
+            Monster mob;
+            if(!nearMonster.TryGetValue(unit,out mob))
+            {
+                nearMonster.Add(unit);
+            }
+            
         }
 
         nearUnit.Add(_unit);
@@ -139,8 +185,10 @@ public class Character : MonoBehaviour
         {
             return null;
         }
-        Monster nearMob = nearMonster.First.Value;
-        foreach (Monster one in nearMonster)
+        List<Monster> mobList = new List<Monster>(nearMonster);
+        Monster nearMob = mobList[0];
+
+        foreach (Monster one in mobList)
         {
             if (one.DISTANCE < nearMob.DISTANCE)
                 nearMob = one;
@@ -205,32 +253,40 @@ public class Character : MonoBehaviour
 
 
 
-    public void ItemMove(ITEMLISTTYPE _StartListType, ITEMLISTTYPE _EndListType, int _StartListIndex, int _EndListIndex)
+    public void ItemMove(ITEMLISTTYPE _startListType, ITEMLISTTYPE _endListType, int _startListIndex, int _endListIndex)
     {
-        ItemMove start_ItemMove = ChangeITemMove(_StartListType);
-        ItemMove end_ItemMove   = ChangeITemMove(_EndListType);
+        ItemMove start_ItemMove = ChangeITemMove(_startListType);
+        ItemMove end_ItemMove   = ChangeITemMove(_endListType);
 
-        Item startItem = start_ItemMove.GetItem(_StartListIndex);
-        Item endItem   = end_ItemMove.GetItem(_EndListIndex);
+        Item startItem = start_ItemMove.GetItem(_startListIndex);
+        Item endItem   = end_ItemMove.GetItem(_endListIndex);
 
 
         if(startItem == null && endItem == null)
         {
             Debug.LogError("빈 두아이템을 옮기려합니다.");            
         }
-        else if(start_ItemMove.PossableMoveItem(_StartListIndex,endItem) && end_ItemMove.PossableMoveItem(_EndListIndex, startItem))
+        else if(start_ItemMove.PossableMoveItem(_startListIndex,endItem) && end_ItemMove.PossableMoveItem(_endListIndex, startItem))
         {
-            Item popItem = start_ItemMove.PopItem(_StartListIndex);  // 시작지점 아이템을 Pop 하여
-            start_ItemMove.AddItem(_StartListIndex, end_ItemMove.Exchange(_EndListIndex, popItem));     // 목적지점 아이템과 교환
+            Item popItem = start_ItemMove.PopItem(_startListIndex);  // 시작지점 아이템을 Pop 하여
+            start_ItemMove.AddItem(_startListIndex, end_ItemMove.Exchange(_endListIndex, popItem));     // 목적지점 아이템과 교환
             
 
 
-            UIManager.uimanager.UpdateUISlots(_StartListType, _StartListIndex);
-            UIManager.uimanager.UpdateUISlots(_EndListType, _EndListIndex);
-
-                     
+            UIManager.uimanager.UpdateUISlots(_startListType, _startListIndex);
+            UIManager.uimanager.UpdateUISlots(_endListType, _endListIndex);                     
+        }        
+    }
+    public void ItemMove_DropBoxtoInven(ITEMLISTTYPE _endListtype,int startListIndex,int _endListIndex)
+    {
+        if (inven.IsInvenFull())
+        {
+            return;
         }
-        
+
+
+
+
     }
 
     public void ItemMove_Auto(ITEMLISTTYPE _StartListType, int _StartListIndex)
@@ -269,39 +325,51 @@ public class Character : MonoBehaviour
     public bool isCantMove = false;              
     public bool OpenLootingbox = false; // 루팅박스 
 
-  
+
     #region Move
+
+
     bool isMove = false;
-    Coroutine move;
   
     public void MovetoEmpty(Vector3 _dest)
     {
-        if (move != null)
+        if(action != null)
         {
-            StopCoroutine(move);
+            StopCoroutine(action);
+            action = null;
         }
-
-        anim.SetBool("IsMove", true);
-        move =StartCoroutine(Move(_dest));        
+        
+        action =StartCoroutine(Move(_dest));        
     }    
     public void MovetoObject(GameObject _Target)
     {
-        if(move != null)
+        if(action != null)
         {
-            StopCoroutine(move);
+            StopCoroutine(action);
+            action = null;
         }
-        isMove = true;        
+        
         float dis = Vector3.Distance(this.transform.position, _Target.transform.position);
-        Vector3 stopPos = Vector3.MoveTowards(this.transform.position, _Target.transform.position,(dis-2f));//stat.ATK_RANGE
-        anim.SetBool("IsMove", true);
-        nav.SetDestination(stopPos);
-        move = StartCoroutine(Move(stopPos));
+        Vector3 stopPos;
+
+        if (dis <= stat.ATK_RANGE)
+        {
+            stopPos = transform.position;
+        }
+        else
+        {
+            stopPos = Vector3.MoveTowards(this.transform.position, _Target.transform.position, dis - stat.ATK_RANGE); 
+        }
+
+        action = StartCoroutine(Move(stopPos));
     }
     IEnumerator Move(Vector3 _dest)
     {
-        nav.SetDestination(_dest);
         isMove = true;
-        while (isMove)
+        anim.SetBool("IsMove", true);
+        nav.SetDestination(_dest);
+        
+        while (true)
         {            
             Vector3 dir = (nav.steeringTarget - transform.position).normalized;
             dir.y = 0;
@@ -311,8 +379,8 @@ public class Character : MonoBehaviour
 
             if (nav.remainingDistance <=0.02&&nav.velocity.magnitude == 0f)
             {
-                anim.SetBool("IsMove", false);
                 isMove = false;
+                anim.SetBool("IsMove", false);                
             }
             
         }
@@ -420,9 +488,9 @@ public class Character : MonoBehaviour
                         break;
                     }
                         
-                    if (mob.DISTANCE <= 2f)//stat.ATK_RANGE
-                    {
-                        Attack();
+                    if (mob.DISTANCE <= stat.ATK_RANGE)
+                    {   
+                        Attack(mob.gameObject);
                         break;
                     }
                     else
@@ -454,11 +522,27 @@ public class Character : MonoBehaviour
                 }                
             case "Item":
                 {
-                    if(_target.layer == 10)
+                    EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.FRIEND, _target.transform);
+
+                    if (_target.layer == 10)            // 거리에 따른 효과
                     {
-                        Mimic mimic = _target.GetComponent<Mimic>();
-                        mimic.SetContect();
-                        break;
+                        Monster mob = _target.GetComponent<Monster>();
+
+                        if (mob == null)
+                        {
+                            Debug.LogError("잘못된 대상입니다 : Monster");
+                            break;
+                        }
+                        if (mob.DISTANCE <= stat.ATK_RANGE)
+                        {
+                            mob.DropItem();
+                            break;
+                        }
+                        else
+                        {
+                            MovetoObject(mob.gameObject);
+                            break;
+                        }
                     }
                     else
                     {
@@ -477,7 +561,7 @@ public class Character : MonoBehaviour
                         break;
                     }
 
-                    if(potal.DISTANCE <= stat.ATK_RANGE)
+                    if(potal.DISTANCE < stat.ATK_RANGE)
                     {
                         nav.SetDestination(transform.position);
                         MoveToScene(potal.mapName, potal.pos);
@@ -500,9 +584,27 @@ public class Character : MonoBehaviour
     {
         StartCoroutine(CoKnockBack());
     }
-    public void Attack()
+
+    bool isPossableAttack = true;
+    public void Attack(GameObject _target)
     {
+        if(isPossableAttack == false)
+        {
+            return;
+        }
+        else
+        {
+            isPossableAttack = false;
+        }
+        transform.LookAt(_target.transform);
+        StartCoroutine(DelayAttack());
         anim.SetTrigger("Attack");
+        
+    }
+    IEnumerator DelayAttack()
+    {
+        yield return new WaitForSeconds(1f);
+        isPossableAttack = true;
     }
     IEnumerator CoKnockBack()
     {
@@ -516,12 +618,14 @@ public class Character : MonoBehaviour
         }
     }
     public void meleeDamageMob(int _num)
-    {        
-        foreach(Monster one in nearMonster)
+    {
+        List<Monster> mob = new List<Monster>(nearMonster);
+
+        foreach(Monster one in mob)
         {
             if (weapons[_num].bounds.Intersects(one.hitBox.bounds))
             {
-                one.Damaged(stat.DamageType(), stat.AttackDamage);
+                one.Damaged(stat.DamageType(), stat.AttckDamage);
             }
         }
        
@@ -557,7 +661,7 @@ public class Character : MonoBehaviour
             {
                 _mob.StatusEffect(STATUSEFFECT.KNOCKBACK, 2f);
                 _mob.StatusEffect(STATUSEFFECT.STURN, 2f);
-                _mob.Damaged(stat.DamageType(), stat.AttackDamage);
+                _mob.Damaged(stat.DamageType(), stat.AttckDamage);
             }
         }
     }
@@ -575,13 +679,13 @@ public class Character : MonoBehaviour
             case DAMAGE.NOMAL:
                 {
                     finalyDmg = _dmg;
-                    stat.HP -= finalyDmg;
+                    stat.Hp -= finalyDmg;
                 }
                 break;
             case DAMAGE.CRITICAL:
                 {
                     finalyDmg = _dmg * 2;
-                    stat.HP-= finalyDmg;
+                    stat.Hp-= finalyDmg;
                 }
                 break;
         }
@@ -673,7 +777,7 @@ public class Character : MonoBehaviour
             {
                 timer -= 1;
                 holdTime -= 1;
-                stat.HP -= 5;
+                stat.Hp -= 5;
                 //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, 10f, Color.red, 1);
             }
             //Effect.transform.position = Character.Player.transform.position;

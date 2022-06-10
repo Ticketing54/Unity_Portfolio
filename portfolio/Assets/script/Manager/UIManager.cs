@@ -22,8 +22,60 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        
+
+        KeyboardSortCut = new Dictionary<KeyCode, Action>();
     }
+
+    private void Update()
+    {
+        Inputkeyboard();
+    }
+    #region KeyboardSortCut
+    Dictionary<KeyCode, Action> KeyboardSortCut;
+
+
+
+
+    public void AddKeyBoardSortCut(KeyCode _keycode, Action _action)
+    {
+        if (KeyboardSortCut.ContainsKey(_keycode))
+        {
+            KeyboardSortCut.Remove(_keycode);
+            KeyboardSortCut.Add(_keycode, _action);
+        }
+        else
+        {
+            KeyboardSortCut.Add(_keycode, _action);
+        }
+    }
+    public void RemoveKeyBoardSortCut(KeyCode _keycode)
+    {
+        if (KeyboardSortCut.ContainsKey(_keycode))
+        {
+            KeyboardSortCut.Remove(_keycode);
+        }
+        else
+        {
+            Debug.Log("없는 단축키를 없애려 합니다.");
+        }
+    }
+
+    void Inputkeyboard()
+    {
+        if (Input.anyKey)
+        {
+            foreach (KeyValuePair<KeyCode, Action> input in KeyboardSortCut)
+            {
+                if (Input.GetKeyDown(input.Key))
+                {
+                    input.Value();
+                }
+            }           
+        }
+    }
+    #endregion
+
+   
     public void UpdateUISlots(ITEMLISTTYPE _type,int index)
     {
         if(updateUiSlot == null)
@@ -37,26 +89,23 @@ public class UIManager : MonoBehaviour
     }
     public void OnBaseUI()
     {
-        baseUi.SetActive(true);
-        AddkeyboardShortcut();
+        baseUi.SetActive(true);        
     }
     public void OffBaseUI()
     {
-        baseUi.SetActive(false);
-        RemovekeyboardShortcut();
-    }
-    void AddkeyboardShortcut()
-    {
-        GameManager.gameManager.character.keyboardShortcut.Add(KeyCode.I, TryOpenInventory);        
-        GameManager.gameManager.character.keyboardShortcut.Add(KeyCode.L, TryOpenQuest);
-    }
-    void RemovekeyboardShortcut()
-    {
-        GameManager.gameManager.character.keyboardShortcut.Remove(KeyCode.I);
-        GameManager.gameManager.character.keyboardShortcut.Remove(KeyCode.N);
-        GameManager.gameManager.character.keyboardShortcut.Remove(KeyCode.M);
-        GameManager.gameManager.character.keyboardShortcut.Remove(KeyCode.L);
-    }
+        baseUi.SetActive(false);        
+    }    
+
+    #region StatusUi
+    public Action<int> AGetGoldUpdateUi;
+    public Action<int> AGetExpUpdateUi;
+    public Action AUpdateHp;
+    public Action AUpdateMp;
+    public Action AUpdateAtk;
+    public Action AUpdateExp;
+    public Action AUpdateLevel;
+    public Action AUpdateSkillPoint;    
+    #endregion
 
 
     #region QuestEffect
@@ -81,98 +130,21 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    #region Middle_Bottom_Status      
-    [SerializeField]
-    Bottom_Character_Info bottom_Character_Info;
-    public void Update_CharacterInfo_Ui()
-    {
-        if(bottom_Character_Info.gameObject.activeSelf == false)
-        {
-            return;
-        }
-        bottom_Character_Info.InfoUpdate();
-    }
-    #endregion
+   
+    #region DropBox
 
-    #region Ui_Inventory
-
-    [SerializeField]
-    UI_Inventory Inv;
-    public delegate void UpdateInventoryUi();
-    public UpdateInventoryUi updateInven;
-    
-    bool inventoryActive = false;    
-    public bool InventoryActive { get { return inventoryActive; } }
-    public void TryOpenInventory()
-    {
-        inventoryActive = !inventoryActive;
-        if (inventoryActive)
-        {
-            OpenInventory();            
-        }
-        else
-        {
-            CloseInventory();
-        }            
-    } 
-    public void OpenInventory()
-    {
-        Inv.gameObject.SetActive(true);
-    }
-    public void CloseInventory()
-    {        
-        Inv.gameObject.SetActive(false);
-              
-    }
-
+    public Action AOpenDropBox;
+    public Action<int> OpenDropBoxCountMessage;
+    public Action DropBoxUpdate;
 
     #endregion
 
-    #region Equipment
-    public UI_Equipment uI_Equipment;
-    bool equipmentActive = false;
-    public bool EquipmentActive { get { return equipmentActive; } }
-    public void TryOpenEquipment()
-    {
-        equipmentActive = !equipmentActive;
-        if (equipmentActive)
-        {
-            OpenEquipment();
-        }
-        else
-        {
-            CloseEquipment();
-        }
-    }
-    public void OpenEquipment()
-    {
-        uI_Equipment.gameObject.SetActive(true);
-    }
-    public void CloseEquipment()
-    {
-        uI_Equipment.gameObject.SetActive(false);
-
-    }
-
-
-
+    #region MiniInfo
+    public Action<int, Vector2> OpenMiniInfo;
+    public Action CloseMiniInfo;
     #endregion
 
     #region ClickMove
-    [SerializeField]                // 클릭시 아이템 정보
-    MiniInfo miniInfo;
-
- 
-    public void OpenMiniInfo(int _itemIndex,Vector2 _Pos)
-    {
-        miniInfo.gameObject.SetActive(true);
-        miniInfo.SetMiniInfo(_itemIndex,_Pos);
-    }
-    
-    public void CloseMiniInfo()
-    {
-        miniInfo.gameObject.SetActive(false);
-    }
     [SerializeField]
     MoveIcon moveicon;              // 드래그 아이콘
     [SerializeField]
@@ -217,33 +189,27 @@ public class UIManager : MonoBehaviour
             if (Input.GetMouseButtonUp(0))
             {
                 itemoveEnd(Input.mousePosition);
-
+                ClickMoveReset();
 
                 yield break;
             }
             yield return null;
         }
-    }
-
+    }    
     public void ClickUpitemSlot(ITEMLISTTYPE _EndListType, int _EndListIndex)
     {
         if (startListType == ITEMLISTTYPE.NONE || startListIndex < 0)           // 클릭이 되지 않았을떄
-        {
-            ClickMoveReset();
+        {   
             return;
-        }            
-
-
-        if(startListIndex == _EndListIndex && startListType == _EndListType)                // 같은곳을 클릭 했을때
+        }  
+        
+        if(startListType == ITEMLISTTYPE.ITEMBOX && _EndListType == ITEMLISTTYPE.INVEN)
         {
-            OpenMiniInfo(GameManager.gameManager.character.ItemList_GetItem(startListType,startListIndex).index,Input.mousePosition);
-            ClickMoveReset();
+            OpenDropBoxCountMessage(startListIndex);
             return;
         }
 
         GameManager.gameManager.character.ItemMove(startListType, _EndListType, startListIndex, _EndListIndex);
-            
-        ClickMoveReset();
     }
 
     void SetMoveIcon(Sprite _image)                  //드래그 아이콘 설정
@@ -264,12 +230,6 @@ public class UIManager : MonoBehaviour
         }
         startItemSlot = null;
     }   
-    #endregion
-
-    #region DropBox    
-    public DropBox dropBox;
-
-
     #endregion
 
     #region Fade
@@ -414,41 +374,7 @@ public class UIManager : MonoBehaviour
         }
     }
     
-    #endregion
-
-    #region UpdateMessage
-    [SerializeField]
-    PatchUi updateMessage;    
-    [SerializeField]
-    CanvasGroup patchCanvasGroup;
-
-
-
-    public void OpenUpdateMessage(long _downloadFileSize)
-    {        
-        updateMessage.SetUpdateMessage(_downloadFileSize);
-    }    
-    public void ClosePatchUi()
-    {
-        StartCoroutine(FadeoutPatch());
-    }
-    IEnumerator FadeoutPatch()
-    {        
-        while (true)
-        {            
-            patchCanvasGroup.alpha -= Time.unscaledDeltaTime*0.5f;
-            if(patchCanvasGroup.alpha <= 0)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-
-        updateMessage.gameObject.SetActive(false);
-    }
-    #endregion
-
+    #endregion  
 
     #region Quest
     public MiniQuestSlot questSlot;
@@ -522,5 +448,5 @@ public class UIManager : MonoBehaviour
         option.gameObject.SetActive(true);
     }
 
-   
+    
 }

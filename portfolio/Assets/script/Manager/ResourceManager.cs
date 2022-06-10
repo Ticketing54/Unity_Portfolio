@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.SceneManagement;
 using System;
 
 
@@ -43,105 +44,82 @@ public class ResourceManager: MonoBehaviour
         {
             Addressables.ReleaseInstance(one.gameObject);
         }
-    }    
-    
-    
+    }
+
+
 
     #region StartResource[Table/Image]
-
-    IList<IResourceLocation> tableList;                 // 테이블 주소
-    IList<IResourceLocation> imageList;                 // 이미지 주소
-    IList<IResourceLocation> dialogList;                // 이미지 주소
-    IList<IResourceLocation> effectList;                // 이펙트 주소
-
-    bool tableSetting       = false;                          // 세팅 체크
-    bool imageSetting       = false;                          // 세팅 체크
-    bool dialogueSetting    = false;
-    bool characterSetting   = false;
-    bool effectSetting      = false;
+    public Action closePatchUi;
     Dictionary<string, Sprite> imageRes = new ();
     Dictionary<string, List<string>> tableRes = new ();          // 배열 인덱스가 각각의 인덱스
     Dictionary<string, List<string>> dialogueRes = new ();
     Dictionary<string, GameObject> effectRes = new ();    
     public void StartResourceSetting()
     {
-        
-        StartCoroutine(IsSettingBasicRes());
-        Addressables.LoadResourceLocationsAsync("Table").Completed +=
-            (talbeLocation) =>
-            {
-                tableList = talbeLocation.Result;
-                Addressables.LoadAssetsAsync<TextAsset>(tableList, SaveTextAsset).Completed +=
-                (ReadyToStart) =>
-                {
-                    Addressables.Release<IList<TextAsset>>(ReadyToStart.Result);
-                    tableSetting = true;
-                };
-            };
-        Addressables.LoadResourceLocationsAsync("Image").Completed +=
-            (imageLocation) =>
-            {
-                imageList = imageLocation.Result;
-                Addressables.LoadAssetsAsync<Sprite>(imageList, SaveImageAsset).Completed +=
-                (ReadyToStart) =>
-                {
-                    imageSetting = true;
-                };
-            };
-
-        Addressables.LoadAssetAsync<GameObject>("PlayerCharacter").Completed +=
-            (player) =>
-            {               
-                
-                character = player.Result;
-                characterSetting = true;
-
-            };
-        Addressables.LoadResourceLocationsAsync("Dialogue").Completed +=
-           (dialogLocation) =>
-           {
-               dialogList = dialogLocation.Result;
-               Addressables.LoadAssetsAsync<TextAsset>(dialogList, SaveDialogAsset).Completed +=
-               (ReadyToStart) =>
-               {
-                   
-                   Addressables.Release<IList<TextAsset>>(ReadyToStart.Result);
-                   dialogueSetting = true;
-               };
-           };
-        Addressables.LoadResourceLocationsAsync("Effect").Completed +=
-          (dialogLocation) =>
-          {
-              effectList = dialogLocation.Result;
-              Addressables.LoadAssetsAsync<GameObject>(effectList, SaveEffectAsset).Completed +=
-              (ReadyToStart) =>
-              {
-                  EffectManager.effectManager.BasicEffectAdd();
-                  effectSetting = true;
-              };
-          };
+        StartCoroutine(CoStartResourceSetting());
     }
     
-
-
-
-
-
-
-
-
-
-
-
-    IEnumerator IsSettingBasicRes()
+    
+    IEnumerator CoStartResourceSetting()
     {
-        while (!(tableSetting&& imageSetting && dialogueSetting && characterSetting  && effectSetting))
-        {
-            yield return null;
-        }
 
-        PatchManager.patchManager.readyToPlay = true;
+        IList<IResourceLocation> tableList;                 // 테이블 주소
+        IList<IResourceLocation> imageList;                 // 이미지 주소
+        IList<IResourceLocation> dialogList;                // 이미지 주소
+        IList<IResourceLocation> effectList;                // 이펙트 주소
+
+
+        AsyncOperationHandle<IList<IResourceLocation>> tableHandle = Addressables.LoadResourceLocationsAsync("Table");
+        yield return tableHandle;
+        tableList = tableHandle.Result;
+
+        AsyncOperationHandle<IList<IResourceLocation>> imageHandle = Addressables.LoadResourceLocationsAsync("Image");
+        yield return imageHandle;
+        imageList = imageHandle.Result;
+
+        AsyncOperationHandle<IList<IResourceLocation>> dialogHandle = Addressables.LoadResourceLocationsAsync("Dialogue");
+        yield return dialogHandle;
+        dialogList = dialogHandle.Result;
+
+        AsyncOperationHandle<IList<IResourceLocation>> effectHandle = Addressables.LoadResourceLocationsAsync("Effect");
+        yield return effectHandle;
+        effectList = effectHandle.Result;
+
+
+        AsyncOperationHandle<IList<TextAsset>> tableAssetHandle = Addressables.LoadAssetsAsync<TextAsset>(tableList, SaveTextAsset);
+        yield return tableAssetHandle;
+        Addressables.Release<IList<TextAsset>>(tableAssetHandle.Result);
+
+
+        AsyncOperationHandle<IList<Sprite>> imageAssetHandle = Addressables.LoadAssetsAsync<Sprite>(imageList, SaveImageAsset);
+        yield return imageAssetHandle;
+
+        AsyncOperationHandle<IList<TextAsset>> dialogAssetHandle = Addressables.LoadAssetsAsync<TextAsset>(dialogList, SaveDialogAsset);
+        yield return dialogAssetHandle;
+        Addressables.Release<IList<TextAsset>>(dialogAssetHandle.Result);
+
+        AsyncOperationHandle<IList<GameObject>> effectAssetHandle = Addressables.LoadAssetsAsync<GameObject>(effectList, SaveEffectAsset);
+        yield return effectAssetHandle;
+        EffectManager.effectManager.BasicEffectAdd();     
+
+        AsyncOperationHandle<GameObject> playercharacter = Addressables.LoadAssetAsync<GameObject>("PlayerCharacter");        
+        yield return playercharacter;
+        character = playercharacter.Result;
+
+        AsyncOperation mainScene = SceneManager.LoadSceneAsync("Main");
+        yield return mainScene;
+
+        closePatchUi();
     }
+
+
+
+
+
+
+
+
+
     void SaveTextAsset(TextAsset _result)
     {
         if (!tableRes.ContainsKey(_result.name))
@@ -372,8 +350,7 @@ public class ResourceManager: MonoBehaviour
         }
         else 
         {
-            newMonster.SetMonster(_mobTableIndex,_startPos);
-            ObjectManager.objManager.AddMobList(newMonster);
+            newMonster.SetMonster(_mobTableIndex,_startPos);            
         }
       
         

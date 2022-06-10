@@ -35,8 +35,9 @@ public enum RECOVERY
 }
 public enum QUESTMARKTYPE
 {
-    EXCLAMATION,
-    QUESTION,
+    STARTABLE,
+    NOTCOMPLETE,
+    COMPLETE
 }
 public enum STATUSEFFECT
 {
@@ -96,6 +97,7 @@ public enum ITEMLISTTYPE
     INVEN,
     QUICK,
     EQUIP,
+    ITEMBOX,
     NONE
 }
 public enum ITEMTYPE

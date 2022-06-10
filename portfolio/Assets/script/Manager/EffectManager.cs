@@ -48,44 +48,15 @@ public class EffectManager : MonoBehaviour
         ClickEffectReset();
     }
 
-    public void UpdateQuestMark(Npc _npc, QUESTMARKTYPE _type,QUESTSTATE _state)
+    public void UpdateQuestMark(Npc _npc,QUESTSTATE _state)
     {
         QuestMark mark;
        if(runningQuestMark.TryGetValue(_npc, out mark))
         {
-            if(mark.MarkType == _type)
-            {
-                if(QUESTSTATE.COMPLETE == _state || QUESTSTATE.NONE == _state)
-                {
-                    mark.StartingOrComplete();
-                }
-                else if(QUESTSTATE.DONE == _state)
-                {
-                    if (_type == QUESTMARKTYPE.EXCLAMATION)
-                    {
-                        questMarkRes.Add("QUESTION", mark);
-                    }
-                    else
-                    {
-                        questMarkRes.Add("EXCLAMATION", mark);
-                    }
-                }
-            }
-            else                                                        // 퀘스트 마크 타입이 다른경우
-            {
-                if(_type == QUESTMARKTYPE.EXCLAMATION)
-                {
-                    questMarkRes.Add("QUESTION", mark);
-                }
-                else
-                {
-                    questMarkRes.Add("EXCLAMATION", mark);
-                }
-                runningQuestMark.Remove(_npc);                
-                CreateQuestMark(_npc, _state);                          // 퀘스트마크 새로 생성
+            runningQuestMark.Remove(_npc);
+            questMarkRes.Add(mark.MarkType.ToString(),mark);
 
-            }
-
+            CreateQuestMark(_npc, _state);
         }
         else
         {
@@ -100,9 +71,8 @@ public class EffectManager : MonoBehaviour
         {
             case QUESTSTATE.NONE:
                 {                    
-                    questmark = questMarkRes.GetData("EXCLAMATION");
-                    questmark.MarkType = QUESTMARKTYPE.EXCLAMATION;
-                    questmark.StartingOrComplete();
+                    questmark = questMarkRes.GetData("STARTABLE");
+                    questmark.MarkType = QUESTMARKTYPE.STARTABLE;                    
                     questmark.gameObject.transform.SetParent(_npc.transform);                    
                     questmark.gameObject.transform.localPosition = new Vector3(0,_npc.Nick_YPos + 0.2f, 0);
                     runningQuestMark.Add(_npc, questmark);
@@ -110,18 +80,16 @@ public class EffectManager : MonoBehaviour
                 break;
             case QUESTSTATE.PLAYING:
                 {                    
-                    questmark = questMarkRes.GetData("QUESTION");
-                    questmark.MarkType = QUESTMARKTYPE.QUESTION;
-                    questmark.Playing();
+                    questmark = questMarkRes.GetData("NOTCOMPLETE");
+                    questmark.MarkType = QUESTMARKTYPE.NOTCOMPLETE;                    
                     questmark.gameObject.transform.SetParent(_npc.transform);
                     questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos+0.2f, 0);
                     runningQuestMark.Add(_npc, questmark);
                 }                
                 break;
             case QUESTSTATE.COMPLETE:                
-                questmark = questMarkRes.GetData("QUESTION");
-                questmark.MarkType = QUESTMARKTYPE.QUESTION;
-                questmark.Playing();
+                questmark = questMarkRes.GetData("COMPLETE");
+                questmark.MarkType = QUESTMARKTYPE.COMPLETE;
                 questmark.gameObject.transform.SetParent(_npc.transform);
                 questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos + 0.2f, 0);
                 runningQuestMark.Add(_npc, questmark);
@@ -154,10 +122,13 @@ public class EffectManager : MonoBehaviour
 
         QuestMark questMarkEx = ResourceManager.resource.GetEffect("EXCLAMATION").AddComponent<QuestMark>();
         QuestMark questMarkQu = ResourceManager.resource.GetEffect("QUESTION").AddComponent<QuestMark>();
-        questMarkEx.MarkType = QUESTMARKTYPE.EXCLAMATION;
-        questMarkQu.MarkType = QUESTMARKTYPE.QUESTION;
-        questMarkRes.Add("EXCLAMATION", questMarkEx);
-        questMarkRes.Add("QUESTION", questMarkQu);        
+        QuestMark questMarkNotQu = ResourceManager.resource.GetEffect("QUESTIONNOTCLEAR").AddComponent<QuestMark>();
+        questMarkEx.MarkType = QUESTMARKTYPE.STARTABLE;
+        questMarkNotQu.MarkType = QUESTMARKTYPE.NOTCOMPLETE;
+        questMarkQu.MarkType = QUESTMARKTYPE.COMPLETE;        
+        questMarkRes.Add("STARTABLE", questMarkEx);
+        questMarkRes.Add("COMPLETE", questMarkQu);        
+        questMarkRes.Add("NOTCOMPLETE", questMarkNotQu);        
     }
     public void ClickEffectReset()               // 맵 이동 시 리셋
     {
@@ -173,7 +144,7 @@ public class EffectManager : MonoBehaviour
         List<Npc> npcList = new List<Npc>(runningQuestMark.Keys);
         for (int i = 0; i < npcList.Count; i++)
         {
-            if(runningQuestMark[npcList[i]].MarkType == QUESTMARKTYPE.EXCLAMATION)
+            if(runningQuestMark[npcList[i]].MarkType == QUESTMARKTYPE.STARTABLE)
             {
                 questMarkRes.Add("EXCLAMATION", runningQuestMark[npcList[i]]);
             }

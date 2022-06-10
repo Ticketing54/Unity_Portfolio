@@ -4,18 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.SceneManagement;
 using TMPro;
 using System;
 
 public class PatchManager : MonoBehaviour
 {
-    public static PatchManager patchManager;    
-    bool readytoplay = false;
-
-    public delegate void StartPatch();
-    public StartPatch startPatch;
-    public bool readyToPlay { get { return readytoplay; } set { readytoplay = value; } }
+    public static PatchManager patchManager;
+    public Action<long> openPatchUi;
+    public Action<AsyncOperationHandle> updatePatchUi;
+    public Action closePatchUi;
    
     private void Awake()
     {
@@ -30,69 +27,36 @@ public class PatchManager : MonoBehaviour
     }
 
     private void Start()
-    {        
-        CheckUpdateResource();
-    }
-    public void CheckUpdateResource()
     {
-        Addressables.GetDownloadSizeAsync("Patch").Completed +=
-            (handle) =>
-            {
-                if (handle.Result == 0)
-                {                    
-                    StartCoroutine(StartGame());
-                    ResourceManager.resource.StartResourceSetting();                    
-                }
-                else
-                {
-                    UIManager.uimanager.OpenUpdateMessage(handle.Result);
-                }
-            };
+        StartCoroutine(CoCheckUpdate());
     }
-    IEnumerator StartGame()
+   
+    IEnumerator CoCheckUpdate()
     {
-        float timer = 0f;        
-        while (true)
-        {
-            if(readyToPlay == true && timer > 3f)
-            {
-                
-                break;
-            }
-            
-            timer += Time.deltaTime;
-            yield return null;
+        AsyncOperationHandle<long> sizeCheck = Addressables.GetDownloadSizeAsync("Patch");
+        yield return sizeCheck;
+
+        if(sizeCheck.Result == 0)
+        {   
+            ResourceManager.resource.StartResourceSetting();            
         }
-
-        readyToPlay = false;
-        LoadSceneMain();
-    }
-    void LoadSceneMain()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-        AsyncOperation operation = SceneManager.LoadSceneAsync("Main");        
-    }
-
-    void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
-    {
-        if(arg0.name == "Main")
+        else
         {
-            UIManager.uimanager.ClosePatchUi();
-            SceneManager.sceneLoaded -= OnSceneLoaded;
+            openPatchUi(sizeCheck.Result);
         }
     }
-
     public void PatchResource()
     {
-        Addressables.DownloadDependenciesAsync("Patch", true).Completed +=
-            (download) =>
-            {
-                UIManager.uimanager.ClosePatchUi();
-                StartCoroutine(StartGame());
-                ResourceManager.resource.StartResourceSetting();
-            };        
+        StartCoroutine(CoPatchResource());
     }   
-   
-   
-    
+
+    IEnumerator CoPatchResource()
+    {
+        AsyncOperationHandle patch = Addressables.DownloadDependenciesAsync("Patch", true);
+        updatePatchUi(patch);
+        
+        yield return patch;
+        closePatchUi();
+        ResourceManager.resource.StartResourceSetting();
+    }
 }

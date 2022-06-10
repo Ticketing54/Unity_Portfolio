@@ -5,18 +5,11 @@ using UnityEngine;
 public class NonDialog_Npc : Npc
 {
 
-    List<List<string>> dialog;
-    public override void Awake()
-    {
-        base.Awake();
-
-        dialog = new List<List<string>>();
-        
-
-    }
-
+    List<List<string>> dialog;    
+    
     private void Start()
     {
+        dialog = new List<List<string>>();
         GetDialogData();
     }
     void GetDialogData()
