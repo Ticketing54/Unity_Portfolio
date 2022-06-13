@@ -28399,7 +28399,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 0.435
+  m_FillAmount: 0.168
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -36196,7 +36196,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &4577033391892680242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52898,7 +52898,6 @@ MonoBehaviour:
   baseUi: {fileID: 6102058874849046042}
   questAddEffect: {fileID: 463877115}
   topEnermyInfoUi: {fileID: 3857811863771741271}
-  moveicon: {fileID: 6294944535819805330}
   DontClick: {fileID: 7808894355524014289}
   fadeInout: {fileID: 6102058873718069939}
   waitForDoing: {fileID: 1316178860}

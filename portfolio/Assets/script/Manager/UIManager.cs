@@ -74,19 +74,7 @@ public class UIManager : MonoBehaviour
         }
     }
     #endregion
-
    
-    public void UpdateUISlots(ITEMLISTTYPE _type,int index)
-    {
-        if(updateUiSlot == null)
-        {
-            return;
-        }
-        else
-        {
-            updateUiSlot(_type, index);
-        }
-    }
     public void OnBaseUI()
     {
         baseUi.SetActive(true);        
@@ -94,17 +82,172 @@ public class UIManager : MonoBehaviour
     public void OffBaseUI()
     {
         baseUi.SetActive(false);        
-    }    
+    }
 
     #region StatusUi
-    public Action<int> AGetGoldUpdateUi;
-    public Action<int> AGetExpUpdateUi;
-    public Action AUpdateHp;
-    public Action AUpdateMp;
-    public Action AUpdateAtk;
-    public Action AUpdateExp;
-    public Action AUpdateLevel;
-    public Action AUpdateSkillPoint;    
+
+    Action<int> aGetGoldUpdateUi;
+    Action<int> aGetExpUpdateUi;
+    Action aUpdateHp;
+    Action aUpdateMp;
+    Action aUpdateAtk;
+    Action aUpdateExp;
+    Action aUpdateLevel;
+    Action aUpdateSkillPoint;
+
+
+    public Action<int> AGetGoldUpdateUi
+    {
+        get
+        {
+            if (aGetGoldUpdateUi == null)
+            {
+                return (one) => { Debug.Log("GoldUpdateUi가 없습니다."); };
+            }
+            else
+            {
+                return aGetGoldUpdateUi;
+            }
+            
+        }
+        set
+        {
+            aGetGoldUpdateUi = value;
+        }
+    }
+    public Action<int> AGetExpUpdateUi
+    {
+        get
+        {
+            if (aGetExpUpdateUi == null)
+            {
+                return (one) => { Debug.Log("aGetExpUpdateUi가 없습니다."); };
+            }
+            else
+            {
+                return aGetExpUpdateUi;
+            }
+
+        }
+        set
+        {
+            aGetExpUpdateUi = value;
+        }
+    }
+    public Action AUpdateHp
+    {
+        get
+        {
+            if (aUpdateHp == null)
+            {
+                return () => { Debug.Log("aUpdateHp가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateHp;
+            }
+
+        }
+        set
+        {
+            aUpdateHp = value;
+        }
+    }
+    public Action AUpdateMp
+    {
+        get
+        {
+            if (aUpdateMp == null)
+            {
+                return () => { Debug.Log("aUpdateMp 가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateMp;
+            }
+
+        }
+        set
+        {
+            aUpdateMp = value;
+        }
+    }
+    public Action AUpdateAtk
+    {
+        get
+        {
+            if (aUpdateAtk == null)
+            {
+                return () => { Debug.Log("aUpdateAtk 가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateAtk;
+            }
+
+        }
+        set
+        {
+            aUpdateAtk = value;
+        }
+    }
+    public Action AUpdateExp
+    {
+        get
+        {
+            if (aUpdateExp == null)
+            {
+                return () => { Debug.Log("aUpdateExp 가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateExp;
+            }
+
+        }
+        set
+        {
+            aUpdateExp = value;
+        }
+    }
+    public Action AUpdateLevel
+    {
+        get
+        {
+            if (aUpdateLevel == null)
+            {
+                return () => { Debug.Log("aUpdateLevel 가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateLevel;
+            }
+
+        }
+        set
+        {
+            aUpdateLevel = value;
+        }
+    }
+    public Action AUpdateSkillPoint
+    {
+        get
+        {
+            if (aUpdateSkillPoint == null)
+            {
+                return () => { Debug.Log("aUpdateSkillPoint 가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateSkillPoint;
+            }
+
+        }
+        set
+        {
+            aUpdateSkillPoint = value;
+        }
+    }
     #endregion
 
 
@@ -144,92 +287,60 @@ public class UIManager : MonoBehaviour
     public Action CloseMiniInfo;
     #endregion
 
-    #region ClickMove
-    [SerializeField]
-    MoveIcon moveicon;              // 드래그 아이콘
+    #region ClickMove    
     [SerializeField]
     Image DontClick;                // 드래그 시 클릭방지
 
-    // Left 클릭 정보    
-    ITEMLISTTYPE startListType = ITEMLISTTYPE.NONE;   
-    int          startListIndex = -1;
-    ItemSlot startItemSlot = null;
-
-    Coroutine RunningCoroutine;                              // 증복 실행 방지
-    
-
-
-    public delegate void EndClicItemMove(Vector2 _Pos);
-    public EndClicItemMove itemoveEnd;
-
-    // 각각의 아이템슬롯 업데이트
-    public delegate void UpdateUiSlot(ITEMLISTTYPE _itemListType, int _Index);                      
-    public UpdateUiSlot updateUiSlot;                                                               
-    
-    public void StartDragItem(ItemSlot _itemSlot,ITEMLISTTYPE _startListType, int _startListIndex)
+    Action<ITEMLISTTYPE,int,Vector2> itemClickUp;
+    Action<ITEMLISTTYPE, int> itemUpdateSlot;
+    Action<ITEMLISTTYPE, int,Vector2> moveItemIcon;
+    public Action<ITEMLISTTYPE, int, Vector2> ItemClickUp
     {
-        if (RunningCoroutine != null)
+        get
         {
-            StopCoroutine(RunningCoroutine);
-        }
-
-                
-        startItemSlot = _itemSlot;
-        startListType = _startListType;
-        startListIndex = _startListIndex;
-        SetMoveIcon(startItemSlot.ICON);
-        startItemSlot.ClickedSlot_Start();
-        RunningCoroutine = StartCoroutine(ClickStart());
-    }
-    IEnumerator ClickStart()
-    {
-        DontClick.gameObject.SetActive(true);
-        while (true)
-        {
-            if (Input.GetMouseButtonUp(0))
+            if (itemClickUp == null)
             {
-                itemoveEnd(Input.mousePosition);
-                ClickMoveReset();
+                return (type, index, pos) =>
+                {
 
-                yield break;
+                };
             }
-            yield return null;
+            else
+            {
+                return itemClickUp;
+            }
         }
-    }    
-    public void ClickUpitemSlot(ITEMLISTTYPE _EndListType, int _EndListIndex)
-    {
-        if (startListType == ITEMLISTTYPE.NONE || startListIndex < 0)           // 클릭이 되지 않았을떄
-        {   
-            return;
-        }  
-        
-        if(startListType == ITEMLISTTYPE.ITEMBOX && _EndListType == ITEMLISTTYPE.INVEN)
+        set
         {
-            OpenDropBoxCountMessage(startListIndex);
-            return;
+            itemClickUp = value;
         }
-
-        GameManager.gameManager.character.ItemMove(startListType, _EndListType, startListIndex, _EndListIndex);
     }
-
-    void SetMoveIcon(Sprite _image)                  //드래그 아이콘 설정
+    public Action<ITEMLISTTYPE, int> ItemUpdateSlot
     {
-        moveicon.gameObject.SetActive(true);
-        moveicon.ActiveMoveIcon(_image);
+        get
+        {
+            if(itemUpdateSlot == null)
+            {
+                return (type, index) => { Debug.Log(type + " 의 " + index + " 번의 슬롯이 없습니다."); };
+            }
+            else
+            {
+                return itemUpdateSlot;
+            }
+        }
+        set
+        {
+            itemUpdateSlot = value;
+        }
+    }
+    public Action<ITEMLISTTYPE,int,Vector2> MoveItemIcon { get => moveItemIcon; set => moveItemIcon = value; }
+
+    public void ItemClickEnd(ITEMLISTTYPE _startType,int _startIndex, Vector2 _pos)
+    {
+        ItemClickUp(_startType, _startIndex, _pos);
+        ItemUpdateSlot(_startType, _startIndex);
     }
    
-    void ClickMoveReset()
-    {
-        DontClick.gameObject.SetActive(false);        
-        startListIndex = -1;        
-        startListType = ITEMLISTTYPE.NONE;
-
-        if (startItemSlot != null)
-        {
-            startItemSlot.ClickedSlot_End();
-        }
-        startItemSlot = null;
-    }   
     #endregion
 
     #region Fade

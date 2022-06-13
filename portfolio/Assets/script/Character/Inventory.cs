@@ -75,7 +75,7 @@ public class Inventory : ItemMove
             if(inven[slotNum]!= null&& inven[slotNum].index == _NewItem.index && _NewItem.itemType != ITEMTYPE.EQUIPMENT)
             {
                 inven[slotNum].ItemCount += _NewItem.ItemCount;                
-                UIManager.uimanager.UpdateUISlots(ITEMLISTTYPE.INVEN, slotNum);
+                UIManager.uimanager.ItemUpdateSlot(ITEMLISTTYPE.INVEN, slotNum);
                 return true;
             }
         }
@@ -85,7 +85,7 @@ public class Inventory : ItemMove
             {
                 inven[slotNum] = _NewItem;
                 currentCount++;
-                UIManager.uimanager.UpdateUISlots(ITEMLISTTYPE.INVEN, slotNum);
+                UIManager.uimanager.ItemUpdateSlot(ITEMLISTTYPE.INVEN, slotNum);
 
                 return true;
             }
@@ -109,18 +109,7 @@ public class Inventory : ItemMove
         }
         return -1;
     }
-    public Item Exchange(int _Index, Item _NewItem)
-    {
-        Item OldItem = inven[_Index];
-
-        if(OldItem != null && OldItem.index == _NewItem.index )
-        {
-            OldItem.ItemCount += _NewItem.ItemCount;
-            return null;
-        }
-        inven[_Index] = _NewItem;
-        return OldItem;
-    }
+ 
     public bool IsSlotEmpty(int _Num)
     {
         return inven[_Num] == null;
@@ -130,7 +119,7 @@ public class Inventory : ItemMove
         return currentCount >= maxCount;
     }
     public bool PossableMoveItem(int _index, Item _MoveItem)
-    {
+    {   
         return true;
     }
     public string InvenInfo()

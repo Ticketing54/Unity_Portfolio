@@ -58,7 +58,7 @@ public class Bottom_Character_Info : MonoBehaviour
     void SetExp()
     {
         Exp_Text.text = character.stat.Exp.ToString() + " / " + character.stat.MaxExp.ToString();
-        Exp_bar.fillAmount = character.stat.Exp / character.stat.MaxExp;
+        Exp_bar.fillAmount = (float)character.stat.Exp / (float)character.stat.MaxExp;
     }
     
 }

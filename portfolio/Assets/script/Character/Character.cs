@@ -43,7 +43,6 @@ public class Character : MonoBehaviour
     public Action<string> RewardUpdate;
     public void GetReward_Monster(int _gold, int _exp)
     {
-       
         if(_gold != 0)
         {
             inven.GetGold(_gold);
@@ -53,11 +52,6 @@ public class Character : MonoBehaviour
         {
             stat.GetExp(_exp);
         }
-        // 인벤
-        // 스탯
-
-        
-        
     }
     public void DropBoxMoveToInven(int _index, int _count)
     {
@@ -255,6 +249,11 @@ public class Character : MonoBehaviour
 
     public void ItemMove(ITEMLISTTYPE _startListType, ITEMLISTTYPE _endListType, int _startListIndex, int _endListIndex)
     {
+        if(_startListIndex == _endListIndex && _startListIndex == _endListIndex)
+        {
+            return;
+        }
+
         ItemMove start_ItemMove = ChangeITemMove(_startListType);
         ItemMove end_ItemMove   = ChangeITemMove(_endListType);
 
@@ -264,18 +263,36 @@ public class Character : MonoBehaviour
 
         if(startItem == null && endItem == null)
         {
-            Debug.LogError("빈 두아이템을 옮기려합니다.");            
+            Debug.Log("빈 두아이템을 옮기려합니다.");            
         }
         else if(start_ItemMove.PossableMoveItem(_startListIndex,endItem) && end_ItemMove.PossableMoveItem(_endListIndex, startItem))
         {
-            Item popItem = start_ItemMove.PopItem(_startListIndex);  // 시작지점 아이템을 Pop 하여
-            start_ItemMove.AddItem(_startListIndex, end_ItemMove.Exchange(_endListIndex, popItem));     // 목적지점 아이템과 교환
+            Item popStartItem = start_ItemMove.PopItem(_startListIndex);
+            Item popEndItem = end_ItemMove.PopItem(_endListIndex);
             
+            if(popStartItem != null && popEndItem != null)
+            {
+                if ((popStartItem.index == popEndItem.index) && (popStartItem.itemType != ITEMTYPE.EQUIPMENT || popEndItem.itemType != ITEMTYPE.EQUIPMENT))
+                {
+                    popStartItem.ItemCount += popEndItem.ItemCount;
+                    end_ItemMove.AddItem(_endListIndex, popStartItem);
+                }
+                else
+                {
+                    start_ItemMove.AddItem(_startListIndex, popEndItem);
+                    end_ItemMove.AddItem(_endListIndex, popStartItem);
+                }
+            }
+            else
+            {
 
+                start_ItemMove.AddItem(_startListIndex, popEndItem);
+                end_ItemMove.AddItem(_endListIndex, popStartItem);
 
-            UIManager.uimanager.UpdateUISlots(_startListType, _startListIndex);
-            UIManager.uimanager.UpdateUISlots(_endListType, _endListIndex);                     
-        }        
+            }
+
+            UIManager.uimanager.ItemUpdateSlot(_endListType, _endListIndex);
+        }
     }
     public void ItemMove_DropBoxtoInven(ITEMLISTTYPE _endListtype,int startListIndex,int _endListIndex)
     {
@@ -297,7 +314,7 @@ public class Character : MonoBehaviour
         {
             case ITEMLISTTYPE.EQUIP:
                 {
-                    ItemMove(_StartListType, ITEMLISTTYPE.INVEN, _StartListIndex, inven.Empty_SlotNum());
+                    ItemMove(ITEMLISTTYPE.EQUIP, ITEMLISTTYPE.INVEN, _StartListIndex, inven.Empty_SlotNum());
                     break;
                 }
             case ITEMLISTTYPE.INVEN:
@@ -305,7 +322,7 @@ public class Character : MonoBehaviour
                     Item rightClickitem = start_ItemMove.GetItem(_StartListIndex);
                     if(rightClickitem!= null&& rightClickitem.itemType == ITEMTYPE.EQUIPMENT)
                     {
-                        ItemMove(_StartListType, ITEMLISTTYPE.EQUIP, _StartListIndex, (int)rightClickitem.equipType);
+                        ItemMove(ITEMLISTTYPE.INVEN, ITEMLISTTYPE.EQUIP, _StartListIndex, (int)rightClickitem.equipType);
                         break;
                         
                     }

@@ -8,25 +8,45 @@ public class MoveIcon : MonoBehaviour
     [SerializeField]
     Image iconImage;
 
-    public void ActiveMoveIcon(Sprite _sprite)
+    ITEMLISTTYPE type;
+    int slotNum;
+
+    Character character;
+
+    private void Start()
     {
-        iconImage.sprite = _sprite;
-        StartCoroutine(StopMoveicon());
+        UIManager.uimanager.MoveItemIcon += SetMoveIcon;
+        gameObject.SetActive(false);
     }
 
-    IEnumerator StopMoveicon()
+    private void OnEnable()
     {
-        while (true)
-        {         
-            if (Input.GetMouseButtonUp(0))
-            {
-                this.gameObject.SetActive(false);
-                yield break;
-            }
-            gameObject.transform.position = Input.mousePosition;
-            yield return null;
-        }        
+        character = GameManager.gameManager.character;
     }
-  
-    
+
+    void SetMoveIcon(ITEMLISTTYPE _type, int _slotNum, Vector2 _pos)
+    {
+        if (this.gameObject.activeSelf == false)
+        {
+            gameObject.SetActive(true);
+        }
+
+        if (_type != type || slotNum != _slotNum)
+        {
+            type = _type;
+            slotNum = _slotNum;
+
+            Item item = character.ItemList_GetItem(type, slotNum);
+            iconImage.sprite = ResourceManager.resource.GetImage(item.itemSpriteName);
+
+        }
+        gameObject.transform.position = _pos;
+    }
+    private void Update()
+    {
+        if (Input.GetMouseButtonUp(0))
+        {
+            gameObject.SetActive(false);
+        }
+    }
 }

@@ -1,16 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 public class Status
 {
 
     Character character;            // 설정 시 지정
 
+
     public Status(Character _character)
     {
         LevelSetting(1);
-        character = _character;
+        character = _character;      
     }
 
     // 캐릭터 레벨
@@ -94,7 +95,6 @@ public class Status
 
             UIManager.uimanager.AUpdateMp();
         }
-
     }    
     public float Atk
     {
@@ -164,14 +164,14 @@ public class Status
         get
         {
             float attackdamage = atk + equip_Atk;
-            return (int)Random.Range((float)(attackdamage * 0.8), (float)(attackdamage * 1.2));
+            return (int)UnityEngine.Random.Range((float)(attackdamage * 0.8), (float)(attackdamage * 1.2));
         }        
     }
     public DAMAGE DamageType()
     {
         int count = CRI;
 
-        int probabillity = Random.Range(count, 101);
+        int probabillity = UnityEngine.Random.Range(count, 101);
 
         if (probabillity <= count)
         {
@@ -202,7 +202,7 @@ public class Status
     public void GetExp(int _exp)
     {
         Exp += _exp;
-        
+        UIManager.uimanager.AGetExpUpdateUi(_exp);
         if(Exp >= need_Exp)
         {
             LevelUp();

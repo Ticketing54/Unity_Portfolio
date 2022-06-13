@@ -49,13 +49,6 @@ public class Equipment : ItemMove
         
     }
 
-    public Item Exchange(int _index, Item _NewItem)
-    {
-        Item popItem = PopItem(_index);
-        AddItem((int)_NewItem.equipType,_NewItem);
-        return popItem;        
-    }
-
     public bool PossableMoveItem(int _index, Item _MoveItem)
     {
         if (_MoveItem == null)

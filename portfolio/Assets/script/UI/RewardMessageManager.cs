@@ -26,12 +26,12 @@ public class RewardMessageManager : MonoBehaviour
 
     }
 
-    public void AddMsg_Gold(int _gold)
+    void AddMsg_Gold(int _gold)
     {
         string msg = " + " + _gold + " Gold를 얻었습니다.";
         AddMsg(msg);
     }
-    public void AddMsg_Exp(int _exp)
+    void AddMsg_Exp(int _exp)
     {
         string msg = " + " + _exp+ " Gold를 얻었습니다.";
         AddMsg(msg);

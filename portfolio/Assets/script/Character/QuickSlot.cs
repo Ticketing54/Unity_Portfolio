@@ -212,21 +212,7 @@ public class QuickSlot :ItemMove
         return PopItem;
     }
 
-    public Item Exchange(int _Index, Item _NewItem)
-    {
-        Item popItem =PopItem(_Index);
-
-        if(popItem != null && popItem.index == _NewItem.index)
-        {
-            _NewItem.ItemCount += popItem.ItemCount;
-            popItem = null;
-        }
-
-        
-        AddItem(_Index, _NewItem);
-
-        return popItem;
-    }
+   
     public bool PossableMoveItem(int _index, Item _MoveItem)
     {
         if(_MoveItem== null)
@@ -247,7 +233,7 @@ public class QuickSlot :ItemMove
         List<Item> quickItem = itemSlots[ITEMSLOTNUM];
         quickItem[_slotNum] = _NewItem;
         quickItem = null;
-        UIManager.uimanager.UpdateUISlots(ITEMLISTTYPE.QUICK, _slotNum);
+        UIManager.uimanager.ItemUpdateSlot(ITEMLISTTYPE.QUICK, _slotNum);
 
     }
     public bool IsEmpty_Item(int _Num)
