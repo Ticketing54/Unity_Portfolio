@@ -53,16 +53,42 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
     Image dragImage;
 
     // 클릭정보
-    BUSINESSTYPE businessType   = BUSINESSTYPE.NONE;         
-    bool         activeMessage  = false;
-    int          clickIndex     = -1;
-    int          activeIndex    = -1;
-    int          count          = 1;
+    BUSINESSTYPE    businessType;
+    bool            activeMessage;
+    int             clickIndex;
+    int             activeIndex;
+    int             count;
 
+    Character character;
+    NpcUnit npc;    
 
+    private void Start()
+    {
+        businessType = BUSINESSTYPE.NONE;
+        activeMessage = false;
+        clickIndex = -1;
+        activeIndex = -1;
+        count = 1;
+
+        UIManager.uimanager.AOpenShop += (npc)=> 
+        {
+
+            UIManager.uimanager.FadeinFucout(() =>
+            {
+                UIManager.uimanager.ACloseDialog();
+                UIManager.uimanager.OnBaseUI();
+                gameObject.SetActive(true);
+                GameManager.gameManager.character.isCantMove = true;
+                OpenShop(npc);
+            });
+            
+            
+        };         
+        gameObject.SetActive(false);
+    }
     private void OnEnable()
     {
-        GameManager.gameManager.character.isCantMove = true;
+        character = GameManager.gameManager.character;            
     }
 
     private void OnDisable()
@@ -72,8 +98,8 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
         if(businessMessage.gameObject.activeSelf == true)
         {
             businessMessage.gameObject.SetActive(false);
-        }
-        GameManager.gameManager.character.isCantMove = false;
+        }        
+        npc = null;
     }
     public void OnPointerDown(PointerEventData _data)
     {
@@ -303,7 +329,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
         switch (businessType)
         {
             case BUSINESSTYPE.BUY:
-                GameManager.gameManager.character.inven.BuyItem(shop_List[activeIndex].itemPrice * count, shop_List[activeIndex].itemIndex, count);
+                GameManager.gameManager.character.inven.BuyItem(shop_List[activeIndex].itemPrice * count,count);
                 BusinessReset();
                 updateInven();
                 
@@ -350,7 +376,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
 
         for (int shopIndex = 0; shopIndex < shop_List.Count; shopIndex++)
         {
-            if (shop_List[shopIndex].isInRect(_clickPos) && shop_List[shopIndex].itemIndex > 0)
+            if (shop_List[shopIndex].isInRect(_clickPos) && npc)
             {
 
                 clickIndex = shopIndex;
@@ -362,7 +388,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
 
         for (int invenIndex = 0; invenIndex < inven_List.Count; invenIndex++)
         {
-            if (inven_List[invenIndex].isInRect(_clickPos) && inven_List[invenIndex].itemIndex>0)
+            if (inven_List[invenIndex].isInRect(_clickPos))
             {
                 clickIndex = invenIndex;
                 businessType = BUSINESSTYPE.SELL;
@@ -436,7 +462,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
 
         for (int shopIndex = 0; shopIndex < shop_List.Count; shopIndex++)
         {
-            if (shop_List[shopIndex].isInRect(_clickPos) && shop_List[shopIndex].itemIndex > 0)
+            if (shop_List[shopIndex].isInRect(_clickPos) && shopIndex>= npc.ITEMS.Count)
             {
 
                 clickIndex = shopIndex;
@@ -448,7 +474,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
 
         for (int invenIndex = 0; invenIndex < inven_List.Count; invenIndex++)
         {
-            if (inven_List[invenIndex].isInRect(_clickPos) && inven_List[invenIndex].itemIndex > 0)
+            if (inven_List[invenIndex].isInRect(_clickPos) && character.inven.IsSlotEmpty(invenIndex) ==false)
             {
                 clickIndex = invenIndex;
                 businessType = BUSINESSTYPE.SELL;
@@ -492,18 +518,23 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
     #endregion
 
 
-    public void StartShopSetting(List<int> _items)
+
+    void OpenShop(NpcUnit _npc)
     {
-        for (int i = 0; i < _items.Count; i++)
+        gameObject.SetActive(true);
+        npc = _npc;
+        List<int> itemList = _npc.ITEMS;
+        for (int i = 0; i < itemList.Count; i++)
         {
-            shop_List[i].SetShopSlot(_items[i]);
+            shop_List[i].SetShopSlot(itemList[i]);
         }
-        for (int shopSlotIndex = _items.Count; shopSlotIndex < shop_List.Count; shopSlotIndex++)
+        for (int shopSlotIndex = itemList.Count; shopSlotIndex < shop_List.Count; shopSlotIndex++)
         {
             shop_List[shopSlotIndex].ResetSlot();
         }
         updateInven();
     }
+   
     public void OpenBusinessWindow(bool _isDrag = false)      // 드래그 시 activeIndex가 없으므로 확정
     {
         if (_isDrag == true)
@@ -526,6 +557,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
     }
     public void ExitShop()
     {
+        GameManager.gameManager.character.isCantMove = false;
         this.gameObject.SetActive(false);
     }
 
@@ -543,14 +575,14 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
         Item getitem;
         for (int itemSlotNum = 0; itemSlotNum < inven_List.Count; itemSlotNum++)
         {
-            getitem = GameManager.gameManager.character.ItemList_GetItem(ITEMLISTTYPE.INVEN, itemSlotNum);
+            getitem = character.ItemList_GetItem(ITEMLISTTYPE.INVEN, itemSlotNum);
             if (getitem == null)
             {
                 inven_List[itemSlotNum].ResetSlot_Inven();
             }
             else
             {
-                inven_List[itemSlotNum].SetShopSlot_Inven(getitem.index, getitem.itemName, getitem.itemSpriteName, getitem.itemPrice, getitem.ItemCount);
+                inven_List[itemSlotNum].SetShopSlot_Inven(getitem.itemName, getitem.itemSpriteName, getitem.itemPrice, getitem.ItemCount);
             }
             getitem = null;
         }

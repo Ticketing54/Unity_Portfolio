@@ -1,0 +1,7 @@
+﻿MonsterType,Index,AddressableName,x,y,z,x(rotate),x(rotate),z(rotate),x(scale),y(scale),z(scale),WayPoint
+Tutorial,1,Durmmya,66,0,12,0,-90,0,1,1,1,
+Tutorial,1,Durmmya,62,0,25,0,-180,0,1,1,1,
+Tutorial,1,Durmmya,65,0,17,0,-90,0,1,1,1,
+Tutorial,1,Durmmya,59,0,25,0,-180,0,1,1,1,
+Tutorial,2,Durmmyb,56,0,5,0,0,0,2,2,2,
+Tutorial,2,Durmmyb,61,0,5,0,0,0,2,2,2,

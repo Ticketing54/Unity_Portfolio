@@ -57,6 +57,7 @@ public class UiEffectManager : MonoBehaviour
         MiniDialogue dialog = miniDailog.GetData();
         dialog.transform.SetParent(this.gameObject.transform);
         dialog.transform.position = Camera.main.WorldToScreenPoint(_target.transform.position + new Vector3(0f, 3f, 0f));
+        
         runningMiniDialog.Add(_target, dialog);
         _target.UsingDialog = true;
         StartCoroutine(CoDialogControl(dialog, _text,_target));       

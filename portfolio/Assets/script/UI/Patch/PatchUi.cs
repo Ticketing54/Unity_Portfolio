@@ -26,7 +26,7 @@ public class PatchUi : MonoBehaviour
         PatchManager.patchManager.openPatchUi += SetUpdateMessage;
         PatchManager.patchManager.closePatchUi += ()=> { downloadMessage.SetActive(false); };
         PatchManager.patchManager.updatePatchUi += UpdateDownload;
-        ResourceManager.resource.closePatchUi += ClosePatchUi;
+        ResourceManager.resource.AClosePatchUi += ClosePatchUi;
     }
 
     public void SetUpdateMessage(long _DownloadFileSize)

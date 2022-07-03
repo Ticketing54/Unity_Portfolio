@@ -101,7 +101,7 @@ public class DropBox : UI_ItemSlots
         for (int slotNumer = 0; slotNumer < itemList.Count; slotNumer++)
         {
             Item item = itemList[slotNumer];            
-            itemSlots[slotNumer].Add(item.itemSpriteName,item.ItemCount,item.index);            
+            itemSlots[slotNumer].Add(item.itemSpriteName,item.ItemCount);            
         }
 
         for (int emptyNumber = itemSlots.Length; emptyNumber < itemSlots.Length; emptyNumber++)
@@ -128,7 +128,7 @@ public class DropBox : UI_ItemSlots
             else
             {
                 Item item = itemList[_index];
-                itemSlots[_index].Add(item.itemSpriteName, item.ItemCount,item.index);
+                itemSlots[_index].Add(item.itemSpriteName, item.ItemCount);
             }
         }
     }

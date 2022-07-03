@@ -13,15 +13,14 @@ public class GameManager : MonoBehaviour
    
     
     public Character character = null;
-  
-    //맵 정보    
 
+    //맵 정보    
+    #region CurrentMapInfo
     public string mapName { get; set; }
     public float mapSizeX { get; set; }
     public float mapSizeY { get; set; }
 
     Dictionary<string, Vector3> wayPoint = new();
-
     void resetWayPoint()
     {
         wayPoint.Clear();
@@ -43,6 +42,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    #endregion
+    public void SetMapInfo(string _mapName)
+    {
+        mapName = _mapName;
+        mapSizeX = GameObject.FindGameObjectWithTag("Floor").transform.position.x * 2;
+        mapSizeY= GameObject.FindGameObjectWithTag("Floor").transform.position.z * 2;
+    }
+
+    
     private void Awake()
     {        
         if (gameManager == null)

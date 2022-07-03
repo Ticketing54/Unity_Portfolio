@@ -39,19 +39,20 @@ MonoBehaviour:
     m_Id: f47b0d89a5e3e4c4a8329fcd2d740047
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 2
-  m_overridePlayerVersion: 1.0Test
+  m_overridePlayerVersion: 
   m_GroupAssets:
   - {fileID: 11400000, guid: ae39c18d4825e294f814c699dcd970bd, type: 2}
-  - {fileID: 11400000, guid: 72bcad785fb0de54da7a9141fda4fbb3, type: 2}
   - {fileID: 11400000, guid: 1bbd2f376eb04b44daa9a4e465726ec6, type: 2}
   - {fileID: 11400000, guid: b84ca43dd5679f341bd25027f4354170, type: 2}
-  - {fileID: 11400000, guid: 6e91dc94e592f664a8941db6d4b4d8d9, type: 2}
   - {fileID: 11400000, guid: 87de2cccd8f4d384aa9100fb922e9d5d, type: 2}
+  - {fileID: 11400000, guid: 4ed9de08809936143a3d5c7a2c167aa5, type: 2}
   - {fileID: 11400000, guid: 4fd718b0d1aff584fa7a8999c0936e2f, type: 2}
   - {fileID: 11400000, guid: 8222bd3bf2e74974491a90fc208620cc, type: 2}
   - {fileID: 11400000, guid: 5612088694590ff4e99121ff362e45db, type: 2}
   - {fileID: 11400000, guid: 6e53b3b6f1effb940b27dc787e3eae21, type: 2}
   - {fileID: 11400000, guid: b926d40e06559d245b7647cc102494d6, type: 2}
+  - {fileID: 11400000, guid: 709324f2c59d66a4ea60269488c0df8c, type: 2}
+  - {fileID: 11400000, guid: 72bcad785fb0de54da7a9141fda4fbb3, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -119,6 +120,7 @@ MonoBehaviour:
     - Sounds
     - Player
     - Dialogue
+    - CutScene
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 567860cb0a76ff24495c8b78a9f9e212, type: 2}
@@ -136,5 +138,6 @@ MonoBehaviour:
   m_HostingServicesManager:
     m_HostingServiceInfos: []
     m_Settings: {fileID: 11400000}
-    m_NextInstanceId: 0
-    m_RegisteredServiceTypeRefs: []
+    m_NextInstanceId: 1
+    m_RegisteredServiceTypeRefs:
+    - UnityEditor.AddressableAssets.HostingServices.HttpHostingService, Unity.Addressables.Editor

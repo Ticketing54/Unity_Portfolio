@@ -6,13 +6,15 @@ using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.Timeline;
+using UnityEngine.Playables;
 using System;
 
 public class LoadingSceneController : MonoBehaviour
 {
     
-    public static LoadingSceneController instance;
-    
+    public static LoadingSceneController instance;    
+
     public static LoadingSceneController Instance
     {
         get
@@ -45,17 +47,8 @@ public class LoadingSceneController : MonoBehaviour
             return;
         }
         DontDestroyOnLoad(gameObject);
+        
     }
-
-
-    public float tableProgress = 0;
-    public float imageProgress = 0;
-
-    
-
-    
-
-    AsyncOperationHandle loadAddressable;
     
     [SerializeField]
     CanvasGroup canvasGroup;
@@ -73,9 +66,6 @@ public class LoadingSceneController : MonoBehaviour
         gameObject.SetActive(true);
 
         StartCoroutine(CoLoadScene(_sceneName));
-        
-        
-        
     }
     IEnumerator CoLoadScene(string _sceneName)
     {
@@ -83,9 +73,11 @@ public class LoadingSceneController : MonoBehaviour
 
 
         AsyncOperationHandle<SceneInstance> loadscene = Addressables.LoadSceneAsync(_sceneName + "Scene");
-        yield return loadscene;
+        yield return loadscene;        
 
-        ResourceManager.resource.LoadSceneResource(_sceneName);
+        yield return StartCoroutine(ResourceManager.resource.CoLoadSceneResource(_sceneName));
+
+        GameManager.gameManager.SetMapInfo(_sceneName);
     }   
 
     public void LoadingPercent(float _percent)
@@ -134,4 +126,49 @@ public class LoadingSceneController : MonoBehaviour
             yield return null;
         }        
     }
+    public void LoadCutScene(string _cutName)
+    {
+        StartCoroutine(CoLoadCutScene(_cutName));
+    }
+    public IEnumerator CoLoadCutScene(string _cutName)
+    {
+        gameObject.SetActive(true);
+        yield return StartCoroutine(Fade(true));
+        CameraManager.cameraManager.enabled = false;
+        UIManager.uimanager.CanvasEnabled(false);
+        
+        AsyncOperationHandle<SceneInstance> cutScene = Addressables.LoadSceneAsync(_cutName, LoadSceneMode.Additive);
+        yield return cutScene;        
+        
+        GameObject timelineObj = GameObject.Find("Timeline");
+        PlayableDirector director = timelineObj.GetComponent<PlayableDirector>();
+        director.playOnAwake = false;
+
+        StartCoroutine(Fade(false));
+        yield return CheckDone(director);
+        yield return Fade(true);
+
+        AsyncOperationHandle<SceneInstance> quitCutScene =Addressables.UnloadSceneAsync(cutScene);
+        yield return quitCutScene;
+
+        CameraManager.cameraManager.enabled = true;
+        UIManager.uimanager.CanvasEnabled(true);
+        yield return Fade(false);
+        gameObject.SetActive(false);
+        
+    }
+    IEnumerator CheckDone(PlayableDirector _director)
+    {
+        _director.Play();
+        while (true)
+        {
+            if(_director.gameObject.activeSelf == false)
+            {   
+
+                break;
+            }
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
 }

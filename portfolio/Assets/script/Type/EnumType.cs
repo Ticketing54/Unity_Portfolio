@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public enum MONSTERSTATE
 {    
     IDLE,
@@ -65,11 +66,6 @@ public enum CLICKEFFECT
     NONE
 }
 
-public enum HAVEQUESTSTATE
-{
-    PLAYING,
-    FINISH
-}
 public enum QUESTTYPE
 {
     BATTLE,

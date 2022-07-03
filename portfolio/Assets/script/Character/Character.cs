@@ -1,20 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.AI;
-using UnityEngine.UI;
-using System;
 using TMPro;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 
 public class Character : MonoBehaviour
-{    
+{
 
-    public Character(){}
+    public Character() { }
 
     public Vector3 StartPos { get; set; }
-    
+
     public float HP_CURENT => stat.Hp;
     public float Hp_Max => stat.MaxHp;
     public string NICKNAME => stat.NAME;
@@ -23,11 +22,11 @@ public class Character : MonoBehaviour
     Coroutine action;
     Animator anim;
 
-    public HashSet<Unit>        nearUnit;
-    public HashSet<Monster>     nearMonster;
-    
+    public HashSet<Unit> nearUnit;
+    public HashSet<Monster> nearMonster;
 
-    NavMeshAgent nav;    
+
+    NavMeshAgent nav;
 
     public delegate void NearUnit(Unit _unit);
     public NearUnit addNearUnit;
@@ -43,12 +42,12 @@ public class Character : MonoBehaviour
     public Action<string> RewardUpdate;
     public void GetReward_Monster(int _gold, int _exp)
     {
-        if(_gold != 0)
+        if (_gold != 0)
         {
             inven.GetGold(_gold);
         }
 
-        if(_exp != 0)
+        if (_exp != 0)
         {
             stat.GetExp(_exp);
         }
@@ -71,13 +70,13 @@ public class Character : MonoBehaviour
         }
 
         UIManager.uimanager.DropBoxUpdate();
-        
+
 
 
     }
     public Item GetDropBoxItem(int _index)
     {
-        if(dropBox == null||_index<0 || _index > dropBox.Count-1)
+        if (dropBox == null || _index < 0 || _index > dropBox.Count - 1)
         {
             return null;
         }
@@ -89,10 +88,10 @@ public class Character : MonoBehaviour
 
     private void Awake()
     {
-        nearUnit    = new HashSet<Unit>();
+        nearUnit = new HashSet<Unit>();
         nearMonster = new HashSet<Monster>();
 
-        addNearUnit    += AddNearUnit;        
+        addNearUnit += AddNearUnit;
         removeNearUnit += RemoveNearUnit;
 
 
@@ -100,24 +99,28 @@ public class Character : MonoBehaviour
         anim = GetComponent<Animator>();
 
 
-        skill       = new CharacterSkill(this,nav,anim);
-        quest       = new CharacterQuest(this);        
-        quickSlot   = new QuickSlot(this);
-        stat        = new Status(this);
-        equip       = new Equipment(this);
-        inven       = new Inventory();
+        skill = new CharacterSkill(this, nav, anim);
+        quest = new CharacterQuest(this);
+        quickSlot = new Character_Quick(this);
+        stat = new Status(this);
+        equip = new Equipment(this);
+        inven = new Inventory();
 
-        quickQuest = new Quest[4];
         nav.updateRotation = false;
         HitBoxSetting();
     }
-  
+
     void Update()
     {
-        Click();        
+        Click();
+
     }
 
-  
+    public List<Quest> GetQuestList(QUESTSTATE _state)
+    {
+        return quest.GetQuestList(_state);
+    }
+
     public void SetPosition(Vector3 _Pos)
     {
         nav.Warp(_Pos);
@@ -126,7 +129,7 @@ public class Character : MonoBehaviour
     {
         nav.Warp(StartPos);
     }
-    
+
 
     [Header("스텟")]
     public Status stat;
@@ -134,15 +137,15 @@ public class Character : MonoBehaviour
     public Equipment equip;
     [Header("스킬")]
     public CharacterSkill skill;
-    [Header("퀘스트")]    
+    [Header("퀘스트")]
     public CharacterQuest quest;
     [Header("인벤토리")]
     public Inventory inven;
     [Header("퀵슬롯")]
-    public QuickSlot quickSlot;
+    public Character_Quick quickSlot;
 
 
-    public Quest[] quickQuest;
+
 
     #region ApproachUnit
     void AddNearUnit(Unit _unit)
@@ -151,11 +154,11 @@ public class Character : MonoBehaviour
         {
             Monster unit = (Monster)_unit;
             Monster mob;
-            if(!nearMonster.TryGetValue(unit,out mob))
+            if (!nearMonster.TryGetValue(unit, out mob))
             {
                 nearMonster.Add(unit);
             }
-            
+
         }
 
         nearUnit.Add(_unit);
@@ -172,7 +175,7 @@ public class Character : MonoBehaviour
         nearUnit.Remove(_unit);
         UIManager.uimanager.uicontrol_Off(_unit);
     }
-   
+
     public Monster ClosestMonster()
     {
         if (nearMonster.Count == 0)
@@ -205,19 +208,19 @@ public class Character : MonoBehaviour
             isUsingUi = value;
         }
     }
-    
-  
-   
+
+
+
 
     #endregion
 
     #region MoveItemControl   
     Item itemMoveItem;
     Item ITEMMOVEITEM { get { return itemMoveItem; } }
-  
+
     ItemMove ChangeITemMove(ITEMLISTTYPE _itemListType)
     {
-        
+
         switch (_itemListType)
         {
             case ITEMLISTTYPE.INVEN:
@@ -232,16 +235,16 @@ public class Character : MonoBehaviour
                 return null;
         }
     }
-    
+
     public Item ItemList_GetItem(ITEMLISTTYPE _ListType, int _Index)
-    {        
+    {
         itemMoveItem = ChangeITemMove(_ListType).GetItem(_Index);
 
-        if(itemMoveItem== null)
+        if (itemMoveItem == null)
         {
             return null;
         }
-            
+
         return ITEMMOVEITEM;
     }
 
@@ -249,28 +252,28 @@ public class Character : MonoBehaviour
 
     public void ItemMove(ITEMLISTTYPE _startListType, ITEMLISTTYPE _endListType, int _startListIndex, int _endListIndex)
     {
-        if(_startListIndex == _endListIndex && _startListIndex == _endListIndex)
+        if (_startListIndex == _endListIndex && _startListIndex == _endListIndex)
         {
             return;
         }
 
         ItemMove start_ItemMove = ChangeITemMove(_startListType);
-        ItemMove end_ItemMove   = ChangeITemMove(_endListType);
+        ItemMove end_ItemMove = ChangeITemMove(_endListType);
 
         Item startItem = start_ItemMove.GetItem(_startListIndex);
-        Item endItem   = end_ItemMove.GetItem(_endListIndex);
+        Item endItem = end_ItemMove.GetItem(_endListIndex);
 
 
-        if(startItem == null && endItem == null)
+        if (startItem == null && endItem == null)
         {
-            Debug.Log("빈 두아이템을 옮기려합니다.");            
+            Debug.Log("빈 두아이템을 옮기려합니다.");
         }
-        else if(start_ItemMove.PossableMoveItem(_startListIndex,endItem) && end_ItemMove.PossableMoveItem(_endListIndex, startItem))
+        else if (start_ItemMove.PossableMoveItem(_startListIndex, endItem) && end_ItemMove.PossableMoveItem(_endListIndex, startItem))
         {
             Item popStartItem = start_ItemMove.PopItem(_startListIndex);
             Item popEndItem = end_ItemMove.PopItem(_endListIndex);
-            
-            if(popStartItem != null && popEndItem != null)
+
+            if (popStartItem != null && popEndItem != null)
             {
                 if ((popStartItem.index == popEndItem.index) && (popStartItem.itemType != ITEMTYPE.EQUIPMENT || popEndItem.itemType != ITEMTYPE.EQUIPMENT))
                 {
@@ -294,7 +297,7 @@ public class Character : MonoBehaviour
             UIManager.uimanager.ItemUpdateSlot(_endListType, _endListIndex);
         }
     }
-    public void ItemMove_DropBoxtoInven(ITEMLISTTYPE _endListtype,int startListIndex,int _endListIndex)
+    public void ItemMove_DropBoxtoInven(ITEMLISTTYPE _endListtype, int startListIndex, int _endListIndex)
     {
         if (inven.IsInvenFull())
         {
@@ -308,7 +311,7 @@ public class Character : MonoBehaviour
 
     public void ItemMove_Auto(ITEMLISTTYPE _StartListType, int _StartListIndex)
     {
-        ItemMove start_ItemMove = ChangeITemMove(_StartListType);        
+        ItemMove start_ItemMove = ChangeITemMove(_StartListType);
 
         switch (_StartListType)
         {
@@ -320,11 +323,11 @@ public class Character : MonoBehaviour
             case ITEMLISTTYPE.INVEN:
                 {
                     Item rightClickitem = start_ItemMove.GetItem(_StartListIndex);
-                    if(rightClickitem!= null&& rightClickitem.itemType == ITEMTYPE.EQUIPMENT)
+                    if (rightClickitem != null && rightClickitem.itemType == ITEMTYPE.EQUIPMENT)
                     {
                         ItemMove(ITEMLISTTYPE.INVEN, ITEMLISTTYPE.EQUIP, _StartListIndex, (int)rightClickitem.equipType);
                         break;
-                        
+
                     }
                     break;
                 }
@@ -335,11 +338,11 @@ public class Character : MonoBehaviour
             default:
                 break;
 
-        }        
-    }  
+        }
+    }
     #endregion
 
-    public bool isCantMove = false;              
+    public bool isCantMove = false;
     public bool OpenLootingbox = false; // 루팅박스 
 
 
@@ -347,25 +350,25 @@ public class Character : MonoBehaviour
 
 
     bool isMove = false;
-  
+
     public void MovetoEmpty(Vector3 _dest)
     {
-        if(action != null)
+        if (action != null)
         {
             StopCoroutine(action);
             action = null;
         }
-        
-        action =StartCoroutine(Move(_dest));        
-    }    
+
+        action = StartCoroutine(Move(_dest));
+    }
     public void MovetoObject(GameObject _Target)
     {
-        if(action != null)
+        if (action != null)
         {
             StopCoroutine(action);
             action = null;
         }
-        
+
         float dis = Vector3.Distance(this.transform.position, _Target.transform.position);
         Vector3 stopPos;
 
@@ -375,7 +378,7 @@ public class Character : MonoBehaviour
         }
         else
         {
-            stopPos = Vector3.MoveTowards(this.transform.position, _Target.transform.position, dis - stat.ATK_RANGE); 
+            stopPos = Vector3.MoveTowards(this.transform.position, _Target.transform.position, dis - stat.ATK_RANGE);
         }
 
         action = StartCoroutine(Move(stopPos));
@@ -385,21 +388,21 @@ public class Character : MonoBehaviour
         isMove = true;
         anim.SetBool("IsMove", true);
         nav.SetDestination(_dest);
-        
+
         while (true)
-        {            
+        {
             Vector3 dir = (nav.steeringTarget - transform.position).normalized;
             dir.y = 0;
             Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, Time.deltaTime * 30f, Time.deltaTime * 30f);
             transform.rotation = Quaternion.LookRotation(newdir);
             yield return null;
 
-            if (nav.remainingDistance <=0.02&&nav.velocity.magnitude == 0f)
+            if (nav.remainingDistance <= 0.02 && nav.velocity.magnitude == 0f)
             {
                 isMove = false;
-                anim.SetBool("IsMove", false);                
+                anim.SetBool("IsMove", false);
             }
-            
+
         }
     }
 
@@ -410,7 +413,7 @@ public class Character : MonoBehaviour
 
     void MoveToScene(string _sceneName, Vector3 _Pos)
     {
-        if(waitForDoing != null)
+        if (waitForDoing != null)
         {
             return;
         }
@@ -418,13 +421,13 @@ public class Character : MonoBehaviour
         waitForDoing = StartCoroutine(CoMoveToScene(5f, _sceneName, _Pos));
     }
 
-    IEnumerator CoMoveToScene(float _timer,string _sceneName,Vector3 _pos)
+    IEnumerator CoMoveToScene(float _timer, string _sceneName, Vector3 _pos)
     {
         string waitForDoingText = _sceneName + " 으로 이동 하는중 입니다.";
-        yield return StartCoroutine(CoWaitForDoing(_timer,waitForDoingText));
-        
+        yield return StartCoroutine(CoWaitForDoing(_timer, waitForDoingText));
 
-        if(InteractSuccess == true)
+
+        if (InteractSuccess == true)
         {
             GameManager.gameManager.MoveToScene(_sceneName, _pos);
             InteractSuccess = false;
@@ -435,9 +438,9 @@ public class Character : MonoBehaviour
     IEnumerator CoWaitForDoing(float _timerMax, string _text)
     {
         UIManager.uimanager.OpenWaitForDoing(_text);
-        
+
         float timer = 0.01f;
-        while (timer<= _timerMax)
+        while (timer <= _timerMax)
         {
             if (isMove == true)
             {
@@ -461,7 +464,7 @@ public class Character : MonoBehaviour
         {
             return;
         }
-        
+
 
         if (!EventSystem.current.IsPointerOverGameObject())
         {
@@ -504,9 +507,9 @@ public class Character : MonoBehaviour
                         Debug.LogError("잘못된 대상입니다 : Monster");
                         break;
                     }
-                        
+
                     if (mob.DISTANCE <= stat.ATK_RANGE)
-                    {   
+                    {
                         Attack(mob.gameObject);
                         break;
                     }
@@ -515,12 +518,12 @@ public class Character : MonoBehaviour
                         MovetoObject(mob.gameObject);
                         break;
                     }
-                }                
+                }
             case "Npc":
                 {
                     EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.FRIEND, _target.transform);
                     Npc npc = _target.GetComponent<Npc>();
-                    if(npc == null)
+                    if (npc == null)
                     {
                         Debug.LogError("잘못된 대상입니다 : Npc");
                         break;
@@ -528,7 +531,7 @@ public class Character : MonoBehaviour
                     if (npc.DISTANCE <= stat.ATK_RANGE)
                     {
                         nav.SetDestination(transform.position);
-                        npc.Interact();                        
+                        npc.Interact();
                         break;
                     }
                     else
@@ -536,7 +539,7 @@ public class Character : MonoBehaviour
                         MovetoObject(npc.gameObject);
                         break;
                     }
-                }                
+                }
             case "Item":
                 {
                     EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.FRIEND, _target.transform);
@@ -565,20 +568,20 @@ public class Character : MonoBehaviour
                     {
                         break;
                     }
-                    
-                    
-                }                
+
+
+                }
             case "Potal":
                 {
                     Potal potal = _target.GetComponent<Potal>();
 
-                    if(potal == null)
+                    if (potal == null)
                     {
                         Debug.LogError("잘못된 대상입니다. : Potal");
                         break;
                     }
 
-                    if(potal.DISTANCE < stat.ATK_RANGE)
+                    if (potal.DISTANCE < stat.ATK_RANGE)
                     {
                         nav.SetDestination(transform.position);
                         MoveToScene(potal.mapName, potal.pos);
@@ -589,7 +592,7 @@ public class Character : MonoBehaviour
                         MovetoObject(potal.gameObject);
                         break;
                     }
-                }                
+                }
             default:
                 break;
         }
@@ -597,7 +600,7 @@ public class Character : MonoBehaviour
     #endregion
 
     #region Attack 
-    public void KnockBack() 
+    public void KnockBack()
     {
         StartCoroutine(CoKnockBack());
     }
@@ -605,7 +608,7 @@ public class Character : MonoBehaviour
     bool isPossableAttack = true;
     public void Attack(GameObject _target)
     {
-        if(isPossableAttack == false)
+        if (isPossableAttack == false)
         {
             return;
         }
@@ -616,7 +619,7 @@ public class Character : MonoBehaviour
         transform.LookAt(_target.transform);
         StartCoroutine(DelayAttack());
         anim.SetTrigger("Attack");
-        
+
     }
     IEnumerator DelayAttack()
     {
@@ -630,7 +633,7 @@ public class Character : MonoBehaviour
         while (timer <= 4)
         {
             timer += Time.deltaTime;
-            nav.velocity = - transform.forward * 8;
+            nav.velocity = -transform.forward * 8;
             yield return null;
         }
     }
@@ -638,16 +641,16 @@ public class Character : MonoBehaviour
     {
         List<Monster> mob = new List<Monster>(nearMonster);
 
-        foreach(Monster one in mob)
+        foreach (Monster one in mob)
         {
             if (weapons[_num].bounds.Intersects(one.hitBox.bounds))
             {
                 one.Damaged(stat.DamageType(), stat.AttckDamage);
             }
         }
-       
+
     }
-    public bool DamageMob(int _num,Monster _target)
+    public bool DamageMob(int _num, Monster _target)
     {
         if (weapons[_num].bounds.Intersects(_target.hitBox.bounds))
         {
@@ -660,7 +663,7 @@ public class Character : MonoBehaviour
     }
     void HitBoxSetting()
     {
-        List<Collider> weaponList = new ();
+        List<Collider> weaponList = new();
         GameObject[] obj = GameObject.FindGameObjectsWithTag("Weapon");
         for (int i = 0; i < obj.Length; i++)
         {
@@ -688,8 +691,8 @@ public class Character : MonoBehaviour
 
 
 
-    public void Damaged(DAMAGE _type,float _dmg)
-   {
+    public void Damaged(DAMAGE _type, float _dmg)
+    {
         float finalyDmg = 0;
         switch (_type)
         {
@@ -702,13 +705,13 @@ public class Character : MonoBehaviour
             case DAMAGE.CRITICAL:
                 {
                     finalyDmg = _dmg * 2;
-                    stat.Hp-= finalyDmg;
+                    stat.Hp -= finalyDmg;
                 }
                 break;
         }
         UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
     }
-   
+
     public void EffectEvent(string _name)
     {
         //GameObject obj = ObjectPoolManager.objManager.EffectPooling(_name);        
@@ -718,17 +721,17 @@ public class Character : MonoBehaviour
         //{
         //    obj.transform.position = transform.position + Priset;            
         //    obj.transform.rotation = transform.rotation;           
-            
+
         //}        
         //StartCoroutine(WaitForIt(obj));
-        
-        
+
+
     }
     IEnumerator WaitForIt(GameObject obj)
     {
-        yield return new WaitForSeconds(2f);        
+        yield return new WaitForSeconds(2f);
         obj.SetActive(false);
-        
+
     }
 
 
@@ -763,34 +766,34 @@ public class Character : MonoBehaviour
         _string.SetActive(false);
     }
 
-  
-    public void burnStateOn()  // 화상
-    {
-        if(stat.isburn == false)
-        {
-            StartCoroutine(BurnDamage());
-        }
-        
 
-    }
-    public void icestateOn()     // 빙결
-    {
-        if(stat.isIce == false)
-        {
-            StartCoroutine(IceState());
-        }
-    }
+    //public void burnStateOn()  // 화상
+    //{
+    //    if(stat.isburn == false)
+    //    {
+    //        StartCoroutine(BurnDamage());
+    //    }
+
+
+    //}
+    //public void icestateOn()     // 빙결
+    //{
+    //    if(stat.isIce == false)
+    //    {
+    //        StartCoroutine(IceState());
+    //    }
+    //}
     IEnumerator BurnDamage()
     {
         GameObject Effect;
         //Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Burn");
         float timer = 0;
         float holdTime = 5;
-        stat.isburn = true;
+        //stat.isburn = true;
         while (true)
         {
             timer += Time.deltaTime;
-            if(timer >= 1)
+            if (timer >= 1)
             {
                 timer -= 1;
                 holdTime -= 1;
@@ -798,14 +801,14 @@ public class Character : MonoBehaviour
                 //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, 10f, Color.red, 1);
             }
             //Effect.transform.position = Character.Player.transform.position;
-            
 
 
-            if(holdTime <= 0)
+
+            if (holdTime <= 0)
             {
                 //Effect.SetActive(false);
                 Effect = null;
-                stat.isburn = false;
+                //stat.isburn = false;
                 yield break;
             }
             yield return null;
@@ -838,14 +841,14 @@ public class Character : MonoBehaviour
 
 
 
-            
+
         //    yield return null;
         //}
     }
-    public void soundPlayer(string _Name) 
+    public void soundPlayer(string _Name)
     {
         //SoundManager.soundmanager.soundsPlay(_Name, Character.Player.gameObject);    
     }
 
-   
+
 }

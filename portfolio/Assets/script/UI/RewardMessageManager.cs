@@ -17,12 +17,12 @@ public class RewardMessageManager : MonoBehaviour
     HashSet<RewardMessage> runningMsg;
     PoolData<RewardMessage> poolMsg;
 
-    private void Awake()
+    private void Start()
     {
         runningMsg = new HashSet<RewardMessage>();
-        poolMsg = new PoolData<RewardMessage>(msg,msgParent,"GetRewardMessage");
+        poolMsg = new PoolData<RewardMessage>(msg, msgParent, "GetRewardMessage");
         UIManager.uimanager.AGetGoldUpdateUi += AddMsg_Gold;
-        UIManager.uimanager.AGetExpUpdateUi  += AddMsg_Exp;
+        UIManager.uimanager.AGetExpUpdateUi += AddMsg_Exp;
 
     }
 

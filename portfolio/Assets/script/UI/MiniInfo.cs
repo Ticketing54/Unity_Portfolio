@@ -34,6 +34,7 @@ public class MiniInfo : MonoBehaviour
 
         UIManager.uimanager.OpenMiniInfo += OpenMiniInfo;
         UIManager.uimanager.CloseMiniInfo += CloseMiniInfo;
+        gameObject.SetActive(false);
     }
 
 

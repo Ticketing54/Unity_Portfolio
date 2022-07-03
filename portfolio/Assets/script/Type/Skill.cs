@@ -16,7 +16,7 @@ public class Skill
     public string spriteName { get; }
     public int needLevel { get; }
     public int coolTime { get; }
-    public int holdTime { get; }
+    public float holdTime { get; }
     public string ability { get; }
     public string effectName { get; }
 
@@ -73,8 +73,8 @@ public class Skill
             Debug.LogError("Create Skill : SkillCoolTime Error");
         }
 
-        int t_HoldTime;
-        if (int.TryParse(table[8], out t_HoldTime))
+        float t_HoldTime;
+        if (float.TryParse(table[8], out t_HoldTime))
         {
             holdTime = t_HoldTime;
         }

@@ -40,17 +40,15 @@ public class Minimap_Maximum : MonoBehaviour
     }
     private void OnEnable()
     {
-        UIManager.uimanager.uicontrol_On += AddMiniDot;
-        UIManager.uimanager.uicontrol_Off += RemoveMiniDot;
-        UIManager.uimanager.miniMapSetting += SetStartMapInfo;
         SetMapInfo();
+        UIManager.uimanager.uicontrol_On += AddMiniDot;
+        UIManager.uimanager.uicontrol_Off += RemoveMiniDot;                
         OpenDotSetting();
     }
     private void OnDisable()
     {
         UIManager.uimanager.uicontrol_On -= AddMiniDot;
-        UIManager.uimanager.uicontrol_Off -= RemoveMiniDot;
-        UIManager.uimanager.miniMapSetting -= SetStartMapInfo;
+        UIManager.uimanager.uicontrol_Off -= RemoveMiniDot;        
         CloseDotSetting();
     }    
     void SetMapInfo()
@@ -64,15 +62,7 @@ public class Minimap_Maximum : MonoBehaviour
             character = GameManager.gameManager.character;
         }
     }
-    void SetStartMapInfo(string _mapName, float _xPos, float _yPos)
-    {
-        mapName = _mapName;
-        mapSize_X = _xPos;
-        mapSize_Y = _yPos;
-        mapImage.sprite = ResourceManager.resource.GetImage(mapName + "Map");
-        character = GameManager.gameManager.character;
-    }
-
+  
 
 
     public void MoveDot()      //Áß¾Ó ¹Ì´Ï¸Ê À§Ä¡

@@ -25,7 +25,9 @@ public class Quest
 
     public int Reward_Gold { get; }
     public int Reward_Exp { get; }
-    public List<List<int>> Reward_Item { get; }
+    public List<List<int>> Reward_Item { get; }    
+    public string CompleteQuestCutScene { get; }
+    public string DoneQuestCutSCene { get; }
     public Quest(int _index, string _questState)
     {
         List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable", _index);
@@ -214,6 +216,14 @@ public class Quest
 
             Reward_Item = reward_Items;
         }
+        if (!string.IsNullOrEmpty(questTable[16]))
+        {
+            CompleteQuestCutScene = questTable[16];
+        }
+        if (!string.IsNullOrEmpty(questTable[17]))
+        {
+            DoneQuestCutSCene = questTable[17];
+        }
     }
     public Quest(int _index, QUESTSTATE _questState)
     {
@@ -388,6 +398,14 @@ public class Quest
             }
 
             Reward_Item = reward_Items;
+        }
+        if (!string.IsNullOrEmpty(questTable[16]))
+        {
+            CompleteQuestCutScene = questTable[16];
+        }
+        if (!string.IsNullOrEmpty(questTable[17]))
+        {
+            DoneQuestCutSCene = questTable[17];
         }
     }
 }

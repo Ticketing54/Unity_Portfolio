@@ -11,9 +11,11 @@ public class Status
     public Status(Character _character)
     {
         LevelSetting(1);
-        character = _character;      
+        character = _character;
+        StateControlDic = new Dictionary<string, Coroutine>();
     }
 
+    Dictionary<string, Coroutine> StateControlDic;
     // 캐릭터 레벨
     int level;
 
@@ -30,6 +32,8 @@ public class Status
 
     // 스킬 포인트
     int skillPoint = 0;
+    // 공격 범위
+    float attack_Range = 1.5f;
     public string NAME { get; set; }
     public int Level
     { 
@@ -274,124 +278,75 @@ public class Status
     }
 
 
-    // 공격 범위
-    float attack_Range = 1.5f;
-
-    // 수정할 것
-    public bool isburn = false;
-    public bool isIce = false;
-    
-    
-    bool usingPotion_Hp = false;  
-    bool usingPotion_Mp = false;
-    public bool UsingPotion_Hp { get => usingPotion_Hp; }
-    public bool UsingPotion_Mp { get => usingPotion_Mp; }
-    public void BuffSkill(Skill _skill)
+    public void RecoveryHp_Potion(float _totalAmount, float _duration)
     {
-        character.StartCoroutine(CoBuffSkill(_skill));        
-    }
-
-    IEnumerator CoBuffSkill(Skill _skill)
-    {
-        string abilityList = _skill.ability;
-        GameObject effect = EffectManager.effectManager.GetBuffEffect(_skill.effectName);
-        effect.transform.SetParent(character.transform);
-        effect.transform.localPosition = Vector3.zero;
-
-        string[] ability = abilityList.Split("#");
-        for (int i = 0; i < ability.Length; i++)
+        if (StateControlDic.ContainsKey("Hp"))
         {
-            string[] abilityData = ability[i].Split('/');
-            ApplybufSkill(abilityData[0], float.Parse(abilityData[1]));
+            character.StopCoroutine(StateControlDic["Hp"]);
+            
+        }
+        
+        StateControlDic.Add("Hp", character.StartCoroutine(CoRecoveryHp(_totalAmount, _duration)));
+    }
+    public void RecoveryMp_Potion(float _totalAmount, float _duration)
+    {
+        if (StateControlDic.ContainsKey("Mp"))
+        {
+            character.StopCoroutine(StateControlDic["Mp"]);
+
         }
 
-        yield return new WaitForSeconds(_skill.holdTime);
+        StateControlDic.Add("Mp", character.StartCoroutine(CoRecoveryMp(_totalAmount, _duration)));
+    }
 
-        for (int i = 0; i < ability.Length; i++)
-        {
-            string[] abilityData = ability[i].Split('/');
-            ApplybufSkill(abilityData[0], -float.Parse(abilityData[1]));
-        }
-        EffectManager.effectManager.PushBuffEffect(_skill.effectName, effect);
-    }
-    void ApplybufSkill(string _stat, float _bufIncrease)
-    {
-        switch (_stat)
-        {
-            case "Spd":
-                {
-                    
-                }
-                break;
-            case "Atk":
-                {
-                    atk += _bufIncrease;
-                }
-                break;
-            case "Cri":
-                break;
-            case "Def":
-                break;
 
-        }
-    }
-    public void RecoveryHp(float _rehp, float _duration)
+    IEnumerator CoRecoveryHp(float _totalAmount, float _duration)
     {
-        usingPotion_Hp = true;        
-        character.StartCoroutine(CoRecoveryHp(_rehp, _duration));
-    }
-    public void RecoveryMp(float _reMp, float _duration)
-    {
-        usingPotion_Mp = true;
-        character.StartCoroutine(CoRecoveryMp(_reMp, _duration));
-    }   
-    IEnumerator CoRecoveryHp(float _rehp, float _duration)
-    {
-        float timer = 0f;
+        float timer = 0;
+        float count = 0;
+        float recoveryHp = _totalAmount / _duration;
         GameObject recoveryHpEffect = EffectManager.effectManager.GetBuffEffect("Hp");
         recoveryHpEffect.transform.SetParent(character.transform);
         recoveryHpEffect.transform.localPosition = Vector3.zero;
         while (timer <= _duration)
         {
-            Hp += _rehp;
             timer += Time.deltaTime;
 
-            if (Hp >= MaxHp)
+            if (timer >= count)
             {
-                Hp = MaxHp;
-            }            
+                count++;
+                character.stat.Hp += recoveryHp;
+            }
+
+            UIManager.uimanager.AUpdateBuf("HpPotion", timer, _duration);
             yield return null;
         }
-        
-        usingPotion_Hp = false;
+        UIManager.uimanager.ARemoveBuf("HpPotion");        
         EffectManager.effectManager.PushBuffEffect("Hp", recoveryHpEffect);
     }
-    IEnumerator CoRecoveryMp(float _remp, float _duration)
+    IEnumerator CoRecoveryMp(float _totalAmount, float _duration)
     {
-        float timer = 0f;
+        float timer = 0;
+        float count = 0;
+        float recoveryMp = _totalAmount / _duration;
         GameObject recoveryMpEffect = EffectManager.effectManager.GetBuffEffect("Mp");
         recoveryMpEffect.transform.SetParent(character.transform);
         recoveryMpEffect.transform.localPosition = Vector3.zero;
         while (timer <= _duration)
         {
-            Mp += _remp;
             timer += Time.deltaTime;
 
-            if (Mp >= MaxMp)
+            if (timer >= count)
             {
-                Mp = MaxMp;
-            }            
+                count++;
+                character.stat.Mp += recoveryMp;
+            }
+
+            UIManager.uimanager.AUpdateBuf("MpPotion", timer, _duration);
             yield return null;
         }
-        usingPotion_Mp = false;
-        EffectManager.effectManager.PushBuffEffect("Mp",recoveryMpEffect);
-
+        UIManager.uimanager.ARemoveBuf("MpPotion");        
+        EffectManager.effectManager.PushBuffEffect("Mp", recoveryMpEffect);
     }
-
-
-
-
-
-
 
 }

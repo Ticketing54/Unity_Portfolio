@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-public class BuffImage : Image
+public class BuffImage : MonoBehaviour
 {
     [SerializeField]
     Image bufImage;
@@ -12,21 +12,21 @@ public class BuffImage : Image
     [SerializeField]
     TextMeshProUGUI cooltimeText;
 
-    public void OnBuffImage(string _spriteName)
+    public void UpdateBuff(float _timer, float _duration)
     {
-        cooltimeImage.fillAmount = 1;
-        cooltimeText.text = "0";
+        cooltimeImage.fillAmount = _timer / _duration;
+        cooltimeText.text = ((int)(_duration - _timer)).ToString();
     }
-
-    public void SetBuff(float _fillamount,int _holdTime)
+    public void SetBuffImage(string _spriteName)
     {
-        cooltimeImage.fillAmount = _fillamount;
-        cooltimeText.text = _holdTime.ToString();
+        bufImage.sprite = ResourceManager.resource.GetImage(_spriteName);
+        cooltimeImage.fillAmount = 0;
+        cooltimeText.text = "0";
     }
     public void Clear()
     {
-        bufImage = null;
-        cooltimeImage = null;
+        bufImage.sprite = null;
+        cooltimeImage.fillAmount = 0;        
         cooltimeText.text = "0";
     }
 }

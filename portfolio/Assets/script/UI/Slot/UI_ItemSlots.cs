@@ -47,7 +47,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
             itemSlots[_index].Clear();
             return;
         }
-        itemSlots[_index].Add(getitem.itemSpriteName, getitem.ItemCount,getitem.index);
+        itemSlots[_index].Add(getitem.itemSpriteName, getitem.ItemCount);
     }
     #endregion
     protected void LeftClickDown(Vector2 _ClickPos)

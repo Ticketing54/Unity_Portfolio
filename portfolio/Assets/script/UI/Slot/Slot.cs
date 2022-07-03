@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
-public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+
+public class Slot : MonoBehaviour
 {   
     [SerializeField]
-    protected Image icon;
-    public int itemIndex;
+    protected Image icon;    
     public Sprite ICON { get { return icon.sprite; } set { icon.sprite = value; } }
     public RectTransform tr;
     Rect rc;
@@ -38,18 +37,7 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
         return false;
     }        
-    public virtual void ClickedSlot_Start()
-    {
-        Color alpacontrol = icon.color;
-        alpacontrol.a = 0.25f;
-        icon.color = alpacontrol;
-    }
-    public virtual void ClickedSlot_End()
-    {
-        Color alpacontrol = icon.color;
-        alpacontrol.a = 1;
-        icon.color = alpacontrol;
-    }
+   
     public bool isEmpty()
     {
         return ICON == null;
@@ -67,22 +55,6 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
         icon.gameObject.SetActive(true);
         icon.sprite = ResourceManager.resource.GetImage(_SpriteName);
-    }
-    public void OnPointerEnter(PointerEventData eventData)
-    {        
-        if (itemIndex > 0)
-        {
-            UIManager.uimanager.OpenMiniInfo(itemIndex, eventData.position);
-        }
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (itemIndex > 0)
-        {
-            UIManager.uimanager.CloseMiniInfo();
-        }
-    }
-
+    }   
 
 }

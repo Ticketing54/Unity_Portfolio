@@ -106,13 +106,13 @@ public class EffectManager : MonoBehaviour
     #region ClickEffect
     public void BasicEffectAdd()
     {
-        GameObject clickNomal = ResourceManager.resource.GetEffect("Click_Nomal");
+        GameObject clickNomal = ResourceManager.resource.GetEffect("ClickNomal");
         clickNomal.transform.SetParent(this.transform);
         clickNomal.gameObject.SetActive(false);
-        GameObject clickEnermy = ResourceManager.resource.GetEffect("Click_Enermy");
+        GameObject clickEnermy = ResourceManager.resource.GetEffect("ClickEnermy");
         clickEnermy.transform.SetParent(this.transform);
         clickEnermy.gameObject.SetActive(false);
-        GameObject clickFriend = ResourceManager.resource.GetEffect("Click_Friend");
+        GameObject clickFriend = ResourceManager.resource.GetEffect("ClickFriend");
         clickFriend.transform.SetParent(this.transform);
         clickFriend.gameObject.SetActive(false);        
         clickList.Add(clickNomal);

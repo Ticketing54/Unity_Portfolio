@@ -63,11 +63,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect
-  - m_GUID: 7deb62f11c9cf0e47b80f2221b5c8255
-    m_Address: Damage
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Effect
   - m_GUID: b00482742948f4c4f81e01fba082aa6d
     m_Address: attack03
     m_ReadOnly: 0

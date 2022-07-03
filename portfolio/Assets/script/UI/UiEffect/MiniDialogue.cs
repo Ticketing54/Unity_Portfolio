@@ -7,6 +7,7 @@ public class MiniDialogue : MonoBehaviour
 {
     [SerializeField]
     TextMeshProUGUI text;
+    
 
     public IEnumerator CoTextingDialog(string _dialog)
     {   

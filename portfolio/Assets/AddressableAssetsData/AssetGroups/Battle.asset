@@ -24,22 +24,22 @@ MonoBehaviour:
     - Patch
     - Scene
   - m_GUID: 531a418f9ff8c4e4db674871d53e76d2
-    m_Address: Battle_WayPoint
+    m_Address: BattleWayPoint
     m_ReadOnly: 0
     m_SerializedLabels:
     - Table
   - m_GUID: 1a007ceb3660a1d4698e4351b4311f91
-    m_Address: Battle_Npc
+    m_Address: BattleNpc
     m_ReadOnly: 0
     m_SerializedLabels:
     - Table
   - m_GUID: d58805dc622275e47b005bc5b8a944cd
-    m_Address: Battle_Monster
+    m_Address: BattleMonster
     m_ReadOnly: 0
     m_SerializedLabels:
     - Table
   - m_GUID: b4e7ee35de809344e9f69a673324606d
-    m_Address: Battle_Potal
+    m_Address: BattlePotal
     m_ReadOnly: 0
     m_SerializedLabels:
     - Table

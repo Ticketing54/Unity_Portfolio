@@ -35,7 +35,7 @@ public class UI_Inventory : UI_ItemSlots
             }
             else
             {
-                itemSlots[itemSlotNum].Add(getitem.itemSpriteName, getitem.ItemCount, getitem.index);
+                itemSlots[itemSlotNum].Add(getitem.itemSpriteName, getitem.ItemCount);
             }
 
             getitem = null;

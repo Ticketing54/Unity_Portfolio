@@ -72,17 +72,22 @@ public class ObjectManager : MonoBehaviour
         }
     }
 
-    public void UpdateQuestMark(int _npcIndex)
+    public void UpdateQuestMark(Quest _quest)
     {
-        Npc npc;
-        if (npcDic.TryGetValue(_npcIndex, out npc))
-        {
-            npc.SetQuestMark();
-        }
-        else
-        {
-            Debug.Log("목표를 찾지 못했습니다.");
+        Quest quest = _quest;
+        int startNpc = quest.Start_Npc;
+        int endNpc   = quest.Goal_Npc;
 
+
+        if (npcDic.ContainsKey(startNpc))
+        {
+            npcDic[startNpc].SetQuestMark();
+        }
+
+
+        if (npcDic.ContainsKey(endNpc))
+        {
+            npcDic[endNpc].SetQuestMark();
         }
     }
 

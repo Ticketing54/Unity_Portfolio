@@ -5,29 +5,28 @@ using UnityEngine.AI;
 
 public class CharacterSkill
 {
-    Dictionary<int, Skill> skillDic;
-    Skill skill;
+    HashSet<int> haveSkills;
+    HashSet<int> coolTimeSkills;
+    
     Character character;
     NavMeshAgent nav;
     Animator anim;
     
     public CharacterSkill(Character _character,NavMeshAgent _nav, Animator _anim)
     {
-        skillDic = new Dictionary<int, Skill>();
-        
+        haveSkills = new HashSet<int>();
+        coolTimeSkills = new HashSet<int>();        
         character = _character;
         nav = _nav;
         anim = _anim;
     }
 
     public void UseSkill(int _skillIndex)
-    {
-        Skill skill;
-        if (!skillDic.TryGetValue(_skillIndex,out skill))
+    {   
+        if(!haveSkills.Contains(_skillIndex) || coolTimeSkills.Contains(_skillIndex))
         {
             return;
-        }        
-        
+        }
         //if (skill.mana > character.stat.MP)               // 마나 소모
         //{
         //    Debug.Log("마나가 부족합니다.");
@@ -39,11 +38,11 @@ public class CharacterSkill
         //}
 
 
-        switch (skill.index)
+        switch (_skillIndex)
         {
             case 1:
                 {
-                    BuffSkill(skill);
+                    BuffSkill(_skillIndex);
                 }
                 break;
             case 2:
@@ -53,12 +52,12 @@ public class CharacterSkill
                 break;
             case 3:
                 {
-                    BuffSkill(skill);
+                    BuffSkill(_skillIndex);
                 }
                 break;
             case 4:
                 {
-                    BuffSkill(skill);
+                    BuffSkill(_skillIndex);
                 }
                 break;
             case 5:
@@ -72,9 +71,8 @@ public class CharacterSkill
     }
 
     public void Add(int _skillIndex)
-    {
-        Skill newSkill = new Skill(_skillIndex);
-        skillDic.Add(_skillIndex, newSkill);
+    {   
+        haveSkills.Add(_skillIndex);
     }
    
 
@@ -129,14 +127,75 @@ public class CharacterSkill
         }
         character.StartCoroutine(CoRushSkill());
     }
-    public void BuffSkill(Skill _skillIndex)                                     //skill 2번
+    public void BuffSkill(int _skillIndex)                                     //skill 2번
     {
-        anim.SetFloat("SkillNum", 2);        
-        character.stat.BuffSkill(_skillIndex);
-        
+        anim.SetFloat("SkillNum", 2);
+        character.StartCoroutine(CoBuffSkill(_skillIndex));
     }
     public void SkillEffectOn(string _effectName)
     {
 
+    }
+
+    IEnumerator CoBuffSkill(int _skillindex)
+    {
+        Skill skill = new Skill(_skillindex);
+        
+        GameObject effect = EffectManager.effectManager.GetBuffEffect(skill.effectName);
+        effect.transform.SetParent(character.transform);
+        effect.transform.localPosition = Vector3.zero;
+
+        string abilityList = skill.ability;
+        string[] ability = abilityList.Split("#");
+        for (int i = 0; i < ability.Length; i++)
+        {
+            string[] abilityData = ability[i].Split('/');
+            ApplybufSkill(abilityData[0], float.Parse(abilityData[1]));
+        }
+
+        yield return new WaitForSeconds(skill.holdTime);
+
+        for (int i = 0; i < ability.Length; i++)
+        {
+            string[] abilityData = ability[i].Split('/');
+            ApplybufSkill(abilityData[0], -float.Parse(abilityData[1]));
+        }
+        EffectManager.effectManager.PushBuffEffect(skill.effectName, effect);
+    }
+
+    IEnumerator CoBuffUIControl(Skill _skill)
+    {
+        float timer = 0f;
+        float holdTime = _skill.holdTime;
+        float coolTime = _skill.coolTime;
+        string spriteName = _skill.spriteName;
+        while (timer < coolTime)
+        {
+            timer += Time.deltaTime;
+
+
+            yield return null;
+        }
+    }
+    void ApplybufSkill(string _stat, float _bufIncrease)
+    {
+        switch (_stat)
+        {
+            case "Spd":
+                {
+
+                }
+                break;
+            case "Atk":
+                {
+                    character.stat.Atk += _bufIncrease;
+                }
+                break;
+            case "Cri":
+                break;
+            case "Def":
+                break;
+
+        }
     }
 }

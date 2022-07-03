@@ -7,7 +7,7 @@ using System;
 public class UIManager : MonoBehaviour
 {
     public static UIManager uimanager;
-    
+    Canvas mainCanvas;
     [SerializeField]
     GameObject baseUi;
 
@@ -24,8 +24,12 @@ public class UIManager : MonoBehaviour
         }
 
         KeyboardSortCut = new Dictionary<KeyCode, Action>();
+        mainCanvas = GetComponent<Canvas>();
     }
-
+    public void CanvasEnabled(bool _state)
+    {
+        mainCanvas.enabled = _state;
+    }
     private void Update()
     {
         Inputkeyboard();
@@ -74,7 +78,51 @@ public class UIManager : MonoBehaviour
         }
     }
     #endregion
-   
+
+
+    public Action OpenQuickQuest
+    {
+        get
+        {
+            if(openQuickQuest == null)
+            {
+                return () => { Debug.Log("OpenQuickQuest is null"); };
+            }
+            else
+            {
+                return openQuickQuest;
+            }
+        }
+        set
+        {
+            openQuickQuest = value;
+        }
+    }
+    
+    Action openQuickQuest;
+    public Action CloseQuickQuest
+    {
+        get
+        {
+            if(closeQuickQuest == null)
+            {
+                return () => { Debug.Log("CloseQuickQuest is null"); };
+            }
+            else
+            {
+                return closeQuickQuest;
+            }
+        }
+        set
+        {
+            closeQuickQuest = value;
+        }
+    }
+    
+    Action closeQuickQuest;
+
+
+
     public void OnBaseUI()
     {
         baseUi.SetActive(true);        
@@ -84,6 +132,46 @@ public class UIManager : MonoBehaviour
         baseUi.SetActive(false);        
     }
 
+
+    public Action<int,float> AQuickSlotItemCooltime
+    {
+        get
+        {
+            if(aQuickSlotItemCooltime == null)
+            {
+                return (Index, cooltime) => { Debug.Log("aQuickSlotUi_itemUpdate is null"); };
+            }
+            else
+            {
+                return aQuickSlotItemCooltime;
+            }
+        }
+        set
+        {
+            aQuickSlotItemCooltime = value;
+        }
+    }       
+    public Action<int, float> AQuickSlotSkillCooltime
+    {
+        get
+        {
+            if (aQuickSlotSkillCooltime == null)
+            {
+                return (Index, cooltime) => { Debug.Log("aQuickSlotUi_SKillUpdate is null"); };
+            }
+            else
+            {
+                return aQuickSlotSkillCooltime;
+            }
+        }
+        set
+        {
+            aQuickSlotSkillCooltime = value;
+        }
+    }
+    Action<int, float> aQuickSlotItemCooltime;
+    Action<int, float> aQuickSlotSkillCooltime;
+    
     #region StatusUi
 
     Action<int> aGetGoldUpdateUi;
@@ -94,7 +182,10 @@ public class UIManager : MonoBehaviour
     Action aUpdateExp;
     Action aUpdateLevel;
     Action aUpdateSkillPoint;
-
+    Action<int> aAddQuestUi;
+    Action<int> aQuestCompleteUi;
+    Action<int> aQuestUpdateUi;
+    Action<int> aQuestDoneUi;
 
     public Action<int> AGetGoldUpdateUi
     {
@@ -248,20 +339,81 @@ public class UIManager : MonoBehaviour
             aUpdateSkillPoint = value;
         }
     }
-    #endregion
-
-
-    #region QuestEffect
-
-    [SerializeField]
-    AddQuestText_Ui questAddEffect;
-
-    public void OnQuestEffect(QUESTSTATE _state)
+    public Action<int> AAddQuestUi
     {
-        questAddEffect.gameObject.SetActive(true);
-        questAddEffect.SetQuestEffect(_state);
+        get
+        {
+            if(aAddQuestUi == null)
+            {
+                return (questindex)=> { Debug.Log("aAddQuestUi 가 없습니다."); };
+            }
+            else
+            {
+                return aAddQuestUi;
+            }
+        }
+        set
+        {
+            aAddQuestUi = value;
+        }
+    }
+    public Action<int> AQuestCompleteUi
+    {
+        get
+        {
+            if(aQuestCompleteUi == null)
+            {
+                return (questindex) => { Debug.Log("aQuestCompleteUi 가 없습니다."); };
+            }
+            else
+            {
+                return aQuestCompleteUi;
+            }
+        }
+        set
+        {
+            aQuestCompleteUi = value;
+        }
+    }
+    public Action<int> AQuestDoneUi
+    {
+        get
+        {
+            if(aQuestDoneUi == null)
+            {
+                return (questindex) => { Debug.Log("AQuestDoneUi 가 없습니다."); };
+            }
+            else
+            {
+                return aQuestDoneUi;
+            }
+        }
+        set
+        {
+            aQuestDoneUi = value;
+        }
+    }
+    public Action<int> AQuestUpdateUi
+    {
+        get
+        {
+            if(aQuestUpdateUi == null)
+            {
+                return (questindex) => { Debug.Log("AQuestUpdateUi 가 없습니다."); };
+            }
+            else
+            {
+                return aQuestUpdateUi;
+            }
+        }
+        set
+        {
+            aQuestUpdateUi = value;
+        }
     }
     #endregion
+
+
 
     #region Middle_Top_HpBar    
     [SerializeField]
@@ -285,6 +437,49 @@ public class UIManager : MonoBehaviour
     #region MiniInfo
     public Action<int, Vector2> OpenMiniInfo;
     public Action CloseMiniInfo;
+    #endregion
+
+    #region BufImage
+
+    public Action<string, float, float> AUpdateBuf
+    {
+        get
+        {
+            if(aUpdateBuf == null)
+            {
+                return (key, total, duration) => { Debug.Log("버프 이미지가 활성화 되지 않았습니다.UpdateBuf"); };
+            }
+            else
+            {
+                return aUpdateBuf;
+            }
+        }
+        set
+        {
+            aUpdateBuf = value;
+        }
+    }
+    public Action<string> ARemoveBuf
+    {
+        get
+        {
+            if (aRemoveBuf == null)
+            {
+                return (key) => { Debug.Log("버프 이미지가 활성화 되지 않았습니다. Remove"); };
+            }
+            else
+            {
+                return aRemoveBuf;
+            }
+        }
+        set
+        {
+            aRemoveBuf = value;
+        }
+    }
+
+    Action<string> aRemoveBuf;
+    Action<string, float, float> aUpdateBuf;
     #endregion
 
     #region ClickMove    
@@ -346,48 +541,58 @@ public class UIManager : MonoBehaviour
     #region Fade
     [SerializeField]
     Image fadeInout;
-
-    public delegate void FadeInTurnOnOffUi();                       // Fade in ->UiOnOff ->Fade out
     
-   
-    public void FadeInOut(FadeInTurnOnOffUi _middleFuc)
+    public void FadeinFucout(Action _actionO=null, Action _action1=null)
     {
-        
-        StartCoroutine(CoFade(_middleFuc));
+        StartCoroutine(CoFadeinFucout(_actionO, _action1));
     }
-    
-    IEnumerator CoFade(FadeInTurnOnOffUi _middleFuc)
+
+
+    IEnumerator CoFadeinFucout(Action _fadeinAction = null, Action _fadeOutAction = null)
+    {
+        yield return StartCoroutine(CoFadeIn());
+        if(_fadeinAction != null)
+        {
+            _fadeinAction();
+        }
+        
+        StartCoroutine(CoFadeOut());
+        if (_fadeOutAction != null)
+        {
+            _fadeOutAction();
+        }
+    }
+    IEnumerator CoFadeIn()
     {
         fadeInout.gameObject.SetActive(true);
-        
         Color controlColor = fadeInout.color;
         controlColor.a = 0;
         fadeInout.color = controlColor;
-        float timer = 0;
-        bool isFadein = true;
-        while(true)
+        float timer = 0;        
+        while (controlColor.a<1)
         {
             yield return null;
-            timer += Time.unscaledDeltaTime ;
+            timer += Time.unscaledDeltaTime;
 
-            controlColor.a = isFadein ? Mathf.Lerp(0f, 1f, timer) : Mathf.Lerp(1f, 0f, timer);
+            controlColor.a = Mathf.Lerp(0f, 1f, timer) ;
             fadeInout.color = controlColor;
-
-            if(isFadein == true && controlColor.a >= 1)
-            {
-                _middleFuc();                               /// 어두워졌을때 작업
-                isFadein = false;
-                timer = 0;
-            }
-
-            if(isFadein == false && controlColor.a <= 0)
-            {
-                break;
-            }
         }
+    }
+    IEnumerator CoFadeOut()
+    {
+        Color controlColor = fadeInout.color;
+        controlColor.a = 0;
+        fadeInout.color = controlColor;
+        float timer = 0;        
+        while (controlColor.a > 0)
+        {
+            yield return null;
+            timer += Time.unscaledDeltaTime;
 
+            controlColor.a = Mathf.Lerp(1f, 0f, timer);
+            fadeInout.color = controlColor;
+        }
         fadeInout.gameObject.SetActive(false);
-        
     }
     #endregion
 
@@ -419,74 +624,72 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Dialog
-    [SerializeField]
-    DialogueUi dialog;
-    //public Shop shop;
-    NpcUnit npc;
-    public void OpenDialog(NpcUnit _npc)
-    {
-        npc = _npc;
-        StartCoroutine(CoFade(SetDialog));        
-    }
-    void SetDialog()
-    {
-        baseUi.SetActive(false);
-        dialog.gameObject.SetActive(true);
-        dialog.StartDialogue(npc);        
-    }
-    void QuitDialog()
-    {        
-        baseUi.SetActive(true);
-        dialog.gameObject.SetActive(false);
-    }
-    public void CloseDialog()
-    {
-        npc = null;
-        StartCoroutine(CoFade(QuitDialog));        
-    }
-    #endregion
 
-    #region Shop
-    [SerializeField]
-    Shop shop;
-    List<int> itemList;
-
-    public void OpenShop(List<int> _itemList)
+    Action<NpcUnit> aOpenDialog;
+    Action aCloseDialog;
+    public Action<NpcUnit> AOpenDialog
     {
-        shop.gameObject.SetActive(true);
-        shop.StartShopSetting(_itemList);
-    }
-    public void OpenShopfromDialog(List<int> _itemList)
-    {
-        itemList = _itemList;
-        StartCoroutine(CoFade(DialogtoShop));
-    }
-    void DialogtoShop()
-    {
-        QuitDialog();
-        OpenShop(itemList);
-    }
-    #endregion
-
-    #region MiniMap
-
-    public delegate void SetMinimapInfo(string _mapName, float _xSize, float _ySize);
-    public SetMinimapInfo miniMapSetting;
-
-    public void MiniMapSetting(string _mapName, float _xSize, float _ySize)
-    {
-        if(miniMapSetting == null)
+        get
         {
-            return;
+            if(aOpenDialog == null)
+            {
+                return (npc) => { Debug.Log("aOpenDialog is null"); };
+            }
+            else
+            {
+                return aOpenDialog;
+            }
+
         }
-        else
+        set => aOpenDialog = value;        
+    }    
+    public Action ACloseDialog
+    {
+        get
         {
-            miniMapSetting(_mapName,_xSize,_ySize);
+            if (aCloseDialog == null)
+            {
+                return () => { Debug.Log("aCloseDialog is null"); };
+            }
+            else
+            {
+                return aCloseDialog;
+            }
+
         }
+        set => aCloseDialog = value;
     }
+
+
     
-    #endregion  
+    
+    
+  
+    #endregion
 
+    
+    Action<NpcUnit> aOpenShop;
+    public Action<NpcUnit> AOpenShop
+    {
+        get
+        {
+            if(aOpenShop == null)
+            {
+                return (npc) => { Debug.Log("OpenShop is null."); };
+            }
+            else
+            {
+                return aOpenShop;
+            }
+        }
+        set
+        {
+            aOpenShop = value;
+        }
+    }
+
+    
+  
     #region Quest
     public MiniQuestSlot questSlot;
     public ScrollRect questList;
@@ -502,26 +705,7 @@ public class UIManager : MonoBehaviour
     public bool QuestActive = false;
     #endregion    
    
-    #region BuffUi
-    [SerializeField]
-    UI_Buff uibuff;
-    public delegate void UpdateBuffUi(string _buffName, float _fillAmount, int _holdTime);
-    public UpdateBuffUi updateBuffUi;
-
-    public void UpdateBuffUISetting(string _buffName, float _fillAmount, int _holdTime)         // 쿨타임도 똑같이 만들 것!
-    {
-        if (updateBuffUi == null)
-        {
-            return;
-        }            
-        else
-        {
-            updateBuffUi(_buffName, _fillAmount, _holdTime);
-        }
-    }
-
-    #endregion
-
+  
     #region Option
     public Option option;
     #endregion
@@ -531,27 +715,6 @@ public class UIManager : MonoBehaviour
     public OnUiControl uicontrol_On;
     public OnUiControl uicontrol_Off;
    
-    
-    public void TryOpenQuest()
-    {
-        QuestActive = !QuestActive;
-        if (QuestActive)
-        {
-            OpenQuest();
-        }
-        else
-            CloseQuest();
-    } 
-    public void OpenQuest()
-    {
-        QuestList_M.SetActive(true);
-        questlist_M.UpdateQuestSlot();
-    }
-    public void CloseQuest()
-    {
-        questlist_M.ClearInfo();        
-        QuestList_M.SetActive(false);
-    }
     
 
     public void OpenOtion()

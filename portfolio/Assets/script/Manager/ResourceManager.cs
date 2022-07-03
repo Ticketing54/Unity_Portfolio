@@ -12,13 +12,8 @@ using System;
 
 public class ResourceManager: MonoBehaviour
 {
-    public static ResourceManager resource;
 
-    [SerializeField]
-    List<Npc> runningNpc = new ();
-    [SerializeField]
-    List<Monster> runningMonster = new ();
-    
+    public static ResourceManager resource;
     public GameObject character;
 
     private void Awake()
@@ -34,22 +29,10 @@ public class ResourceManager: MonoBehaviour
         }
     }
 
-    void ReleaseAddressable()
-    {
-        foreach (Npc one in runningNpc)
-        {
-            Addressables.ReleaseInstance(one.gameObject);
-        }
-        foreach (Monster one in runningMonster)
-        {
-            Addressables.ReleaseInstance(one.gameObject);
-        }
-    }
-
 
 
     #region StartResource[Table/Image]
-    public Action closePatchUi;
+    public Action AClosePatchUi;
     Dictionary<string, Sprite> imageRes = new ();
     Dictionary<string, List<string>> tableRes = new ();          // 배열 인덱스가 각각의 인덱스
     Dictionary<string, List<string>> dialogueRes = new ();
@@ -62,9 +45,8 @@ public class ResourceManager: MonoBehaviour
     
     IEnumerator CoStartResourceSetting()
     {
-
         IList<IResourceLocation> tableList;                 // 테이블 주소
-        IList<IResourceLocation> imageList;                 // 이미지 주소
+        IList<IResourceLocation> imageList;                                                    // 
         IList<IResourceLocation> dialogList;                // 이미지 주소
         IList<IResourceLocation> effectList;                // 이펙트 주소
 
@@ -75,7 +57,7 @@ public class ResourceManager: MonoBehaviour
 
         AsyncOperationHandle<IList<IResourceLocation>> imageHandle = Addressables.LoadResourceLocationsAsync("Image");
         yield return imageHandle;
-        imageList = imageHandle.Result;
+        imageList= imageHandle.Result;
 
         AsyncOperationHandle<IList<IResourceLocation>> dialogHandle = Addressables.LoadResourceLocationsAsync("Dialogue");
         yield return dialogHandle;
@@ -88,18 +70,21 @@ public class ResourceManager: MonoBehaviour
 
         AsyncOperationHandle<IList<TextAsset>> tableAssetHandle = Addressables.LoadAssetsAsync<TextAsset>(tableList, SaveTextAsset);
         yield return tableAssetHandle;
+        Addressables.Release<IList<IResourceLocation>>(tableList);
         Addressables.Release<IList<TextAsset>>(tableAssetHandle.Result);
-
 
         AsyncOperationHandle<IList<Sprite>> imageAssetHandle = Addressables.LoadAssetsAsync<Sprite>(imageList, SaveImageAsset);
         yield return imageAssetHandle;
+        Addressables.Release<IList<IResourceLocation>>(imageList);
 
         AsyncOperationHandle<IList<TextAsset>> dialogAssetHandle = Addressables.LoadAssetsAsync<TextAsset>(dialogList, SaveDialogAsset);
         yield return dialogAssetHandle;
+        Addressables.Release<IList<IResourceLocation>>(dialogList);
         Addressables.Release<IList<TextAsset>>(dialogAssetHandle.Result);
 
         AsyncOperationHandle<IList<GameObject>> effectAssetHandle = Addressables.LoadAssetsAsync<GameObject>(effectList, SaveEffectAsset);
         yield return effectAssetHandle;
+        Addressables.Release<IList<IResourceLocation>>(effectList);
         EffectManager.effectManager.BasicEffectAdd();     
 
         AsyncOperationHandle<GameObject> playercharacter = Addressables.LoadAssetAsync<GameObject>("PlayerCharacter");        
@@ -109,7 +94,7 @@ public class ResourceManager: MonoBehaviour
         AsyncOperation mainScene = SceneManager.LoadSceneAsync("Main");
         yield return mainScene;
 
-        closePatchUi();
+        AClosePatchUi();
     }
 
 
@@ -133,6 +118,15 @@ public class ResourceManager: MonoBehaviour
             tableRes.Add(_result.name, info);
         }
     }
+
+    void SaveImageAsset(Sprite _result)
+    {
+        if (!imageRes.ContainsKey(_result.name))
+        {
+            imageRes.Add(_result.name, _result);
+        }
+    }
+
     void SaveDialogAsset(TextAsset _result)
     {
         if (!dialogueRes.ContainsKey(_result.name))
@@ -146,13 +140,7 @@ public class ResourceManager: MonoBehaviour
             dialogueRes.Add(_result.name, info);
         }
     }
-    void SaveImageAsset(Sprite _result)
-    {
-        if (!imageRes.ContainsKey(_result.name))
-        {
-            imageRes.Add(_result.name, _result);
-        }
-    }
+  
     void SaveEffectAsset(GameObject _result)
     {
         if (!effectRes.ContainsKey(_result.name))
@@ -188,7 +176,7 @@ public class ResourceManager: MonoBehaviour
     }    
     IEnumerator CoLoadNpc(string _mapName)
     {
-        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "_Npc");
+        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "Npc");
         yield return mapRes;
             
             
@@ -213,7 +201,7 @@ public class ResourceManager: MonoBehaviour
     }
     IEnumerator CoLoadMonster(string _mapName)
     {   
-        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "_Monster");
+        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "Monster");
 
         yield return mapRes;
         List<string> mobInfo = LoadText(mapRes.Result);
@@ -249,7 +237,7 @@ public class ResourceManager: MonoBehaviour
     IEnumerator CoLoadPotal(string _mapName)
     {
 
-        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "_Potal");
+        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "Potal");
         
         yield return mapRes ;
         List<string> npcInfo = LoadText(mapRes.Result);
@@ -271,7 +259,7 @@ public class ResourceManager: MonoBehaviour
     {
         GameManager.gameManager.ClearWayPoint();       
 
-        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "_WayPoint");
+        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "WayPoint");
         yield return mapRes;
 
         List<string> wayPointList = LoadText(mapRes.Result);
@@ -285,14 +273,8 @@ public class ResourceManager: MonoBehaviour
             GameManager.gameManager.AddWayPoint(sInfo[0], wayPoint);
         }
     }
-    IEnumerator CoLoadSceneResource(string _mapName)
+    public IEnumerator CoLoadSceneResource(string _mapName)
     {
-        // 미니맵 세팅
-        float x = GameManager.gameManager.mapSizeX = GameObject.FindGameObjectWithTag("Floor").transform.position.x * 2;
-        float y = GameManager.gameManager.mapSizeY = GameObject.FindGameObjectWithTag("Floor").transform.position.z * 2;
-        UIManager.uimanager.MiniMapSetting(_mapName, x, y);
-
-
         yield return StartCoroutine(CoLoadNpc(_mapName));
         LoadingSceneController.instance.LoadingPercent(0.25f);
         yield return StartCoroutine(CoLoadMonster(_mapName));

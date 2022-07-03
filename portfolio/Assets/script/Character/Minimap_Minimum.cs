@@ -38,15 +38,13 @@ public class Minimap_Minimum : MonoBehaviour
     {
         SetMapInfo();
         UIManager.uimanager.uicontrol_On   += AddMiniDot;
-        UIManager.uimanager.uicontrol_Off  += RemoveMiniDot;
-        UIManager.uimanager.miniMapSetting += SetStartMapInfo;
+        UIManager.uimanager.uicontrol_Off  += RemoveMiniDot;        
         OpenDotSetting();
     }
     private void OnDisable()
     {
         UIManager.uimanager.uicontrol_On   -= AddMiniDot;
-        UIManager.uimanager.uicontrol_Off  -= RemoveMiniDot;
-        UIManager.uimanager.miniMapSetting -= SetStartMapInfo;
+        UIManager.uimanager.uicontrol_Off  -= RemoveMiniDot;        
         CloseDotSetting();
     }
     private void Update()
@@ -66,17 +64,6 @@ public class Minimap_Minimum : MonoBehaviour
             character = GameManager.gameManager.character;
         }
     }
-
-    void SetStartMapInfo(string _mapName, float _xPos, float _yPos)
-    {
-        mapName = _mapName;
-        mapSize_X = _xPos;
-        mapSize_Y = _yPos;
-        mapImage.sprite = ResourceManager.resource.GetImage(mapName + "Map");
-        character = GameManager.gameManager.character;
-    }
-
-
 
     void OpenDotSetting()
     {

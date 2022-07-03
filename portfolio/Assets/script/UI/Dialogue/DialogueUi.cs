@@ -40,20 +40,42 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
     bool isDoneTexting = false;
     int nextDilogNum = -3;
+    NpcUnit npc;
 
-    private void Awake()
+
+    private void Start()
     {
         choicePool = new PoolData<Choice>(clickChoiceBar, choice_NotUsed, "Choice");
-        
-    }
+        UIManager.uimanager.AOpenDialog += (OpenNpc) =>
+        {
+            UIManager.uimanager.FadeinFucout(
+                () =>
+                {
+                    UIManager.uimanager.OffBaseUI();                    
+                },
+                () =>
+                {
+                    gameObject.SetActive(true);
+                    npc = OpenNpc;
+                    StartDialogue(npc);
+                }                
+                );
 
+        };
+        UIManager.uimanager.ACloseDialog += () => 
+        {
+            GameManager.gameManager.character.isCantMove = false;
+            gameObject.SetActive(false);
+        };
+        
+        gameObject.SetActive(false);
+    }
     private void OnDisable()
     {   
         ChoiceReset();
         npc_DialogData = null;
         questList = null;
-        DialogTextReset();
-        GameManager.gameManager.character.isCantMove = false;
+        DialogTextReset();        
     }
     
    
@@ -100,7 +122,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
   
   
     public void StartDialogue(NpcUnit _npc)
-    {
+    {   
         if (_npc.ITEMS != null)
         {            
             items = _npc.ITEMS;
@@ -262,29 +284,44 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
     {
         if (_dialog_Index == -2)
         {
-            UIManager.uimanager.CloseDialog();
+            UIManager.uimanager.FadeinFucout(() =>
+            {
+                gameObject.SetActive(false);
+                GameManager.gameManager.character.isCantMove = false;
+                UIManager.uimanager.OnBaseUI();
+            }
+            );
             return;
         }
         ChoiceReset();
         if (_dialog_Index == -1)
-        {            
-            UIManager.uimanager.OpenShopfromDialog(items);
+        {
+            UIManager.uimanager.AOpenShop(npc);
             return;
         }
         
-        List<string> dialogData = npc_DialogData[_dialog_Index];
-        StartCoroutine(CoDialog_Texting(dialogData)); // 대화 입력
+        
+        StartCoroutine(CoDialog_Texting(_dialog_Index)); // 대화 입력
     }
 
 
-    IEnumerator CoDialog_Texting(List<string> _dialogData)
+    IEnumerator CoDialog_Texting(int _index)
     {
-        string questStartIndex    = _dialogData[1];           // 퀘스트 시작 Index
-        string questEndIndex      = _dialogData[2];           // 퀘스트 종료 Index
-        string dialog             = _dialogData[3];           // 대화
-        string choice             = _dialogData[4];           // 선택지
-        string nextDialog         = _dialogData[5];           // 다음 대화
+        List<string> dialogData = npc_DialogData[_index];
+        string questStartIndex    = dialogData[1];           // 퀘스트 시작 Index
+        string questEndIndex      = dialogData[2];           // 퀘스트 종료 Index
+        string dialog             = dialogData[3];           // 대화
+        string choice             = dialogData[4];           // 선택지
+        string nextDialog         = dialogData[5];           // 다음 대화
+        string cutScene           = dialogData[6];
         bool npcReward               = false;
+
+
+        if (!string.IsNullOrEmpty(cutScene))
+        {
+            yield return LoadingSceneController.instance.CoLoadCutScene(cutScene);
+        }
+
 
         if (!string.IsNullOrEmpty(questStartIndex))                                                                       // 퀘스트
         {

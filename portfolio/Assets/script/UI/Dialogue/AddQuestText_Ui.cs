@@ -13,33 +13,43 @@ public class AddQuestText_Ui : MonoBehaviour
     Vector2 StartPos = new Vector2(0, -330);    
     float timer = 0f;
     bool isActive = false;
+
+    #region QuestEffect
+
+    void AddQuestEffect(int _questIndex)
+    {
+        gameObject.SetActive(true);
+        Quest quest = new Quest(_questIndex,QUESTSTATE.NONE);
+        text.text = "[" + quest.Name+"]"+" 퀘스트를 수락 하셨습니다.";
+    }
+    void CompleteQuestEffect(int _questIndex)
+    {
+        gameObject.SetActive(true);
+        Quest quest = new Quest(_questIndex, QUESTSTATE.NONE);
+        text.text = "[" + quest.Name + "]" + " 퀘스트완료! Npc를 찾아가세요.";
+    }
+    void DoneQuestEffect(int _questIndex)
+    {
+        gameObject.SetActive(true);
+        Quest quest = new Quest(_questIndex, QUESTSTATE.NONE);
+        text.text = "[" + quest.Name + "]" + " 퀘스트를 완료하였습니다. ";
+    }
+    #endregion
+    private void Start()
+    {
+        UIManager.uimanager.AAddQuestUi      += AddQuestEffect;
+        UIManager.uimanager.AQuestCompleteUi += CompleteQuestEffect;
+        UIManager.uimanager.AQuestDoneUi     += DoneQuestEffect;
+
+        gameObject.SetActive(false);        
+    }
     private void OnEnable()
     {
         rectTrans.anchoredPosition = StartPos;
         timer = 0f;
         isActive = false;
     }
-    public void SetQuestEffect(QUESTSTATE _state)
-    {
-        switch (_state)
-        {
-            case QUESTSTATE.PLAYING:
-                {
-                    text.text = "퀘스트를 수락 하셨습니다.";
-                    break;
-                }
-            case QUESTSTATE.COMPLETE:
-                {
-                    text.text = "퀘스트 완료 Npc를 찾아가세요!";
-                    break;
-                }
-            case QUESTSTATE.DONE:
-                {
-                    text.text = "퀘스트를 완료 하셨습니다.";
-                    break;
-                }
-        }
-    }
+   
     private void Update()
     {
         if (isActive == true)
@@ -61,7 +71,6 @@ public class AddQuestText_Ui : MonoBehaviour
                 {
                     isActive = true;
                 }
-
             }
             else
             {
@@ -69,11 +78,8 @@ public class AddQuestText_Ui : MonoBehaviour
                 {
                     rectTrans.anchoredPosition += Vector2.up;
                 }
-                
-                addQuestText.alpha += Time.deltaTime * 2f;
-                
+                addQuestText.alpha += Time.deltaTime * 2f;                
             }
-
         }
     }
 

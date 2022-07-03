@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 
@@ -11,13 +12,27 @@ public class CharacterQuest
 {
     Character character;
 
+    Dictionary<int, Quest> quickQuests;
+
+    Action<int> aAddQuestUi;
+    Action<int> aCompleteQuestUi;
+    Action<int> aQuestDoneUi;
+    Action<int> aQuestUpdateUi;
 
     public CharacterQuest(Character _character)
     {
         character = _character;
-        allQuestDic = new QuestStateDic();
-        playingQuest = new QuestDic();
-        doneQuest = new QuestDic();
+        allQuestDic     = new QuestStateDic();
+        playingQuest    = new QuestDic();
+        doneQuest       = new QuestDic();
+        questItem       = new Dictionary<int, int>();
+        questMonster    = new Dictionary<int, int>();
+        quickQuests     = new Dictionary<int, Quest>();
+
+        aAddQuestUi         = UIManager.uimanager.AAddQuestUi;
+        aCompleteQuestUi    = UIManager.uimanager.AQuestCompleteUi;
+        aQuestDoneUi        = UIManager.uimanager.AQuestDoneUi;
+        aQuestUpdateUi      = UIManager.uimanager.AQuestUpdateUi;
     }
     [SerializeField]
     QuestStateDic allQuestDic;
@@ -25,11 +40,57 @@ public class CharacterQuest
     QuestDic doneQuest;
 
 
+    // 아이템 인덱스 / 퀘스트 인덱스 
+    Dictionary<int, int> questItem;
+    // 몬스터 인덱스 / 퀘스트 인덱스 
+    Dictionary<int, int> questMonster;
 
-    Dictionary<int, int> questItem = new Dictionary<int, int>();        // 아이템 인덱스 / 퀘스트 인덱스 
-    Dictionary<int, int> questMonster = new Dictionary<int, int>();     // 몬스터 인덱스 / 퀘스트 인덱스 
 
 
+    #region QuickQuest
+
+    void AddQuickQuest(int _index, Quest _quest)
+    {
+        if(quickQuests.Count >= 4)
+        {
+            return;
+        }
+        else
+        {
+            quickQuests.Add(_index, _quest);
+
+
+
+        }
+    }
+
+    void RemoveQuickQuest(int _index)
+    {
+        if (quickQuests.ContainsKey(_index))
+        {
+            quickQuests.Remove(_index);
+        }
+    }
+    #endregion
+
+    public List<Quest> GetQuestList(QUESTSTATE _state)
+    {
+        switch (_state)
+        {
+            case QUESTSTATE.PLAYING:
+                {
+                    List<Quest> playingQuestList = new List<Quest>(playingQuest.Values);
+                    return playingQuestList;
+                }                
+            case QUESTSTATE.DONE:
+                {
+                    List<Quest> doneQuestList = new List<Quest>(doneQuest.Values);
+                    return doneQuestList;
+                }
+            default:
+                return null;                
+        }
+    }
     public void AddQuest(int _index, QUESTSTATE _state=QUESTSTATE.PLAYING)
     {
         if (allQuestDic.ContainsKey(_index))
@@ -38,41 +99,37 @@ public class CharacterQuest
             return;
         }      
         Quest quest = new Quest(_index,_state);
+
         switch (quest.Type)
         {
             case QUESTTYPE.DIALOG:
                 {
-                    quest.State = QUESTSTATE.COMPLETE;
-                    UIManager.uimanager.OnQuestEffect(QUESTSTATE.COMPLETE);
+                    quest.State = QUESTSTATE.COMPLETE;                    
                     break;
                 }
             case QUESTTYPE.BATTLE:
                 {
-                    questMonster.Add(quest.Goal_Index,quest.Index);
-                    UIManager.uimanager.OnQuestEffect(QUESTSTATE.PLAYING);
+                    questMonster.Add(quest.Goal_Index,quest.Index);                    
                     break;
                 }
             case QUESTTYPE.COLLECT:
                 {
-                    questItem.Add(quest.Goal_Index,quest.Index);
-                    UIManager.uimanager.OnQuestEffect(QUESTSTATE.PLAYING);
+                    questItem.Add(quest.Goal_Index,quest.Index);                    
                     break;
                 }
             case QUESTTYPE.ETC:
                 {
                     Npc targetNpc = ObjectManager.objManager.GetNpc(quest.Goal_Index);
-                    targetNpc.EtcQuest(quest.Index);
-                    UIManager.uimanager.OnQuestEffect(QUESTSTATE.PLAYING);
+                    targetNpc.EtcQuest(quest.Index);                    
                     break;
                 }
             default:
                 break;
-        }
+        }        
+        aAddQuestUi(_index);
         allQuestDic.Add(_index, quest.State);
         playingQuest.Add(_index, quest);
-        ObjectManager.objManager.UpdateQuestMark(quest.Start_Npc);
-        ObjectManager.objManager.UpdateQuestMark(quest.Goal_Npc);
-        
+        ObjectManager.objManager.UpdateQuestMark(quest);        
     }
     public void UpdatePlayingQuest(int _index, int _addCount)
     {
@@ -100,9 +157,12 @@ public class CharacterQuest
                     default:
                         break;
                 }
-                UIManager.uimanager.OnQuestEffect(QUESTSTATE.COMPLETE);
-                ObjectManager.objManager.UpdateQuestMark(quest.Start_Npc);
-                ObjectManager.objManager.UpdateQuestMark(quest.Goal_Npc);
+                if (!string.IsNullOrEmpty(quest.CompleteQuestCutScene))
+                {
+                    LoadingSceneController.instance.LoadCutScene(quest.CompleteQuestCutScene);
+                }
+                UIManager.uimanager.AQuestCompleteUi(_index);
+                ObjectManager.objManager.UpdateQuestMark(quest);                
             }
 
 
@@ -195,10 +255,8 @@ public class CharacterQuest
             else
             {
                 doneQuest.Add(_index, popQuest);
-
-                UIManager.uimanager.OnQuestEffect(QUESTSTATE.DONE);
-                ObjectManager.objManager.UpdateQuestMark(popQuest.Start_Npc);
-                ObjectManager.objManager.UpdateQuestMark(popQuest.Goal_Npc);
+                UIManager.uimanager.AQuestDoneUi(_index);
+                ObjectManager.objManager.UpdateQuestMark(popQuest);                
             }
             allQuestDic[_index] = QUESTSTATE.DONE;
 

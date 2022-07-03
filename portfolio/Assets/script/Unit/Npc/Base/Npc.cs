@@ -87,7 +87,7 @@ public class Npc :NpcUnit
     public virtual void Interact()
     {
         GameManager.gameManager.character.isCantMove = true;
-        UIManager.uimanager.OpenDialog(this);        
+        UIManager.uimanager.AOpenDialog(this);
     }
     public virtual void EtcQuest(int _questIndex)
     {

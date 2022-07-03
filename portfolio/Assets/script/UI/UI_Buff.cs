@@ -8,74 +8,62 @@ public class UI_Buff : MonoBehaviour
     PoolData<BuffImage> buffPool;
     Dictionary<string, BuffImage> runningBuffDic;
 
-
     [SerializeField]
     BuffImage exampleBuffImage;
     [SerializeField]
     ScrollRect bufLine;
+    [SerializeField]
+    GameObject parent;
 
     private void OnEnable()
     {
-        UIManager.uimanager.updateBuffUi += OnBuffIUiSetting;
+        UIManager.uimanager.AUpdateBuf += UpdateBuf;
+        UIManager.uimanager.ARemoveBuf += RemoveBuf;
     }
     private void OnDisable()
     {
-        UIManager.uimanager.updateBuffUi -= OnBuffIUiSetting;
-        ClearUIBuff();
-
+        UIManager.uimanager.AUpdateBuf -= UpdateBuf;
+        UIManager.uimanager.ARemoveBuf -= RemoveBuf;
+        ClearBufImage();
     }
 
 
     private void Awake()
     {
-        buffPool = new PoolData<BuffImage>(exampleBuffImage,this.gameObject,"Buff");
+        buffPool = new PoolData<BuffImage>(exampleBuffImage, parent, "Buff");
         runningBuffDic = new Dictionary<string, BuffImage>();
     }
 
-    public void OnBuffIUiSetting(string _buffName, float _fillAmount,int _holdTime)
-    {
-        BuffImage buf;
-        if(runningBuffDic.TryGetValue(_buffName,out buf))
-        {
-            buf.OnBuffImage(_buffName);
-            buf.SetBuff(_fillAmount, _holdTime);
-        }
-        else
-        {
-            buf = buffPool.GetData();
-            buf.transform.SetParent(bufLine.content.transform);
-            buf.transform.localPosition = Vector3.zero;
-            buf.transform.localScale = new Vector3(1f, 1f, 1f);
 
-            runningBuffDic.Add(_buffName, buf);
-            buf.OnBuffImage(_buffName);
-            buf.SetBuff(_fillAmount, _holdTime);
+    void UpdateBuf(string _key, float _timer, float _duration)
+    {
+        if (!runningBuffDic.ContainsKey(_key))
+        {
+            BuffImage newbufImage = buffPool.GetData();
+            newbufImage.SetBuffImage(_key);
+            newbufImage.transform.SetParent(bufLine.content.transform);
+            runningBuffDic.Add(_key, newbufImage);
+        }
+        BuffImage bufImage = runningBuffDic[_key];
+        bufImage.UpdateBuff(_timer, _duration);        
+    }
+    void RemoveBuf(string _key)
+    {
+        if (runningBuffDic.ContainsKey(_key))
+        {
+            BuffImage removeBufImage = runningBuffDic[_key];
+            removeBufImage.Clear();
+            buffPool.Add(removeBufImage);
+            runningBuffDic.Remove(_key);
         }
     }
 
-    public void OffBuffUISetting(string _buffName)
+    void ClearBufImage()
     {
-        BuffImage buf;
-        if(runningBuffDic.TryGetValue(_buffName,out buf))
+        List<string> runningImageList = new List<string>(runningBuffDic.Keys);
+        for (int i = 0; i < runningImageList.Count; i++)
         {
-            buf.Clear();
-            buffPool.Add(buf);
-            runningBuffDic.Remove(_buffName);
+            RemoveBuf(runningImageList[i]);
         }
-        else
-        {
-            Debug.LogError("없는 BuffUi를 off 하려합니다.");
-        }
-    }
-
-    void ClearUIBuff()
-    {
-        List<string> runningDickey = new List<string>(runningBuffDic.Keys);
-
-        for (int i = 0; i < runningDickey.Count; i++)
-        {
-            OffBuffUISetting(runningDickey[i]);
-        }
-    }
-    
+    }  
 }
