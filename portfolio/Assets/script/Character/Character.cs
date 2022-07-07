@@ -1,120 +1,222 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.AI;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 
 public class Character : MonoBehaviour
 {
-    public static Character Player;
 
-    public Character(){}
-    public float HP_CURENT => stat.HP;
-    public float Hp_Max => stat.MAXHP;
+    public Character() { }
+
+    public Vector3 StartPos { get; set; }
+
+    public float HP_CURENT => stat.Hp;
+    public float Hp_Max => stat.MaxHp;
     public string NICKNAME => stat.NAME;
 
-    public List<Collider> weapons;    
-    Animator anim;    
-  
-    
+    public List<Collider> weapons;
+    Coroutine action;
+    Animator anim;
+
+    public HashSet<Unit> nearUnit;
+    public HashSet<Monster> nearMonster;
 
 
-    private void Awake()
+    NavMeshAgent nav;
+
+    public delegate void NearUnit(Unit _unit);
+    public NearUnit addNearUnit;
+    public NearUnit removeNearUnit;
+
+    public List<Item> dropBox;
+
+    public void OpenDropBox(List<Item> _dropBox)
     {
-        if (Player == null)
+        dropBox = _dropBox;
+        UIManager.uimanager.AOpenDropBox();
+    }
+    public Action<string> RewardUpdate;
+    public void GetReward_Monster(int _gold, int _exp)
+    {
+        if (_gold != 0)
         {
-            Player = this;
-            DontDestroyOnLoad(gameObject);
+            inven.GetGold(_gold);
+        }
+
+        if (_exp != 0)
+        {
+            stat.GetExp(_exp);
+        }
+    }
+    public void MoveToDropItem(int _index, int _count)
+    {
+        Item item = dropBox[_index];
+        Item moveItem = new Item(item.index, _count);
+        if (inven.PushItem(moveItem))
+        {
+            if (item.ItemCount <= _count)
+            {
+                dropBox[_index] = null;
+            }
+            else
+            {
+                dropBox[_index].ItemCount -= _count;
+            }
         }
         else
         {
-            if(GameManager.gameManager.character != this)
-            {
-                Destroy(gameObject);
-            }            
+            return;
         }
-        skill = new CharacterSkill();
-        quest = new CharacterQuest();
-        inven = new Inventory();
-        quickSlot = new QuickSlot();
-        quickQuest = new Quest[4];
-        
-        //stat = new Status();
-        //equip = new Equipment();        
     }
-    private void Start()
+    public bool MoveToDropItem_All()
     {
-        if (nav == null)
+        if(dropBox == null)
         {
-            nav = GetComponent<NavMeshAgent>();
+            return false;
         }
-        nav.updateRotation = false;
+        else
+        {
+            for (int i = 0; i < dropBox.Count; i++)
+            {
+                Item item = dropBox[i];
+                if(inven.PushItem(item))
+                {
+                    dropBox[i] = null;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+ 
+    public Item GetDropBoxItem(int _index)
+    {
+        if (dropBox == null || _index < 0 || _index > dropBox.Count - 1)
+        {
+            return null;
+        }
+        else
+        {
+            return dropBox[_index];
+        }
+    }
+
+    private void Awake()
+    {
+        nearUnit = new HashSet<Unit>();
+        nearMonster = new HashSet<Monster>();
+
+        addNearUnit += AddNearUnit;
+        removeNearUnit += RemoveNearUnit;
+
+
+        nav = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
-        
+
+
+        skill = new CharacterSkill(this, nav, anim);
+        quest = new CharacterQuest(this);
+        quickSlot = new Character_Quick(this);
+        stat = new Status(this);
+        equip = new Equipment(this);
+        inven = new Inventory();
+
+        nav.updateRotation = false;
         HitBoxSetting();
     }
-    
+
     void Update()
     {
         Click();
 
-
     }
 
-
-    public LinkedList<Monster> nearMonster = new LinkedList<Monster>();    
-
-    public void AddNearMonster(Monster _mob)
+    public List<Quest> GetQuestList(QUESTSTATE _state)
     {
-        if(_mob is Monster)
-        {
-            nearMonster.AddLast((Monster)_mob);
-        }
+        return quest.GetQuestList(_state);
     }
-    public void RemoveNearMonster(Monster _mob)
+
+    public void SetPosition(Vector3 _Pos)
     {
-        if(_mob is Monster)
-        {
-            nearMonster.Remove((Monster)_mob);
-        }
+        nav.Warp(_Pos);
+    }
+    public void SetPosition()
+    {
+        nav.Warp(StartPos);
     }
 
 
-    public Monster ClosestMonster()
-    {
-        if (nearMonster.Count == 0)
-        {
-            return null;
-        }            
-        Monster nearMob = nearMonster.First.Value;
-        foreach(Monster one in nearMonster)
-        {
-            if (one.DISTANCE < nearMob.DISTANCE)
-                nearMob = one;
-        }
-        return nearMob;
-    }
-    NavMeshAgent nav;
     [Header("스텟")]
     public Status stat;
     [Header("장비")]
     public Equipment equip;
     [Header("스킬")]
     public CharacterSkill skill;
-    [Header("퀘스트")]    
+    [Header("퀘스트")]
     public CharacterQuest quest;
     [Header("인벤토리")]
     public Inventory inven;
     [Header("퀵슬롯")]
-    public QuickSlot quickSlot;
+    public Character_Quick quickSlot;
 
 
-    public Quest[] quickQuest;
 
-    
+
+    #region ApproachUnit
+    void AddNearUnit(Unit _unit)
+    {
+        if (_unit is Monster == true)
+        {
+            Monster unit = (Monster)_unit;
+            Monster mob;
+            if (!nearMonster.TryGetValue(unit, out mob))
+            {
+                nearMonster.Add(unit);
+            }
+
+        }
+
+        nearUnit.Add(_unit);
+        UIManager.uimanager.uicontrol_On(_unit);
+    }
+
+    void RemoveNearUnit(Unit _unit)
+    {
+        if (_unit is Monster == true)
+        {
+            nearMonster.Remove((Monster)_unit);
+        }
+
+        nearUnit.Remove(_unit);
+        UIManager.uimanager.uicontrol_Off(_unit);
+    }
+
+    public Monster ClosestMonster()
+    {
+        if (nearMonster.Count == 0)
+        {
+            return null;
+        }
+        List<Monster> mobList = new List<Monster>(nearMonster);
+        Monster nearMob = mobList[0];
+
+        foreach (Monster one in mobList)
+        {
+            if (one.DISTANCE < nearMob.DISTANCE)
+                nearMob = one;
+        }
+        return nearMob;
+    }
+    #endregion
+
     #region UiControl
 
     bool isUsingUi = false;
@@ -129,18 +231,19 @@ public class Character : MonoBehaviour
             isUsingUi = value;
         }
     }
-    
-  
-   
+
+
+
 
     #endregion
+
     #region MoveItemControl   
     Item itemMoveItem;
     Item ITEMMOVEITEM { get { return itemMoveItem; } }
-  
+
     ItemMove ChangeITemMove(ITEMLISTTYPE _itemListType)
     {
-        
+
         switch (_itemListType)
         {
             case ITEMLISTTYPE.INVEN:
@@ -155,68 +258,99 @@ public class Character : MonoBehaviour
                 return null;
         }
     }
-    
+
     public Item ItemList_GetItem(ITEMLISTTYPE _ListType, int _Index)
-    {        
+    {
         itemMoveItem = ChangeITemMove(_ListType).GetItem(_Index);
 
-        if(itemMoveItem== null)
+        if (itemMoveItem == null)
         {
             return null;
         }
-            
+
         return ITEMMOVEITEM;
     }
 
 
 
-    public void ItemMove(ITEMLISTTYPE _StartListType, ITEMLISTTYPE _EndListType, int _StartListIndex, int _EndListIndex)
+    public void ItemMove(ITEMLISTTYPE _startListType, ITEMLISTTYPE _endListType, int _startListIndex, int _endListIndex)
     {
-        ItemMove start_ItemMove = ChangeITemMove(_StartListType);
-        ItemMove end_ItemMove   = ChangeITemMove(_EndListType);
-
-        Item startItem = start_ItemMove.GetItem(_StartListIndex);
-        Item endItem   = end_ItemMove.GetItem(_EndListIndex);
-
-
-        if(startItem == null && endItem == null)
+        if (_startListIndex == _endListIndex && _startListIndex == _endListIndex)
         {
-            Debug.LogError("빈 두아이템을 옮기려합니다.");            
+            return;
         }
-        else if(start_ItemMove.PossableMoveItem(_StartListIndex,endItem) && end_ItemMove.PossableMoveItem(_EndListIndex, startItem))
+
+        ItemMove start_ItemMove = ChangeITemMove(_startListType);
+        ItemMove end_ItemMove = ChangeITemMove(_endListType);
+
+        Item startItem = start_ItemMove.GetItem(_startListIndex);
+        Item endItem = end_ItemMove.GetItem(_endListIndex);
+
+
+        if (startItem == null && endItem == null)
         {
-            Item popItem = start_ItemMove.PopItem(_StartListIndex);  // 시작지점 아이템을 Pop 하여
-            start_ItemMove.AddItem(_StartListIndex, end_ItemMove.Exchange(_EndListIndex, popItem));     // 목적지점 아이템과 교환
-            
-
-
-            UIManager.uimanager.updateUiSlot(_StartListType, _StartListIndex);
-            UIManager.uimanager.updateUiSlot(_EndListType, _EndListIndex);
-
-                     
+            Debug.Log("빈 두아이템을 옮기려합니다.");
         }
-        
+        else if (start_ItemMove.PossableMoveItem(_startListIndex, endItem) && end_ItemMove.PossableMoveItem(_endListIndex, startItem))
+        {
+            Item popStartItem = start_ItemMove.PopItem(_startListIndex);
+            Item popEndItem = end_ItemMove.PopItem(_endListIndex);
+
+            if (popStartItem != null && popEndItem != null)
+            {
+                if ((popStartItem.index == popEndItem.index) && (popStartItem.itemType != ITEMTYPE.EQUIPMENT || popEndItem.itemType != ITEMTYPE.EQUIPMENT))
+                {
+                    popStartItem.ItemCount += popEndItem.ItemCount;
+                    end_ItemMove.AddItem(_endListIndex, popStartItem);
+                }
+                else
+                {
+                    start_ItemMove.AddItem(_startListIndex, popEndItem);
+                    end_ItemMove.AddItem(_endListIndex, popStartItem);
+                }
+            }
+            else
+            {
+
+                start_ItemMove.AddItem(_startListIndex, popEndItem);
+                end_ItemMove.AddItem(_endListIndex, popStartItem);
+
+            }
+
+            UIManager.uimanager.ItemUpdateSlot(_endListType, _endListIndex);
+        }
+    }
+    public void ItemMove_DropBoxtoInven(ITEMLISTTYPE _endListtype, int startListIndex, int _endListIndex)
+    {
+        if (inven.IsInvenFull())
+        {
+            return;
+        }
+
+
+
+
     }
 
     public void ItemMove_Auto(ITEMLISTTYPE _StartListType, int _StartListIndex)
     {
-        ItemMove start_ItemMove = ChangeITemMove(_StartListType);        
+        ItemMove start_ItemMove = ChangeITemMove(_StartListType);
 
         switch (_StartListType)
         {
             case ITEMLISTTYPE.EQUIP:
                 {
-                    ItemMove(_StartListType, ITEMLISTTYPE.INVEN, _StartListIndex, inven.Empty_SlotNum());
+                    ItemMove(ITEMLISTTYPE.EQUIP, ITEMLISTTYPE.INVEN, _StartListIndex, inven.Empty_SlotNum());
                     break;
                 }
             case ITEMLISTTYPE.INVEN:
                 {
                     Item rightClickitem = start_ItemMove.GetItem(_StartListIndex);
-                    if(rightClickitem!= null&& rightClickitem.itemType == ITEMTYPE.EQUIPMENT)
+                    if (rightClickitem != null && rightClickitem.itemType == ITEMTYPE.EQUIPMENT)
                     {
-                        ItemMove(_StartListType, ITEMLISTTYPE.EQUIP, _StartListIndex, (int)rightClickitem.equipType);
+                        ItemMove(ITEMLISTTYPE.INVEN, ITEMLISTTYPE.EQUIP, _StartListIndex, (int)rightClickitem.equipType);
                         break;
-                        
+
                     }
                     break;
                 }
@@ -227,85 +361,124 @@ public class Character : MonoBehaviour
             default:
                 break;
 
-        }        
-    }  
+        }
+    }
     #endregion
 
-    public string GetChracterInfo()
-    {        
-        string Data = string.Empty;
-        Data += Character.Player.stat.NAME + ",";
-        Data += GameManager.gameManager.MapName + ",";
-        Data += Character.Player.transform.position.x + ",";
-        Data += Character.Player.transform.position.y + ",";
-        Data += Character.Player.transform.position.z + ",";
-        Data += Character.Player.stat.LEVEL + ",";
-        Data += Character.Player.stat.HP + ",";
-        Data += Character.Player.stat.MP + ",";
-        Data += Character.Player.stat.EXP + ",";
-        Data += Character.Player.stat.SkillPoint + ",";
-        
-
-        string invenInfo = inven.InvenInfo();
-        string equipInfo = equip.EqipInfo();
-        string quickInfo = quickSlot.QuickItemInfo();
-        Data += invenInfo+"\n";
-        Data += equipInfo+"\n";
-        Data += quickInfo+"\n";
-
-        return Data;
-    }
-
-    public bool isCantMove = false;              
+    public bool isCantMove = false;
     public bool OpenLootingbox = false; // 루팅박스 
-    
-  
+
+
     #region Move
+
+
     bool isMove = false;
-    Coroutine move;
+
     public void MovetoEmpty(Vector3 _dest)
     {
-        if (move != null)
+        if (action != null)
         {
-            StopCoroutine(move);
+            StopCoroutine(action);
+            action = null;
         }
 
-        anim.SetBool("IsMove", true);
-        move =StartCoroutine(Move(_dest));        
-    }    
+        action = StartCoroutine(Move(_dest));
+    }
     public void MovetoObject(GameObject _Target)
     {
-        if(move != null)
+        if (action != null)
         {
-            StopCoroutine(move);
+            StopCoroutine(action);
+            action = null;
         }
-        isMove = true;        
+
         float dis = Vector3.Distance(this.transform.position, _Target.transform.position);
-        Vector3 stopPos = Vector3.MoveTowards(this.transform.position, _Target.transform.position,(dis-2f));//stat.ATK_RANGE
-        nav.SetDestination(stopPos);
-        move = StartCoroutine(Move(stopPos));
+        Vector3 stopPos;
+
+        if (dis <= stat.ATK_RANGE)
+        {
+            stopPos = transform.position;
+        }
+        else
+        {
+            stopPos = Vector3.MoveTowards(this.transform.position, _Target.transform.position, dis - stat.ATK_RANGE);
+        }
+
+        action = StartCoroutine(Move(stopPos));
     }
     IEnumerator Move(Vector3 _dest)
     {
-        nav.SetDestination(_dest);
         isMove = true;
-        while (isMove)
-        {            
+        anim.SetBool("IsMove", true);
+        nav.SetDestination(_dest);
+
+        while (true)
+        {
             Vector3 dir = (nav.steeringTarget - transform.position).normalized;
             dir.y = 0;
             Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, Time.deltaTime * 30f, Time.deltaTime * 30f);
             transform.rotation = Quaternion.LookRotation(newdir);
             yield return null;
 
-            if (nav.remainingDistance <=0.02&&nav.velocity.magnitude == 0f)
+            if (nav.remainingDistance <= 0.02 && nav.velocity.magnitude == 0f)
             {
-                anim.SetBool("IsMove", false);
                 isMove = false;
+                anim.SetBool("IsMove", false);
             }
-            
+
         }
     }
-   
+
+    Coroutine waitForDoing;
+    bool InteractSuccess = false;
+
+
+
+    void MoveToScene(string _sceneName, Vector3 _Pos)
+    {
+        if (waitForDoing != null)
+        {
+            return;
+        }
+
+        waitForDoing = StartCoroutine(CoMoveToScene(5f, _sceneName, _Pos));
+    }
+
+    IEnumerator CoMoveToScene(float _timer, string _sceneName, Vector3 _pos)
+    {
+        string waitForDoingText = _sceneName + " 으로 이동 하는중 입니다.";
+        yield return StartCoroutine(CoWaitForDoing(_timer, waitForDoingText));
+
+
+        if (InteractSuccess == true)
+        {
+            GameManager.gameManager.MoveToScene(_sceneName, _pos);
+            InteractSuccess = false;
+        }
+        waitForDoing = null;
+    }
+
+    IEnumerator CoWaitForDoing(float _timerMax, string _text)
+    {
+        UIManager.uimanager.OpenWaitForDoing(_text);
+
+        float timer = 0.01f;
+        while (timer <= _timerMax)
+        {
+            if (isMove == true)
+            {
+                InteractSuccess = false;
+                UIManager.uimanager.ExitWaitForDoing();
+                yield break;
+            }
+            UIManager.uimanager.RunningWaitForDoing(timer / _timerMax);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        InteractSuccess = true;
+        UIManager.uimanager.ExitWaitForDoing();
+    }
+
     #endregion
     #region Click / interact
     void Click()
@@ -314,33 +487,34 @@ public class Character : MonoBehaviour
         {
             return;
         }
-            
-        if (Input.GetMouseButtonDown(0))
+
+
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hitinfo;
-            if (Physics.Raycast(ray, out hitinfo))
+            if (Input.GetMouseButtonDown(0))
             {
-                if (hitinfo.collider.gameObject.layer == 9)
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hitinfo;
+                if (Physics.Raycast(ray, out hitinfo))
                 {
-                    EffectManager.effectManager.ClickEffectOn(hitinfo.point);
-                    MovetoEmpty(hitinfo.point);
-                    return;
-                }
-                else if (hitinfo.collider.gameObject.tag == "Item" ||
-                    hitinfo.collider.gameObject.tag == "Npc"
-                    || hitinfo.collider.gameObject.tag == "Monster")
-                {
-                    
-                    interact(hitinfo.collider.gameObject);
-                }
+                    if (hitinfo.collider.gameObject.layer == 9)
+                    {
+                        //EffectManager.effectManager.ClickEffectOn(hitinfo.point);
+                        MovetoEmpty(hitinfo.point);
+                        return;
+                    }
+                    else if (hitinfo.collider.gameObject.tag.Equals("Item") ||
+                        hitinfo.collider.gameObject.tag.Equals("Npc")
+                        || hitinfo.collider.gameObject.tag.Equals("Monster")
+                        || hitinfo.collider.gameObject.tag.Equals("Potal"))
+                    {
 
+                        interact(hitinfo.collider.gameObject);
+                    }
+
+                }
             }
-            //if (!EventSystem.current.IsPointerOverGameObject())
-            //{
-               
 
-            //}
         }
     }
     void interact(GameObject _target)
@@ -356,10 +530,10 @@ public class Character : MonoBehaviour
                         Debug.LogError("잘못된 대상입니다 : Monster");
                         break;
                     }
-                        
-                    if (mob.DISTANCE <= 2f)//stat.ATK_RANGE
+
+                    if (mob.DISTANCE <= stat.ATK_RANGE)
                     {
-                        Attack();
+                        Attack(mob.gameObject);
                         break;
                     }
                     else
@@ -367,20 +541,20 @@ public class Character : MonoBehaviour
                         MovetoObject(mob.gameObject);
                         break;
                     }
-                }                
+                }
             case "Npc":
                 {
                     EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.FRIEND, _target.transform);
                     Npc npc = _target.GetComponent<Npc>();
-                    if(npc == null)
+                    if (npc == null)
                     {
-                        Debug.LogError("잘못된 대상입니다 : Monster");
+                        Debug.LogError("잘못된 대상입니다 : Npc");
                         break;
                     }
                     if (npc.DISTANCE <= stat.ATK_RANGE)
                     {
                         nav.SetDestination(transform.position);
-                        npc.Interact();                        
+                        npc.Interact();
                         break;
                     }
                     else
@@ -388,9 +562,60 @@ public class Character : MonoBehaviour
                         MovetoObject(npc.gameObject);
                         break;
                     }
-                }                
+                }
             case "Item":
-                break;
+                {
+                    EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.FRIEND, _target.transform);
+
+                    if (_target.layer == 10)            // 거리에 따른 효과
+                    {
+                        Monster mob = _target.GetComponent<Monster>();
+
+                        if (mob == null)
+                        {
+                            Debug.LogError("잘못된 대상입니다 : Monster");
+                            break;
+                        }
+                        if (mob.DISTANCE <= stat.ATK_RANGE)
+                        {
+                            mob.DropItem();
+                            break;
+                        }
+                        else
+                        {
+                            MovetoObject(mob.gameObject);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+
+                }
+            case "Potal":
+                {
+                    Potal potal = _target.GetComponent<Potal>();
+
+                    if (potal == null)
+                    {
+                        Debug.LogError("잘못된 대상입니다. : Potal");
+                        break;
+                    }
+
+                    if (potal.DISTANCE < stat.ATK_RANGE)
+                    {
+                        nav.SetDestination(transform.position);
+                        MoveToScene(potal.mapName, potal.pos);
+                        break;
+                    }
+                    else
+                    {
+                        MovetoObject(potal.gameObject);
+                        break;
+                    }
+                }
             default:
                 break;
         }
@@ -398,13 +623,31 @@ public class Character : MonoBehaviour
     #endregion
 
     #region Attack 
-    public void KnockBack() 
+    public void KnockBack()
     {
         StartCoroutine(CoKnockBack());
     }
-    public void Attack()
+
+    bool isPossableAttack = true;
+    public void Attack(GameObject _target)
     {
+        if (isPossableAttack == false)
+        {
+            return;
+        }
+        else
+        {
+            isPossableAttack = false;
+        }
+        transform.LookAt(_target.transform);
+        StartCoroutine(DelayAttack());
         anim.SetTrigger("Attack");
+
+    }
+    IEnumerator DelayAttack()
+    {
+        yield return new WaitForSeconds(1f);
+        isPossableAttack = true;
     }
     IEnumerator CoKnockBack()
     {
@@ -413,22 +656,24 @@ public class Character : MonoBehaviour
         while (timer <= 4)
         {
             timer += Time.deltaTime;
-            nav.velocity = - transform.forward * 8;
+            nav.velocity = -transform.forward * 8;
             yield return null;
         }
     }
     public void meleeDamageMob(int _num)
-    {        
-        foreach(Monster one in nearMonster)
+    {
+        List<Monster> mob = new List<Monster>(nearMonster);
+
+        foreach (Monster one in mob)
         {
             if (weapons[_num].bounds.Intersects(one.hitBox.bounds))
             {
-                one.Damaged(5f);       
+                one.Damaged(stat.DamageType(), stat.AttckDamage);
             }
         }
-       
+
     }
-    public bool DamageMob(int _num,Monster _target)
+    public bool DamageMob(int _num, Monster _target)
     {
         if (weapons[_num].bounds.Intersects(_target.hitBox.bounds))
         {
@@ -441,7 +686,7 @@ public class Character : MonoBehaviour
     }
     void HitBoxSetting()
     {
-        List<Collider> weaponList = new List<Collider>();
+        List<Collider> weaponList = new();
         GameObject[] obj = GameObject.FindGameObjectsWithTag("Weapon");
         for (int i = 0; i < obj.Length; i++)
         {
@@ -449,44 +694,9 @@ public class Character : MonoBehaviour
         }
         weapons = weaponList;
     }
-    #endregion
 
 
-
-    #region Skill
-    public delegate void UpdateBuffUi(string _skillSpriteName, float _amount);
-    UpdateBuffUi updateBufUi;
-    public void TakeDownSword() // 애니메이션 이벤트                                     //skill 0번
-    {
-        isCantMove = true;
-        //이펙트 연출
-        StartCoroutine(CoTakeDownSword());
-        anim.SetFloat("SkillNum", 0);
-        anim.SetTrigger("Skill");
-        
-    }
-    public void RushSkill()                                                              //skill 1번
-    {
-        // 이펙트 추가 할 것
-        anim.SetFloat("SkillNum", 1);
-        anim.SetTrigger("Skill");        
-        Monster closestMob = ClosestMonster();
-        if (nearMonster != null)
-        {
-            transform.LookAt(closestMob.transform);
-        }
-        StartCoroutine(CoRushSkill());
-    }
-    public void BuffSkill(int _skillIndex, int _count)                                     //skill 2번
-    {
-        anim.SetFloat("SkillNum", 2);
-
-    }
-    public void SkillEffectOn(string _effectName)
-    {
-
-    }
-    public void RangeDamageMob() 
+    public void RangeDamageMob()
     {
         foreach (Monster _mob in nearMonster)
         {
@@ -494,70 +704,37 @@ public class Character : MonoBehaviour
             {
                 _mob.StatusEffect(STATUSEFFECT.KNOCKBACK, 2f);
                 _mob.StatusEffect(STATUSEFFECT.STURN, 2f);
-                _mob.Damaged(5f);
+                _mob.Damaged(stat.DamageType(), stat.AttckDamage);
             }
         }
     }
-    IEnumerator CoTakeDownSword()
-    {
-        yield return new WaitForSeconds(2f);
-        isCantMove = false;
-    }
-    
-    IEnumerator CoRushSkill()
-    {        
-        isCantMove = true;
-        nav.ResetPath();        
-        float timer = 0f;        
-        DamageList list = new DamageList();
-        foreach(Monster mob in nearMonster)
-        {
-            list.Add(mob);
-        }
-        while (timer <= 1.2)
-        {
-            timer += Time.deltaTime;
-            nav.velocity = transform.forward * 2;
-            list.DamedMonster(5f,STATUSEFFECT.STURN,1f);
-            yield return null;
-        }
-        isCantMove = false;
-    }
-
-
     #endregion
 
-    IEnumerator LevUpMove(GameObject obj, TextMeshProUGUI _string)  //레벨업 
-    {
 
-        Vector3 Pos = transform.position;
-        Pos.y += 1f;
-        _string.fontSize = 33;
-        while (obj.activeSelf == true)
+
+
+
+    public void Damaged(DAMAGE _type, float _dmg)
+    {
+        float finalyDmg = 0;
+        switch (_type)
         {
-                        
-            obj.transform.position = gameObject.transform.position;
-            _string.transform.position = Camera.main.WorldToScreenPoint(new Vector3(Pos.x,Pos.y+=Time.deltaTime*0.6f,Pos.z));
-            _string.fontSize += Time.deltaTime* 20f;
-            _string.alpha -= Time.deltaTime *0.6f;
-            yield return null;
-
+            case DAMAGE.NOMAL:
+                {
+                    finalyDmg = _dmg;
+                    stat.Hp -= finalyDmg;
+                }
+                break;
+            case DAMAGE.CRITICAL:
+                {
+                    finalyDmg = _dmg * 2;
+                    stat.Hp -= finalyDmg;
+                }
+                break;
         }
-
-        yield return null;
-        
-    }
-    IEnumerator WaitForItLev(GameObject obj,GameObject _string) // 레벨업
-    {
-        yield return new WaitForSeconds(2.5f);        
-        obj.SetActive(false);
-        _string.SetActive(false);
+        UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
     }
 
-   
-   
-   
-  
     public void EffectEvent(string _name)
     {
         //GameObject obj = ObjectPoolManager.objManager.EffectPooling(_name);        
@@ -567,124 +744,134 @@ public class Character : MonoBehaviour
         //{
         //    obj.transform.position = transform.position + Priset;            
         //    obj.transform.rotation = transform.rotation;           
-            
+
         //}        
         //StartCoroutine(WaitForIt(obj));
-        
-        
+
+
     }
     IEnumerator WaitForIt(GameObject obj)
     {
-        yield return new WaitForSeconds(2f);        
+        yield return new WaitForSeconds(2f);
         obj.SetActive(false);
-        
+
     }
-   
-    public void  RangeMob()
+
+
+
+
+
+
+    IEnumerator LevUpMove(GameObject obj, TextMeshProUGUI _string)  //레벨업 
     {
-        //for (int i = 0; i < MobList.Count; i++)
-        //{
-        //    if (MobList[i].DiSTANCE <=2f)
-        //    {
-        //        MobList[i].isDamage = true;
-        //        float Dmg = Stat.ATK * 3f;
-        //        MobList[i].Hp -= Dmg;                
-        //        ObjectPoolManager.objManager.LoadDamage(MobList[i].gameObject, Dmg, Color.yellow, 1);
-        //    }
-        //}
+
+        Vector3 Pos = transform.position;
+        Pos.y += 1f;
+        _string.fontSize = 33;
+        while (obj.activeSelf == true)
+        {
+
+            obj.transform.position = gameObject.transform.position;
+            _string.transform.position = Camera.main.WorldToScreenPoint(new Vector3(Pos.x, Pos.y += Time.deltaTime * 0.6f, Pos.z));
+            _string.fontSize += Time.deltaTime * 20f;
+            _string.alpha -= Time.deltaTime * 0.6f;
+            yield return null;
+
+        }
+
+        yield return null;
+
     }
-  
-    //public Monster FindNearEnermy()
+    IEnumerator WaitForItLev(GameObject obj, GameObject _string) // 레벨업
+    {
+        yield return new WaitForSeconds(2.5f);
+        obj.SetActive(false);
+        _string.SetActive(false);
+    }
+
+
+    //public void burnStateOn()  // 화상
     //{
-    //    Monster mob = MobList[0];
-    //    for(int i =0; i < MobList.Count; i++)
+    //    if(stat.isburn == false)
     //    {
-    //        if (mob.DiSTANCE > MobList[i].DiSTANCE)
-    //            mob = MobList[i];
+    //        StartCoroutine(BurnDamage());
     //    }
 
-    //    return mob;
-    //}    
-    public void burnStateOn()  // 화상
-    {
-        if(stat.isburn == false)
-        {
-            StartCoroutine(BurnDamage());
-        }
-        
 
-    }
-    public void icestateOn()     // 빙결
-    {
-        if(stat.isIce == false)
-        {
-            StartCoroutine(IceState());
-        }
-    }
+    //}
+    //public void icestateOn()     // 빙결
+    //{
+    //    if(stat.isIce == false)
+    //    {
+    //        StartCoroutine(IceState());
+    //    }
+    //}
     IEnumerator BurnDamage()
     {
         GameObject Effect;
         //Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Burn");
         float timer = 0;
         float holdTime = 5;
-        stat.isburn = true;
+        //stat.isburn = true;
         while (true)
         {
             timer += Time.deltaTime;
-            if(timer >= 1)
+            if (timer >= 1)
             {
                 timer -= 1;
                 holdTime -= 1;
-                stat.HP -= 5;
+                stat.Hp -= 5;
                 //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, 10f, Color.red, 1);
             }
             //Effect.transform.position = Character.Player.transform.position;
-            
 
 
-            if(holdTime <= 0)
+
+            if (holdTime <= 0)
             {
                 //Effect.SetActive(false);
                 Effect = null;
-                stat.isburn = false;
+                //stat.isburn = false;
                 yield break;
             }
             yield return null;
         }
     }
+
     IEnumerator IceState()
     {
-        GameObject Effect;
-        //Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Ice");
-        float timer = 0;
-        stat.isIce = true;        
-        Character.Player.nav.speed -= 4f;
-        Character.Player.anim.speed = 0.5f;
-        while (true)
-        {
-            timer += Time.deltaTime;
-            if (timer >=5)
-            {
-                //Effect.SetActive(false);
-                Effect = null;
-                stat.isIce = false;
-                Character.Player.nav.speed += 4f;
-                Character.Player.anim.speed = 1f;
+        yield return null;
+        //GameObject Effect;
+        ////Effect = Effect = ObjectPoolManager.objManager.EffectPooling("Ice");
+        //float timer = 0;
+        //stat.isIce = true;        
+        //Character.Player.nav.speed -= 4f;
+        //Character.Player.anim.speed = 0.5f;
+        //while (true)
+        //{
+        //    timer += Time.deltaTime;
+        //    if (timer >=5)
+        //    {
+        //        //Effect.SetActive(false);
+        //        Effect = null;
+        //        stat.isIce = false;
+        //        Character.Player.nav.speed += 4f;
+        //        Character.Player.anim.speed = 1f;
 
-                yield break;
-            }
-            //Effect.transform.position = Character.Player.transform.position;
+        //        yield break;
+        //    }
+        //    //Effect.transform.position = Character.Player.transform.position;
 
 
 
-            
-            yield return null;
-        }
+
+        //    yield return null;
+        //}
     }
-    public void soundPlayer(string _Name) 
+    public void soundPlayer(string _Name)
     {
-        SoundManager.soundmanager.soundsPlay(_Name, Character.Player.gameObject);    
+        //SoundManager.soundmanager.soundsPlay(_Name, Character.Player.gameObject);    
     }
 
-   
+
 }

@@ -6,370 +6,10 @@ using UnityEngine.UI;
 using System;
 public class UIManager : MonoBehaviour
 {
-    public static UIManager uimanager;    
-
-    #region Ui_Effect
-
-    
+    public static UIManager uimanager;
+    Canvas mainCanvas;
     [SerializeField]
     GameObject baseUi;
-    #endregion
-
-    #region Middle_Top_HpBar    
-    [SerializeField]
-    TopEnermyInfoUi topEnermyInfoUi;
-    public void Open_Top_EnermyInfo(BattleUnit _Monster)              // 상단 중앙 적정보 UI
-    {
-        topEnermyInfoUi.gameObject.SetActive(true);
-        topEnermyInfoUi.Top_EnermyInfoUi(_Monster);
-    }
-    #endregion
-
-    #region Middle_Bottom_HpBar        
-    [SerializeField]
-    Bottom_Character_Info bottom_Character_Info;
-    public void Update_CharacterInfo_Ui()
-    {
-        bottom_Character_Info.InfoUpdate();
-    }
-    #endregion
-
-    #region Ui_Inventory
-
-    [SerializeField]
-    UI_Inventory Inv;
-    public delegate void UpdateInventoryUi();
-    public UpdateInventoryUi updateInven;
-    
-    bool inventoryActive = false;    
-    public bool InventoryActive { get { return inventoryActive; } }
-    public void TryOpenInventory()
-    {
-        inventoryActive = !inventoryActive;
-        if (inventoryActive)
-        {
-            OpenInventory();            
-        }
-        else
-        {
-            CloseInventory();
-        }            
-    } 
-    public void OpenInventory()
-    {
-        Inv.gameObject.SetActive(true);
-    }
-    public void CloseInventory()
-    {        
-        Inv.gameObject.SetActive(false);
-              
-    }
-
-
-    #endregion
-
-    #region Equipment
-    public UI_Equipment uI_Equipment;
-    bool equipmentActive = false;
-    public bool EquipmentActive { get { return equipmentActive; } }
-    public void TryOpenEquipment()
-    {
-        equipmentActive = !equipmentActive;
-        if (equipmentActive)
-        {
-            OpenEquipment();
-        }
-        else
-        {
-            CloseEquipment();
-        }
-    }
-    public void OpenEquipment()
-    {
-        uI_Equipment.gameObject.SetActive(true);
-    }
-    public void CloseEquipment()
-    {
-        uI_Equipment.gameObject.SetActive(false);
-
-    }
-
-
-
-    #endregion
-
-    #region ClickMove
-    [SerializeField]                // 클릭시 아이템 정보
-    MiniInfo miniInfo;
-
-
-    public void OpenMiniInfo(int _itemIndex,Vector2 _Pos)
-    {
-        miniInfo.gameObject.SetActive(true);
-        miniInfo.SetMiniInfo(_itemIndex,_Pos);
-    }
-    public void CloseMiniInfo()
-    {
-        miniInfo.gameObject.SetActive(false);
-    }
-    [SerializeField]
-    MoveIcon moveicon;              // 드래그 아이콘
-    [SerializeField]
-    Image DontClick;                // 드래그 시 클릭방지
-
-    // Left 클릭 정보    
-    ITEMLISTTYPE startListType = ITEMLISTTYPE.NONE;   
-    int          startListIndex = -1;
-    ItemSlot startItemSlot = null;
-
-    Coroutine RunningCoroutine;                              // 증복 실행 방지
-    
-
-
-    public delegate void EndClicItemMove(Vector2 _Pos);
-    public EndClicItemMove itemoveEnd;
-
-    // 각각의 아이템슬롯 업데이트
-    public delegate void UpdateUiSlot(ITEMLISTTYPE _itemListType, int _Index);                      //
-    public UpdateUiSlot updateUiSlot;                                                               // 따로 자료형을 만들어서 제작하면 여러개를 한번에 할수 있을듯
-    
-    public void StartDragItem(ItemSlot _itemSlot,ITEMLISTTYPE _startListType, int _startListIndex)
-    {
-        if (RunningCoroutine != null)
-        {
-            StopCoroutine(RunningCoroutine);
-        }
-
-                
-        startItemSlot = _itemSlot;
-        startListType = _startListType;
-        startListIndex = _startListIndex;
-        SetMoveIcon(startItemSlot.ICON);
-        startItemSlot.ClickedSlot_Start();
-        RunningCoroutine = StartCoroutine(ClickStart());
-    }
-    IEnumerator ClickStart()
-    {
-        DontClick.gameObject.SetActive(true);
-        while (true)
-        {
-            if (Input.GetMouseButtonUp(0))
-            {
-                itemoveEnd(Input.mousePosition);
-
-
-                yield break;
-            }
-            yield return null;
-        }
-    }
-
-    public void ClickUpitemSlot(ITEMLISTTYPE _EndListType, int _EndListIndex)
-    {
-        if (startListType == ITEMLISTTYPE.NONE || startListIndex < 0)           // 클릭이 되지 않았을떄
-        {
-            ClickMoveReset();
-            return;
-        }            
-
-
-        if(startListIndex == _EndListIndex && startListType == _EndListType)                // 같은곳을 클릭 했을때
-        {
-            OpenMiniInfo(Character.Player.ItemList_GetItem(startListType,startListIndex).index,Input.mousePosition);
-            ClickMoveReset();
-            return;
-        }
-
-        Character.Player.ItemMove(startListType, _EndListType, startListIndex, _EndListIndex);
-            
-        ClickMoveReset();
-    }
-
-    void SetMoveIcon(Sprite _image)                  //드래그 아이콘 설정
-    {
-        moveicon.gameObject.SetActive(true);
-        moveicon.ActiveMoveIcon(_image);
-    }
-   
-    void ClickMoveReset()
-    {
-        DontClick.gameObject.SetActive(false);        
-        startListIndex = -1;        
-        startListType = ITEMLISTTYPE.NONE;
-
-        if (startItemSlot != null)
-        {
-            startItemSlot.ClickedSlot_End();
-        }
-        startItemSlot = null;
-    }   
-    #endregion
-
-    #region DropBox    
-    public DropBox dropBox;
-
-
-    #endregion
-
-    #region Fade
-    [SerializeField]
-    Image fadeInout;
-
-    public delegate void FadeInTurnOnOffUi();                       // Fade in ->UiOnOff ->Fade out
-    
-   
-    public void FadeInOut(FadeInTurnOnOffUi _middleFuc)
-    {
-        
-        StartCoroutine(CoFade(_middleFuc));
-    }
-    
-    IEnumerator CoFade(FadeInTurnOnOffUi _middleFuc)
-    {
-        fadeInout.gameObject.SetActive(true);
-        
-        Color controlColor = fadeInout.color;
-        controlColor.a = 0;
-        fadeInout.color = controlColor;
-        float timer = 0;
-        bool isFadein = true;
-        while(true)
-        {
-            yield return null;
-            timer += Time.unscaledDeltaTime ;
-
-            controlColor.a = isFadein ? Mathf.Lerp(0f, 1f, timer) : Mathf.Lerp(1f, 0f, timer);
-            fadeInout.color = controlColor;
-
-            if(isFadein == true && controlColor.a >= 1)
-            {
-                _middleFuc();                               /// 어두워졌을때 작업
-                isFadein = false;
-                timer = 0;
-            }
-
-            if(isFadein == false && controlColor.a <= 0)
-            {
-                break;
-            }
-        }
-
-        fadeInout.gameObject.SetActive(false);
-        
-    }
-    #endregion
-
-    #region Dialog
-    [SerializeField]
-    DialogueUi dialog;
-    //public Shop shop;
-    NpcUnit npc;
-    public void OpenDialog(NpcUnit _npc)
-    {
-        npc = _npc;
-        StartCoroutine(CoFade(SetDialog));        
-    }
-    void SetDialog()
-    {
-        baseUi.gameObject.SetActive(false);
-        dialog.gameObject.SetActive(true);
-        dialog.StartDialogue(npc);        
-    }
-    void QuitDialog()
-    {        
-        baseUi.gameObject.SetActive(true);
-        dialog.gameObject.SetActive(false);
-    }
-    public void CloseDialog()
-    {
-        npc = null;
-        StartCoroutine(CoFade(QuitDialog));        
-    }
-    #endregion
-
-    #region Shop
-    [SerializeField]
-    Shop shop;
-    List<int> itemList;
-
-    public void OpenShop(List<int> _itemList)
-    {
-        shop.gameObject.SetActive(true);
-        shop.StartShopSetting(_itemList);
-    }
-    public void OpenShopfromDialog(List<int> _itemList)
-    {
-        itemList = _itemList;
-        StartCoroutine(CoFade(DialogtoShop));
-    }
-    void DialogtoShop()
-    {
-        QuitDialog();
-        OpenShop(itemList);
-    }
-    #endregion
-
-    #region UpdateMessage
-    [SerializeField]
-    PatchUi updateMessage;    
-    [SerializeField]
-    CanvasGroup patchCanvasGroup;
-
-
-
-    public void OpenUpdateMessage(long _downloadFileSize)
-    {        
-        updateMessage.SetUpdateMessage(_downloadFileSize);
-    }    
-    public void ClosePatchUi()
-    {
-        StartCoroutine(FadeoutPatch());
-    }
-    IEnumerator FadeoutPatch()
-    {        
-        while (true)
-        {            
-            patchCanvasGroup.alpha -= Time.unscaledDeltaTime*0.5f;
-            if(patchCanvasGroup.alpha <= 0)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-
-        updateMessage.gameObject.SetActive(false);
-    }
-    #endregion
-
-
-    #region Quest
-    public MiniQuestSlot questSlot;
-    public ScrollRect questList;
-    public GameObject QuestList_M;
-    public QuestMainUI questlist_M;
-
-    #endregion
-
-    #region Skill
-    //스킬
-    public SkillManager skillmanager;
-    public GameObject skill;
-     bool SkillActive = false;
-    public bool QuestActive = false;
-    #endregion    
-
-    #region MiniMap
-    public MiniMap minimap;
-    public GameObject Minimap_n;
-    public GameObject Minimap_M;
-    #endregion
-
-    #region Option
-    public Option option;
-    #endregion
-
-    public UiEffectManager uiEffectManager;
 
     private void Awake()
     {
@@ -382,114 +22,741 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        KeyboardSortCut = new Dictionary<KeyCode, Action>();
+        mainCanvas = GetComponent<Canvas>();
     }
-
-  
-
-    void Update()
-    {       
-
-
-        if(Character.Player != null )
-        {            
-            
-            if (Input.GetKeyDown(KeyCode.I))
-            {
-                //TryOpenInventory();
-            }          
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-
-            }
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                TryOpenMiniMap_n();
-            }
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                TryOpenMiniMap_M();
-            }
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                TryOpenQuest();
-            }
-
-            
-        }
-
-
-
-
-    }
-    public void TryOpenMiniMap_M()
+    public void CanvasEnabled(bool _state)
     {
-        minimap.miniMap_M_Max_Min();
+        mainCanvas.enabled = _state;
     }
-   
-    public void TryOpenMiniMap_n()
+    private void Update()
     {
-        minimap.miniMap_n_Max_Min();
+        Inputkeyboard();
     }
-   
-   
+    #region KeyboardSortCut
+    Dictionary<KeyCode, Action> KeyboardSortCut;
 
-    //public void OpenShop(Npc _npc) // 상점열기
-    //{
-    //    if (InventoryActive == false)
-    //    {
-    //        TryOpenInventory();            
-    //    }
-            
-    //    Inven.transform.position = shop.gameObject.transform.position + new Vector3(325f, 0, 0);
 
-    //    shop.gameObject.SetActive(true);
-    //    //shop.ShopUpdate(_npc);
-        
-    //}
-    //public void CloseDialog(Npc _npc) // 대화창 닫기
-    //{
-    //    _npc.dialog_Done = false;
-    //    _npc.Dialog_num = 1;
-    //    _npc.NextDialog = -1;
-    //    dialog.ChoiceReset();
-    //    //UIManager.uimanager.DialogControl();
 
-    //    if (shop.gameObject.activeSelf == true)
-    //    {
-    //        shop.gameObject.SetActive(false);
-    //        //TryOpenInventory();
-    //    }
-        
-    //}
-    public void TryOpenQuest()
+
+    public void AddKeyBoardSortCut(KeyCode _keycode, Action _action)
     {
-        QuestActive = !QuestActive;
-        if (QuestActive)
+        if (KeyboardSortCut.ContainsKey(_keycode))
         {
-            OpenQuest();
+            KeyboardSortCut.Remove(_keycode);
+            KeyboardSortCut.Add(_keycode, _action);
         }
         else
-            CloseQuest();
-    } 
-    public void OpenQuest()
-    {
-        QuestList_M.SetActive(true);
-        questlist_M.UpdateQuestSlot();
+        {
+            KeyboardSortCut.Add(_keycode, _action);
+        }
     }
-    public void CloseQuest()
+    public void RemoveKeyBoardSortCut(KeyCode _keycode)
     {
-        questlist_M.ClearInfo();        
-        QuestList_M.SetActive(false);
+        if (KeyboardSortCut.ContainsKey(_keycode))
+        {
+            KeyboardSortCut.Remove(_keycode);
+        }
+        else
+        {
+            Debug.Log("없는 단축키를 없애려 합니다.");
+        }
+    }
 
+    void Inputkeyboard()
+    {
+        if (Input.anyKey)
+        {
+            foreach (KeyValuePair<KeyCode, Action> input in KeyboardSortCut)
+            {
+                if (Input.GetKeyDown(input.Key))
+                {
+                    input.Value();
+                }
+            }           
+        }
     }
+    #endregion
+
+
+    public Action OpenQuickQuest
+    {
+        get
+        {
+            if(openQuickQuest == null)
+            {
+                return () => { Debug.Log("OpenQuickQuest is null"); };
+            }
+            else
+            {
+                return openQuickQuest;
+            }
+        }
+        set
+        {
+            openQuickQuest = value;
+        }
+    }
+    
+    Action openQuickQuest;
+    public Action CloseQuickQuest
+    {
+        get
+        {
+            if(closeQuickQuest == null)
+            {
+                return () => { Debug.Log("CloseQuickQuest is null"); };
+            }
+            else
+            {
+                return closeQuickQuest;
+            }
+        }
+        set
+        {
+            closeQuickQuest = value;
+        }
+    }
+    
+    Action closeQuickQuest;
+
+
+
+    public void OnBaseUI()
+    {
+        baseUi.SetActive(true);        
+    }
+    public void OffBaseUI()
+    {
+        baseUi.SetActive(false);        
+    }
+
+
+    public Action<int,float> AQuickSlotItemCooltime
+    {
+        get
+        {
+            if(aQuickSlotItemCooltime == null)
+            {
+                return (Index, cooltime) => { Debug.Log("aQuickSlotUi_itemUpdate is null"); };
+            }
+            else
+            {
+                return aQuickSlotItemCooltime;
+            }
+        }
+        set
+        {
+            aQuickSlotItemCooltime = value;
+        }
+    }       
+    public Action<int, float> AQuickSlotSkillCooltime
+    {
+        get
+        {
+            if (aQuickSlotSkillCooltime == null)
+            {
+                return (Index, cooltime) => { Debug.Log("aQuickSlotUi_SKillUpdate is null"); };
+            }
+            else
+            {
+                return aQuickSlotSkillCooltime;
+            }
+        }
+        set
+        {
+            aQuickSlotSkillCooltime = value;
+        }
+    }
+    Action<int, float> aQuickSlotItemCooltime;
+    Action<int, float> aQuickSlotSkillCooltime;
+    
+    #region StatusUi
+
+    Action<int> aGetGoldUpdateUi;
+    Action<int> aGetExpUpdateUi;
+    Action aUpdateHp;
+    Action aUpdateMp;
+    Action aUpdateAtk;
+    Action aUpdateExp;
+    Action aUpdateLevel;
+    Action aUpdateSkillPoint;
+    Action<int> aAddQuestUi;    
+    Action<int,QUESTSTATE> aQuestUpdateUi;
+    Action<Quest> aAddQuickQuestUi;
+    Action<Quest> aUpdateQuickQuestUi;
+
+    public Action<int> AGetGoldUpdateUi
+    {
+        get
+        {
+            if (aGetGoldUpdateUi == null)
+            {
+                return (one) => { Debug.Log("GoldUpdateUi가 없습니다."); };
+            }
+            else
+            {
+                return aGetGoldUpdateUi;
+            }
+            
+        }
+        set
+        {
+            aGetGoldUpdateUi = value;
+        }
+    }
+    public Action<int> AGetExpUpdateUi
+    {
+        get
+        {
+            if (aGetExpUpdateUi == null)
+            {
+                return (one) => { Debug.Log("aGetExpUpdateUi가 없습니다."); };
+            }
+            else
+            {
+                return aGetExpUpdateUi;
+            }
+
+        }
+        set
+        {
+            aGetExpUpdateUi = value;
+        }
+    }
+    public Action AUpdateHp
+    {
+        get
+        {
+            if (aUpdateHp == null)
+            {
+                return () => { Debug.Log("aUpdateHp가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateHp;
+            }
+
+        }
+        set
+        {
+            aUpdateHp = value;
+        }
+    }
+    public Action AUpdateMp
+    {
+        get
+        {
+            if (aUpdateMp == null)
+            {
+                return () => { Debug.Log("aUpdateMp 가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateMp;
+            }
+
+        }
+        set
+        {
+            aUpdateMp = value;
+        }
+    }
+    public Action AUpdateAtk
+    {
+        get
+        {
+            if (aUpdateAtk == null)
+            {
+                return () => { Debug.Log("aUpdateAtk 가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateAtk;
+            }
+
+        }
+        set
+        {
+            aUpdateAtk = value;
+        }
+    }
+    public Action AUpdateExp
+    {
+        get
+        {
+            if (aUpdateExp == null)
+            {
+                return () => { Debug.Log("aUpdateExp 가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateExp;
+            }
+
+        }
+        set
+        {
+            aUpdateExp = value;
+        }
+    }
+    public Action AUpdateLevel
+    {
+        get
+        {
+            if (aUpdateLevel == null)
+            {
+                return () => { Debug.Log("aUpdateLevel 가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateLevel;
+            }
+
+        }
+        set
+        {
+            aUpdateLevel = value;
+        }
+    }
+    public Action AUpdateSkillPoint
+    {
+        get
+        {
+            if (aUpdateSkillPoint == null)
+            {
+                return () => { Debug.Log("aUpdateSkillPoint 가 없습니다."); };
+            }
+            else
+            {
+                return aUpdateSkillPoint;
+            }
+
+        }
+        set
+        {
+            aUpdateSkillPoint = value;
+        }
+    }
+    public Action<int> AAddQuestUi
+    {
+        get
+        {
+            if(aAddQuestUi == null)
+            {
+                return (questindex)=> { Debug.Log("aAddQuestUi 가 없습니다."); };
+            }
+            else
+            {
+                return aAddQuestUi;
+            }
+        }
+        set
+        {
+            aAddQuestUi = value;
+        }
+    }    
+    public Action<int,QUESTSTATE> AQuestUpdateUi
+    {
+        get
+        {
+            if(aQuestUpdateUi == null)
+            {
+                return (questindex,state) => { Debug.Log("AQuestUpdateUi 가 없습니다."); };
+            }
+            else
+            {
+                return aQuestUpdateUi;
+            }
+        }
+        set
+        {
+            aQuestUpdateUi = value;
+        }
+    }
+    public Action<Quest> AAddQuickQuestUi
+    {
+        get
+        {
+            if (aAddQuickQuestUi == null)
+            {
+                return (questindex) => { Debug.Log("aAddQuickQuestUi is null."); };
+            }
+            else
+            {
+                return aAddQuickQuestUi;
+            }
+        }
+        set
+        {
+            aAddQuickQuestUi = value;
+        }
+    }
+    public Action<Quest> AUpdateQuickQuestUi
+    {
+        get
+        {
+            if (aUpdateQuickQuestUi == null)
+            {
+                return (questindex) => { Debug.Log("aUpdateQuickQuestUi is null."); };
+            }
+            else
+            {
+                return aUpdateQuickQuestUi;
+            }
+        }
+        set
+        {
+            aUpdateQuickQuestUi = value;
+        }
+    }
+    #endregion
+
+
+
+    #region Middle_Top_HpBar    
+    [SerializeField]
+    TopEnermyInfoUi topEnermyInfoUi;
+    public void Open_Top_EnermyInfo(Monster _Monster)              // 상단 중앙 적정보 UI
+    {
+        topEnermyInfoUi.gameObject.SetActive(true);
+        topEnermyInfoUi.Top_EnermyInfoUi(_Monster);
+    }
+    #endregion
+
+
+    #region DropBox
+
+    Action aOpenDropBox;
+    Action<int> aUpdateDropBox;
+    public Action AOpenDropBox
+    {
+        get
+        {
+            if(aOpenDropBox == null)
+            {
+                return () => { Debug.Log("AOpenDropBox is Null"); };
+            }
+            else
+            {
+                return aOpenDropBox;
+            }
+        }
+        set
+        {
+            aOpenDropBox = value;
+        }
+    }
+    public Action<int> AUpdateDropBox
+    {
+        get
+        {
+            if(aUpdateDropBox == null)
+            {
+                return (index) => { Debug.Log("AUpdateDropBox is Null"); };
+            }
+            else
+            {
+                return aUpdateDropBox;
+            }
+        }
+        set
+        {
+            aUpdateDropBox = value;
+        }
+    }
+    
+
+    #endregion
+
+    #region MiniInfo
+    public Action<int, Vector2> OpenMiniInfo;
+    public Action CloseMiniInfo;
+    #endregion
+
+    #region BufImage
+
+    public Action<string, float, float> AUpdateBuf
+    {
+        get
+        {
+            if(aUpdateBuf == null)
+            {
+                return (key, total, duration) => { Debug.Log("버프 이미지가 활성화 되지 않았습니다.UpdateBuf"); };
+            }
+            else
+            {
+                return aUpdateBuf;
+            }
+        }
+        set
+        {
+            aUpdateBuf = value;
+        }
+    }
+    public Action<string> ARemoveBuf
+    {
+        get
+        {
+            if (aRemoveBuf == null)
+            {
+                return (key) => { Debug.Log("버프 이미지가 활성화 되지 않았습니다. Remove"); };
+            }
+            else
+            {
+                return aRemoveBuf;
+            }
+        }
+        set
+        {
+            aRemoveBuf = value;
+        }
+    }
+
+    Action<string> aRemoveBuf;
+    Action<string, float, float> aUpdateBuf;
+    #endregion
+
+    #region ClickMove    
+    [SerializeField]
+    Image DontClick;                // 드래그 시 클릭방지
+
+    Action<ITEMLISTTYPE,int,Vector2> itemClickUp;
+    Action<ITEMLISTTYPE, int> itemUpdateSlot;
+    Action<ITEMLISTTYPE, int,Vector2> moveItemIcon;
+    public Action<ITEMLISTTYPE, int, Vector2> ItemClickUp
+    {
+        get
+        {
+            if (itemClickUp == null)
+            {
+                return (type, index, pos) =>
+                {
+
+                };
+            }
+            else
+            {
+                return itemClickUp;
+            }
+        }
+        set
+        {
+            itemClickUp = value;
+        }
+    }
+    public Action<ITEMLISTTYPE, int> ItemUpdateSlot
+    {
+        get
+        {
+            if(itemUpdateSlot == null)
+            {
+                return (type, index) => { Debug.Log(type + " 의 " + index + " 번의 슬롯이 없습니다."); };
+            }
+            else
+            {
+                return itemUpdateSlot;
+            }
+        }
+        set
+        {
+            itemUpdateSlot = value;
+        }
+    }
+    public Action<ITEMLISTTYPE,int,Vector2> MoveItemIcon { get => moveItemIcon; set => moveItemIcon = value; }
+
+    public void ItemClickEnd(ITEMLISTTYPE _startType,int _startIndex, Vector2 _pos)
+    {
+        ItemClickUp(_startType, _startIndex, _pos);
+        ItemUpdateSlot(_startType, _startIndex);
+    }
+   
+    #endregion
+
+    #region Fade
+    [SerializeField]
+    Image fadeInout;
+    
+    public void FadeinFucout(Action _actionO=null, Action _action1=null)
+    {
+        StartCoroutine(CoFadeinFucout(_actionO, _action1));
+    }
+
+
+    IEnumerator CoFadeinFucout(Action _fadeinAction = null, Action _fadeOutAction = null)
+    {
+        yield return StartCoroutine(CoFadeIn());
+        if(_fadeinAction != null)
+        {
+            _fadeinAction();
+        }
+        
+        StartCoroutine(CoFadeOut());
+        if (_fadeOutAction != null)
+        {
+            _fadeOutAction();
+        }
+    }
+    IEnumerator CoFadeIn()
+    {
+        fadeInout.gameObject.SetActive(true);
+        Color controlColor = fadeInout.color;
+        controlColor.a = 0;
+        fadeInout.color = controlColor;
+        float timer = 0;        
+        while (controlColor.a<1)
+        {
+            yield return null;
+            timer += Time.unscaledDeltaTime;
+
+            controlColor.a = Mathf.Lerp(0f, 1f, timer) ;
+            fadeInout.color = controlColor;
+        }
+    }
+    IEnumerator CoFadeOut()
+    {
+        Color controlColor = fadeInout.color;
+        controlColor.a = 0;
+        fadeInout.color = controlColor;
+        float timer = 0;        
+        while (controlColor.a > 0)
+        {
+            yield return null;
+            timer += Time.unscaledDeltaTime;
+
+            controlColor.a = Mathf.Lerp(1f, 0f, timer);
+            fadeInout.color = controlColor;
+        }
+        fadeInout.gameObject.SetActive(false);
+    }
+    #endregion
+
+    #region WaitForDoingUi
+    [SerializeField]
+    WaitForDoingUi waitForDoing;
+
+    public void RunningWaitForDoing(float _percent)
+    {
+
+        if(waitForDoing.gameObject.activeSelf == false)
+        {
+            Debug.LogError("대기화면창이 꺼져있습니다.");
+
+        }
+
+        waitForDoing.SetGauge(_percent);
+    }
+    public void OpenWaitForDoing(string _text)
+    {
+        waitForDoing.gameObject.SetActive(true);
+        waitForDoing.SetGauge(_text);
+    }
+    public void ExitWaitForDoing()
+    {
+        waitForDoing.gameObject.SetActive(false);
+    }
+
+    #endregion
+
+    #region Dialog
+
+    Action<Npc> aOpenDialog;
+    Action aCloseDialog;
+    public Action<Npc> AOpenDialog
+    {
+        get
+        {
+            if(aOpenDialog == null)
+            {
+                return (npc) => { Debug.Log("aOpenDialog is null"); };
+            }
+            else
+            {
+                return aOpenDialog;
+            }
+
+        }
+        set => aOpenDialog = value;        
+    }    
+    public Action ACloseDialog
+    {
+        get
+        {
+            if (aCloseDialog == null)
+            {
+                return () => { Debug.Log("aCloseDialog is null"); };
+            }
+            else
+            {
+                return aCloseDialog;
+            }
+
+        }
+        set => aCloseDialog = value;
+    }
+
+
+    
+    
+    
+  
+    #endregion
+
+    
+    Action<NpcUnit> aOpenShop;
+    public Action<NpcUnit> AOpenShop
+    {
+        get
+        {
+            if(aOpenShop == null)
+            {
+                return (npc) => { Debug.Log("OpenShop is null."); };
+            }
+            else
+            {
+                return aOpenShop;
+            }
+        }
+        set
+        {
+            aOpenShop = value;
+        }
+    }
+
+    
+  
+    #region Quest
+    public MiniQuestSlot questSlot;
+    public ScrollRect questList;
+    public GameObject QuestList_M;
+    public QuestMainUI questlist_M;
+
+    #endregion
+
+    #region Skill
+    //스킬
+    public SkillManager skillmanager;
+    public GameObject skill;     
+    public bool QuestActive = false;
+    #endregion    
+   
+  
+    #region Option
+    public Option option;
+    #endregion
+
+    public UiEffectManager uiEffectManager;
+    public delegate void OnUiControl(Unit _unit);
+    public OnUiControl uicontrol_On;
+    public OnUiControl uicontrol_Off;
+   
     
 
     public void OpenOtion()
     {
         option.gameObject.SetActive(true);
-
-
     }
 
-   
+    
 }

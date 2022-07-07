@@ -34,25 +34,25 @@ public class Charater_Run : StateMachineBehaviour
     
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        runsounds.transform.position = Character.Player.transform.position;
+        runsounds.transform.position = GameManager.gameManager.character.transform.position;
 
 
-        if(Player.stat.isIce == true &&runsounds.name !="IceRun")
-        {
-            runsounds.name = "IceRun";
-            audiosource.Stop();
-            AudioClip _clip = Resources.Load<AudioClip>("Sounds/IceRun");
-            audiosource.clip = _clip;            
-            audiosource.Play();
-        }
-        else if (Player.stat.isIce == false && runsounds.name != "Run")
-        {
-            runsounds.name = "Run";
-            audiosource.Stop();
-            AudioClip _clip = Resources.Load<AudioClip>("Sounds/Run");
-            audiosource.clip = _clip;
-            audiosource.Play();
-        }
+        //if(Player.stat.isIce == true &&runsounds.name !="IceRun")
+        //{
+        //    runsounds.name = "IceRun";
+        //    audiosource.Stop();
+        //    AudioClip _clip = Resources.Load<AudioClip>("Sounds/IceRun");
+        //    audiosource.clip = _clip;            
+        //    audiosource.Play();
+        //}
+        //else if (Player.stat.isIce == false && runsounds.name != "Run")
+        //{
+        //    runsounds.name = "Run";
+        //    audiosource.Stop();
+        //    AudioClip _clip = Resources.Load<AudioClip>("Sounds/Run");
+        //    audiosource.clip = _clip;
+        //    audiosource.Play();
+        //}
 
 
 

@@ -8,7 +8,7 @@ public class EffectManager : MonoBehaviour
     PoolingManager_Resource effectRes;
     PoolingManager<QuestMark> questMarkRes;
     Dictionary<GameObject, string> runningEffect;
-    Dictionary<Npc, QuestMark> runningQuestMark;
+    Dictionary<Npc, QuestMark> runningQuestMark;    
     
 
     List<GameObject> clickList;
@@ -33,48 +33,30 @@ public class EffectManager : MonoBehaviour
 
         runningEffect = new Dictionary<GameObject, string>();
         runningQuestMark = new Dictionary<Npc, QuestMark>();        
+        
         clickList = new List<GameObject>();
 
+        
     }
-    
-    public void UpdateQuestMark(Npc _npc, QUESTMARKTYPE _type,QUESTSTATE _state)
+    private void Start()
+    {
+        GameManager.gameManager.moveSceneReset += MoveToSceneReset;
+    }
+
+    void MoveToSceneReset()
+    {
+        ClickEffectReset();
+    }
+
+    public void UpdateQuestMark(Npc _npc,QUESTSTATE _state)
     {
         QuestMark mark;
        if(runningQuestMark.TryGetValue(_npc, out mark))
         {
-            if(mark.MarkType == _type)
-            {
-                if(QUESTSTATE.COMPLETE == _state || QUESTSTATE.NONE == _state)
-                {
-                    mark.StartingOrComplete();
-                }
-                else if(QUESTSTATE.DONE == _state)
-                {
-                    if (_type == QUESTMARKTYPE.EXCLAMATION)
-                    {
-                        questMarkRes.Add("QUESTION", mark);
-                    }
-                    else
-                    {
-                        questMarkRes.Add("EXCLAMATION", mark);
-                    }
-                }
-            }
-            else                                                        // 퀘스트 마크 타입이 다른경우
-            {
-                if(_type == QUESTMARKTYPE.EXCLAMATION)
-                {
-                    questMarkRes.Add("QUESTION", mark);
-                }
-                else
-                {
-                    questMarkRes.Add("EXCLAMATION", mark);
-                }
-                runningQuestMark.Remove(_npc);                
-                CreateQuestMark(_npc, _state);                          // 퀘스트마크 새로 생성
+            runningQuestMark.Remove(_npc);
+            questMarkRes.Add(mark.MarkType.ToString(),mark);
 
-            }
-
+            CreateQuestMark(_npc, _state);
         }
         else
         {
@@ -89,9 +71,8 @@ public class EffectManager : MonoBehaviour
         {
             case QUESTSTATE.NONE:
                 {                    
-                    questmark = questMarkRes.GetData("EXCLAMATION");
-                    questmark.MarkType = QUESTMARKTYPE.EXCLAMATION;
-                    questmark.StartingOrComplete();
+                    questmark = questMarkRes.GetData("STARTABLE");
+                    questmark.MarkType = QUESTMARKTYPE.STARTABLE;                    
                     questmark.gameObject.transform.SetParent(_npc.transform);                    
                     questmark.gameObject.transform.localPosition = new Vector3(0,_npc.Nick_YPos + 0.2f, 0);
                     runningQuestMark.Add(_npc, questmark);
@@ -99,18 +80,16 @@ public class EffectManager : MonoBehaviour
                 break;
             case QUESTSTATE.PLAYING:
                 {                    
-                    questmark = questMarkRes.GetData("QUESTION");
-                    questmark.MarkType = QUESTMARKTYPE.QUESTION;
-                    questmark.Playing();
+                    questmark = questMarkRes.GetData("NOTCOMPLETE");
+                    questmark.MarkType = QUESTMARKTYPE.NOTCOMPLETE;                    
                     questmark.gameObject.transform.SetParent(_npc.transform);
                     questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos+0.2f, 0);
                     runningQuestMark.Add(_npc, questmark);
                 }                
                 break;
             case QUESTSTATE.COMPLETE:                
-                questmark = questMarkRes.GetData("QUESTION");
-                questmark.MarkType = QUESTMARKTYPE.QUESTION;
-                questmark.Playing();
+                questmark = questMarkRes.GetData("COMPLETE");
+                questmark.MarkType = QUESTMARKTYPE.COMPLETE;
                 questmark.gameObject.transform.SetParent(_npc.transform);
                 questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos + 0.2f, 0);
                 runningQuestMark.Add(_npc, questmark);
@@ -127,13 +106,13 @@ public class EffectManager : MonoBehaviour
     #region ClickEffect
     public void BasicEffectAdd()
     {
-        GameObject clickNomal = ResourceManager.resource.GetEffect("Click_Nomal");
+        GameObject clickNomal = ResourceManager.resource.GetEffect("ClickNomal");
         clickNomal.transform.SetParent(this.transform);
         clickNomal.gameObject.SetActive(false);
-        GameObject clickEnermy = ResourceManager.resource.GetEffect("Click_Enermy");
+        GameObject clickEnermy = ResourceManager.resource.GetEffect("ClickEnermy");
         clickEnermy.transform.SetParent(this.transform);
         clickEnermy.gameObject.SetActive(false);
-        GameObject clickFriend = ResourceManager.resource.GetEffect("Click_Friend");
+        GameObject clickFriend = ResourceManager.resource.GetEffect("ClickFriend");
         clickFriend.transform.SetParent(this.transform);
         clickFriend.gameObject.SetActive(false);        
         clickList.Add(clickNomal);
@@ -143,12 +122,15 @@ public class EffectManager : MonoBehaviour
 
         QuestMark questMarkEx = ResourceManager.resource.GetEffect("EXCLAMATION").AddComponent<QuestMark>();
         QuestMark questMarkQu = ResourceManager.resource.GetEffect("QUESTION").AddComponent<QuestMark>();
-        questMarkEx.MarkType = QUESTMARKTYPE.EXCLAMATION;
-        questMarkQu.MarkType = QUESTMARKTYPE.QUESTION;
-        questMarkRes.Add("EXCLAMATION", questMarkEx);
-        questMarkRes.Add("QUESTION", questMarkQu);        
+        QuestMark questMarkNotQu = ResourceManager.resource.GetEffect("QUESTIONNOTCLEAR").AddComponent<QuestMark>();
+        questMarkEx.MarkType = QUESTMARKTYPE.STARTABLE;
+        questMarkNotQu.MarkType = QUESTMARKTYPE.NOTCOMPLETE;
+        questMarkQu.MarkType = QUESTMARKTYPE.COMPLETE;        
+        questMarkRes.Add("STARTABLE", questMarkEx);
+        questMarkRes.Add("COMPLETE", questMarkQu);        
+        questMarkRes.Add("NOTCOMPLETE", questMarkNotQu);        
     }
-    public void EffectReset()               // 맵 이동 시 리셋
+    public void ClickEffectReset()               // 맵 이동 시 리셋
     {
         foreach(GameObject click in clickList)
         {
@@ -162,7 +144,7 @@ public class EffectManager : MonoBehaviour
         List<Npc> npcList = new List<Npc>(runningQuestMark.Keys);
         for (int i = 0; i < npcList.Count; i++)
         {
-            if(runningQuestMark[npcList[i]].MarkType == QUESTMARKTYPE.EXCLAMATION)
+            if(runningQuestMark[npcList[i]].MarkType == QUESTMARKTYPE.STARTABLE)
             {
                 questMarkRes.Add("EXCLAMATION", runningQuestMark[npcList[i]]);
             }
@@ -214,31 +196,48 @@ public class EffectManager : MonoBehaviour
     #endregion
     
    
-    GameObject GetEffect(string _effectName)                                // Effect 이름별로 꺼내오기
+    public GameObject GetEffect(string _effectName)                                // Effect 이름별로 꺼내오기
     {
         GameObject effectObj = effectRes.GetData(_effectName);
         if (effectObj == null)
         {
-            GameObject NewEffect = ResourceManager.resource.GetEffect(_effectName);         // 리소스 수정후 수정할 것
-            AddEfect(_effectName,NewEffect);
+            GameObject newEffect = ResourceManager.resource.GetEffect(_effectName);         // 리소스 수정후 수정할 것
+            AddEffect(_effectName,newEffect);
             return GetEffect(_effectName);
         }
         else
-        {
-            effectObj.gameObject.SetActive(true);
+        {            
             return effectObj;
         }
-
     }
-    void AddEfect(string _effectName,GameObject _effect)                                       // Effect 사용 후 저장
+    public GameObject GetBuffEffect(string _effectName)
+    {
+        GameObject effectObj = effectRes.GetData(_effectName);
+        if(effectObj == null)
+        {
+            GameObject newBuffEffect = ResourceManager.resource.GetEffect(_effectName);
+            effectRes.Add(_effectName, newBuffEffect);
+            return GetBuffEffect(_effectName);
+        }
+        else
+        {
+            return effectObj;
+        }
+    }
+    public void PushBuffEffect(string _effectName, GameObject _effect)
+    {
+        effectRes.Add(_effectName, _effect);
+    }
+    void AddEffect(string _effectName,GameObject _effect)                                       // Effect 사용 후 저장
     {
         string effectName;
         if(runningEffect.TryGetValue(_effect,out effectName))
         {
             runningEffect.Remove(_effect);
             effectRes.Add(effectName, _effect);
+            return;
         }
-        effectRes.Add(_effect.name, _effect);
+        effectRes.Add(_effectName, _effect);
     }
     void RunningEffectAdd(GameObject _effect)
     {
@@ -263,8 +262,7 @@ public class EffectManager : MonoBehaviour
     IEnumerator TurnoffEffect(string _effectName,GameObject _effect, float _holdingtime)
     {
         yield return new WaitForSeconds(_holdingtime);
-        AddEfect(_effectName,_effect);
+        AddEffect(_effectName,_effect);
     }
-
 
 }

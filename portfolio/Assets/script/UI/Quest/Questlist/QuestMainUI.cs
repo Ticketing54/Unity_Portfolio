@@ -6,9 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 
 public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,IDragHandler
-{
-
-    // 오브젝트
+{    
     [SerializeField]
     TextMeshProUGUI Name;
     [SerializeField]
@@ -21,20 +19,89 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
     ScrollRect questScroll;
     [SerializeField]
     // 퀘스트 상태
-    HAVEQUESTSTATE mainState;
-    
-    Quest quest;
-    Queue<QuestSlot> UsableSlot = new Queue<QuestSlot>();
-    QuestSlot Slot;
+    QUESTSTATE mainState;
+    [SerializeField]
+    QuestSlot questslot;
 
-    public List<QuestSlot> questlist = new List<QuestSlot>();           // 큐형식으로 구현해야하는데 큐를 사용하기 애매함
-    public QuestSlot questslot;
+    PoolData<QuestSlot> questSlotPool;
+    Dictionary<int, QuestSlot> runningSlotDic;
+    List<QuestSlot> runningSlotList;
 
-
-    public MoveWindow moveWindow;
+    [SerializeField]
+    MoveWindow moveWindow;
     bool WindowDrag = false;
     Vector2 Window_Preset = Vector2.zero;
     public RectTransform Window;
+    Character character;
+    private void Awake()
+    {
+        mainState = QUESTSTATE.PLAYING;
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.L, TryOpenQuest);
+        questSlotPool = new PoolData<QuestSlot>(questslot, this.gameObject, "QuestSlot");
+        runningSlotDic = new Dictionary<int, QuestSlot>();
+        runningSlotList = new List<QuestSlot>();
+    }
+    private void OnEnable()
+    {
+        character = GameManager.gameManager.character;
+        UpdateQuestInfo();
+    }
+    private void OnDisable()
+    {
+        RunningReset();
+        ClearInfo();
+    }
+
+    void UpdateQuestInfo()
+    {
+        List<Quest> questList = character.GetQuestList(mainState);
+        for (int i = 0; i < questList.Count; i++)
+        {
+            QuestSlot newSlot = questSlotPool.GetData();
+            Quest quest = questList[i];
+            newSlot.QuestWrite(quest.questName);
+            newSlot.transform.SetParent(questScroll.content.transform);
+            runningSlotDic.Add(quest.Index, newSlot);
+            runningSlotList.Add(newSlot);
+        }
+    }
+
+    void RunningReset()
+    {
+        List<int> runningKeys = new List<int>(runningSlotDic.Keys);
+
+        foreach(int key in runningKeys)
+        {
+            QuestSlot runningSlot = runningSlotDic[key];
+            runningSlotDic.Remove(key);
+            runningSlot.Clear();
+            questSlotPool.Add(runningSlot);
+        }
+
+        runningSlotList.Clear();
+    }
+
+    #region KeyboardShortCut
+    bool questActive = false;
+    void TryOpenQuest()
+    {
+        questActive = !questActive;
+        if (questActive)
+        {
+            OpenQuest();
+        }
+        else
+            CloseQuest();
+    }
+    void OpenQuest()
+    {
+        gameObject.SetActive(true);        
+    }
+    void CloseQuest()
+    {   
+        gameObject.SetActive(false);
+    }
+    #endregion
 
     public void OnPointerDown(PointerEventData data)
     {
@@ -44,14 +111,11 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
             Window_Preset = data.position - (Vector2)Window.position;
         }
 
-        if (IsEmpty())
-            return;
-        
-        for (int i = 0; i < questlist.Count; i++)
+        for (int i = 0; i < runningSlotList.Count; i++)
         {
-            if (questlist[i].isInRect(data.position))
+            if (runningSlotList[i].isInRect(data.position))
             {
-                QuestInfoUpdate(questlist[i].QuestIndex);
+                QuestInfoUpdate(runningSlotList[i].QuestIndex);
             }
         }
     }
@@ -64,7 +128,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
     }
     public void QuestInfoUpdate(int _Index)
     {
-        quest = new Quest(_Index, Character.Player.quest.ChracterState_Quest(_Index));
+        Quest quest = new Quest(_Index, GameManager.gameManager.character.quest.ChracterState_Quest(_Index));
         if(quest == null)
         {
             Debug.LogError("퀘스트를 찾을수 없습니다.");
@@ -73,7 +137,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
         switch (quest.State)
         {
             case QUESTSTATE.DONE:
-                Name.text = quest.Name;
+                Name.text = quest.questName;
                 Name.color = Color.gray;
                 Type.text = quest.Type.ToString();
                 Type.color = Color.gray;
@@ -88,7 +152,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
                 Type.color = Color.white;
                 Explain.color = Color.white;
                 State.color = Color.white;
-                Name.text = quest.Name;
+                Name.text = quest.questName;
                 Type.text = quest.Type.ToString();
                 Explain.text = quest.Explain;
                 State.text = "진행중";
@@ -99,7 +163,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
                 Type.color = Color.white;
                 Explain.color = Color.white;
                 State.color = Color.white;
-                Name.text = quest.Name;
+                Name.text = quest.questName;
                 Type.text = quest.Type.ToString();
                 Explain.text = quest.Explain;
                 State.text = "달성";
@@ -113,60 +177,6 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
     }
     
 
-
-    public void UpdateQuestSlot()
-    {
-        CloseQuestSlot();
-        List<int> List = new List<int>();                                       /// 수정할 것!~
-        QuestSlot NewQuestSlot;
-        //List = Character.Player.QUEST.GetQuestList(mainState);
-
-        for (int i = 0; i < List.Count; i++)
-        {
-            NewQuestSlot = GetSlot(List[i]);
-            NewQuestSlot.gameObject.SetActive(true);
-            ///퀘스트 이름 확인할 것
-            NewQuestSlot.QuestWrite("테스트입니다");
-            NewQuestSlot.transform.SetParent(questScroll.content.transform);
-            questlist.Add(NewQuestSlot);
-        }        
-    }
-    public void CloseQuestSlot()
-    {
-        for (int i = 0; i < questlist.Count; i++)
-        {
-            InsertSlot(questlist[i]);            
-        }
-        questlist.Clear();
-    }
-    void InsertSlot(QuestSlot _UsedSlot)
-    {
-        UsableSlot.Enqueue(_UsedSlot);
-        _UsedSlot.Clear();
-        _UsedSlot.transform.SetParent(null);
-        _UsedSlot.gameObject.SetActive(false);
-    }
-    bool IsEmpty()
-    {
-        return questlist.Count == 0;
-    }
-    QuestSlot GetSlot(int _QuestIndex)
-    {
-        QuestSlot NewSlot;
-
-        if (UsableSlot.Count == 0)
-        {
-            NewSlot = Instantiate(questslot);
-            NewSlot.QuestIndex = _QuestIndex;
-            return NewSlot;           
-        }
-        else
-        {
-            NewSlot = UsableSlot.Dequeue();
-            NewSlot.QuestIndex = _QuestIndex;
-            return NewSlot;
-        }
-    }   
     public void OnPointerUp(PointerEventData data)
     {
         WindowDrag = false;

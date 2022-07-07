@@ -5,12 +5,25 @@ using System;
 
 [System.Serializable]
 public class Inventory : ItemMove
-{    
+{
     [SerializeField]
-    Item[] inven = new Item[18];
-
-    public int gold { get; set; }
+    Item[] inven;
+    int maxCount;
+    int currentCount;
+    public Inventory()
+    {
+        inven =new Item[18];
+        maxCount = 18;
+        currentCount = 0;
+    }
+    int gold;
+    public int Gold { get => gold; set => gold = value; }
     
+    public void GetGold(int _gold)
+    {
+        gold += _gold;
+        UIManager.uimanager.AGetGoldUpdateUi(_gold);
+    }
     public void BuyItem(int _price,int _itemIndex,int _itemCount =1)
     {
         gold -= _price;
@@ -39,24 +52,40 @@ public class Inventory : ItemMove
     {
         Item PopItem = GetItem(_SlotNum);
         inven[_SlotNum] = null;
+        currentCount--;
         return PopItem;
     }        
     public void GetRewards(List<List<int>> _rewards)
     {
-
+        if(_rewards == null)
+        {
+            return;
+        }
+        for (int i = 0; i < _rewards.Count; i++)
+        {
+            List<int> reward = _rewards[i];
+            Item rewardItem = new Item(reward[0], reward[1]);
+            PushItem(rewardItem);
+        }
     }
     public bool PushItem(Item _NewItem)
     {
         for(int slotNum = 0; slotNum < inven.Length; slotNum++)
         {
+            if(inven[slotNum]!= null&& inven[slotNum].index == _NewItem.index && _NewItem.itemType != ITEMTYPE.EQUIPMENT)
+            {
+                inven[slotNum].ItemCount += _NewItem.ItemCount;                
+                UIManager.uimanager.ItemUpdateSlot(ITEMLISTTYPE.INVEN, slotNum);
+                return true;
+            }
+        }
+        for (int slotNum = 0; slotNum < inven.Length; slotNum++)
+        {
             if (inven[slotNum] == null)
             {
-                inven[slotNum] = _NewItem;                
-
-                if(UIManager.uimanager.InventoryActive == true)
-                {   
-                    UIManager.uimanager.updateInven();
-                }
+                inven[slotNum] = _NewItem;
+                currentCount++;
+                UIManager.uimanager.ItemUpdateSlot(ITEMLISTTYPE.INVEN, slotNum);
 
                 return true;
             }
@@ -66,6 +95,7 @@ public class Inventory : ItemMove
     
     public void AddItem(int _Index, Item _NewItem)
     {
+        currentCount++;
         inven[_Index] = _NewItem;
     }   
     public int Empty_SlotNum()
@@ -79,25 +109,17 @@ public class Inventory : ItemMove
         }
         return -1;
     }
-    public Item Exchange(int _Index, Item _NewItem)
-    {
-        Item OldItem = inven[_Index];
-
-        if(OldItem != null && OldItem.index == _NewItem.index )
-        {
-            OldItem.ItemCount += _NewItem.ItemCount;
-            return null;
-        }
-        inven[_Index] = _NewItem;
-        return OldItem;
-    }
-    public bool IsEmpty(int _Num)
+ 
+    public bool IsSlotEmpty(int _Num)
     {
         return inven[_Num] == null;
     }
-
-    public bool PossableMoveItem(int _index, Item _MoveItem)
+    public bool IsInvenFull()
     {
+        return currentCount >= maxCount;
+    }
+    public bool PossableMoveItem(int _index, Item _MoveItem)
+    {   
         return true;
     }
     public string InvenInfo()

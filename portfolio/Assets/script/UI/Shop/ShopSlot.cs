@@ -23,7 +23,7 @@ public class ShopSlot : Slot
    
     public void SetShopSlot(int _itemIndex)
     {
-        itemIndex = _itemIndex;
+        
         List<string> itemInfo = ResourceManager.resource.GetTable_Index("ItemTable", _itemIndex);
         if(itemInfo == null)
         {
@@ -42,9 +42,8 @@ public class ShopSlot : Slot
         itemPrice_Text.gameObject.SetActive(true);
         itemPrice_Text.text = itemInfo[6];
     }
-    public void SetShopSlot_Inven(int _itemIndex,string _itemName,string _itemSpriteName,int _itemPrice,int _itemCount)
-    {
-        itemIndex = _itemIndex;
+    public void SetShopSlot_Inven(string _itemName,string _itemSpriteName,int _itemPrice,int _itemCount)
+    {   
         itemName = _itemName;
         icon.gameObject.SetActive(true);
         icon.sprite = ResourceManager.resource.GetImage(_itemSpriteName);
@@ -66,7 +65,7 @@ public class ShopSlot : Slot
         {
             touchItem.gameObject.SetActive(false);
         }
-        itemIndex = -1;
+        
         itemPrice = -1;
         itemName = string.Empty;
         if(itemCount_Text.gameObject.activeSelf == true)
@@ -91,8 +90,7 @@ public class ShopSlot : Slot
         if(touchItem.gameObject.activeSelf == true)
         {
             touchItem.gameObject.SetActive(false);
-        }        
-        itemIndex = -1;
+        }                
         itemPrice = -1;
         itemName = string.Empty;
     }

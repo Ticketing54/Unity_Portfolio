@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class ItemSlot : Slot
+public class ItemSlot : Slot, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField]
-    Text ItemCount;
-    public void Add(string _SpriteName, int _ItemCount,int _itemIndex)
-    {
-        itemIndex = _itemIndex;
+    protected Text ItemCount;
+    public void Add(string _SpriteName, int _ItemCount)
+    {   
         if (_SpriteName == string.Empty)
         {
             Clear();
@@ -33,11 +33,21 @@ public class ItemSlot : Slot
     public override void Clear()
     {        
         icon.sprite = null;
-        icon.gameObject.SetActive(false);
-        itemIndex = -1;
+        icon.gameObject.SetActive(false);        
 
         if(ItemCount.gameObject.activeSelf==true)
             ItemCount.gameObject.SetActive(false);
+    }
+    public virtual void OnPointerEnter(PointerEventData eventData)
+    {
+        //UIManager.uimanager.OpenMiniInfo(itemIndex, eventData.position);
+        
+    }
+
+    public virtual void OnPointerExit(PointerEventData eventData)
+    {
+        //UIManager.uimanager.CloseMiniInfo();
+        
     }
 
 }

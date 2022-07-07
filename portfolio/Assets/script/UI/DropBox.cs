@@ -3,36 +3,188 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
-public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointerUpHandler
+public class DropBox : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
 {
-    public List<Slot> DropSlotlist = new List<Slot>();   
-    public MiniInfo miniinfo;        
-
-
-    public MoveWindow moveWindow;
-    bool WindowDrag = false;
-    Vector2 Window_Preset = Vector2.zero;
-    public RectTransform Window;
-
-
-    public Vector3 Pos = Vector3.zero;
-
-    private void Update()
-    {
-
-        if (this.gameObject.activeSelf == true)
-        {
-            //UIManager.uimanager.InventoryActive = true;
-            //if (UIManager.uimanager.Inven.gameObject.activeSelf == false)
-            //    UIManager.uimanager.Inven.gameObject.SetActive(true);
-
-        }
-            
-        
-
-
+    [SerializeField]
+    List<ItemSlot> dropBoxSlots;
+    Character character;
+    
+    private void Start()
+    {   
+        UIManager.uimanager.AOpenDropBox += ()=> 
+        { 
+            gameObject.SetActive(true);
+            SetDropBox();
+        };
+        UIManager.uimanager.AUpdateDropBox += UpdateSlot;
+        workingIndex = -1;        
+        dropBoxCount =  1;
+        gameObject.SetActive(false);
     }
+
+    #region DropBoxMessage
+
+    [SerializeField]
+    Image dropBoxCountMessage;
+    [SerializeField]
+    TextMeshProUGUI countText;
+    int workingIndex;    
+    int dropBoxCount;
+    Item workingItem;
+
+    public void AllReceive()
+    {
+        if (GameManager.gameManager.character.MoveToDropItem_All())
+        {
+            CloseDropBox();
+        }
+        else
+        {
+            UpdateAllSlot();
+        }
+    }
+    public void OkButton()
+    {
+        GameManager.gameManager.character.MoveToDropItem(workingIndex, dropBoxCount);
+        UpdateSlot(workingIndex);
+        CloseDropBoxCountMessage();
+    }
+    public void NoButton()
+    {
+        CloseDropBoxCountMessage();
+    }
+    public void CountUpButton()
+    {
+        if (workingItem.ItemCount <= dropBoxCount)
+        {
+            return;
+        }
+
+        dropBoxCount++;
+        countText.text = dropBoxCount.ToString();
+    }
+    public void CountDownButton()
+    {
+        if (dropBoxCount == 1)
+        {
+            return;
+        }
+        dropBoxCount--;
+        countText.text = dropBoxCount.ToString();
+    }
+    void CloseDropBoxCountMessage()
+    {
+        workingItem     = null;
+        workingIndex    = -1;
+        dropBoxCount    = 1;
+        dropBoxCountMessage.gameObject.SetActive(false);
+    }
+    void OpenDropBoxCountMessage(int _index)
+    {
+        workingItem = GameManager.gameManager.character.GetDropBoxItem(_index);
+
+        if(workingItem.ItemCount == 1)
+        {
+            OkButton();            
+        }
+        else
+        {   
+            dropBoxCountMessage.gameObject.SetActive(true);
+        }
+        
+    }
+    public void CloseDropBox()
+    {
+        CloseDropBoxCountMessage();
+        gameObject.SetActive(false);
+    }
+    #endregion
+
+    private void OnDisable()
+    {
+        character = null;
+    }
+    void SetDropBox()
+    {   
+        character = GameManager.gameManager.character;
+        UpdateAllSlot();
+    }
+    
+    public void UpdateAllSlot()    
+    {
+        List<Item> itemList = GameManager.gameManager.character.dropBox;
+        if(itemList == null)
+        {
+            return;
+        }
+
+        for (int slotNumer = 0; slotNumer < itemList.Count; slotNumer++)
+        {
+            Item item = itemList[slotNumer];
+            dropBoxSlots[slotNumer].Add(item.itemSpriteName,item.ItemCount);            
+        }
+
+        for (int emptyNumber = dropBoxSlots.Count; emptyNumber < dropBoxSlots.Count; emptyNumber++)
+        {
+            dropBoxSlots[emptyNumber].Clear();
+        }
+    }
+    public void UpdateSlot(int _index)
+    {
+        Item item = character.GetDropBoxItem(_index);
+
+
+        if (item == null)
+        {
+            dropBoxSlots[_index].Clear();
+        }
+        else
+        {
+            dropBoxSlots[_index].Add(item.itemSpriteName, item.ItemCount);
+        }
+    }
+
+   
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            for (int i = 0; i < dropBoxSlots.Count; i++)
+            {
+                if (dropBoxSlots[i].isInRect(eventData.position) && character.GetDropBoxItem(i) != null)
+                {
+                    workingIndex = i;
+                }
+            }
+        }
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if(workingIndex == -1)
+        {
+            return;
+        }
+        else
+        {
+            if (Input.GetMouseButtonUp(1))
+            {
+                if (dropBoxSlots[workingIndex].isInRect(eventData.position))
+                {
+                    OpenDropBoxCountMessage(workingIndex);
+                    return;
+                }
+
+            }
+            else
+            {
+                workingIndex = -1;
+            }
+        }
+    }
+
     //public void OnPointerDown(PointerEventData data)
     //{
     //    if (miniinfo.gameObject.activeSelf == true)
@@ -49,7 +201,7 @@ public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointe
     //            Window_Preset = data.position - (Vector2)Window.position;
 
     //        }
-           
+
 
 
     //        if (miniinfo.gameObject.activeSelf == true)
@@ -63,7 +215,7 @@ public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointe
     //        {
     //            if (DropSlotlist[i].isInRect(data.position) && DropSlotlist[i].Icon.gameObject.activeSelf == true)
     //            {
-                    
+
     //                for(int j = 0; j < Inven.Inven.Count; j++)
     //                {
     //                    if (Inven.Inven[j].item != null&&DropSlotlist[i].item.Index == Inven.Inven[j].item.Index)
@@ -91,7 +243,7 @@ public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointe
     //                }
 
     //            }
-                  
+
 
 
     //        }
@@ -136,7 +288,7 @@ public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointe
 
     //            }
     //        }
-           
+
 
     //    }
     //}
@@ -180,7 +332,7 @@ public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointe
     //                if(isDone == true)
     //                {
     //                    continue;
-                        
+
     //                }
     //                for(int b = 0; b < DropSlotlist.Count; b++)
     //                {
@@ -206,7 +358,7 @@ public class DropBox : MonoBehaviour //IPointerDownHandler,IDragHandler, IPointe
     //        }
 
 
-            
+
 
     //    }
 

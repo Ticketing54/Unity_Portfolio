@@ -9,8 +9,10 @@ using TMPro;
 public class Npc :NpcUnit
 {   
     
-    protected NavMeshAgent nav;   
-
+    protected NavMeshAgent nav;
+    protected Quaternion startDir;
+    protected Coroutine action;
+    
     public void SetNpc(int _index,string _npcName, float _nickYPos,List<int> _quests,List<int> _items,string _dialogue)
     {
         npcIndex = _index;
@@ -20,9 +22,45 @@ public class Npc :NpcUnit
         dialogue = _dialogue;
         quests = _quests;
         SetQuestMark();
+        startPos = transform.position;
+        startDir = transform.rotation;
     }
 
-    public void SetQuestMark()
+    public void LookIdle()
+    {
+        if(action != null)
+        {
+            StopCoroutine(action);
+        }        
+        action = StartCoroutine(CoLookIdle());
+    }
+    IEnumerator CoLookCharacter()
+    {
+        Vector3 dir = (GameManager.gameManager.character.transform.position - transform.position).normalized;        
+        dir.y = 0;
+        float timer = 0f;
+        while (timer <=1f)
+        {
+
+            Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, timer, timer);
+            timer += Time.deltaTime;
+            transform.rotation = Quaternion.LookRotation(newdir);
+            yield return null;
+        }            
+    }
+    IEnumerator CoLookIdle()
+    {   
+        float timer = 0f;
+        while (timer<=1f)
+        {
+
+            //Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, timer, timer);
+            timer += Time.deltaTime;
+            transform.rotation = Quaternion.Lerp(transform.rotation, startDir,timer);
+            yield return null;
+        }
+    }
+    public virtual void SetQuestMark()
     {
         if (quests == null)
         {
@@ -33,7 +71,7 @@ public class Npc :NpcUnit
             
             for (int i = 0; i < quests.Count; i++)
             {
-                Quest quest = Character.Player.quest.GetQuest(quests[i]);
+                Quest quest = GameManager.gameManager.character.quest.GetQuest(quests[i]);
                 if(quest == null)
                 {
                     List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable", quests[i]);
@@ -41,9 +79,9 @@ public class Npc :NpcUnit
 
                     if(int.TryParse(questTable[8],out startNpcIndex))
                     {
-                        if (Character.Player.quest.ClearPrecedQuest(quests[i]) && startNpcIndex == npcIndex)
+                        if (GameManager.gameManager.character.quest.ClearPrecedQuest(quests[i]) && startNpcIndex == npcIndex)
                         {
-                            EffectManager.effectManager.UpdateQuestMark(this, QUESTMARKTYPE.EXCLAMATION, QUESTSTATE.NONE);
+                            EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.NONE);
                             return;
                         }
                     }
@@ -54,10 +92,20 @@ public class Npc :NpcUnit
                     switch (quest.State)
                     {
                         case QUESTSTATE.PLAYING:
-                            EffectManager.effectManager.UpdateQuestMark(this, QUESTMARKTYPE.QUESTION, QUESTSTATE.PLAYING);
+                            EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.PLAYING);
                             return;
                         case QUESTSTATE.COMPLETE:
-                            EffectManager.effectManager.UpdateQuestMark(this, QUESTMARKTYPE.QUESTION, QUESTSTATE.COMPLETE);
+                            {
+                                if(quest.Start_Npc == NpcIndex && quest.Type == QUESTTYPE.DIALOG)
+                                {
+                                    EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.PLAYING);
+                                }
+                                else
+                                {
+                                    EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.COMPLETE);
+                                }
+                            }
+                            
                             return;
                         case QUESTSTATE.DONE:
                             continue;
@@ -69,28 +117,28 @@ public class Npc :NpcUnit
                 
             }
         }            
-    }   
-    private void OnEnable()
-    {
-        
     }
-    public virtual void Start()
+    public override void OnEnable()
     {
-        UIManager.uimanager.uiEffectManager.ActiveNpcUi(this);
-        nav = this.GetComponent<NavMeshAgent>();        
-       
+        base.OnEnable();
     }
     public virtual void Interact()
     {
-        Character.Player.isCantMove = true;
-        UIManager.uimanager.OpenDialog(this);        
+        GameManager.gameManager.character.isCantMove = true;
+        UIManager.uimanager.AOpenDialog(this);
+        if(action != null)
+        {
+            StopCoroutine(action);
+        }
+        action = StartCoroutine(CoLookCharacter());
     }
     public virtual void EtcQuest(int _questIndex)
     {
-        
+        Debug.Log("기타 퀘스트");
     }
-    
-    
+
+  
+
 
     //IEnumerator Mini_DotMove()
     //{

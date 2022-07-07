@@ -6,13 +6,15 @@ using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.Timeline;
+using UnityEngine.Playables;
 using System;
 
 public class LoadingSceneController : MonoBehaviour
 {
     
-    public static LoadingSceneController instance;
-    
+    public static LoadingSceneController instance;    
+
     public static LoadingSceneController Instance
     {
         get
@@ -32,6 +34,11 @@ public class LoadingSceneController : MonoBehaviour
             return instance;
         }
     }
+
+
+    SceneInstance prevScene;
+
+
     private void Awake()
     {
         if(Instance != this)
@@ -40,103 +47,129 @@ public class LoadingSceneController : MonoBehaviour
             return;
         }
         DontDestroyOnLoad(gameObject);
+        
     }
-
-
-    public float tableProgress = 0;
-    public float imageProgress = 0;
-
-    
-
-    
-
-    AsyncOperationHandle loadAddressable;
     
     [SerializeField]
     CanvasGroup canvasGroup;
 
     [SerializeField]
-    Image progressBar;
-
-    private string loadSceneName;    
-    string loadScenenName = string.Empty;
-    SceneInstance prevScene;
-    public bool resourceSetting = false;
-
-    public void LoadScene(string sceneName)
+    Image progressBar; 
+    
+    
+    
+    float loadingPercent = 0f;
+    Coroutine coUpdatePercent;
+    
+    public void LoadScene(string _sceneName)
     {        
         gameObject.SetActive(true);
-        loadSceneName = sceneName;
-        Fade(true);
-        
-        // 씬 불러오기 
-        StartCoroutine(LoadSceneProcess());        
-        Addressables.LoadSceneAsync(loadSceneName+ "Scene").Completed += OnSceneLoaded;       
 
+        StartCoroutine(CoLoadScene(_sceneName));
     }
-
-    private void OnSceneLoaded(AsyncOperationHandle<SceneInstance> obj)
+    IEnumerator CoLoadScene(string _sceneName)
     {
+        yield return Fade(true);
 
-        if(obj.Status == AsyncOperationStatus.Succeeded)
+
+        AsyncOperationHandle<SceneInstance> loadscene = Addressables.LoadSceneAsync(_sceneName + "Scene");
+        yield return loadscene;        
+
+        yield return StartCoroutine(ResourceManager.resource.CoLoadSceneResource(_sceneName));
+
+        GameManager.gameManager.SetMapInfo(_sceneName);
+    }   
+
+    public void LoadingPercent(float _percent)
+    {
+        if(coUpdatePercent != null)
         {
-            prevScene = obj.Result;            
-            ResourceManager.resource.LoadSceneResource(loadSceneName + "Table");
+            StopCoroutine(coUpdatePercent);
         }
-        else
-        {
-            Debug.Log("씬 로드 실패");
-        }        
+
+
+
+        coUpdatePercent = StartCoroutine(LoadSceneProcess(_percent));        
     }
 
-    private IEnumerator LoadSceneProcess()
+    private IEnumerator LoadSceneProcess(float _Percent)
     {
-        progressBar.fillAmount = 0f;
-        while (true)
+        float Timer = 0f;
+        while (progressBar.fillAmount < _Percent)
         {
-            if (progressBar.fillAmount < 0.9f)
-            {
-                progressBar.fillAmount += Time.deltaTime*0.5f;
-            }
-            else
-            {
-                if(resourceSetting == true)
-                {
-                    CameraManager.cameraManager.CameraTargetOnCharacter();
-                    progressBar.fillAmount = 1;
-                    resourceSetting=false;
-                    break;
-                }
 
-            }
-            
+            Timer += Time.deltaTime;
+            loadingPercent = Mathf.Lerp(loadingPercent, _Percent, Timer);
+
+            progressBar.fillAmount = loadingPercent;           
+
             yield return null;
-        }        
-        StartCoroutine(Fade(false));
+        }                
+
+        if(_Percent == 1)
+        {
+            coUpdatePercent = null;
+
+            yield return Fade(false);
+            gameObject.SetActive(false);
+        }
     }
-   
-    //private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
-    //{   
-    //    if(arg0.name == loadSceneName)
-    //    {
-            
-    //        StartCoroutine(Fade(false));            
-    //        SceneManager.sceneLoaded -= OnSceneLoaded;      
-    //    }
-    //}
+    
+  
     IEnumerator Fade(bool isFadeIn)
     {
         float timer = 0f;
         while (timer <= 1f)
-        {
-            yield return null;
-            timer += Time.unscaledDeltaTime * 3f;
+        {   
+            timer += Time.unscaledDeltaTime ;
             canvasGroup.alpha = isFadeIn ? Mathf.Lerp(0f, 1f, timer) : Mathf.Lerp(1f, 0f, timer);
-        }
-        if (!isFadeIn)
+            yield return null;
+        }        
+    }
+    public void LoadCutScene(string _cutName)
+    {
+        gameObject.SetActive(true);
+        StartCoroutine(CoLoadCutScene(_cutName));
+    }
+    public IEnumerator CoLoadCutScene(string _cutName)
+    {
+        gameObject.SetActive(true);
+        yield return StartCoroutine(Fade(true));
+        CameraManager.cameraManager.enabled = false;
+        UIManager.uimanager.CanvasEnabled(false);
+        
+        AsyncOperationHandle<SceneInstance> cutScene = Addressables.LoadSceneAsync(_cutName, LoadSceneMode.Additive);
+        yield return cutScene;        
+        
+        GameObject timelineObj = GameObject.Find("Timeline");
+        PlayableDirector director = timelineObj.GetComponent<PlayableDirector>();
+        director.playOnAwake = false;
+
+        StartCoroutine(Fade(false));
+        yield return CheckDone(director);
+        yield return Fade(true);
+
+        AsyncOperationHandle<SceneInstance> quitCutScene =Addressables.UnloadSceneAsync(cutScene);
+        yield return quitCutScene;
+
+        CameraManager.cameraManager.enabled = true;
+        UIManager.uimanager.CanvasEnabled(true);
+        yield return Fade(false);
+        gameObject.SetActive(false);
+        
+    }
+    IEnumerator CheckDone(PlayableDirector _director)
+    {
+        _director.Play();
+        while (true)
         {
-            
-            gameObject.SetActive(false);
+            if(_director.gameObject.activeSelf == false)
+            {   
+
+                break;
+            }
+            yield return new WaitForSeconds(1f);
         }
     }
+
 }

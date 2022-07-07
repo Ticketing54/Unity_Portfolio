@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 [System.Serializable]
 public class Equipment : ItemMove
@@ -8,11 +9,16 @@ public class Equipment : ItemMove
     [SerializeField]
     Status Stat= null;    
     [SerializeField]
-    Item[] Equip = new Item[5];   
+    Item[] Equip = new Item[5];
+
+    Action openEquip;
+
+    Character character;
     
-    public Equipment(Status _Stat)
-    {        
-        Stat = _Stat;
+    public Equipment(Character _character)
+    {
+        character = _character;        
+        Stat = character.stat;
     }
     public Item GetItem(int _equipType)
     {
@@ -41,13 +47,6 @@ public class Equipment : ItemMove
         Equip[_index] = _NewItem;   
         
         
-    }
-
-    public Item Exchange(int _index, Item _NewItem)
-    {
-        Item popItem = PopItem(_index);
-        AddItem((int)_NewItem.equipType,_NewItem);
-        return popItem;        
     }
 
     public bool PossableMoveItem(int _index, Item _MoveItem)

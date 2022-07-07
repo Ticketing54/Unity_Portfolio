@@ -1,10 +1,44 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+
+public enum MONSTERSTATE
+{    
+    IDLE,
+    COMBAT,
+    MOVE,
+    ATTACK,
+    DAMAGED,
+    DIE,
+}
+public enum MAINLOADING
+{
+    NEW,
+    LOAD1,
+    LOAD2,
+    LOAD3,
+    LOAD4
+}
+public enum SKILLTYPE
+{
+    NONE,
+    PASSIVE,
+    ACTIVE,
+    BUFF
+}
+
+
+public enum RECOVERY
+{
+    HP,
+    MP
+}
 public enum QUESTMARKTYPE
 {
-    EXCLAMATION,
-    QUESTION,
+    STARTABLE,
+    NOTCOMPLETE,
+    COMPLETE
 }
 public enum STATUSEFFECT
 {
@@ -18,13 +52,7 @@ public enum STATUS
     MP,
     ATK,
 }
-public enum CHARACTERANIMATION
-{
-    STOP,
-    MOVE,
-    ATTACK,
-    SKILL,
-}
+
 public enum DAMAGE
 {
     NOMAL,
@@ -37,29 +65,7 @@ public enum CLICKEFFECT
     FRIEND,
     NONE
 }
-public enum TABLETYPE
-{
-    ITEM,
-    LEVEL,
-    MONSTER,
-    QUEST,
-    SKILL,
-    USER,
-    NONE,
-}
 
-
-public enum RESTYPE
-{
-    GAMEOBJECT,
-    IMAGE,
-    NONE,
-}
-public enum HAVEQUESTSTATE
-{
-    PLAYING,
-    FINISH
-}
 public enum QUESTTYPE
 {
     BATTLE,
@@ -87,6 +93,7 @@ public enum ITEMLISTTYPE
     INVEN,
     QUICK,
     EQUIP,
+    ITEMBOX,
     NONE
 }
 public enum ITEMTYPE

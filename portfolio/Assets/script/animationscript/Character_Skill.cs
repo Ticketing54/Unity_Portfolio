@@ -16,12 +16,7 @@ public class Character_Skill : StateMachineBehaviour
         //    nav = Character.Player.nav;
         //Character.Player.DontMove = true;
         
-        Skill_num = animator.GetFloat("SkillNum");
-
-        if(Skill_num == 1)
-        {
-            End = Character.Player.transform.forward*4f + Character.Player.transform.position;
-        }
+       
       
     }
 

@@ -6,18 +6,14 @@ using UnityEngine.UI;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.SceneManagement;
 using System;
 
 
 public class ResourceManager: MonoBehaviour
 {
-    public static ResourceManager resource;
 
-    [SerializeField]
-    List<Npc> runningNpc = new List<Npc>();
-    [SerializeField]
-    List<Monster> runningMonster = new List<Monster>();
-    
+    public static ResourceManager resource;
     public GameObject character;
 
     private void Awake()
@@ -33,131 +29,96 @@ public class ResourceManager: MonoBehaviour
         }
     }
 
-    void ReleaseAddressable()
-    {
-        foreach (Npc one in runningNpc)
-        {
-            Addressables.ReleaseInstance(one.gameObject);
-        }
-        foreach (Monster one in runningMonster)
-        {
-            Addressables.ReleaseInstance(one.gameObject);
-        }
-    }
-    Dictionary<string, GameObject> loadObj;
-    Dictionary<string, string> mapInfo;    
-    
-    List<GameObject> ClickEffect;
+
 
     #region StartResource[Table/Image]
-
-    IList<IResourceLocation> tableList;                 // 테이블 주소
-    IList<IResourceLocation> imageList;                 // 이미지 주소
-    IList<IResourceLocation> dialogList;                // 이미지 주소
-    IList<IResourceLocation> effectList;                // 이펙트 주소
-
-    bool tableSetting       = false;                          // 세팅 체크
-    bool imageSetting       = false;                          // 세팅 체크
-    bool dialogueSetting    = false;
-    bool characterSetting   = false;
-    bool effectSetting      = false;
-    Dictionary<string, Sprite> imageRes = new Dictionary<string, Sprite>();
-    Dictionary<string, List<string>> tableRes = new Dictionary<string, List<string>>();          // 배열 인덱스가 각각의 인덱스
-    Dictionary<string, List<string>> dialogueRes = new Dictionary<string, List<string>>();
-    Dictionary<string, GameObject> effectRes = new Dictionary<string, GameObject>();
+    public Action AClosePatchUi;
+    Dictionary<string, Sprite> imageRes = new ();
+    Dictionary<string, List<string>> tableRes = new ();          // 배열 인덱스가 각각의 인덱스
+    Dictionary<string, List<string>> dialogueRes = new ();
+    Dictionary<string, GameObject> effectRes = new ();    
     public void StartResourceSetting()
     {
-        StartCoroutine(IsSettingBasicRes());
-        Addressables.LoadResourceLocationsAsync("Table").Completed +=
-            (talbeLocation) =>
-            {
-                tableList = talbeLocation.Result;
-                Addressables.LoadAssetsAsync<TextAsset>(tableList, SaveTextAsset).Completed +=
-                (ReadyToStart) =>
-                {
-                    Addressables.Release<IList<TextAsset>>(ReadyToStart.Result);
-                    tableSetting = true;
-                };
-            };
-        Addressables.LoadResourceLocationsAsync("Image").Completed +=
-            (imageLocation) =>
-            {
-                imageList = imageLocation.Result;
-                Addressables.LoadAssetsAsync<Sprite>(imageList, SaveImageAsset).Completed +=
-                (ReadyToStart) =>
-                {
-                    imageSetting = true;
-                };
-            };
-
-        Addressables.LoadAssetAsync<GameObject>("PlayerCharacter").Completed +=
-            (player) =>
-            {               
-                
-                character = player.Result;
-                characterSetting = true;
-
-            };
-        Addressables.LoadResourceLocationsAsync("Dialogue").Completed +=
-           (dialogLocation) =>
-           {
-               dialogList = dialogLocation.Result;
-               Addressables.LoadAssetsAsync<TextAsset>(dialogList, SaveDialogAsset).Completed +=
-               (ReadyToStart) =>
-               {
-                   
-                   Addressables.Release<IList<TextAsset>>(ReadyToStart.Result);
-                   dialogueSetting = true;
-               };
-           };
-        Addressables.LoadResourceLocationsAsync("Effect").Completed +=
-          (dialogLocation) =>
-          {
-              effectList = dialogLocation.Result;
-              Addressables.LoadAssetsAsync<GameObject>(effectList, SaveEffectAsset).Completed +=
-              (ReadyToStart) =>
-              {
-                  EffectManager.effectManager.BasicEffectAdd();
-                  effectSetting = true;
-              };
-          };
+        StartCoroutine(CoStartResourceSetting());
     }
     
-    IEnumerator IsSettingBasicRes()
+    
+    IEnumerator CoStartResourceSetting()
     {
-        while (!(tableSetting&& imageSetting && dialogueSetting && characterSetting  && effectSetting))
-        {
-            yield return null;
-        }
+        IList<IResourceLocation> tableList;                 // 테이블 주소
+        IList<IResourceLocation> imageList;                                                    // 
+        IList<IResourceLocation> dialogList;                // 이미지 주소
+        IList<IResourceLocation> effectList;                // 이펙트 주소
 
-        PatchManager.patchManager.readyToPlay = true;
+
+        AsyncOperationHandle<IList<IResourceLocation>> tableHandle = Addressables.LoadResourceLocationsAsync("Table");
+        yield return tableHandle;
+        tableList = tableHandle.Result;
+
+        AsyncOperationHandle<IList<IResourceLocation>> imageHandle = Addressables.LoadResourceLocationsAsync("Image");
+        yield return imageHandle;
+        imageList= imageHandle.Result;
+
+        AsyncOperationHandle<IList<IResourceLocation>> dialogHandle = Addressables.LoadResourceLocationsAsync("Dialogue");
+        yield return dialogHandle;
+        dialogList = dialogHandle.Result;
+
+        AsyncOperationHandle<IList<IResourceLocation>> effectHandle = Addressables.LoadResourceLocationsAsync("Effect");
+        yield return effectHandle;
+        effectList = effectHandle.Result;
+
+
+        AsyncOperationHandle<IList<TextAsset>> tableAssetHandle = Addressables.LoadAssetsAsync<TextAsset>(tableList, SaveTextAsset);
+        yield return tableAssetHandle;
+        Addressables.Release<IList<IResourceLocation>>(tableList);
+        Addressables.Release<IList<TextAsset>>(tableAssetHandle.Result);
+
+        AsyncOperationHandle<IList<Sprite>> imageAssetHandle = Addressables.LoadAssetsAsync<Sprite>(imageList, SaveImageAsset);
+        yield return imageAssetHandle;
+        Addressables.Release<IList<IResourceLocation>>(imageList);
+
+        AsyncOperationHandle<IList<TextAsset>> dialogAssetHandle = Addressables.LoadAssetsAsync<TextAsset>(dialogList, SaveDialogAsset);
+        yield return dialogAssetHandle;
+        Addressables.Release<IList<IResourceLocation>>(dialogList);
+        Addressables.Release<IList<TextAsset>>(dialogAssetHandle.Result);
+
+        AsyncOperationHandle<IList<GameObject>> effectAssetHandle = Addressables.LoadAssetsAsync<GameObject>(effectList, SaveEffectAsset);
+        yield return effectAssetHandle;
+        Addressables.Release<IList<IResourceLocation>>(effectList);
+        EffectManager.effectManager.BasicEffectAdd();     
+
+        AsyncOperationHandle<GameObject> playercharacter = Addressables.LoadAssetAsync<GameObject>("PlayerCharacter");        
+        yield return playercharacter;
+        character = playercharacter.Result;
+
+        AsyncOperation mainScene = SceneManager.LoadSceneAsync("Main");
+        yield return mainScene;
+
+        AClosePatchUi();
     }
+
+
+
+
+
+
+
+
+
     void SaveTextAsset(TextAsset _result)
     {
         if (!tableRes.ContainsKey(_result.name))
         {
             string[] line = _result.text.Split(Environment.NewLine.ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
-            List<String> info = new List<string>();
-            for (int i = 1; i < line.Length; i++)
+            List<String> info = new();
+            for (int i = 0; i < line.Length; i++)
             {
                 info.Add(line[i]);
             }
             tableRes.Add(_result.name, info);
         }
     }
-    void SaveDialogAsset(TextAsset _result)
-    {
-        if (!dialogueRes.ContainsKey(_result.name))
-        {
-            string[] line = _result.text.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            List<String> info = new List<string>();
-            for (int i = 1; i < line.Length; i++)
-            {
-                info.Add(line[i]);
-            }
-            dialogueRes.Add(_result.name, info);
-        }
-    }
+
     void SaveImageAsset(Sprite _result)
     {
         if (!imageRes.ContainsKey(_result.name))
@@ -165,6 +126,21 @@ public class ResourceManager: MonoBehaviour
             imageRes.Add(_result.name, _result);
         }
     }
+
+    void SaveDialogAsset(TextAsset _result)
+    {
+        if (!dialogueRes.ContainsKey(_result.name))
+        {
+            string[] line = _result.text.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            List<String> info = new ();
+            for (int i = 0; i < line.Length; i++)
+            {
+                info.Add(line[i]);
+            }
+            dialogueRes.Add(_result.name, info);
+        }
+    }
+  
     void SaveEffectAsset(GameObject _result)
     {
         if (!effectRes.ContainsKey(_result.name))
@@ -180,119 +156,166 @@ public class ResourceManager: MonoBehaviour
 
 
     #region Loading[Obg/Map]
+
+    int loadCount = 0;
     
-    public void LoadSceneResource(string _mapTableName)
+
+    List<string> LoadText(TextAsset _textAsset)
     {
-        List<string> mapInfo;
-        
-
-        if (Character.Player == null)
+        if(_textAsset == null)
         {
-            Character player = Instantiate(character).AddComponent<Character>();
-            GameManager.gameManager.character = player;
-        }
-       
-        if (tableRes.TryGetValue(_mapTableName, out mapInfo))
-        {
-            ReleaseAddressable();
-
-            // 시작 시 로드할 오브젝트의 수 세팅            
-
-            string[] sInfo;
-            for (int i = 0; i < mapInfo.Count-1; i++)
-            {
-                sInfo = mapInfo[i].Split(',');
-               
-                    
-                Vector3 pos = new Vector3(float.Parse(sInfo[2]), float.Parse(sInfo[3]), float.Parse(sInfo[4]));
-                Quaternion rotate = Quaternion.Euler(float.Parse(sInfo[5]), float.Parse(sInfo[6]), float.Parse(sInfo[7]));
-                Vector3 scale = new Vector3(float.Parse(sInfo[8]), float.Parse(sInfo[9]), float.Parse(sInfo[10]));
-
-
-                List<string> npcTable = GetTable("NpcTable");
-                List<string> monsterTable = GetTable("MonsterTable");
-
-                switch (sInfo[0])
-                {
-                    case "Npc":
-                        {
-                            List<string> npcTable_index = GetTable(npcTable,int.Parse(sInfo[1]));
-                            Addressables.InstantiateAsync(npcTable_index[1]).Completed +=
-                                (handle) =>
-                                {
-                                    GameObject npcObj = handle.Result;             
-                                    if(npcObj == null)
-                                    {
-                                        Debug.Log("npc 가 없습니다.");
-                                    }
-                                    npcObj.gameObject.tag = "Npc";
-                                    npcObj.gameObject.transform.position = pos;
-                                    npcObj.gameObject.transform.rotation = rotate;
-                                    npcObj.gameObject.transform.localScale = scale;
-                                    SettingNpc(npcObj, npcTable_index);     
-                                };
-                            break;
-                        }                        
-                    case "Monster":
-                        {
-                            List<string> monsterTable_index = GetTable(monsterTable, int.Parse(sInfo[1]));                            
-                            Addressables.InstantiateAsync(monsterTable_index[1]).Completed +=
-                                (handle) =>
-                                {
-                                    GameObject monsterObj = handle.Result;
-                                    monsterObj.gameObject.tag = "Monster";
-                                    monsterObj.gameObject.transform.position = pos;
-                                    monsterObj.gameObject.transform.rotation = rotate;
-                                    monsterObj.gameObject.transform.localScale = scale;
-                                    if(monsterObj == null){
-                                        Debug.Log("Monster 가 없습니다.");
-                                    }
-                                    SettingMonster(monsterObj, monsterTable_index);
-                                };
-                            break;
-                        }
-                    case "Boss":
-                        {
-                            break;
-                        }
-                    default:
-                        {
-                            Debug.Log("존재하지않는 형식의 오브젝트입니다.");
-                            break;
-                        }                        
-                }
-            }
-            LoadingSceneController.instance.resourceSetting = true;            
+            return null;
         }
         else
         {
-            Debug.Log("맵정보가 없습니다.");
+            string [] line = _textAsset.text.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            List<string> loadNpcList = new();
+            loadNpcList.AddRange(line);
+            return loadNpcList;
+        }        
+    }    
+    IEnumerator CoLoadNpc(string _mapName)
+    {
+        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "Npc");
+        yield return mapRes;
+            
+            
+        List<string> npcInfo = LoadText(mapRes.Result);
+        Addressables.Release<TextAsset>(mapRes.Result);
+
+
+        List<string> npcTable = GetTable("NpcTable");
+        for (int i = 1; i < npcInfo.Count; i++)
+        {
+            string[] sInfo = npcInfo[i].Split(',');
+
+            List<string> npcTable_index = GetTable(npcTable, int.Parse(sInfo[0]));
+
+            AsyncOperationHandle<GameObject> npc= Addressables.InstantiateAsync(npcTable_index[1]);
+            yield return npc;
+
+
+            
+            SettingNpc(npc.Result, npcTable_index,sInfo);
         }
     }
+    IEnumerator CoLoadMonster(string _mapName)
+    {   
+        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "Monster");
+
+        yield return mapRes;
+        List<string> mobInfo = LoadText(mapRes.Result);
+        Addressables.Release<TextAsset>(mapRes);
+
+
+        List<string> mobTable = GetTable("MonsterTable");
+        for (int i = 1; i < mobInfo.Count; i++)
+        {
+            string[] sInfo = mobInfo[i].Split(',');            
+            
+            AsyncOperationHandle<GameObject> mobHandle = Addressables.InstantiateAsync(sInfo[2]);
+            yield return mobHandle;
+
+
+            GameObject mob = mobHandle.Result;
+            Vector3 pos = new(float.Parse(sInfo[3]), float.Parse(sInfo[4]), float.Parse(sInfo[5]));
+            Quaternion rotate = Quaternion.Euler(float.Parse(sInfo[6]), float.Parse(sInfo[7]), float.Parse(sInfo[8]));
+            Vector3 scale = new(float.Parse(sInfo[9]), float.Parse(sInfo[10]), float.Parse(sInfo[11]));
+
+
+            mob.tag = "Monster";
+            mob.layer = 10;
+            mob.transform.position = pos;
+            mob.transform.rotation = rotate;
+            mob.transform.localScale = scale;
+            mob.name = sInfo[2];
+
+            SettingMonster(mob, int.Parse(sInfo[1]), sInfo[0],pos);            
+        }
+    }
+
+    IEnumerator CoLoadPotal(string _mapName)
+    {
+
+        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "Potal");
+        
+        yield return mapRes ;
+        List<string> npcInfo = LoadText(mapRes.Result);
+        Addressables.Release<TextAsset>(mapRes);
+        for (int i = 1; i < npcInfo.Count; i++)
+        {
+            string[] sInfo = npcInfo[i].Split(',');
+
+            GameObject potalObj;
+            yield return potalObj = Addressables.InstantiateAsync("Potal").Result;
+            Potal potal = potalObj.AddComponent<Potal>();
+            potal.mapName = sInfo[0];
+            potal.pos = new Vector3(float.Parse(sInfo[4]), float.Parse(sInfo[5]), float.Parse(sInfo[6]));
+
+            // 포탈 정보 입력            
+        }
+    }
+    IEnumerator CoLoadWayPoint(string _mapName)
+    {
+        GameManager.gameManager.ClearWayPoint();       
+
+        AsyncOperationHandle<TextAsset> mapRes = Addressables.LoadAssetAsync<TextAsset>(_mapName + "WayPoint");
+        yield return mapRes;
+
+        List<string> wayPointList = LoadText(mapRes.Result);
+        Addressables.Release<TextAsset>(mapRes);
+
+        for (int i = 1; i < wayPointList.Count; i++)
+        {
+            string[] sInfo = wayPointList[i].Split(',');
+            
+            Vector3 wayPoint = new Vector3(float.Parse(sInfo[1]), float.Parse(sInfo[2]), float.Parse(sInfo[3]));
+            GameManager.gameManager.AddWayPoint(sInfo[0], wayPoint);
+        }
+    }
+    public IEnumerator CoLoadSceneResource(string _mapName)
+    {
+        yield return StartCoroutine(CoLoadNpc(_mapName));
+        LoadingSceneController.instance.LoadingPercent(0.25f);
+        yield return StartCoroutine(CoLoadMonster(_mapName));
+        LoadingSceneController.instance.LoadingPercent(0.5f);
+        yield return StartCoroutine(CoLoadPotal(_mapName));
+        LoadingSceneController.instance.LoadingPercent(0.75f);
+        yield return StartCoroutine(CoLoadWayPoint(_mapName));
+        LoadingSceneController.instance.LoadingPercent(1);
+
+        CameraManager.cameraManager.CameraTargetOnCharacter();        
+        GameManager.gameManager.character.SetPosition();
+        UIManager.uimanager.OnBaseUI();
+    }
+    public void LoadSceneResource(string _mapName)
+    {
+        StartCoroutine(CoLoadSceneResource(_mapName));
+    }
     
-    void SettingMonster(GameObject _obj, List<string> _table)
+    void SettingMonster(GameObject _mobObj,int _mobTableIndex,string _mobType,Vector3 _startPos)
     {
         Monster newMonster;
-        switch (_table[2])                                                  // 몬스터 타입별 스크립트 
+        switch (_mobType)                                                  // 몬스터 타입별 스크립트 
         {
             case "Nomal":
                 {
-                    newMonster= (Monster)_obj.AddComponent<Nomal_Monster>();
+                    newMonster= (Monster)_mobObj.AddComponent<Nomal_Monster>();
                     break;
                 }
             case "Tutorial":
                 {
-                    newMonster = (Monster)_obj.AddComponent<Tutorial_Monster>();
+                    newMonster = (Monster)_mobObj.AddComponent<Tutorial_Monster>();
                     break;
                 }
-            case "Offensive":
+            case "Hostile":
                 {
-                    newMonster = (Monster)_obj.AddComponent<Tutorial_Monster>();        //
+                    newMonster = (Monster)_mobObj.AddComponent<Hostile_Monster>();        //
                     break;
                 }
             case "Mimic":
                 {
-                    newMonster = (Monster)_obj.AddComponent<Tutorial_Monster>();        //
+                    newMonster = (Monster)_mobObj.AddComponent<Mimic>();        //
                     break;
                 }
             default:
@@ -300,53 +323,59 @@ public class ResourceManager: MonoBehaviour
                     return;
                 }
         }
+        
+
         if(newMonster == null)
         {
             Debug.Log("Monster 가 생성되지 않았습니다.");
             return;
         }
-        newMonster.name = _table[3];
-        if (!string.IsNullOrEmpty(_table[7]))
+        else 
         {
-            string[] dropItemsInfo = _table[7].Split('/');
-            List<int[]> items = new List<int[]>();
-            for (int i = 0; i < dropItemsInfo.Length; i++)
-            {
-                int[] iteminfo = Array.ConvertAll(dropItemsInfo[i].Split('#'), index => int.Parse(index));
-                items.Add(iteminfo);
-            }
-            newMonster.SetMonster(int.Parse(_table[0]),_table[3], int.Parse(_table[4]), float.Parse(_table[5]), float.Parse(_table[6]), int.Parse(_table[7]), int.Parse(_table[8]), float.Parse(_table[10]), _table[11], items);
+            newMonster.SetMonster(_mobTableIndex,_startPos);            
         }
-        else
-        {
-            newMonster.SetMonster(int.Parse(_table[0]),_table[3], int.Parse(_table[4]), float.Parse(_table[5]), float.Parse(_table[6]), int.Parse(_table[7]), int.Parse(_table[8]), float.Parse(_table[10]), _table[11]);
-        }
-
-        ObjectManager.objManager.AddMobList(newMonster);
+      
+        
     }
-    void SettingNpc(GameObject _obj,List<string>_table)                                                     // 차후 추가하게될경우 추가
+    void SettingNpc(GameObject _npc,List<string>_table,string [] _objInfo)                                                     
     {
+        Vector3 pos = new(float.Parse(_objInfo[1]), float.Parse(_objInfo[2]), float.Parse(_objInfo[3]));
+        Quaternion rotate = Quaternion.Euler(float.Parse(_objInfo[4]), float.Parse(_objInfo[5]), float.Parse(_objInfo[6]));
+        Vector3 scale = new(float.Parse(_objInfo[7]), float.Parse(_objInfo[8]), float.Parse(_objInfo[9]));
+
+
+
+        _npc.tag = "Npc";
+        _npc.transform.position = pos;
+        _npc.transform.rotation = rotate;
+        _npc.transform.localScale = scale;
+
+
+
+
+
+
         Npc newNpc;
         switch (_table[2])
         {
             case "Nomal":
                 {
-                    newNpc = (Npc)_obj.AddComponent<Nomal_Npc>();                   
+                    newNpc = (Npc)_npc.AddComponent<Nomal_Npc>();                   
                     break;
                 }
             case "Tutorial":
                 {
-                    newNpc = (Npc)_obj.AddComponent<Tutorial_Npc>();
+                    newNpc = (Npc)_npc.AddComponent<Tutorial_Npc>();
                     break;
                 }
             case "Passerby":
                 {
-                    newNpc = (Npc)_obj.AddComponent<Tutorial_Npc>();            //
+                    newNpc = (Npc)_npc.AddComponent<Tutorial_Npc>();            //
                     break;
                 }
             case "NoneDialog":
                 {
-                    newNpc = (Npc)_obj.AddComponent<Tutorial_Npc>();            //
+                    newNpc = (Npc)_npc.AddComponent<NonDialog_Npc>();
                     break;
                 }
             default:
@@ -384,13 +413,19 @@ public class ResourceManager: MonoBehaviour
         }
         
         newNpc.SetNpc(int.Parse(_table[0]),_table[3], float.Parse(_table[6]), npcQuest, npcitems,_table[7]);
-
+        if (!string.IsNullOrEmpty(_objInfo[10]))
+        {
+            string[] wayarr = _objInfo[10].Split('/');
+            List<string> wayList = new List<string>();
+            wayList.AddRange(wayarr);
+            newNpc.wayPoint = wayList;
+        }
         ObjectManager.objManager.AddnpcDic(int.Parse(_table[0]), newNpc);        
     }
     #endregion
 
 
-    public GameObject Instantiate(string _name) { return null; } /// <summary>
+    
     public Sprite GetImage(string _name)
     {
         Sprite getImage;
@@ -417,8 +452,8 @@ public class ResourceManager: MonoBehaviour
     }
     public List<string> GetTable(List<string> _table,int _index)
     {
-        string[] getTable = _table[_index-1].Split(',');
-        List<string> getList = new List<string>();
+        string[] getTable = _table[_index].Split(',');
+        List<string> getList = new ();
 
         for (int i = 0; i < getTable.Length; i++)
         {
@@ -436,8 +471,8 @@ public class ResourceManager: MonoBehaviour
             return null;
         }
 
-        string[] getTable = table[_index-1].Split(',');
-        List<string> getList = new List<string>();
+        string[] getTable = table[_index].Split(',');
+        List<string> getList = new ();
 
         for (int i = 0; i < getTable.Length; i++)
         {

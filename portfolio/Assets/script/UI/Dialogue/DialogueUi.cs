@@ -32,9 +32,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
     [SerializeField]
     TextMeshProUGUI reward_Gold;    
     [SerializeField]
-    TextMeshProUGUI rewards_Item;
-    [SerializeField]
-    AddQuestText_Ui addQuestEffect;     // 퀘스트를 수락하셨습니다. << 메세지
+    TextMeshProUGUI rewards_Item;    
 
     List<int> items;
     List<int> questList;
@@ -42,21 +40,47 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
     bool isDoneTexting = false;
     int nextDilogNum = -3;
+    Npc npc;
 
-    private void Awake()
+
+    private void Start()
     {
         choicePool = new PoolData<Choice>(clickChoiceBar, choice_NotUsed, "Choice");
-        
-    }
+        UIManager.uimanager.AOpenDialog += (OpenNpc) =>
+        {
+            UIManager.uimanager.FadeinFucout(
+                () =>
+                {
+                    UIManager.uimanager.OffBaseUI();                    
+                },
+                () =>
+                {
+                    gameObject.SetActive(true);
+                    npc = OpenNpc;
+                    StartDialogue(npc);
+                }                
+                );
 
+        };
+        UIManager.uimanager.ACloseDialog += () => 
+        {
+            GameManager.gameManager.character.isCantMove = false;
+            gameObject.SetActive(false);
+        };
+        
+        gameObject.SetActive(false);
+    }
     private void OnDisable()
-    {        
-        addQuestEffect.gameObject.SetActive(false);             // 퀘스트 등록 이벤트 
+    {
+        if(npc != null)
+        {
+            npc.LookIdle();
+        }        
         ChoiceReset();
         npc_DialogData = null;
         questList = null;
-        DialogTextReset();
-        Character.Player.isCantMove = false;
+        npc = null;
+        DialogTextReset();        
     }
     
    
@@ -103,7 +127,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
   
   
     public void StartDialogue(NpcUnit _npc)
-    {
+    {   
         if (_npc.ITEMS != null)
         {            
             items = _npc.ITEMS;
@@ -140,7 +164,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         {
             for (int i = 0; i < questList.Count; i++)
             {
-                Quest quest = Character.Player.quest.GetQuest(questList[i]);
+                Quest quest = GameManager.gameManager.character.quest.GetQuest(questList[i]);
                 if (quest == null)
                 {
                     List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable", questList[i]);
@@ -148,7 +172,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
                     if (int.TryParse(questTable[8], out startNpcIndex))
                     {
-                        if (Character.Player.quest.ClearPrecedQuest(questList[i]) && startNpcIndex == _npc.NpcIndex)
+                        if (GameManager.gameManager.character.quest.ClearPrecedQuest(questList[i]) && startNpcIndex == _npc.NpcIndex)
                         {
                             Npc_Texting(int.Parse(questTable[10]));
                             return;
@@ -265,43 +289,54 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
     {
         if (_dialog_Index == -2)
         {
-            UIManager.uimanager.CloseDialog();
+            UIManager.uimanager.FadeinFucout(() =>
+            {
+                gameObject.SetActive(false);
+                GameManager.gameManager.character.isCantMove = false;
+                UIManager.uimanager.OnBaseUI();
+            }
+            );
             return;
         }
         ChoiceReset();
         if (_dialog_Index == -1)
-        {            
-            UIManager.uimanager.OpenShopfromDialog(items);
+        {
+            UIManager.uimanager.AOpenShop(npc);
             return;
         }
         
-        List<string> dialogData = npc_DialogData[_dialog_Index-1];
-        StartCoroutine(CoDialog_Texting(dialogData)); // 대화 입력
+        
+        StartCoroutine(CoDialog_Texting(_dialog_Index)); // 대화 입력
     }
 
 
-    IEnumerator CoDialog_Texting(List<string> _dialogData)
+    IEnumerator CoDialog_Texting(int _index)
     {
-        string questStartIndex    = _dialogData[1];           // 퀘스트 시작 Index
-        string questEndIndex      = _dialogData[2];           // 퀘스트 종료 Index
-        string dialog             = _dialogData[3];           // 대화
-        string choice             = _dialogData[4];           // 선택지
-        string nextDialog         = _dialogData[5];           // 다음 대화
+        List<string> dialogData = npc_DialogData[_index];
+        string questStartIndex    = dialogData[1];           // 퀘스트 시작 Index
+        string questEndIndex      = dialogData[2];           // 퀘스트 종료 Index
+        string dialog             = dialogData[3];           // 대화
+        string choice             = dialogData[4];           // 선택지
+        string nextDialog         = dialogData[5];           // 다음 대화
+        string cutScene           = dialogData[6];
         bool npcReward               = false;
+
+
+        if (!string.IsNullOrEmpty(cutScene))
+        {
+            yield return LoadingSceneController.instance.CoLoadCutScene(cutScene);
+        }
+
 
         if (!string.IsNullOrEmpty(questStartIndex))                                                                       // 퀘스트
         {
-            Character.Player.quest.AddQuest(int.Parse(questStartIndex));            
-            addQuestEffect.gameObject.SetActive(true);
-            addQuestEffect.SetQuestEffect(true);
+            GameManager.gameManager.character.quest.AddQuest(int.Parse(questStartIndex));
         }
 
         if (!string.IsNullOrEmpty(questEndIndex))                                                                       // 퀘스트
         {
-            Character.Player.quest.QuestComplete(int.Parse(questEndIndex));
-            npcReward = true;
-            addQuestEffect.gameObject.SetActive(true);
-            addQuestEffect.SetQuestEffect(false);
+            GameManager.gameManager.character.quest.QuestDone(int.Parse(questEndIndex));
+            npcReward = true;            
         }
 
 

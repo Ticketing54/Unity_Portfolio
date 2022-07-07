@@ -8,11 +8,6 @@ public class CameraManager : MonoBehaviour
 
     public GameObject target;
 
-
-
-
-
-
     public float dis = 6f;    
     public float xSpeed = 220f;
     public float ySpeed = 100f;    
@@ -28,6 +23,8 @@ public class CameraManager : MonoBehaviour
     public float yMinLimit = -20f;
     public float yMaxLimit = 80f;
 
+    [SerializeField]
+    Camera main;
     private void Awake()
     {
         if (cameraManager == null)
@@ -39,7 +36,8 @@ public class CameraManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-      
+
+        main = Camera.main;
     }
     float ClampAngle(float angle, float min, float max)
     {
@@ -55,12 +53,10 @@ public class CameraManager : MonoBehaviour
         Vector3 angles = transform.eulerAngles;
         eulerAngleX = angles.y;
         eulerAngleY = angles.x;
-
-        
     }
     public void CameraTargetOnCharacter()
     {
-        target = Character.Player.gameObject;
+        target = GameManager.gameManager.character.gameObject;
         isTargetCharacter = true;       
     }
     public void CamearaTargetOff()

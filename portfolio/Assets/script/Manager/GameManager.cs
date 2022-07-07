@@ -13,23 +13,44 @@ public class GameManager : MonoBehaviour
    
     
     public Character character = null;
-    public Monster mob = null;
-    public Npc npc = null;
-    public Potal potal = null;
-    public string Character_Name = string.Empty;
 
-    List<Monster> mob_list = new List<Monster>();        
+    //맵 정보    
+    #region CurrentMapInfo
+    public string mapName { get; set; }
+    public float mapSizeX { get; set; }
+    public float mapSizeY { get; set; }
 
+    Dictionary<string, Vector3> wayPoint = new();
+    void resetWayPoint()
+    {
+        wayPoint.Clear();
+    }
+
+    public void ClearWayPoint()
+    {
+        wayPoint.Clear();
+    }
+    public void AddWayPoint(string _key, Vector3 _pos)
+    {
+        if (wayPoint.ContainsKey(_key))
+        {
+            Debug.LogError("이미 있는 키를 더할려고 합니다.");
+        }
+        else
+        {
+            wayPoint.Add(_key, _pos);
+        }
+    }
+
+    #endregion
+    public void SetMapInfo(string _mapName)
+    {
+        mapName = _mapName;
+        mapSizeX = GameObject.FindGameObjectWithTag("Floor").transform.position.x * 2;
+        mapSizeY= GameObject.FindGameObjectWithTag("Floor").transform.position.z * 2;
+    }
 
     
-
-    public delegate void ReadyToStart();
-    public ReadyToStart readyToStart;   
-
-    
-    //정보    
-    public string MapName = string.Empty;    
-  
     private void Awake()
     {        
         if (gameManager == null)
@@ -41,82 +62,80 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        moveSceneReset += resetWayPoint;
     }
 
     
 
     public void LoadGame(int _index)    // 저장된 데이터 로드
-    {       
-        
-        
-        Load_C_Data(_index);                                                   
-        //UIManager.uimanager.minimap.MapSetting();   //미니맵 변경        
-        
+    {
+        if(character != null)
+        {
+            Destroy(character);
+            character = null;
+        }
+        character = Instantiate(ResourceManager.resource.character).AddComponent<Character>();
+        character.transform.SetParent(this.transform);
+        Load_C_Data(_index);
+        UIManager.uimanager.OnBaseUI();        
+
 
     }
     public void NewGame(string _nickName)       // 새로운 게임시작 
-    {   
-        LoadingSceneController.Instance.LoadScene("Village");
-        New_C_Data(_nickName);
+    {
+        if (character != null)
+        {
+            Destroy(character);
+            character = null;
+        }
+        character = Instantiate(ResourceManager.resource.character).AddComponent<Character>();
+        character.transform.SetParent(this.transform);
+        character.gameObject.layer = 8;
+        New_C_Data(_nickName);        
+        LoadingSceneController.Instance.LoadScene("Village");        
+    }
+
+
+    public delegate void MoveSceneReset();
+    public MoveSceneReset moveSceneReset;
+    public void MoveToScene(string _sceneName,Vector3 _Pos)
+    {
+        UIManager.uimanager.OffBaseUI();
+        character.StartPos = _Pos;
+        moveSceneReset();
+        LoadingSceneController.instance.LoadScene(_sceneName);
     }
    
-    public void MainMenu()
-    {
-        
-        
-        
-//        ObjectPoolManager.objManager.PoolingReset_Load();        
-        Destroy(Character.Player.gameObject);          
-
-
-    }
     public void New_C_Data(string _nickName)
     {
-        character = null;
-        
-        GameObject obj = Instantiate(ResourceManager.resource.character);        
-        character = obj.AddComponent<Character>();
-        Status NewStat = new Status("New",1, 0, 0, 0, 0);       
 
-        NewStat.LevelSetting(1);
-        character.stat = NewStat;
-        character.tag = "Player";
-        character.gameObject.layer = 8;        
-        character.name = "Player";        
-        Character_Name = string.Empty;
-        MapName = "Village";        
-        character.inven = new Inventory();
-        character.inven.gold = 5000;
-
+        character.stat.LevelSetting(5);
+        character.tag = "Player";         
+        character.name = _nickName;                
+        mapName = "Village";                
+        character.inven.Gold = 5000;
+        character.StartPos = new Vector3(32f,0f,20f);
 
         // Test
-
-
-        Item test1 = new Item(1,1);
-        Item test2 = new Item(1,3);
-        Item test3 = new Item(1,2);
-        Item test4 = new Item(2,1);
-        Item test5 = new Item(2,2);
-        Item test6 = new Item(3,1);
+       
+        Item test1 = new (1,1);
+        Item test2 = new (1,3);
+        Item test3 = new (1,2);
+        Item test4 = new (2,1);
+        Item test5 = new (2,2);
+        Item test6 = new (3,1);
         character.inven.PushItem(test1);
         character.inven.PushItem(test2);
         character.inven.PushItem(test3);
         character.inven.PushItem(test4);
         character.inven.PushItem(test5);
         character.inven.PushItem(test6);
-
-
-
-
-
-
-
-        character.quickSlot = new QuickSlot();
-        character.quest = new CharacterQuest();
-        Equipment newEquip = new Equipment(NewStat);
-        character.equip = newEquip;
-        character.transform.position = new Vector3(31f,0f,17f);        
+        
+        
+        
     }
+    
+
     public void Load_C_Data(int _num)
     {           
         string temp = UserDataManager.instance.LoadData(_num);
@@ -127,22 +146,18 @@ public class GameManager : MonoBehaviour
             
         
         string[] DATA = temp.Split('\n');
-        GameObject obj = Instantiate(ResourceManager.resource.Instantiate("Character"));        
+        GameObject obj = new();
         character = obj.AddComponent<Character>();        
         character.tag = "Player";
         character.gameObject.layer = 8;
         string []info = DATA[0].Split(',');
-        character.name = info[0];
-        Status NewStat = new Status(info[0], int.Parse(info[5]), float.Parse(info[6]), float.Parse(info[7]), int.Parse(info[8]), int.Parse(info[9]));
-        character.stat = NewStat;
+        character.name = info[0];  
+        
         ChangeLayerObj(character.gameObject.transform, 8);
-        MapName = info[1];        
-        Inventory NewInven = new Inventory();
-        character.inven = NewInven;
-        QuickSlot NewQuick = new QuickSlot();
-        character.quickSlot = NewQuick;
-        Equipment newEquip = new Equipment(NewStat);
-        character.equip = newEquip;
+        mapName = info[1];        
+        
+        
+              
 
         if(DATA[1] != "")
         {

@@ -17,7 +17,7 @@ public class QuestSlot :Slot
     {
         Text.text = _QuestName;
     }
-    public void Clear()
+    public override void Clear()
     {
         QuestIndex = -1;
         Text.text = "";

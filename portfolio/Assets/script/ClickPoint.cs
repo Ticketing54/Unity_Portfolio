@@ -9,7 +9,7 @@ public class ClickPoint : MonoBehaviour
     {
         get
         {
-            Dis = Vector3.Distance(Character.Player.transform.position, this.transform.position);
+            Dis = Vector3.Distance(GameManager.gameManager.character.transform.position, this.transform.position);
             return Dis;
         }
     }    

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: CutScene
+  m_EditorClassIdentifier: 
+  m_GroupName: CutScene
+  m_Data:
+    m_SerializedData: []
+  m_GUID: c7f6653a320795f4da99e5eaced73907
+  m_SerializeEntries:
+  - m_GUID: afc7252079c6408418d3c8d417235186
+    m_Address: PasserbyCutScene
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Patch
+    - CutScene
+  - m_GUID: 2c916b78546741e489f5378657947e2d
+    m_Address: PasserbyRunningScene
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CutScene
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 6defd24f3161a494192e121d10f7c432, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 0fa62ea84bde5244496bb41b975b2fe5, type: 2}
+    - {fileID: 11400000, guid: b2a7364086af0ef45a56417b917425ee, type: 2}

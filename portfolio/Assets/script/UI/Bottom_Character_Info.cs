@@ -20,17 +20,45 @@ public class Bottom_Character_Info : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI Lev;                // Lev_Text
 
-
-    public void InfoUpdate()
+    Character character;
+    private void Awake()
     {
-        Hp_bar.fillAmount = Character.Player.stat.HP / Character.Player.stat.MAXHP;
-        Hp_text.text = ((int)Character.Player.stat.HP).ToString() + " / " + ((int)Character.Player.stat.HP).ToString();
-        Mp_bar.fillAmount = Character.Player.stat.MP / Character.Player.stat.MAXMP;
-        Mp_text.text = ((int)Character.Player.stat.MP).ToString() + " / " + ((int)Character.Player.stat.MAXMP).ToString();        
+        UIManager.uimanager.AUpdateHp    += SetHp;
+        UIManager.uimanager.AUpdateMp    += SetMp;
+        UIManager.uimanager.AUpdateLevel += SetLev;
+        UIManager.uimanager.AUpdateExp   += SetExp;
 
-        Lev.text = "Level : " + Character.Player.stat.LEVEL.ToString();
-        Exp_Text.text = Character.Player.stat.EXP.ToString() + " / " + Character.Player.stat.MAXEXP.ToString();
-        Exp_bar.fillAmount = Character.Player.stat.EXP / Character.Player.stat.MAXEXP;
     }
-
+    private void OnEnable()
+    {
+        character = GameManager.gameManager.character;
+        UpdateBottom();
+    }
+    void UpdateBottom()
+    {   
+        SetHp();
+        SetMp();
+        SetLev();
+        SetExp();
+    }
+    void SetHp()
+    {   
+        Hp_bar.fillAmount = character.stat.Hp / character.stat.MaxHp;
+        Hp_text.text = ((int)character.stat.Hp).ToString() + " / " + ((int)character.stat.MaxHp).ToString();
+    }
+    void SetMp()
+    {
+        Mp_bar.fillAmount = character.stat.Mp / character.stat.MaxMp;
+        Mp_text.text = ((int)character.stat.Mp).ToString() + " / " + ((int)character.stat.MaxMp).ToString();
+    }
+    void SetLev()
+    {
+        Lev.text = "Level : " + character.stat.Level.ToString();
+    }
+    void SetExp()
+    {
+        Exp_Text.text = character.stat.Exp.ToString() + " / " + character.stat.MaxExp.ToString();
+        Exp_bar.fillAmount = (float)character.stat.Exp / (float)character.stat.MaxExp;
+    }
+    
 }

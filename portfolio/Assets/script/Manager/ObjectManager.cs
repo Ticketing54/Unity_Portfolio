@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class ObjectManager : MonoBehaviour
 {
+    public static ObjectManager objManager;    
+    Dictionary<int, Npc> npcDic;
+    Dictionary<Monster, Coroutine> respawnMob;
 
-    public static ObjectManager objManager;
 
-    List<Monster> mobList = new List<Monster>();
-    Dictionary<int, Npc> npcDic = new Dictionary<int, Npc>();        
     private void Awake()
     {
-        if(objManager == null)
+        if (objManager == null)
         {
             objManager = this;
             DontDestroyOnLoad(gameObject);
@@ -19,13 +19,36 @@ public class ObjectManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }        
+        }
+        
+        npcDic = new Dictionary<int, Npc>();
+        respawnMob = new Dictionary<Monster, Coroutine>();
+
     }
-    public void AddMobList(Monster _mob)
+
+    private void Start()
     {
-        mobList.Add(_mob);
+        GameManager.gameManager.moveSceneReset += MoveOtherMap;
     }
-    public void AddnpcDic(int _index,Npc _npc)
+
+
+    public void StartRespawnMob(Monster _mob)
+    {
+        Coroutine coRespawn = StartCoroutine(CoRespawn(_mob));
+        respawnMob.Add(_mob, coRespawn);    
+    }
+    
+
+    IEnumerator CoRespawn(Monster _mob)
+    {
+        _mob.gameObject.SetActive(false);
+        yield return new WaitForSeconds(5f);
+        respawnMob.Remove(_mob);
+        _mob.gameObject.SetActive(true);
+        
+    }
+    
+    public void AddnpcDic(int _index, Npc _npc)
     {
         if (npcDic.ContainsKey(_index))
         {
@@ -35,7 +58,7 @@ public class ObjectManager : MonoBehaviour
         {
             npcDic.Add(_index, _npc);
         }
-        
+
     }
     public Npc GetNpc(int _index)
     {
@@ -49,24 +72,28 @@ public class ObjectManager : MonoBehaviour
         }
     }
 
-    public void UpdateQuestMark(int _npcIndex)
+    public void UpdateQuestMark(Quest _quest)
     {
-        Npc npc;
-        if (npcDic.TryGetValue(_npcIndex, out npc))
-        {
-            npc.SetQuestMark();
-        }
-        else
-        {
-            Debug.Log("목표를 찾지 못했습니다.");
+        Quest quest = _quest;
+        int startNpc = quest.Start_Npc;
+        int endNpc   = quest.Goal_Npc;
 
+
+        if (npcDic.ContainsKey(startNpc))
+        {   
+            npcDic[startNpc].SetQuestMark();
+        }
+
+
+        if (npcDic.ContainsKey(endNpc))
+        {
+            npcDic[endNpc].SetQuestMark();
         }
     }
 
     public void MoveOtherMap()
-    {        
-        mobList.Clear();
-        npcDic.Clear();        
+    {
+        respawnMob.Clear();
+        npcDic.Clear();
     }
-
 }

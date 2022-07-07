@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 
@@ -9,17 +10,91 @@ public class QuestDic : SerializableDictionary<int, Quest> { }
 [System.Serializable]
 public class CharacterQuest 
 {
+    Character character;
+
+    Dictionary<int, Quest> quickQuests;
+
+    public CharacterQuest(Character _character)
+    {
+        character = _character;
+        allQuestDic     = new QuestStateDic();
+        playingQuest    = new QuestDic();
+        doneQuest       = new QuestDic();
+        questItem       = new Dictionary<int, int>();
+        questMonster    = new Dictionary<int, int>();
+        quickQuests     = new Dictionary<int, Quest>();
+
+    }
     [SerializeField]
-    QuestStateDic allQuestDic = new QuestStateDic();
-    QuestDic playingQuest = new QuestDic();
-    QuestDic doneQuest = new QuestDic();
+    QuestStateDic allQuestDic;
+    QuestDic playingQuest;
+    QuestDic doneQuest;
+
+
+    // 아이템 인덱스 / 퀘스트 인덱스 
+    Dictionary<int, int> questItem;
+    // 몬스터 인덱스 / 퀘스트 인덱스 
+    Dictionary<int, int> questMonster;
 
 
 
-    Dictionary<int, int> questItem = new Dictionary<int, int>();        // 아이템 인덱스 / 퀘스트 인덱스 
-    Dictionary<int, int> questMonster = new Dictionary<int, int>();     // 몬스터 인덱스 / 퀘스트 인덱스 
+    #region QuickQuest
 
+    void AddQuickQuest(int _index, Quest _quest)
+    {
+        if(quickQuests.Count >= 4)
+        {
+            return;
+        }
+        else
+        {
+            quickQuests.Add(_index, _quest);
+            UIManager.uimanager.AUpdateQuickQuestUi(_quest);
+        }
+    }
 
+    void UpdateQuickQuest(int _index)
+    {
+        if (quickQuests.ContainsKey(_index))
+        {
+            Quest quest = quickQuests[_index];
+            UIManager.uimanager.AUpdateQuickQuestUi(quest);
+        }
+    }
+
+    void RemoveQuickQuest(int _index)
+    {
+        if (quickQuests.ContainsKey(_index))
+        {
+            Quest quest = quickQuests[_index];
+            quickQuests.Remove(_index);
+            UIManager.uimanager.AUpdateQuickQuestUi(quest);
+        }
+    }
+    public List<Quest> GetQuickSlots()
+    {   
+        return new List<Quest>(quickQuests.Values);
+    }
+    #endregion
+
+    public List<Quest> GetQuestList(QUESTSTATE _state)
+    {
+        switch (_state)
+        {
+            case QUESTSTATE.PLAYING:
+                {
+                    List<Quest> playingQuestList = new List<Quest>(playingQuest.Values);
+                    return playingQuestList;
+                }                
+            case QUESTSTATE.DONE:
+                {
+                    List<Quest> doneQuestList = new List<Quest>(doneQuest.Values);
+                    return doneQuestList;
+                }
+            default:
+                return null;                
+        }
+    }
     public void AddQuest(int _index, QUESTSTATE _state=QUESTSTATE.PLAYING)
     {
         if (allQuestDic.ContainsKey(_index))
@@ -28,6 +103,7 @@ public class CharacterQuest
             return;
         }      
         Quest quest = new Quest(_index,_state);
+
         switch (quest.Type)
         {
             case QUESTTYPE.DIALOG:
@@ -37,28 +113,49 @@ public class CharacterQuest
                 }
             case QUESTTYPE.BATTLE:
                 {
-                    questMonster.Add(quest.Goal_Index,quest.Index);
+                    questMonster.Add(quest.Goal_Index,quest.Index);                    
                     break;
                 }
             case QUESTTYPE.COLLECT:
                 {
-                    questItem.Add(quest.Goal_Index,quest.Index);
+                    questItem.Add(quest.Goal_Index,quest.Index);                    
                     break;
                 }
             case QUESTTYPE.ETC:
                 {
-                    ObjectManager.objManager.GetNpc(quest.Goal_Index).EtcQuest(quest.Index);
+                    Npc targetNpc = ObjectManager.objManager.GetNpc(quest.Goal_Index);
+                    targetNpc.EtcQuest(quest.Index);                    
                     break;
                 }
             default:
                 break;
         }
+
+        AddQuickQuest(_index, quest);        
         allQuestDic.Add(_index, quest.State);
         playingQuest.Add(_index, quest);
-        ObjectManager.objManager.UpdateQuestMark(quest.Start_Npc);
-        ObjectManager.objManager.UpdateQuestMark(quest.Goal_Npc);
+        UIManager.uimanager.AAddQuestUi(_index);
+        ObjectManager.objManager.UpdateQuestMark(quest);        
     }
-    public void UpdatePlayingQuest(int _index, int _addCount)
+    public void UpdateQuest_Monster(int _monsterIndex)
+    {
+        if(questMonster.ContainsKey(_monsterIndex))
+        {
+            UpdatePlayingQuest(questMonster[_monsterIndex], 1);
+        }
+    }
+    public void UpdateQuest_Item(int _itemIndex,int _itemCount)
+    {
+        if (questItem.ContainsKey(_itemIndex))
+        {
+            UpdatePlayingQuest(questItem[_itemIndex], _itemCount);
+        }
+    }
+    public void UpdateQuest_Etc(int _questIndex)
+    {
+        UpdatePlayingQuest(_questIndex, 1);
+    }
+    void UpdatePlayingQuest(int _index, int _addCount)
     {
         if (playingQuest.ContainsKey(_index))
         {
@@ -84,12 +181,14 @@ public class CharacterQuest
                     default:
                         break;
                 }
-
-                ObjectManager.objManager.UpdateQuestMark(quest.Start_Npc);
-                ObjectManager.objManager.UpdateQuestMark(quest.Goal_Npc);
+                if (!string.IsNullOrEmpty(quest.CompleteQuestCutScene))
+                {
+                    LoadingSceneController.instance.LoadCutScene(quest.CompleteQuestCutScene);
+                }                
+                ObjectManager.objManager.UpdateQuestMark(quest);                
             }
-
-
+            UpdateQuickQuest(_index);
+            UIManager.uimanager.AQuestUpdateUi(_index,quest.State);
         }
         else
         {
@@ -137,7 +236,7 @@ public class CharacterQuest
             return null;
         }
     }
-    public void QuestComplete(int _index)
+    public void QuestDone(int _index)
     {        
         if (allQuestDic.ContainsKey(_index))
         {
@@ -150,9 +249,9 @@ public class CharacterQuest
         Quest popQuest;
         if (playingQuest.TryGetValue(_index,out popQuest))
         {
-            Character.Player.inven.gold += popQuest.Reward_Gold;
-            Character.Player.stat.EXP += popQuest.Reward_Exp;
-            Character.Player.inven.GetRewards(popQuest.Reward_Item);
+            character.inven.GetGold(popQuest.Reward_Gold); 
+            character.stat.GetExp(popQuest.Reward_Exp);
+            character.inven.GetRewards(popQuest.Reward_Item);
 
             switch (popQuest.Type)
             {
@@ -179,8 +278,12 @@ public class CharacterQuest
             else
             {
                 doneQuest.Add(_index, popQuest);
+                UIManager.uimanager.AQuestUpdateUi(_index,popQuest.State);
+                RemoveQuickQuest(_index);
+                ObjectManager.objManager.UpdateQuestMark(popQuest);                
             }
             allQuestDic[_index] = QUESTSTATE.DONE;
+
         }
         else
         {

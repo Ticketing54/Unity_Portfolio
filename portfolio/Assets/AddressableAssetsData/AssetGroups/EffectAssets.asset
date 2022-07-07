@@ -38,7 +38,7 @@ MonoBehaviour:
     m_SerializedLabels:
     - Effect
   - m_GUID: f6d7e1db2fa4c334c8f27dc915b5971f
-    m_Address: QuestNotClear
+    m_Address: QUESTIONNOTCLEAR
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect
@@ -60,16 +60,6 @@ MonoBehaviour:
     - Effect
   - m_GUID: 69bbc3fd57ef2344298314b6f07b38bf
     m_Address: Hp
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Effect
-  - m_GUID: 7deb62f11c9cf0e47b80f2221b5c8255
-    m_Address: Damage
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Effect
-  - m_GUID: 831e80d077229c84d948aa756f3b9d4d
-    m_Address: Potal
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect

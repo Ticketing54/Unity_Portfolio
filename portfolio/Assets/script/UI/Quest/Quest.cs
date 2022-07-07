@@ -7,7 +7,7 @@ using System;
 public class Quest
 {
     public int Index { get; }
-    public string Name { get; }
+    public string questName { get; }
     public QUESTTYPE Type { get; }      
     public string Explain { get; }    
     public GOALTYPE Goal_Type { get; }
@@ -25,7 +25,14 @@ public class Quest
 
     public int Reward_Gold { get; }
     public int Reward_Exp { get; }
-    public List<List<int>> Reward_Item { get; }
+    public List<List<int>> Reward_Item { get; }    
+    public string CompleteQuestCutScene { get; }
+    public string DoneQuestCutSCene { get; }
+
+    public Vector3 startPos { get; }    
+    public Vector3 startDir { get;}
+    public Vector3 completePos { get; }
+    public Vector3 completeDir { get; }
     public Quest(int _index, string _questState)
     {
         List<string> questTable = ResourceManager.resource.GetTable_Index("QuestTable", _index);
@@ -46,7 +53,7 @@ public class Quest
             return;
         }
 
-        Name = questTable[1];
+        questName = questTable[1];
         QUESTTYPE t_Type;
         if(Enum.TryParse(questTable[2],out t_Type))                                                 
         {
@@ -214,6 +221,28 @@ public class Quest
 
             Reward_Item = reward_Items;
         }
+        if (!string.IsNullOrEmpty(questTable[16]))
+        {
+            CompleteQuestCutScene = questTable[16];
+        }
+        if (!string.IsNullOrEmpty(questTable[17]))
+        {
+            DoneQuestCutSCene = questTable[17];
+        }
+
+        if (!string.IsNullOrEmpty(questTable[18]))
+        {
+            string[] posDir = questTable[18].Split("/");
+            startPos = new Vector3(float.Parse(posDir[0]), float.Parse(posDir[1]), float.Parse(posDir[2]));
+            startDir = new Vector3(float.Parse(posDir[3]), float.Parse(posDir[4]), float.Parse(posDir[5]));
+        }
+        if (!string.IsNullOrEmpty(questTable[19]))
+        {
+            string[] posDir = questTable[19].Split("/");
+            completePos = new Vector3(float.Parse(posDir[0]), float.Parse(posDir[1]), float.Parse(posDir[2]));
+            completeDir = new Vector3(float.Parse(posDir[3]), float.Parse(posDir[4]), float.Parse(posDir[5]));
+        }
+
     }
     public Quest(int _index, QUESTSTATE _questState)
     {
@@ -235,7 +264,7 @@ public class Quest
             return;
         }
 
-        Name = questTable[0];
+        questName = questTable[1];
         QUESTTYPE t_Type;
         if (Enum.TryParse(questTable[2], out t_Type))                                                 // 퀘스트타입
         {
@@ -388,6 +417,26 @@ public class Quest
             }
 
             Reward_Item = reward_Items;
+        }
+        if (!string.IsNullOrEmpty(questTable[16]))
+        {
+            CompleteQuestCutScene = questTable[16];
+        }
+        if (!string.IsNullOrEmpty(questTable[17]))
+        {
+            DoneQuestCutSCene = questTable[17];
+        }
+        if (!string.IsNullOrEmpty(questTable[18]))
+        {
+            string[] posDir = questTable[18].Split("/");
+            startPos = new Vector3(float.Parse(posDir[0]), float.Parse(posDir[1]), float.Parse(posDir[2]));
+            startDir = new Vector3(float.Parse(posDir[3]), float.Parse(posDir[4]), float.Parse(posDir[5]));
+        }
+        if (!string.IsNullOrEmpty(questTable[19]))
+        {
+            string[] posDir = questTable[19].Split("/");
+            completePos = new Vector3(float.Parse(posDir[0]), float.Parse(posDir[1]), float.Parse(posDir[2]));
+            completeDir = new Vector3(float.Parse(posDir[3]), float.Parse(posDir[4]), float.Parse(posDir[5]));
         }
     }
 }
