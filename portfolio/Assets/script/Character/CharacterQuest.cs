@@ -14,11 +14,6 @@ public class CharacterQuest
 
     Dictionary<int, Quest> quickQuests;
 
-    Action<int> aAddQuestUi;
-    Action<int> aCompleteQuestUi;
-    Action<int> aQuestDoneUi;
-    Action<int> aQuestUpdateUi;
-
     public CharacterQuest(Character _character)
     {
         character = _character;
@@ -29,10 +24,6 @@ public class CharacterQuest
         questMonster    = new Dictionary<int, int>();
         quickQuests     = new Dictionary<int, Quest>();
 
-        aAddQuestUi         = UIManager.uimanager.AAddQuestUi;
-        aCompleteQuestUi    = UIManager.uimanager.AQuestCompleteUi;
-        aQuestDoneUi        = UIManager.uimanager.AQuestDoneUi;
-        aQuestUpdateUi      = UIManager.uimanager.AQuestUpdateUi;
     }
     [SerializeField]
     QuestStateDic allQuestDic;
@@ -58,9 +49,16 @@ public class CharacterQuest
         else
         {
             quickQuests.Add(_index, _quest);
+            UIManager.uimanager.AUpdateQuickQuestUi(_quest);
+        }
+    }
 
-
-
+    void UpdateQuickQuest(int _index)
+    {
+        if (quickQuests.ContainsKey(_index))
+        {
+            Quest quest = quickQuests[_index];
+            UIManager.uimanager.AUpdateQuickQuestUi(quest);
         }
     }
 
@@ -68,8 +66,14 @@ public class CharacterQuest
     {
         if (quickQuests.ContainsKey(_index))
         {
+            Quest quest = quickQuests[_index];
             quickQuests.Remove(_index);
+            UIManager.uimanager.AUpdateQuickQuestUi(quest);
         }
+    }
+    public List<Quest> GetQuickSlots()
+    {   
+        return new List<Quest>(quickQuests.Values);
     }
     #endregion
 
@@ -125,13 +129,33 @@ public class CharacterQuest
                 }
             default:
                 break;
-        }        
-        aAddQuestUi(_index);
+        }
+
+        AddQuickQuest(_index, quest);        
         allQuestDic.Add(_index, quest.State);
         playingQuest.Add(_index, quest);
+        UIManager.uimanager.AAddQuestUi(_index);
         ObjectManager.objManager.UpdateQuestMark(quest);        
     }
-    public void UpdatePlayingQuest(int _index, int _addCount)
+    public void UpdateQuest_Monster(int _monsterIndex)
+    {
+        if(questMonster.ContainsKey(_monsterIndex))
+        {
+            UpdatePlayingQuest(questMonster[_monsterIndex], 1);
+        }
+    }
+    public void UpdateQuest_Item(int _itemIndex,int _itemCount)
+    {
+        if (questItem.ContainsKey(_itemIndex))
+        {
+            UpdatePlayingQuest(questItem[_itemIndex], _itemCount);
+        }
+    }
+    public void UpdateQuest_Etc(int _questIndex)
+    {
+        UpdatePlayingQuest(_questIndex, 1);
+    }
+    void UpdatePlayingQuest(int _index, int _addCount)
     {
         if (playingQuest.ContainsKey(_index))
         {
@@ -160,12 +184,11 @@ public class CharacterQuest
                 if (!string.IsNullOrEmpty(quest.CompleteQuestCutScene))
                 {
                     LoadingSceneController.instance.LoadCutScene(quest.CompleteQuestCutScene);
-                }
-                UIManager.uimanager.AQuestCompleteUi(_index);
+                }                
                 ObjectManager.objManager.UpdateQuestMark(quest);                
             }
-
-
+            UpdateQuickQuest(_index);
+            UIManager.uimanager.AQuestUpdateUi(_index,quest.State);
         }
         else
         {
@@ -213,7 +236,7 @@ public class CharacterQuest
             return null;
         }
     }
-    public void QuestComplete(int _index)
+    public void QuestDone(int _index)
     {        
         if (allQuestDic.ContainsKey(_index))
         {
@@ -255,7 +278,8 @@ public class CharacterQuest
             else
             {
                 doneQuest.Add(_index, popQuest);
-                UIManager.uimanager.AQuestDoneUi(_index);
+                UIManager.uimanager.AQuestUpdateUi(_index,popQuest.State);
+                RemoveQuickQuest(_index);
                 ObjectManager.objManager.UpdateQuestMark(popQuest);                
             }
             allQuestDic[_index] = QUESTSTATE.DONE;

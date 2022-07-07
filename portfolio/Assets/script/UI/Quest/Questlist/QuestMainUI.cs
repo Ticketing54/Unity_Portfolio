@@ -59,7 +59,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
         {
             QuestSlot newSlot = questSlotPool.GetData();
             Quest quest = questList[i];
-            newSlot.QuestWrite(quest.Name);
+            newSlot.QuestWrite(quest.questName);
             newSlot.transform.SetParent(questScroll.content.transform);
             runningSlotDic.Add(quest.Index, newSlot);
             runningSlotList.Add(newSlot);
@@ -137,7 +137,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
         switch (quest.State)
         {
             case QUESTSTATE.DONE:
-                Name.text = quest.Name;
+                Name.text = quest.questName;
                 Name.color = Color.gray;
                 Type.text = quest.Type.ToString();
                 Type.color = Color.gray;
@@ -152,7 +152,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
                 Type.color = Color.white;
                 Explain.color = Color.white;
                 State.color = Color.white;
-                Name.text = quest.Name;
+                Name.text = quest.questName;
                 Type.text = quest.Type.ToString();
                 Explain.text = quest.Explain;
                 State.text = "진행중";
@@ -163,7 +163,7 @@ public class QuestMainUI : MonoBehaviour,IPointerDownHandler, IPointerUpHandler,
                 Type.color = Color.white;
                 Explain.color = Color.white;
                 State.color = Color.white;
-                Name.text = quest.Name;
+                Name.text = quest.questName;
                 Type.text = quest.Type.ToString();
                 Explain.text = quest.Explain;
                 State.text = "달성";

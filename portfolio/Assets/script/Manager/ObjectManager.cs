@@ -80,7 +80,7 @@ public class ObjectManager : MonoBehaviour
 
 
         if (npcDic.ContainsKey(startNpc))
-        {
+        {   
             npcDic[startNpc].SetQuestMark();
         }
 

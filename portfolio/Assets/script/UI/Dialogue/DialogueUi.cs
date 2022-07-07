@@ -40,7 +40,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
     bool isDoneTexting = false;
     int nextDilogNum = -3;
-    NpcUnit npc;
+    Npc npc;
 
 
     private void Start()
@@ -71,10 +71,15 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         gameObject.SetActive(false);
     }
     private void OnDisable()
-    {   
+    {
+        if(npc != null)
+        {
+            npc.LookIdle();
+        }        
         ChoiceReset();
         npc_DialogData = null;
         questList = null;
+        npc = null;
         DialogTextReset();        
     }
     
@@ -330,7 +335,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
         if (!string.IsNullOrEmpty(questEndIndex))                                                                       // 퀘스트
         {
-            GameManager.gameManager.character.quest.QuestComplete(int.Parse(questEndIndex));
+            GameManager.gameManager.character.quest.QuestDone(int.Parse(questEndIndex));
             npcReward = true;            
         }
 

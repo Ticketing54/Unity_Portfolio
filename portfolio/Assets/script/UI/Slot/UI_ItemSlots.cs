@@ -83,7 +83,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
         }
     }
 
-    protected void RightClickDown(Vector2 _ClickPos)
+    protected virtual void RightClickDown(Vector2 _ClickPos)
     {
         for (int itemMoveUiIndex = 0; itemMoveUiIndex < itemSlots.Length; itemMoveUiIndex++)
         {
@@ -110,7 +110,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
     }
     
 
-    public void OnPointerDown(PointerEventData clickPoint)
+    public virtual void OnPointerDown(PointerEventData clickPoint)
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -124,7 +124,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
         }
     }
 
-    public void OnPointerUp(PointerEventData clickPoint)
+    public virtual void OnPointerUp(PointerEventData clickPoint)
     {
         if (Input.GetMouseButtonUp(0))
         {
@@ -139,7 +139,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
         }
     }
 
-    public void OnDrag(PointerEventData _dragdata)
+    public virtual void OnDrag(PointerEventData _dragdata)
     {
         if(0 < leftClickIndex)
         {

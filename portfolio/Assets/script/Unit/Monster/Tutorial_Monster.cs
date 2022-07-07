@@ -146,7 +146,7 @@ public class Tutorial_Monster : Monster
     {
         if (GameManager.gameManager.character.quest.isQuestMonster(index))
         {
-            GameManager.gameManager.character.quest.UpdatePlayingQuest(2,1);
+            GameManager.gameManager.character.quest.UpdateQuest_Etc(2);
         }
         anim.SetTrigger("Damage");
         float finalyDmg = 0;

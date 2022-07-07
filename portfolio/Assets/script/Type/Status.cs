@@ -318,10 +318,10 @@ public class Status
                 character.stat.Hp += recoveryHp;
             }
 
-            UIManager.uimanager.AUpdateBuf("HpPotion", timer, _duration);
+            UIManager.uimanager.AUpdateBuf("Hp", timer, _duration);
             yield return null;
         }
-        UIManager.uimanager.ARemoveBuf("HpPotion");        
+        UIManager.uimanager.ARemoveBuf("Hp");        
         EffectManager.effectManager.PushBuffEffect("Hp", recoveryHpEffect);
     }
     IEnumerator CoRecoveryMp(float _totalAmount, float _duration)
@@ -342,10 +342,10 @@ public class Status
                 character.stat.Mp += recoveryMp;
             }
 
-            UIManager.uimanager.AUpdateBuf("MpPotion", timer, _duration);
+            UIManager.uimanager.AUpdateBuf("Mp", timer, _duration);
             yield return null;
         }
-        UIManager.uimanager.ARemoveBuf("MpPotion");        
+        UIManager.uimanager.ARemoveBuf("Mp");        
         EffectManager.effectManager.PushBuffEffect("Mp", recoveryMpEffect);
     }
 

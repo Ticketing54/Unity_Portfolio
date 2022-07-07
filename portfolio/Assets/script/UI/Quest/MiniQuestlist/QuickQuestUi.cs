@@ -16,76 +16,107 @@ public class QuickQuestUi : MonoBehaviour
     PoolData<MiniQuestSlot> miniQuestPool;    
 
     Dictionary<int, MiniQuestSlot> runningMiniQuestSlots;
-    List<MiniQuestSlot> runningSlotsList;
+    
 
     Character character;
 
     private void Start()
     {
-        runningMiniQuestSlots   = new Dictionary<int, MiniQuestSlot>();
-        runningSlotsList        = new List<MiniQuestSlot>();
+        runningMiniQuestSlots   = new Dictionary<int, MiniQuestSlot>();        
         miniQuestPool        = new PoolData<MiniQuestSlot>(exampleSlot, parent, "MiniQuestSlots");
-        UIManager.uimanager.OpenQuickQuest  += OpenQuickQuest;
-        UIManager.uimanager.CloseQuickQuest += CloseQuickQuest;
+        
+    }
+    private void OnEnable()
+    {
+        character = GameManager.gameManager.character;
+        UIManager.uimanager.AUpdateQuickQuestUi += UpdateQuickQuest;
+        UIManager.uimanager.AAddQuickQuestUi += AddQuest;
+        UpdateAllQuest();
     }
     private void OnDisable()
     {
-        ResetSlots();   
+        UIManager.uimanager.AUpdateQuickQuestUi -= UpdateQuickQuest;
+        UIManager.uimanager.AAddQuickQuestUi -= AddQuest;
+        ResetSlots();
+        
     }
     void ResetSlots()
     {
-        for (int i = 0; i < runningSlotsList.Count; i++)
+        List<int> runningList = new List<int>(runningMiniQuestSlots.Keys);
+        for (int i = 0; i < runningList.Count; i++)
         {
-            miniQuestPool.Add(runningSlotsList[i]);            
+            miniQuestPool.Add(runningMiniQuestSlots[runningList[i]]);            
         }
-        runningMiniQuestSlots.Clear();
+        runningMiniQuestSlots.Clear();        
     }
 
     void AddQuest(Quest _quest)
-    {
-        if(runningSlotsList.Count >= 4 )
-        {
-            return;
-        }
-
+    {   
         MiniQuestSlot slot = miniQuestPool.GetData();
         slot.TextingQuestSlot(_quest);
         runningMiniQuestSlots.Add(_quest.Index, slot);
-        runningSlotsList.Add(slot);
         slot.transform.SetParent(miniQuestScrollRect.content.transform);
-    }
 
-    void CompleteQuest(int _quest)
+        if (_quest.State == QUESTSTATE.COMPLETE)
+        {
+            slot.transform.SetAsFirstSibling();
+        }
+    }
+    void RemoveQuest(int _index)
     {
-
+        if (runningMiniQuestSlots.ContainsKey(_index))
+        {
+            MiniQuestSlot slot = runningMiniQuestSlots[_index];
+            miniQuestPool.Add(slot);
+            runningMiniQuestSlots.Remove(_index);
+        }
     }
-    
-    void UpdateQuest(int _index)
-    {
-
-    }
-    void DoneQuest(int _index)
-    {
-
-    }
-   
-   
-   
     public void OpenQuickQuest()
     {
         character = GameManager.gameManager.character;
+        UIManager.uimanager.AUpdateQuickQuestUi += UpdateQuickQuest;
+        UIManager.uimanager.AAddQuickQuestUi += AddQuest;
         miniQuestScrollRect.gameObject.SetActive(true);
-        UpdateQuickQuest();
-
+        UpdateAllQuest();
     }
 
-    void UpdateQuickQuest()
+    void UpdateQuickQuest(Quest _quest)
     {
-        
+        MiniQuestSlot slot = runningMiniQuestSlots[_quest.Index];
 
+        switch (_quest.State)
+        {
+            case QUESTSTATE.PLAYING:
+                slot.UpdatePrograss(_quest);
+                slot.transform.SetAsFirstSibling();
+                break;
+            case QUESTSTATE.COMPLETE:
+                slot.UpdatePrograss(_quest);
+                slot.transform.SetAsFirstSibling();
+                break;
+            case QUESTSTATE.DONE:
+                RemoveQuest(_quest.Index);
+                break;
+        }
+
+    }
+    void UpdateAllQuest()
+    {   
+        if(character == null)
+        {
+            return;
+        }
+        List<Quest> questList = character.quest.GetQuickSlots();
+        for (int i = 0; i < questList.Count; i++)
+        {
+            AddQuest(questList[i]);
+        }
     }
     public void CloseQuickQuest()
     {
+        UIManager.uimanager.AUpdateQuickQuestUi -= UpdateQuickQuest;
+        UIManager.uimanager.AAddQuickQuestUi -= AddQuest;
+        ResetSlots();
         miniQuestScrollRect.gameObject.SetActive(false);
     }
 }

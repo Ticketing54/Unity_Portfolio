@@ -16,30 +16,49 @@ public class AddQuestText_Ui : MonoBehaviour
 
     #region QuestEffect
 
+
+
+    void QuestEffectOn(int _questIndex, QUESTSTATE _state)
+    {
+        switch (_state)
+        {
+            case QUESTSTATE.PLAYING:
+                break;
+            case QUESTSTATE.COMPLETE:
+                {
+                    CompleteQuestEffect(_questIndex);
+                }
+                break;
+            case QUESTSTATE.DONE:
+                {
+                    DoneQuestEffect(_questIndex);
+                }
+                break;
+        }
+    }
     void AddQuestEffect(int _questIndex)
     {
         gameObject.SetActive(true);
         Quest quest = new Quest(_questIndex,QUESTSTATE.NONE);
-        text.text = "[" + quest.Name+"]"+" 퀘스트를 수락 하셨습니다.";
+        text.text = "[" + quest.questName+"]"+" 퀘스트를 수락 하셨습니다.";
     }
     void CompleteQuestEffect(int _questIndex)
     {
         gameObject.SetActive(true);
         Quest quest = new Quest(_questIndex, QUESTSTATE.NONE);
-        text.text = "[" + quest.Name + "]" + " 퀘스트완료! Npc를 찾아가세요.";
+        text.text = "[" + quest.questName + "]" + " 퀘스트완료! Npc를 찾아가세요.";
     }
     void DoneQuestEffect(int _questIndex)
     {
         gameObject.SetActive(true);
         Quest quest = new Quest(_questIndex, QUESTSTATE.NONE);
-        text.text = "[" + quest.Name + "]" + " 퀘스트를 완료하였습니다. ";
+        text.text = "[" + quest.questName + "]" + " 퀘스트를 완료하였습니다. ";
     }
     #endregion
     private void Start()
     {
         UIManager.uimanager.AAddQuestUi      += AddQuestEffect;
-        UIManager.uimanager.AQuestCompleteUi += CompleteQuestEffect;
-        UIManager.uimanager.AQuestDoneUi     += DoneQuestEffect;
+        UIManager.uimanager.AQuestUpdateUi += QuestEffectOn;        
 
         gameObject.SetActive(false);        
     }

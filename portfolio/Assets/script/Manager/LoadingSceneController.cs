@@ -128,6 +128,7 @@ public class LoadingSceneController : MonoBehaviour
     }
     public void LoadCutScene(string _cutName)
     {
+        gameObject.SetActive(true);
         StartCoroutine(CoLoadCutScene(_cutName));
     }
     public IEnumerator CoLoadCutScene(string _cutName)

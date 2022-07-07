@@ -52,28 +52,51 @@ public class Character : MonoBehaviour
             stat.GetExp(_exp);
         }
     }
-    public void DropBoxMoveToInven(int _index, int _count)
+    public void MoveToDropItem(int _index, int _count)
     {
-        if (inven.IsInvenFull())
+        Item item = dropBox[_index];
+        Item moveItem = new Item(item.index, _count);
+        if (inven.PushItem(moveItem))
+        {
+            if (item.ItemCount <= _count)
+            {
+                dropBox[_index] = null;
+            }
+            else
+            {
+                dropBox[_index].ItemCount -= _count;
+            }
+        }
+        else
         {
             return;
         }
-
-        Item targetItem = GetDropBoxItem(_index);
-
-        targetItem.ItemCount -= _count;
-        inven.PushItem(new Item(targetItem.index, _count));
-
-        if (targetItem.ItemCount <= 0)
-        {
-            dropBox.Remove(targetItem);
-        }
-
-        UIManager.uimanager.DropBoxUpdate();
-
-
-
     }
+    public bool MoveToDropItem_All()
+    {
+        if(dropBox == null)
+        {
+            return false;
+        }
+        else
+        {
+            for (int i = 0; i < dropBox.Count; i++)
+            {
+                Item item = dropBox[i];
+                if(inven.PushItem(item))
+                {
+                    dropBox[i] = null;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+ 
     public Item GetDropBoxItem(int _index)
     {
         if (dropBox == null || _index < 0 || _index > dropBox.Count - 1)

@@ -19,30 +19,45 @@ public class MiniQuestSlot : MonoBehaviour
 
     public void TextingQuestSlot(Quest _quest)
     {
-        
-        if(_quest.Goal_Need == 0)
+        quest_Name.color = Color.white;
+        quest_Explain.color = Color.white;
+        quest_Prograss.color = Color.white;
+        quest_Name.text = _quest.questName;
+        quest_Explain.text = _quest.Explain;
+
+
+        if (_quest.State == QUESTSTATE.COMPLETE)
         {
-            quest_Name.text = _quest.Name;
-            quest_Explain.text = _quest.Explain;
-            quest_Prograss.text = "";
+            finishQuest();
             return;
         }
-        quest_Name.text = _quest.Name;
-        quest_Explain.text = _quest.Explain;
-        quest_Prograss.text = "( " + _quest.Goal_Current + " / " + _quest.Goal_Need + " )";
+        else
+        {
+            quest_Prograss.text = "( " + _quest.Goal_Current + " / " + _quest.Goal_Need + " )";
+        }
+        
+        
 
     }
 
     public void UpdatePrograss(Quest _quest)   
     {
-        quest_Prograss.text = "( " + _quest.Goal_Need + " / " + _quest.Goal_Current + " )";
+        if(_quest.State == QUESTSTATE.COMPLETE)
+        {
+            finishQuest();
+        }
+        else
+        {
+            quest_Prograss.text = "( " + _quest.Goal_Current + " / " + _quest.Goal_Need + " )";
+        }
+        
     }
 
     public void finishQuest()   //퀘스트 완료
     {
-        quest_Name.color = Color.gray;
-        quest_Explain.color = Color.gray;
-        quest_Prograss.color = Color.gray;
+        quest_Name.color = Color.green;
+        quest_Explain.color = Color.green;
+        quest_Prograss.color = Color.green;
         quest_Prograss.text = "완료";
     }
 

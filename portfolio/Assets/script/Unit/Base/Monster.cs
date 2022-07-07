@@ -52,6 +52,7 @@ public class Monster : Unit
         gameObject.tag = "Item";
         anim.SetTrigger("IsDie");
         GameManager.gameManager.character.GetReward_Monster(gold, exp);
+        GameManager.gameManager.character.quest.UpdateQuest_Monster(index);
 
         SetItem();
         if (dropItem == null)

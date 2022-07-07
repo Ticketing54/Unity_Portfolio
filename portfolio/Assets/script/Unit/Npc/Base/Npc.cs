@@ -9,8 +9,10 @@ using TMPro;
 public class Npc :NpcUnit
 {   
     
-    protected NavMeshAgent nav;   
-
+    protected NavMeshAgent nav;
+    protected Quaternion startDir;
+    protected Coroutine action;
+    
     public void SetNpc(int _index,string _npcName, float _nickYPos,List<int> _quests,List<int> _items,string _dialogue)
     {
         npcIndex = _index;
@@ -20,9 +22,45 @@ public class Npc :NpcUnit
         dialogue = _dialogue;
         quests = _quests;
         SetQuestMark();
+        startPos = transform.position;
+        startDir = transform.rotation;
     }
 
-    public void SetQuestMark()
+    public void LookIdle()
+    {
+        if(action != null)
+        {
+            StopCoroutine(action);
+        }        
+        action = StartCoroutine(CoLookIdle());
+    }
+    IEnumerator CoLookCharacter()
+    {
+        Vector3 dir = (GameManager.gameManager.character.transform.position - transform.position).normalized;        
+        dir.y = 0;
+        float timer = 0f;
+        while (timer <=1f)
+        {
+
+            Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, timer, timer);
+            timer += Time.deltaTime;
+            transform.rotation = Quaternion.LookRotation(newdir);
+            yield return null;
+        }            
+    }
+    IEnumerator CoLookIdle()
+    {   
+        float timer = 0f;
+        while (timer<=1f)
+        {
+
+            //Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, timer, timer);
+            timer += Time.deltaTime;
+            transform.rotation = Quaternion.Lerp(transform.rotation, startDir,timer);
+            yield return null;
+        }
+    }
+    public virtual void SetQuestMark()
     {
         if (quests == null)
         {
@@ -88,6 +126,11 @@ public class Npc :NpcUnit
     {
         GameManager.gameManager.character.isCantMove = true;
         UIManager.uimanager.AOpenDialog(this);
+        if(action != null)
+        {
+            StopCoroutine(action);
+        }
+        action = StartCoroutine(CoLookCharacter());
     }
     public virtual void EtcQuest(int _questIndex)
     {

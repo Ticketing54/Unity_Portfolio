@@ -182,10 +182,10 @@ public class UIManager : MonoBehaviour
     Action aUpdateExp;
     Action aUpdateLevel;
     Action aUpdateSkillPoint;
-    Action<int> aAddQuestUi;
-    Action<int> aQuestCompleteUi;
-    Action<int> aQuestUpdateUi;
-    Action<int> aQuestDoneUi;
+    Action<int> aAddQuestUi;    
+    Action<int,QUESTSTATE> aQuestUpdateUi;
+    Action<Quest> aAddQuickQuestUi;
+    Action<Quest> aUpdateQuickQuestUi;
 
     public Action<int> AGetGoldUpdateUi
     {
@@ -356,50 +356,14 @@ public class UIManager : MonoBehaviour
         {
             aAddQuestUi = value;
         }
-    }
-    public Action<int> AQuestCompleteUi
-    {
-        get
-        {
-            if(aQuestCompleteUi == null)
-            {
-                return (questindex) => { Debug.Log("aQuestCompleteUi 가 없습니다."); };
-            }
-            else
-            {
-                return aQuestCompleteUi;
-            }
-        }
-        set
-        {
-            aQuestCompleteUi = value;
-        }
-    }
-    public Action<int> AQuestDoneUi
-    {
-        get
-        {
-            if(aQuestDoneUi == null)
-            {
-                return (questindex) => { Debug.Log("AQuestDoneUi 가 없습니다."); };
-            }
-            else
-            {
-                return aQuestDoneUi;
-            }
-        }
-        set
-        {
-            aQuestDoneUi = value;
-        }
-    }
-    public Action<int> AQuestUpdateUi
+    }    
+    public Action<int,QUESTSTATE> AQuestUpdateUi
     {
         get
         {
             if(aQuestUpdateUi == null)
             {
-                return (questindex) => { Debug.Log("AQuestUpdateUi 가 없습니다."); };
+                return (questindex,state) => { Debug.Log("AQuestUpdateUi 가 없습니다."); };
             }
             else
             {
@@ -409,6 +373,42 @@ public class UIManager : MonoBehaviour
         set
         {
             aQuestUpdateUi = value;
+        }
+    }
+    public Action<Quest> AAddQuickQuestUi
+    {
+        get
+        {
+            if (aAddQuickQuestUi == null)
+            {
+                return (questindex) => { Debug.Log("aAddQuickQuestUi is null."); };
+            }
+            else
+            {
+                return aAddQuickQuestUi;
+            }
+        }
+        set
+        {
+            aAddQuickQuestUi = value;
+        }
+    }
+    public Action<Quest> AUpdateQuickQuestUi
+    {
+        get
+        {
+            if (aUpdateQuickQuestUi == null)
+            {
+                return (questindex) => { Debug.Log("aUpdateQuickQuestUi is null."); };
+            }
+            else
+            {
+                return aUpdateQuickQuestUi;
+            }
+        }
+        set
+        {
+            aUpdateQuickQuestUi = value;
         }
     }
     #endregion
@@ -425,12 +425,48 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-   
+
     #region DropBox
 
-    public Action AOpenDropBox;
-    public Action<int> OpenDropBoxCountMessage;
-    public Action DropBoxUpdate;
+    Action aOpenDropBox;
+    Action<int> aUpdateDropBox;
+    public Action AOpenDropBox
+    {
+        get
+        {
+            if(aOpenDropBox == null)
+            {
+                return () => { Debug.Log("AOpenDropBox is Null"); };
+            }
+            else
+            {
+                return aOpenDropBox;
+            }
+        }
+        set
+        {
+            aOpenDropBox = value;
+        }
+    }
+    public Action<int> AUpdateDropBox
+    {
+        get
+        {
+            if(aUpdateDropBox == null)
+            {
+                return (index) => { Debug.Log("AUpdateDropBox is Null"); };
+            }
+            else
+            {
+                return aUpdateDropBox;
+            }
+        }
+        set
+        {
+            aUpdateDropBox = value;
+        }
+    }
+    
 
     #endregion
 
@@ -625,9 +661,9 @@ public class UIManager : MonoBehaviour
 
     #region Dialog
 
-    Action<NpcUnit> aOpenDialog;
+    Action<Npc> aOpenDialog;
     Action aCloseDialog;
-    public Action<NpcUnit> AOpenDialog
+    public Action<Npc> AOpenDialog
     {
         get
         {

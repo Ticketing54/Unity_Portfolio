@@ -5,18 +5,23 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class DropBox : UI_ItemSlots
+public class DropBox : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
 {
+    [SerializeField]
+    List<ItemSlot> dropBoxSlots;
+    Character character;
     
-    private void Awake()
-    {
-        itemListType = ITEMLISTTYPE.ITEMBOX;
-        UIManager.uimanager.AOpenDropBox += OpenDropBox;
-        UIManager.uimanager.DropBoxUpdate += UpdateAllSlot;
-        UIManager.uimanager.OpenDropBoxCountMessage += (index) =>
-        {
-            OpenDropBoxCountMessage(index);            
+    private void Start()
+    {   
+        UIManager.uimanager.AOpenDropBox += ()=> 
+        { 
+            gameObject.SetActive(true);
+            SetDropBox();
         };
+        UIManager.uimanager.AUpdateDropBox += UpdateSlot;
+        workingIndex = -1;        
+        dropBoxCount =  1;
+        gameObject.SetActive(false);
     }
 
     #region DropBoxMessage
@@ -25,19 +30,25 @@ public class DropBox : UI_ItemSlots
     Image dropBoxCountMessage;
     [SerializeField]
     TextMeshProUGUI countText;
-    int workingIndex = -1;
-    int dropBoxCount = 1;
+    int workingIndex;    
+    int dropBoxCount;
     Item workingItem;
 
-
-
-    void OpenDropBox()
+    public void AllReceive()
     {
-        gameObject.SetActive(true);        
+        if (GameManager.gameManager.character.MoveToDropItem_All())
+        {
+            CloseDropBox();
+        }
+        else
+        {
+            UpdateAllSlot();
+        }
     }
     public void OkButton()
     {
-        // 이제 이동하고 Ui갱신할 것!;
+        GameManager.gameManager.character.MoveToDropItem(workingIndex, dropBoxCount);
+        UpdateSlot(workingIndex);
         CloseDropBoxCountMessage();
     }
     public void NoButton()
@@ -68,29 +79,40 @@ public class DropBox : UI_ItemSlots
         workingItem     = null;
         workingIndex    = -1;
         dropBoxCount    = 1;
-        dropBoxCountMessage.gameObject.SetActive(true);
+        dropBoxCountMessage.gameObject.SetActive(false);
     }
     void OpenDropBoxCountMessage(int _index)
     {
         workingItem = GameManager.gameManager.character.GetDropBoxItem(_index);
-        workingIndex = _index;
-        dropBoxCountMessage.gameObject.SetActive(true);
-    }
 
+        if(workingItem.ItemCount == 1)
+        {
+            OkButton();            
+        }
+        else
+        {   
+            dropBoxCountMessage.gameObject.SetActive(true);
+        }
+        
+    }
+    public void CloseDropBox()
+    {
+        CloseDropBoxCountMessage();
+        gameObject.SetActive(false);
+    }
     #endregion
 
-
-    public override void OnEnable()
+    private void OnDisable()
     {
+        character = null;
+    }
+    void SetDropBox()
+    {   
+        character = GameManager.gameManager.character;
         UpdateAllSlot();
-        
     }
-    public override void OnDisable()
-    {
-        
-    }
-
-    public override void UpdateAllSlot()    
+    
+    public void UpdateAllSlot()    
     {
         List<Item> itemList = GameManager.gameManager.character.dropBox;
         if(itemList == null)
@@ -100,35 +122,65 @@ public class DropBox : UI_ItemSlots
 
         for (int slotNumer = 0; slotNumer < itemList.Count; slotNumer++)
         {
-            Item item = itemList[slotNumer];            
-            itemSlots[slotNumer].Add(item.itemSpriteName,item.ItemCount);            
+            Item item = itemList[slotNumer];
+            dropBoxSlots[slotNumer].Add(item.itemSpriteName,item.ItemCount);            
         }
 
-        for (int emptyNumber = itemSlots.Length; emptyNumber < itemSlots.Length; emptyNumber++)
+        for (int emptyNumber = dropBoxSlots.Count; emptyNumber < dropBoxSlots.Count; emptyNumber++)
         {
-            itemSlots[emptyNumber].Clear();
+            dropBoxSlots[emptyNumber].Clear();
         }
     }
-    public override void UpdateSlot(ITEMLISTTYPE _itemListType, int _index)
+    public void UpdateSlot(int _index)
     {
-        
-        List<Item> itemList = GameManager.gameManager.character.dropBox;
+        Item item = character.GetDropBoxItem(_index);
 
-        if(itemList == null)
+
+        if (item == null)
+        {
+            dropBoxSlots[_index].Clear();
+        }
+        else
+        {
+            dropBoxSlots[_index].Add(item.itemSpriteName, item.ItemCount);
+        }
+    }
+
+   
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            for (int i = 0; i < dropBoxSlots.Count; i++)
+            {
+                if (dropBoxSlots[i].isInRect(eventData.position) && character.GetDropBoxItem(i) != null)
+                {
+                    workingIndex = i;
+                }
+            }
+        }
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if(workingIndex == -1)
         {
             return;
         }
         else
         {
-            if(itemList.Count == 0 || itemList.Count-1 < _index)
+            if (Input.GetMouseButtonUp(1))
             {
-                GameManager.gameManager.character.dropBox = null;
-                gameObject.SetActive(false);
+                if (dropBoxSlots[workingIndex].isInRect(eventData.position))
+                {
+                    OpenDropBoxCountMessage(workingIndex);
+                    return;
+                }
+
             }
             else
             {
-                Item item = itemList[_index];
-                itemSlots[_index].Add(item.itemSpriteName, item.ItemCount);
+                workingIndex = -1;
             }
         }
     }

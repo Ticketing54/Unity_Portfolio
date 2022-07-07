@@ -32,7 +32,7 @@ public class Tutorial_Npc : Npc
         {
             if(GameManager.gameManager.character.stat.MaxHp == GameManager.gameManager.character.stat.Hp)
             {
-                GameManager.gameManager.character.quest.UpdatePlayingQuest(3, 1);
+                GameManager.gameManager.character.quest.UpdateQuest_Etc(3);
                 break;
             }
             yield return null;
