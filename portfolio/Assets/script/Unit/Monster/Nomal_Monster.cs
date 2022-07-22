@@ -6,6 +6,10 @@ public class Nomal_Monster : Monster
 {
     public override void Damaged(DAMAGE _type, float _dmg)
     {
+        if(Hp_Curent <= 0)
+        {
+            return;
+        }
         if(action != null)
         {
             StopCoroutine(action);
@@ -29,6 +33,7 @@ public class Nomal_Monster : Monster
                 }
                 break;
         }
+       
         UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
         anim.SetTrigger("Damaged");
     }

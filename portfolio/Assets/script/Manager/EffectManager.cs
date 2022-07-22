@@ -64,6 +64,16 @@ public class EffectManager : MonoBehaviour
 
         }
     }
+    public void RemoveQuestMark(Npc _npc)
+    {
+        
+        if (runningQuestMark.ContainsKey(_npc))
+        {
+            QuestMark questMark = runningQuestMark[_npc];
+            runningQuestMark.Remove(_npc);
+            questMarkRes.Add(questMark.MarkType.ToString(), questMark);
+        }       
+    }
     void CreateQuestMark(Npc _npc,QUESTSTATE _state)
     {        
         QuestMark questmark;

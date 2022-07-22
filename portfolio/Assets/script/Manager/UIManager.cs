@@ -151,13 +151,13 @@ public class UIManager : MonoBehaviour
             aQuickSlotItemCooltime = value;
         }
     }       
-    public Action<int, float> AQuickSlotSkillCooltime
+    public Action<int, float,int> AQuickSlotSkillCooltime
     {
         get
         {
             if (aQuickSlotSkillCooltime == null)
             {
-                return (Index, cooltime) => { Debug.Log("aQuickSlotUi_SKillUpdate is null"); };
+                return (Index, cooltime,count) => { Debug.Log("aQuickSlotUi_SKillUpdate is null"); };
             }
             else
             {
@@ -170,7 +170,7 @@ public class UIManager : MonoBehaviour
         }
     }
     Action<int, float> aQuickSlotItemCooltime;
-    Action<int, float> aQuickSlotSkillCooltime;
+    Action<int, float,int> aQuickSlotSkillCooltime;
     
     #region StatusUi
 
@@ -525,6 +525,7 @@ public class UIManager : MonoBehaviour
     Action<ITEMLISTTYPE,int,Vector2> itemClickUp;
     Action<ITEMLISTTYPE, int> itemUpdateSlot;
     Action<ITEMLISTTYPE, int,Vector2> moveItemIcon;
+    Action<int, Vector2> aMoveSkillIcon;
     public Action<ITEMLISTTYPE, int, Vector2> ItemClickUp
     {
         get
@@ -546,6 +547,7 @@ public class UIManager : MonoBehaviour
             itemClickUp = value;
         }
     }
+    
     public Action<ITEMLISTTYPE, int> ItemUpdateSlot
     {
         get
@@ -565,12 +567,91 @@ public class UIManager : MonoBehaviour
         }
     }
     public Action<ITEMLISTTYPE,int,Vector2> MoveItemIcon { get => moveItemIcon; set => moveItemIcon = value; }
+    
 
     public void ItemClickEnd(ITEMLISTTYPE _startType,int _startIndex, Vector2 _pos)
     {
         ItemClickUp(_startType, _startIndex, _pos);
         ItemUpdateSlot(_startType, _startIndex);
     }
+
+    public Action<int,Vector2> AMoveSkillIcon
+    {
+        get
+        {
+            if(aMoveSkillIcon == null)
+            {
+                return (skillIndex, pos) => { Debug.Log("aMoveSkillIcon isNull"); };
+            }
+            else
+            {
+                return aMoveSkillIcon;
+            }
+        }
+        set
+        {
+            aMoveSkillIcon = value;
+        }
+    }
+    Action<int, Vector2> aMoveSkillQuick;
+    public Action<int,Vector2> AMoveSkillQuick
+    {
+        get
+        {
+            if(aMoveSkillQuick == null)
+            {
+                return (index, Pos) => { Debug.Log("aMoveSkillQuick is null"); };
+            }
+            else
+            {
+                return aMoveSkillQuick;
+            }
+        }
+        set
+        {
+            aMoveSkillQuick = value;
+        }
+    }
+    Action<int> aUpdateSkillMain;
+    public Action<int> AUpdateSkillMain
+    {
+        get
+        {
+            if (aUpdateSkillMain == null)
+            {
+                return (index) => { Debug.Log("aUpdateSlotMain is Null"); };
+            }
+            else
+            {
+                return aUpdateSkillMain;
+            }
+        }
+        set
+        {
+            aUpdateSkillMain = value;
+        }
+    }
+    Action<int> aUpdateSkillSlot;
+    public Action<int> AUpdateSkillSlot
+    {
+        get
+        {
+            if(aUpdateSkillSlot == null)
+            {
+                return (index) => { Debug.Log("aUpdateSkillSlot is Null"); };
+            }
+            else
+            {
+                return aUpdateSkillSlot;
+            }
+        }
+        set
+        {
+            aUpdateSkillSlot = value;
+        }
+    }
+
+
    
     #endregion
 
@@ -730,13 +811,13 @@ public class UIManager : MonoBehaviour
     public MiniQuestSlot questSlot;
     public ScrollRect questList;
     public GameObject QuestList_M;
-    public QuestMainUI questlist_M;
+    public Ui_QuestMain questlist_M;
 
     #endregion
 
     #region Skill
     //스킬
-    public SkillManager skillmanager;
+    public UI_Skill skillmanager;
     public GameObject skill;     
     public bool QuestActive = false;
     #endregion    

@@ -189,27 +189,27 @@ MonoBehaviour:
     m_SerializedLabels:
     - Image
   - m_GUID: 7f44e5d4df72d7448af30e9e916a1009
-    m_Address: skilla
+    m_Address: skill0
     m_ReadOnly: 0
     m_SerializedLabels:
     - Image
   - m_GUID: 53085f18b2c38eb4e8539c23811c3347
-    m_Address: skillb
+    m_Address: skill1
     m_ReadOnly: 0
     m_SerializedLabels:
     - Image
   - m_GUID: 7e051d18bae47984299ed30a69f8bf1e
-    m_Address: skillc
+    m_Address: skill2
     m_ReadOnly: 0
     m_SerializedLabels:
     - Image
   - m_GUID: 09afc7129c6400947ab194811d1e314b
-    m_Address: skilld
+    m_Address: skill3
     m_ReadOnly: 0
     m_SerializedLabels:
     - Image
   - m_GUID: 5d2ab8663a3653b43a68add74a525717
-    m_Address: skille
+    m_Address: skill4
     m_ReadOnly: 0
     m_SerializedLabels:
     - Image

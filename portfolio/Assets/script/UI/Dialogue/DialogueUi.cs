@@ -64,7 +64,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         };
         UIManager.uimanager.ACloseDialog += () => 
         {
-            GameManager.gameManager.character.isCantMove = false;
+            GameManager.gameManager.character.isPossableMove = true;
             gameObject.SetActive(false);
         };
         
@@ -292,7 +292,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
             UIManager.uimanager.FadeinFucout(() =>
             {
                 gameObject.SetActive(false);
-                GameManager.gameManager.character.isCantMove = false;
+                GameManager.gameManager.character.isPossableMove = true;
                 UIManager.uimanager.OnBaseUI();
             }
             );

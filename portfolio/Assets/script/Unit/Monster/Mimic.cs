@@ -7,8 +7,7 @@ public class Mimic : Monster
     bool contact = false;
     
     public override void OnEnable()
-    {
-        base.OnEnable();
+    {   
         gameObject.tag = "Item";
     }
     public override void OnDisable()

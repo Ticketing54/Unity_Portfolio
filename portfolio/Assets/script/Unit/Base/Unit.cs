@@ -66,14 +66,14 @@ public class Unit : MonoBehaviour
         {
             if (GameManager.gameManager.character != null)
             {
-                if (this.DISTANCE < 4f && approachChracter == false)
+                if (this.DISTANCE < 6f && approachChracter == false)
                 {
                     approachChracter = true;
                     GameManager.gameManager.character.addNearUnit(this);
 
                 }
 
-                if (this.DISTANCE >= 4f && approachChracter == true)
+                if (this.DISTANCE >= 6f && approachChracter == true)
                 {
                     approachChracter = false;
                     GameManager.gameManager.character.removeNearUnit(this);

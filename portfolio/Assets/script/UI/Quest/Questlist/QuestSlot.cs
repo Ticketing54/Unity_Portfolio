@@ -6,20 +6,14 @@ using TMPro;
 public class QuestSlot :Slot
 {    
     [SerializeField]
-    TextMeshProUGUI Text;
-    public int QuestIndex { get; set; }
-    public QuestSlot(int _QuestIndex)
-    {
-        QuestIndex = _QuestIndex;
-    }
-
+    TextMeshProUGUI Text;    
+    
     public void QuestWrite(string _QuestName)
     {
         Text.text = _QuestName;
     }
     public override void Clear()
-    {
-        QuestIndex = -1;
+    {   
         Text.text = "";
         Text.color = Color.white;
     }

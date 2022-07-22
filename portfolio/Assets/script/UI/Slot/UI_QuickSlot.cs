@@ -9,55 +9,55 @@ public class UI_QuickSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     [SerializeField]
     QuickSlot[] quickItemSlots;
     [SerializeField]
-    SkillSlot[] quickSkillSlots;
+    SkillQuickSlot[] quickSkillSlots;
 
     ITEMLISTTYPE itemListType;
     Character character;
 
-    int leftClickIndex = -1;
-    int rightClickindex = -1;
+    int lefItemIndex   ;
+    int leftSkillSlotIndex ;
+    int leftSkillIndex ;
+    int rightitemIndex ;
 
 
     public void OnEnable()
     {
         character = GameManager.gameManager.character;
         UpdateAllSlot();
-        UIManager.uimanager.ItemUpdateSlot += UpdateSlot;
-        UIManager.uimanager.ItemClickUp += IsinRectLeftClick;
-        UIManager.uimanager.AQuickSlotItemCooltime += QuickSlotCooltimeUpdate;
+        UIManager.uimanager.ItemUpdateSlot          += UpdateSlot;
+        UIManager.uimanager.ItemClickUp             += IsinRectLeftClick;
+        UIManager.uimanager.AQuickSlotItemCooltime  += QuickSlotCooltimeUpdate;
+        UIManager.uimanager.AMoveSkillQuick         += IsInRectLeftClick_Skill;
+        UIManager.uimanager.AUpdateSkillSlot        += UpdateSkillSlot;
+        UIManager.uimanager.AQuickSlotSkillCooltime += QuickSlotCooltimeUpdate_Skill;
     }
 
     public  void OnDisable()
     {
-        UIManager.uimanager.ItemUpdateSlot -= UpdateSlot;
-        UIManager.uimanager.ItemClickUp -= IsinRectLeftClick;
-        UIManager.uimanager.AQuickSlotItemCooltime -= QuickSlotCooltimeUpdate;
+        UIManager.uimanager.ItemUpdateSlot          -= UpdateSlot;
+        UIManager.uimanager.ItemClickUp             -= IsinRectLeftClick;
+        UIManager.uimanager.AMoveSkillQuick         -= IsInRectLeftClick_Skill;
+        UIManager.uimanager.AUpdateSkillSlot        -= UpdateSkillSlot;
+        UIManager.uimanager.AQuickSlotItemCooltime  -= QuickSlotCooltimeUpdate;
+        UIManager.uimanager.AQuickSlotSkillCooltime -= QuickSlotCooltimeUpdate_Skill;
     }
     private void Awake()
     {
-        itemListType = ITEMLISTTYPE.QUICK;        
+        itemListType = ITEMLISTTYPE.QUICK;
+        leftSkillSlotIndex = -1;
+        leftSkillIndex = -1;
+        rightitemIndex = -1;
     }
 
 
-    void QuickSlotCooltimeUpdate(int _itemIndex, float _percent)
+    void QuickSlotCooltimeUpdate(int _slotIndex, float _percent)
     {
-        List<int> sameItemIndex = character.quickSlot.GetSameItemIndexList(_itemIndex);
-        if(sameItemIndex == null)
-        {
-            return;
-        }
-        else
-        {
-            for (int i = 0; i < sameItemIndex.Count; i++)
-            {
-                quickItemSlots[sameItemIndex[i]].SetCoolTime(_percent);
-            }
-        }
+        quickItemSlots[_slotIndex].SetCoolTime(_percent);
     }
 
-    void QucikSlotCooltimeUpdate_Skill(int _itemIndex, float _percent)
+    void QuickSlotCooltimeUpdate_Skill(int _slotIndex, float _percent, int _count)
     {
-
+        quickSkillSlots[_slotIndex].SetCoolTime(_percent, _count);
     }
     public void UpdateSlot(ITEMLISTTYPE _itemListType, int _index)
     {
@@ -75,13 +75,25 @@ public class UI_QuickSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         }
         quickItemSlots[_index].Add(getitem.itemSpriteName, getitem.ItemCount);
     }
+    void UpdateSkillSlot(int _index)
+    {
+        Skill skill = GameManager.gameManager.character.skill.GetQuickSkill(_index);
+
+        if(skill == null)
+        {
+            quickSkillSlots[_index].Clear();            
+        }
+        else
+        {
+            quickSkillSlots[_index].Add(skill.spriteName);
+        }
+    }
 
 
     public void UpdateAllSlot()
     {
         for (int i = 0; i < quickItemSlots.Length; i++)
         {
-
             Item quickItem = character.quickSlot.GetItem(i);
             if(quickItem == null)
             {
@@ -91,32 +103,67 @@ public class UI_QuickSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
             {
                 quickItemSlots[i].Add(quickItem.itemSpriteName, quickItem.ItemCount);
             }
-
         }
+
+        for (int j = 0; j < quickSkillSlots.Length; j++)
+        {
+            UpdateSkillSlot(j);
+        }
+
     }
 
     protected void LeftClickDown(Vector2 _ClickPos)
     {
+        ResetClickInfo();
         for (int itemMoveUiIndex = 0; itemMoveUiIndex < quickItemSlots.Length; itemMoveUiIndex++)
         {
             if (quickItemSlots[itemMoveUiIndex].isInRect(_ClickPos) && !quickItemSlots[itemMoveUiIndex].isEmpty())
             {
-                leftClickIndex = itemMoveUiIndex;
+                lefItemIndex = itemMoveUiIndex;
+                return;
             }
         }
+
+        for (int skillIndex = 0; skillIndex < quickSkillSlots.Length; skillIndex++)
+        {
+            if(quickSkillSlots[skillIndex].isInRect(_ClickPos) && character.skill.GetQuickSkill(skillIndex) != null)
+            {
+                leftSkillSlotIndex = skillIndex;
+                leftSkillIndex = character.skill.GetQuickSkill(skillIndex).index;
+                return;
+            }
+        }
+
     }
 
 
     protected void LeftClickUp(Vector2 _ClickPos)
     {
-        if (leftClickIndex >= 0)
+        if (lefItemIndex >= 0)
         {
-            UIManager.uimanager.ItemClickEnd(itemListType, leftClickIndex, _ClickPos);
+            UIManager.uimanager.ItemClickEnd(itemListType, lefItemIndex, _ClickPos);            
+            return;
         }
 
-        leftClickIndex = -1;
+        if(leftSkillSlotIndex>= 0)
+        {
+            for (int skillIndex = 0; skillIndex < quickSkillSlots.Length; skillIndex++)
+            {
+                if (quickSkillSlots[skillIndex].isInRect(_ClickPos))
+                {
+                    character.skill.MoveQuickSkill(leftSkillSlotIndex, skillIndex);                    
+                    return;
+                }
+            }
+            character.skill.MoveQuickSkill(leftSkillSlotIndex, -1);            
+        }        
     }
-
+    void ResetClickInfo()
+    {
+        lefItemIndex = -1;
+        leftSkillSlotIndex = -1;
+        leftSkillIndex = -1;
+    }
     protected void IsinRectLeftClick(ITEMLISTTYPE _type, int _slotNum, Vector2 _pos)
     {
         for (int index = 0; index < quickItemSlots.Length; index++)
@@ -128,13 +175,23 @@ public class UI_QuickSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         }
     }
 
+    void IsInRectLeftClick_Skill(int _index, Vector2 _pos)
+    {
+        for (int slotNum = 0; slotNum < quickSkillSlots.Length; slotNum++)
+        {
+            if (quickSkillSlots[slotNum].isInRect(_pos))
+            {   
+                character.skill.AddQuickSkill(slotNum, _index);
+            }
+        }
+    }
     protected void RightClickDown(Vector2 _ClickPos)
     {
         for (int itemMoveUiIndex = 0; itemMoveUiIndex < quickItemSlots.Length; itemMoveUiIndex++)
         {
             if (quickItemSlots[itemMoveUiIndex].isInRect(_ClickPos) && !quickItemSlots[itemMoveUiIndex].isEmpty())
             {
-                rightClickindex = itemMoveUiIndex;
+                rightitemIndex = itemMoveUiIndex;
             }
         }
     }
@@ -144,14 +201,14 @@ public class UI_QuickSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     {
         for (int index = 0; index < quickItemSlots.Length; index++)
         {
-            if (quickItemSlots[index].isInRect(_ClickPos) && !quickItemSlots[index].isEmpty() && rightClickindex == index)
+            if (quickItemSlots[index].isInRect(_ClickPos) && !quickItemSlots[index].isEmpty() && rightitemIndex == index)
             {
                 character.ItemMove_Auto(itemListType, index);
                 UpdateSlot(itemListType, index);
             }
         }
 
-        rightClickindex = -1;
+        rightitemIndex = -1;
     }
 
 
@@ -189,9 +246,13 @@ public class UI_QuickSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
     public void OnDrag(PointerEventData _dragdata)
     {
-        if (0 < leftClickIndex)
+        if (0 <= lefItemIndex)
         {
-            UIManager.uimanager.MoveItemIcon(itemListType, leftClickIndex, _dragdata.position);
+            UIManager.uimanager.MoveItemIcon(itemListType, lefItemIndex, _dragdata.position);
+        }
+        if (0 <= leftSkillSlotIndex)
+        {
+            UIManager.uimanager.AMoveSkillIcon(leftSkillIndex, _dragdata.position);
         }
     }
 }

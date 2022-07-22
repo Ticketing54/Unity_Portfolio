@@ -2,6 +2,6 @@
 1,Author,Tutorial,훈련 교관,,1/2/3/4,3.7,Author,
 2,Blacksmith,Nomal,마을 대장장이,1/2/3/4/5/6/9,1,1.7,Blacksmith,
 3,Citizen,NoneDialog,마을주민,,,2.8,Citizen,
-4,Mayor,Nomal,촌장,,4/6/7/8,2.8,Mayor,
-5,Passerby,Passerby,겁쟁이 잭,,5,2.8,Passerby,
+4,Mayor,Nomal,촌장,,4/6/7/7,2.8,Mayor,
+5,Passerby,Quest,겁쟁이 잭,,5,2.8,Passerby,
 6,BeginnerBlacksmith,Nomal,수습 대장장이,10/11/12/13/7/8/9,,2.8,BeginnerBlacksmith,
