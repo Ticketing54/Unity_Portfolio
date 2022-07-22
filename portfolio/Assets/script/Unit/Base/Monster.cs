@@ -38,19 +38,19 @@ public class Monster : Unit
 
         set
         {
-            hp_Cur = value;
-            if (hp_Cur <= 0)
+            hp_Cur = value;     
+            if(hp_Cur <= 0)
             {
-                Die();
+                Die();                
             }
         }
     }
 
-    void Die()
+    protected void Die()
     {
         StopCoroutine(action);
         gameObject.tag = "Item";
-        anim.SetTrigger("IsDie");
+        anim.SetBool("IsDie", true);        
         GameManager.gameManager.character.GetReward_Monster(gold, exp);
         GameManager.gameManager.character.quest.UpdateQuest_Monster(index);
 
@@ -89,7 +89,7 @@ public class Monster : Unit
             material.color = color;
             yield return null;
         }
-        anim.SetBool("IsDie", false);
+        anim.SetBool("IsDie", false);        
         ObjectManager.objManager.StartRespawnMob(this);
     }
     public float Hp_Max { get => hp_Max; }
@@ -358,7 +358,13 @@ public class Monster : Unit
 
     public virtual void Damaged(DAMAGE _type, float _dmg)
     {
+        if(Hp_Curent <= 0)
+        {
+            return;
+        }
+
         float finalyDmg = 0;
+        
         switch (_type)
         {
             case DAMAGE.NOMAL:
@@ -373,6 +379,11 @@ public class Monster : Unit
                     Hp_Curent -= finalyDmg;
                 }
                 break;
+        }
+
+        if(Hp_Curent <= 0)
+        {
+            Die();
         }
         UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
     }
@@ -423,7 +434,12 @@ public class Monster : Unit
     protected virtual IEnumerator CoDamaged()
     {
         anim.SetTrigger("Damaged");
-        yield return StartCoroutine(CoKnockBack(1f));
+        if(action != null)
+        {
+            StopCoroutine(action);
+        }
+        
+        yield return StartCoroutine(CoKnockBack());
         action = StartCoroutine(CoCombat());
     }
     public void StatusEffect(STATUSEFFECT _state, float _duration)
@@ -432,7 +448,7 @@ public class Monster : Unit
         {
             case STATUSEFFECT.KNOCKBACK:
                 {
-                    KnockBack(_duration);
+                    KnockBack();
                 }
                 break;
             case STATUSEFFECT.STURN:
@@ -479,19 +495,27 @@ public class Monster : Unit
         Debug.Log("스턴해제");
         //isstrun = false;
     }
-    void KnockBack(float _duration)
+    void KnockBack()
     {
         // 넉백 애니메이션
-        StartCoroutine(CoKnockBack(_duration));
+        StartCoroutine(CoKnockBack());
     }
-    protected IEnumerator CoKnockBack(float _duration)
+    protected IEnumerator CoKnockBack()
     {
         float timer = 0f;
-        nav.ResetPath();
-        Vector3 dir = transform.position - GameManager.gameManager.character.transform.position;
+        nav.updateRotation = false;
+        transform.LookAt(GameManager.gameManager.character.transform);
+        Vector3 dir = (transform.position - GameManager.gameManager.character.transform.position).normalized;
+        nav.speed = 5;
+        nav.SetDestination(transform.position + dir * 1f);
+        while (timer<0.5f)
+        {
+            yield return null;
 
-        nav.velocity += dir.normalized *2;
-
+            timer += Time.deltaTime;
+        }
+        nav.speed = 3.5f;
+        nav.updateRotation = true;
         yield return null;
     }
 

@@ -78,7 +78,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
                 UIManager.uimanager.ACloseDialog();
                 UIManager.uimanager.OnBaseUI();
                 gameObject.SetActive(true);
-                GameManager.gameManager.character.isCantMove = true;
+                GameManager.gameManager.character.isPossableMove = false;
                 OpenShop(npc);
             });
             
@@ -557,7 +557,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
     }
     public void ExitShop()
     {
-        GameManager.gameManager.character.isCantMove = false;
+        GameManager.gameManager.character.isPossableMove = true;
         this.gameObject.SetActive(false);
     }
 

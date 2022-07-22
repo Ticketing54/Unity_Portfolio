@@ -28,10 +28,7 @@ public class Character_Quick : ItemMove
         character           = _character;
         runningUseItem      = new HashSet<int>();
         runningUseSkill     = new HashSet<int>();        
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Q, SkillSlot_Q);
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.W, SkillSlot_W);
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.E, SkillSlot_E);
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.R, SkillSlot_R);
+        
         UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha1, ItemSlot_First);
         UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha2, ItemSlot_Second);
         UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha3, ItemSlot_Third);
@@ -159,7 +156,27 @@ public class Character_Quick : ItemMove
 
     public void UseSkill(int _slotNum)
     {
-        //
+        Skill skill = GetSkill(_slotNum);
+
+        if(skill == null)
+        {
+            return;
+        }
+        else
+        {
+
+            //character.skill.UseSkill(skill.index);
+            //if (runningUseSkill.Contains(skill.index))
+            //{
+            //    return;
+            //}
+            //else
+            //{
+            //    runningUseSkill.Add(skill.index);
+            //    character.StartCoroutine(CoCoolTimecheck_Skill(skill.index, skill.coolTime));
+            //    character.skill.UseSkill(skill.index);
+            //}
+        }
     }
     public void UseItem(int _index)
     {
@@ -235,6 +252,22 @@ public class Character_Quick : ItemMove
         }
         runningUseItem.Remove(_itemInex);
     }
+    IEnumerator CoCoolTimecheck_Skill(int _skillIndex,float _coolTime)
+    {
+        float timer = 0.0001f;
+        
+        while (timer <= _coolTime)
+        {
+            timer += Time.deltaTime;
+            float maxCoolTime = _coolTime;
+            maxCoolTime -= timer;
+            float percent = timer / _coolTime;
+            CoolTimeCheck_SKill(_skillIndex, percent, (int)maxCoolTime);
+            yield return null;
+        }
+        runningUseSkill.Remove(_skillIndex);
+    }
+    
     void CoolTimeCheck_Item(int _itemIndex,float _percent)
     {
         List<Item> quickslotItems = itemSlots[ItemSlotNum];
@@ -247,7 +280,7 @@ public class Character_Quick : ItemMove
             }
         }
     }
-    void CoolTimeCheck_SKill(int _skillIndex, float _percent)
+    void CoolTimeCheck_SKill(int _skillIndex, float _percent,int _coolTime)
     {
         List<Skill> quickslotItems = skillSlots[SkillSlotNum];
 
@@ -255,7 +288,7 @@ public class Character_Quick : ItemMove
         {
             if (quickslotItems[i] != null && quickslotItems[i].index == _skillIndex)
             {
-                UIManager.uimanager.AQuickSlotItemCooltime(i, _percent);
+                UIManager.uimanager.AQuickSlotSkillCooltime(i, _percent,_coolTime);
             }
         }
     }
@@ -335,22 +368,26 @@ public class Character_Quick : ItemMove
         return quickSkill[_SlotNum];
     }
    
-    public void AddSkill(int _ListNum, int _SlotNum,int _skillIndex)
-    {
-        List<Skill> quickSkill = skillSlots[skillSlotNum];
-        quickSkill[_SlotNum] = new Skill(_skillIndex);
-    }   
-    public void RemoveSkill(int _SlotNum)
-    {
-        List<Skill> quickSkill = skillSlots[skillSlotNum];
-        quickSkill[_SlotNum] = null;
-    }
-    #region UseSkill
-    //
-    //
-    //
-    #endregion
-
+    //public void AddSkill(int _SlotNum,int _skillIndex)
+    //{
+    //    List<Skill> quickSkill = skillSlots[skillSlotNum];
+    //    for (int i = 0; i < quickSkill.Count; i++)
+    //    {
+    //        if(quickSkill[i] != null &&quickSkill[i].index == _skillIndex)
+    //        {
+    //            quickSkill[i] = null;
+    //            UIManager.uimanager.AUpdateSkillSlot(i);
+    //        }
+    //    }        
+    //    quickSkill[_SlotNum] = new Skill(_skillIndex);
+    //    UIManager.uimanager.AUpdateSkillSlot(_SlotNum);
+    //}   
+    //public void RemoveSkill(int _SlotNum)
+    //{
+    //    List<Skill> quickSkill = skillSlots[skillSlotNum];
+    //    quickSkill[_SlotNum] = null;
+    //}
+   
     
 
     public List<int> GetSameItemIndexList(int _itemIndex)
@@ -388,4 +425,19 @@ public class Character_Quick : ItemMove
         }
         return -1;
     }
+    //public void MoveQuickSkill(int _startIndex,int _endIndex)
+    //{
+    //    if (_endIndex == -1)
+    //    {
+    //        skillSlots[skillSlotNum][_startIndex] = null;
+    //        UIManager.uimanager.AUpdateSkillSlot(_startIndex);
+    //        return;
+    //    }
+    //    Skill skill = skillSlots[skillSlotNum][_startIndex];
+    //    skillSlots[skillSlotNum][_startIndex] = skillSlots[skillSlotNum][_endIndex];
+    //    skillSlots[skillSlotNum][_endIndex] = skill;
+
+    //    UIManager.uimanager.AUpdateSkillSlot(_startIndex);
+    //    UIManager.uimanager.AUpdateSkillSlot(_endIndex);        
+    //}
 }

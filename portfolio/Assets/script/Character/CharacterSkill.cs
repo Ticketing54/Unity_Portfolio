@@ -4,45 +4,141 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class CharacterSkill
-{
-    HashSet<int> haveSkills;
-    HashSet<int> coolTimeSkills;
-    
+{   
+    HashSet<int> haveSkills;    
+
+    Skill[,] skillQuick;
+    int skillQuickNum;
+    public int SkillSlotNum 
+    { 
+        get => skillQuickNum;
+        set
+        {
+            if(value >= 4)
+            {
+                skillQuickNum = 0;
+            }
+            else
+            {
+                skillQuickNum = value;
+            }
+        } 
+    }
+
     Character character;
     NavMeshAgent nav;
     Animator anim;
-    
+
+
+    HashSet<int> coolTimeSkill;
+
     public CharacterSkill(Character _character,NavMeshAgent _nav, Animator _anim)
     {
-        haveSkills = new HashSet<int>();
-        coolTimeSkills = new HashSet<int>();        
         character = _character;
         nav = _nav;
         anim = _anim;
+
+        haveSkills       = new HashSet<int>();
+        coolTimeSkill     = new HashSet<int>();
+        skillQuick       = new Skill[4, 4];
+        
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Q, SkillSlot_Q);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.W, SkillSlot_W);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.E, SkillSlot_E);
+        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.R, SkillSlot_R);
+    }
+    #region KeyboardShorcut   
+    public void SkillSlot_Q()
+    {
+        UseSkill(0);
     }
 
-    public void UseSkill(int _skillIndex)
-    {   
-        if(!haveSkills.Contains(_skillIndex) || coolTimeSkills.Contains(_skillIndex))
+    public void SkillSlot_W()
+    {
+        UseSkill(1);
+    }
+
+    public void SkillSlot_E()
+    {
+        UseSkill(2);
+    }
+
+    public void SkillSlot_R()
+    {
+        UseSkill(3);
+    }
+    #endregion
+    #region QuickSkill
+    public void AddQuickSkill(int _slotNum, int _skillIndex)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if(skillQuick[skillQuickNum, i] != null && skillQuick[skillQuickNum, i].index == _skillIndex)
+            {
+                RemoveQuickSkill(i);
+                UIManager.uimanager.AUpdateSkillSlot(i);
+            }                
+        }
+
+        skillQuick[skillQuickNum, _slotNum] = new Skill(_skillIndex);
+        UIManager.uimanager.AUpdateSkillSlot(_slotNum);
+    }
+
+    public void RemoveQuickSkill(int _slotNum)
+    {
+        skillQuick[skillQuickNum, _slotNum] = null;
+    }
+
+    public Skill GetQuickSkill(int _slotNum)
+    {
+        return skillQuick[skillQuickNum, _slotNum];
+    }
+    public void MoveQuickSkill(int _startIndex, int _endIndex)
+    {
+        if(_endIndex == -1)
+        {
+            skillQuick[skillQuickNum, _startIndex] = null;
+            UIManager.uimanager.AUpdateSkillSlot(_startIndex);
+            return;
+        }
+        Skill skill = skillQuick[skillQuickNum, _startIndex];
+        skillQuick[skillQuickNum, _startIndex] = skillQuick[skillQuickNum, _endIndex];
+        skillQuick[skillQuickNum, _endIndex] = skill;
+
+        UIManager.uimanager.AUpdateSkillSlot(_startIndex);
+        UIManager.uimanager.AUpdateSkillSlot(_endIndex);
+    }
+    #endregion
+
+    void UseSkill(int _slotNum)
+    {
+        Skill skill = GetQuickSkill(_slotNum);
+
+        if(skill == null)
         {
             return;
         }
-        //if (skill.mana > character.stat.MP)               // 마나 소모
+
+        if(!haveSkills.Contains(skill.index) || coolTimeSkill.Contains(skill.index))
+        {
+            return;
+        }
+        //if (skill.mana > character.stat.Mp)               // 마나 소모
         //{
         //    Debug.Log("마나가 부족합니다.");
         //    return;
         //}
         //else
         //{
-        //    character.stat.MP -= skill.mana;
+        //    character.stat.Mp -= skill.mana;
         //}
 
 
-        switch (_skillIndex)
+        switch (skill.index)
         {
             case 1:
                 {
-                    BuffSkill(_skillIndex);
+                    BuffSkill(skill.index);
                 }
                 break;
             case 2:
@@ -52,12 +148,12 @@ public class CharacterSkill
                 break;
             case 3:
                 {
-                    BuffSkill(_skillIndex);
+                    BuffSkill(skill.index);
                 }
                 break;
             case 4:
                 {
-                    BuffSkill(_skillIndex);
+                    BuffSkill(skill.index);
                 }
                 break;
             case 5:
@@ -68,25 +164,75 @@ public class CharacterSkill
             default:
                 return;
         }
+
+        coolTimeSkill.Add(skill.index);
+        character.StartCoroutine(CoCoolTimecheck_Skill(skill.index, skill.coolTime));
+
     }
 
     public void Add(int _skillIndex)
-    {   
-        haveSkills.Add(_skillIndex);
+    {
+        if (!haveSkills.Contains(_skillIndex))
+        {
+            if (character.stat.SkillPoint > 0)
+            {
+                character.stat.SkillPoint--;
+                haveSkills.Add(_skillIndex);
+                int slotIndex = _skillIndex - 1;
+                UIManager.uimanager.AUpdateSkillMain(slotIndex);
+            }
+        }        
     }
-   
+   public Skill GetSkill(int _skillIndex)
+    {
+        if (haveSkills.Contains(_skillIndex))
+        {
+            return new Skill(_skillIndex);
+        }
+        else
+        {
+            return null;
+        }
+    }
 
 
     IEnumerator CoTakeDownSword()
     {
         yield return new WaitForSeconds(2f);
-        character.isCantMove = false;
+        character.isPossableMove = true;
     }
 
-    IEnumerator CoRushSkill()
+    IEnumerator CoRushSkill()           // 스킬 끝나는 시간 조절하기
     {
-        character.isCantMove = true;
-        nav.ResetPath();
+        Vector3 curPosition = character.gameObject.transform.position;
+        Monster closestMob = character.ClosestMonster();
+        Vector3 targetPos;
+        if (closestMob == null)
+        {
+            nav.stoppingDistance = 0f;
+            nav.acceleration = 100;
+            targetPos = character.gameObject.transform.position + character.gameObject.transform.forward * 4f;
+        }
+        else
+        {
+            nav.stoppingDistance = 2f;            
+            targetPos = closestMob.transform.position;
+        }
+        yield return new WaitForSeconds(0.6f);
+        nav.speed = 20;
+        
+
+        NavMeshHit hitinfo;
+        if(nav.Raycast(targetPos, out hitinfo))
+        {
+            nav.SetDestination(hitinfo.position);
+        }
+        else
+        {
+            nav.SetDestination(targetPos);
+        }
+
+
         float timer = 0f;
         DamageList list = new DamageList();
         foreach (Monster mob in character.nearMonster)
@@ -94,21 +240,28 @@ public class CharacterSkill
             list.Add(mob);
         }
         Vector3 des = nav.transform.forward;
-        while (timer <= 1.2)
+        while (timer < 1.5f)
         {
-            timer += Time.deltaTime;
-            nav.velocity = des * 2;
-            list.DamedMonster(5f, STATUSEFFECT.STURN, 1f);
             yield return null;
+
+            timer += Time.deltaTime;
+            list.DamedMonster(5f, STATUSEFFECT.STURN, 1f);            
+            if(nav.remainingDistance <= 0.01 && nav.velocity.magnitude == 0f)
+            {
+                break;
+            }
+            
         }
-        character.isCantMove = false;
+
+        nav.speed = 7;
+        character.isPossableMove = true;
     }
 
 
     
     public void TakeDownSword() // 애니메이션 이벤트                                     //skill 0번
     {
-        character.isCantMove = true;
+        character.isPossableMove = false;
         //이펙트 연출
         character.StartCoroutine(CoTakeDownSword());
         anim.SetFloat("SkillNum", 0);
@@ -130,7 +283,9 @@ public class CharacterSkill
     public void BuffSkill(int _skillIndex)                                     //skill 2번
     {
         anim.SetFloat("SkillNum", 2);
-        character.StartCoroutine(CoBuffSkill(_skillIndex));
+        anim.SetTrigger("Skill");
+        character.stat.ApplyBuffSkill(_skillIndex);
+        //character.StartCoroutine(CoBuffSkill(_skillIndex));
     }
     public void SkillEffectOn(string _effectName)
     {
@@ -139,28 +294,29 @@ public class CharacterSkill
 
     IEnumerator CoBuffSkill(int _skillindex)
     {
-        Skill skill = new Skill(_skillindex);
+        yield return null;
+        //Skill skill = new Skill(_skillindex);
         
-        GameObject effect = EffectManager.effectManager.GetBuffEffect(skill.effectName);
-        effect.transform.SetParent(character.transform);
-        effect.transform.localPosition = Vector3.zero;
+        //GameObject effect = EffectManager.effectManager.GetBuffEffect(skill.effectName);
+        //effect.transform.SetParent(character.transform);
+        //effect.transform.localPosition = Vector3.zero;
 
-        string abilityList = skill.ability;
-        string[] ability = abilityList.Split("#");
-        for (int i = 0; i < ability.Length; i++)
-        {
-            string[] abilityData = ability[i].Split('/');
-            ApplybufSkill(abilityData[0], float.Parse(abilityData[1]));
-        }
+        //string abilityList = skill.ability;
+        //string[] ability = abilityList.Split("#");
+        //for (int i = 0; i < ability.Length; i++)
+        //{
+        //    string[] abilityData = ability[i].Split('/');
+        //    ApplybufSkill(abilityData[0], float.Parse(abilityData[1]));
+        //}
 
-        yield return new WaitForSeconds(skill.holdTime);
+        //yield return new WaitForSeconds(skill.holdTime);
 
-        for (int i = 0; i < ability.Length; i++)
-        {
-            string[] abilityData = ability[i].Split('/');
-            ApplybufSkill(abilityData[0], -float.Parse(abilityData[1]));
-        }
-        EffectManager.effectManager.PushBuffEffect(skill.effectName, effect);
+        //for (int i = 0; i < ability.Length; i++)
+        //{
+        //    string[] abilityData = ability[i].Split('/');
+        //    ApplybufSkill(abilityData[0], -float.Parse(abilityData[1]));
+        //}
+        //EffectManager.effectManager.PushBuffEffect(skill.effectName, effect);
     }
 
     IEnumerator CoBuffUIControl(Skill _skill)
@@ -177,25 +333,33 @@ public class CharacterSkill
             yield return null;
         }
     }
-    void ApplybufSkill(string _stat, float _bufIncrease)
+    
+    IEnumerator CoCoolTimecheck_Skill(int _skillIndex, float _coolTime)
     {
-        switch (_stat)
+        float timer = 0.0001f;
+
+        while (timer <= _coolTime)
         {
-            case "Spd":
-                {
+            timer += Time.deltaTime;
+            float maxCoolTime = _coolTime;
+            maxCoolTime -= timer;
+            float percent = timer / _coolTime;
+            CoolTimeCheck_SKill(_skillIndex, percent, (int)maxCoolTime);
+            yield return null;
+        }
+        coolTimeSkill.Remove(_skillIndex);
+    }
 
-                }
-                break;
-            case "Atk":
-                {
-                    character.stat.Atk += _bufIncrease;
-                }
-                break;
-            case "Cri":
-                break;
-            case "Def":
-                break;
-
+    void CoolTimeCheck_SKill(int _skillIndex, float _percent, int _coolTime)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (skillQuick[skillQuickNum,i]!= null && skillQuick[skillQuickNum, i].index == _skillIndex)
+            {
+                UIManager.uimanager.AQuickSlotSkillCooltime(i, _percent, _coolTime);
+            }
         }
     }
+
+
 }

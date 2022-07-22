@@ -156,8 +156,7 @@ public class ResourceManager: MonoBehaviour
 
 
     #region Loading[Obg/Map]
-
-    int loadCount = 0;
+    
     
 
     List<string> LoadText(TextAsset _textAsset)
@@ -315,7 +314,7 @@ public class ResourceManager: MonoBehaviour
                 }
             case "Mimic":
                 {
-                    newMonster = (Monster)_mobObj.AddComponent<Mimic>();        //
+                    newMonster = (Monster)_mobObj.AddComponent<Mimic>();        //                    
                     break;
                 }
             default:
@@ -368,9 +367,9 @@ public class ResourceManager: MonoBehaviour
                     newNpc = (Npc)_npc.AddComponent<Tutorial_Npc>();
                     break;
                 }
-            case "Passerby":
+            case "Quest":
                 {
-                    newNpc = (Npc)_npc.AddComponent<Tutorial_Npc>();            //
+                    newNpc = (Npc)_npc.AddComponent<QuestNpc>();            //
                     break;
                 }
             case "NoneDialog":

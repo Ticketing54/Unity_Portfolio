@@ -24,8 +24,9 @@ public class QuestNpc : Npc
 
             if(quest == null)
             {
-                transform.position = quest.startPos;
-                transform.rotation = Quaternion.Euler(quest.startDir);
+                Quest newQuest = new Quest(quests[i],QUESTSTATE.NONE);
+                transform.position = newQuest.startPos;
+                transform.rotation = Quaternion.Euler(newQuest.startDir);
                 return;
             }
             else

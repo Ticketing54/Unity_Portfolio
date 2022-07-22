@@ -6,19 +6,23 @@ using UnityEngine.UI;
 public class QuickSlot : ItemSlot
 {
     [SerializeField]
-    Image CoolTime;
-
+    Image coolTime;
+    public override void Add(string _SpriteName)
+    {
+        Clear();
+        base.Add(_SpriteName);        
+    }
 
     public void SetCoolTime(float _percent)
     {
-        CoolTime.fillAmount = 1-_percent;
+        coolTime.fillAmount = 1-_percent;
         
     }
     public override void Clear()
     {
         icon.sprite = null;
         icon.gameObject.SetActive(false);
-        CoolTime.fillAmount = 0;
+        coolTime.fillAmount = 0;
 
         if (ItemCount.gameObject.activeSelf == true)
             ItemCount.gameObject.SetActive(false);

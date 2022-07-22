@@ -24,6 +24,7 @@ public class Character : MonoBehaviour
 
     public HashSet<Unit> nearUnit;
     public HashSet<Monster> nearMonster;
+    Rigidbody rig;
 
 
     NavMeshAgent nav;
@@ -34,6 +35,7 @@ public class Character : MonoBehaviour
 
     public List<Item> dropBox;
 
+  
     public void OpenDropBox(List<Item> _dropBox)
     {
         dropBox = _dropBox;
@@ -119,7 +121,7 @@ public class Character : MonoBehaviour
 
 
         nav = GetComponent<NavMeshAgent>();
-        anim = GetComponent<Animator>();
+        anim = GetComponent<Animator>();        
 
 
         skill = new CharacterSkill(this, nav, anim);
@@ -136,7 +138,7 @@ public class Character : MonoBehaviour
     void Update()
     {
         Click();
-
+        LevelUpTest();
     }
 
     public List<Quest> GetQuestList(QUESTSTATE _state)
@@ -168,7 +170,13 @@ public class Character : MonoBehaviour
     public Character_Quick quickSlot;
 
 
-
+    void LevelUpTest()
+    {
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            stat.LevelUp();
+        }
+    }
 
     #region ApproachUnit
     void AddNearUnit(Unit _unit)
@@ -365,7 +373,7 @@ public class Character : MonoBehaviour
     }
     #endregion
 
-    public bool isCantMove = false;
+    public bool isPossableMove = true;
     public bool OpenLootingbox = false; // 루팅박스 
 
 
@@ -374,58 +382,51 @@ public class Character : MonoBehaviour
 
     bool isMove = false;
 
-    public void MovetoEmpty(Vector3 _dest)
+    public void Move(Vector3 _targetPos, bool isTarget = false)
     {
+        if(isPossableMove == false)
+        {
+            return;
+        }
+
         if (action != null)
         {
             StopCoroutine(action);
             action = null;
         }
 
-        action = StartCoroutine(Move(_dest));
-    }
-    public void MovetoObject(GameObject _Target)
+        action = StartCoroutine(CoMove(_targetPos,isTarget));
+    }   
+    IEnumerator CoMove(Vector3 _targetPos,bool isTarget = false)
     {
-        if (action != null)
-        {
-            StopCoroutine(action);
-            action = null;
-        }
+        isMove = true;
+        anim.SetBool("IsMove", true);        
+        nav.SetDestination(_targetPos);
 
-        float dis = Vector3.Distance(this.transform.position, _Target.transform.position);
-        Vector3 stopPos;
-
-        if (dis <= stat.ATK_RANGE)
+        if(isTarget == true)
         {
-            stopPos = transform.position;
+            nav.stoppingDistance = stat.ATK_RANGE;
         }
         else
         {
-            stopPos = Vector3.MoveTowards(this.transform.position, _Target.transform.position, dis - stat.ATK_RANGE);
+            nav.stoppingDistance = 0;
         }
-
-        action = StartCoroutine(Move(stopPos));
-    }
-    IEnumerator Move(Vector3 _dest)
-    {
-        isMove = true;
-        anim.SetBool("IsMove", true);
-        nav.SetDestination(_dest);
-
+        
         while (true)
         {
+            yield return null;
+
             Vector3 dir = (nav.steeringTarget - transform.position).normalized;
             dir.y = 0;
             Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, Time.deltaTime * 30f, Time.deltaTime * 30f);
             transform.rotation = Quaternion.LookRotation(newdir);
-            yield return null;
 
-            if (nav.remainingDistance <= 0.02 && nav.velocity.magnitude == 0f)
+            if (nav.remainingDistance <= stat.ATK_RANGE && nav.velocity.magnitude == 0f)
             {
                 isMove = false;
                 anim.SetBool("IsMove", false);
+                break;
             }
-
         }
     }
 
@@ -483,24 +484,23 @@ public class Character : MonoBehaviour
     #region Click / interact
     void Click()
     {
-        if (isCantMove == true)
-        {
-            return;
-        }
-
-
         if (!EventSystem.current.IsPointerOverGameObject())
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(1))
             {
+                if (isPossableMove == false)
+                {
+                    return;
+                }
+
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hitinfo;
                 if (Physics.Raycast(ray, out hitinfo))
                 {
                     if (hitinfo.collider.gameObject.layer == 9)
                     {
-                        //EffectManager.effectManager.ClickEffectOn(hitinfo.point);
-                        MovetoEmpty(hitinfo.point);
+                        EffectManager.effectManager.ClickEffectOn(hitinfo.point);
+                        Move(hitinfo.point);
                         return;
                     }
                     else if (hitinfo.collider.gameObject.tag.Equals("Item") ||
@@ -509,59 +509,49 @@ public class Character : MonoBehaviour
                         || hitinfo.collider.gameObject.tag.Equals("Potal"))
                     {
 
-                        interact(hitinfo.collider.gameObject);
+                        MouseButtonRIght(hitinfo.collider.gameObject);
                     }
-
+                }
+            }
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hitinfo;
+                if (Physics.Raycast(ray, out hitinfo))
+                {
+                    if (hitinfo.collider.gameObject.tag.Equals("Item") ||
+                        hitinfo.collider.gameObject.tag.Equals("Npc")
+                        || hitinfo.collider.gameObject.tag.Equals("Monster")
+                        || hitinfo.collider.gameObject.tag.Equals("Potal"))
+                    {
+                        MouseButtonLeft(hitinfo.collider.gameObject);
+                    }
+                    else
+                    {
+                        Attack();
+                    }
+                }
+                else
+                {
+                    Attack();
                 }
             }
 
         }
     }
-    void interact(GameObject _target)
+    void MouseButtonRIght(GameObject _target)
     {
         switch (_target.tag)
         {
             case "Monster":
                 {
-                    EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.ENERMY, _target.transform);
-                    Monster mob = _target.GetComponent<Monster>();
-                    if (mob == null)
-                    {
-                        Debug.LogError("잘못된 대상입니다 : Monster");
-                        break;
-                    }
-
-                    if (mob.DISTANCE <= stat.ATK_RANGE)
-                    {
-                        Attack(mob.gameObject);
-                        break;
-                    }
-                    else
-                    {
-                        MovetoObject(mob.gameObject);
-                        break;
-                    }
+                    EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.ENERMY, _target.transform);                    
+                    break;
                 }
             case "Npc":
                 {
                     EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.FRIEND, _target.transform);
-                    Npc npc = _target.GetComponent<Npc>();
-                    if (npc == null)
-                    {
-                        Debug.LogError("잘못된 대상입니다 : Npc");
-                        break;
-                    }
-                    if (npc.DISTANCE <= stat.ATK_RANGE)
-                    {
-                        nav.SetDestination(transform.position);
-                        npc.Interact();
-                        break;
-                    }
-                    else
-                    {
-                        MovetoObject(npc.gameObject);
-                        break;
-                    }
+                    break;
                 }
             case "Item":
                 {
@@ -583,7 +573,7 @@ public class Character : MonoBehaviour
                         }
                         else
                         {
-                            MovetoObject(mob.gameObject);
+                            Move(mob.transform.position,true);
                             break;
                         }
                     }
@@ -604,21 +594,94 @@ public class Character : MonoBehaviour
                         break;
                     }
 
-                    if (potal.DISTANCE < stat.ATK_RANGE)
+                    if (potal.DISTANCE <= stat.ATK_RANGE)
                     {
                         nav.SetDestination(transform.position);
                         MoveToScene(potal.mapName, potal.pos);
-                        break;
+                        return;
                     }
                     else
                     {
-                        MovetoObject(potal.gameObject);
+                        
                         break;
                     }
                 }
             default:
                 break;
         }
+
+        Move(_target.transform.position, true);
+    }
+    void MouseButtonLeft(GameObject _target)
+    {
+        switch (_target.tag)
+        {
+            case "Monster":
+                {
+                    EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.ENERMY, _target.transform);
+                    transform.LookAt(_target.transform);
+                    Attack();
+                    break;
+                }
+            case "Npc":
+                {
+                    EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.FRIEND, _target.transform);
+                    Npc npc = _target.GetComponent<Npc>();
+                    if(npc == null)
+                    {
+                        Debug.LogError("wrong Target : Npc");
+                        return;
+                    }
+                    UIManager.uimanager.AOpenDialog(npc);                    
+                    break;
+                }
+            case "Item":
+                {
+                    EffectManager.effectManager.ClickEffectOn(CLICKEFFECT.FRIEND, _target.transform);
+
+                    if (_target.layer == 10)            // 거리에 따른 효과
+                    {
+                        Monster mob = _target.GetComponent<Monster>();
+
+                        if (mob == null)
+                        {
+                            Debug.LogError("잘못된 대상입니다 : Monster");
+                            break;
+                        }
+                        if (mob.DISTANCE <= stat.ATK_RANGE)
+                        {
+                            mob.DropItem();
+                            break;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+
+                }
+            case "Potal":
+                {
+                    Potal potal = _target.GetComponent<Potal>();
+
+                    if (potal == null)
+                    {
+                        Debug.LogError("잘못된 대상입니다. : Potal");
+                        break;
+                    }
+
+                    if (potal.DISTANCE <= stat.ATK_RANGE)
+                    {   
+                        MoveToScene(potal.mapName, potal.pos);
+                        break;
+                    }
+                    break;
+                }
+            default:
+                break;
+        }        
     }
     #endregion
 
@@ -629,8 +692,10 @@ public class Character : MonoBehaviour
     }
 
     bool isPossableAttack = true;
-    public void Attack(GameObject _target)
+    Coroutine delayAttack;
+    public void Attack()
     {
+        nav.destination = transform.position;
         if (isPossableAttack == false)
         {
             return;
@@ -638,16 +703,26 @@ public class Character : MonoBehaviour
         else
         {
             isPossableAttack = false;
+            isPossableMove   = false;
         }
-        transform.LookAt(_target.transform);
-        StartCoroutine(DelayAttack());
+
+        if (delayAttack != null)
+        {
+            StopCoroutine(delayAttack);
+            isPossableAttack = false;
+            isPossableMove = false;
+        }
+        
+        delayAttack = StartCoroutine(DelayAttack());
         anim.SetTrigger("Attack");
 
     }
     IEnumerator DelayAttack()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.7f);
         isPossableAttack = true;
+        yield return new WaitForSeconds(0.5f);
+        isPossableMove   = true;
     }
     IEnumerator CoKnockBack()
     {

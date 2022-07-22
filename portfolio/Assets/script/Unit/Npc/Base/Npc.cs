@@ -116,6 +116,7 @@ public class Npc :NpcUnit
                 }
                 
             }
+            EffectManager.effectManager.RemoveQuestMark(this);
         }            
     }
     public override void OnEnable()
@@ -124,7 +125,7 @@ public class Npc :NpcUnit
     }
     public virtual void Interact()
     {
-        GameManager.gameManager.character.isCantMove = true;
+        GameManager.gameManager.character.isPossableMove = false;
         UIManager.uimanager.AOpenDialog(this);
         if(action != null)
         {

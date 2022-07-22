@@ -16,7 +16,7 @@ public class ItemSlot : Slot, IPointerEnterHandler, IPointerExitHandler
             return;
         }
         icon.gameObject.SetActive(true);
-        icon.sprite = ResourceManager.resource.GetImage(_SpriteName);        
+        icon.sprite = ResourceManager.resource.GetImage(_SpriteName);                
 
         if (_ItemCount > 1)
         {
