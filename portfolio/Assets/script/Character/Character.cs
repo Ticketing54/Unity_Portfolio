@@ -632,7 +632,7 @@ public class Character : MonoBehaviour
                         Debug.LogError("wrong Target : Npc");
                         return;
                     }
-                    UIManager.uimanager.AOpenDialog(npc);                    
+                    npc.Interact();                
                     break;
                 }
             case "Item":

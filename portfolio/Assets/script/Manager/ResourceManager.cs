@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEngine.UI;
+using TMPro;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
@@ -91,8 +92,16 @@ public class ResourceManager: MonoBehaviour
         yield return playercharacter;
         character = playercharacter.Result;
 
+        AsyncOperationHandle<TextMeshPro> dialogText = Addressables.LoadAssetAsync<TextMeshPro>("DialogText");
+        yield return dialogText;        
+
+        AsyncOperationHandle<GameObject> dialogBubble = Addressables.LoadAssetAsync<GameObject>("DialogBubble");
+        yield return dialogBubble;
+
         AsyncOperation mainScene = SceneManager.LoadSceneAsync("Main");
         yield return mainScene;
+
+        EffectManager.effectManager.AddSpeechBubbleResource(dialogBubble.Result, dialogText.Result);
 
         AClosePatchUi();
     }
