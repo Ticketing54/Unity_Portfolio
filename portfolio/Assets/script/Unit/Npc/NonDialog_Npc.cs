@@ -39,7 +39,7 @@ public class NonDialog_Npc : Npc
         int currentDialogNum = Random.Range(0, maxdialog );
         List<string> currentDialogData = dialog[currentDialogNum];
 
-        UIManager.uimanager.uiEffectManager.TextingMiniDialog(currentDialogData[1],this);
+        UIManager.uimanager.uiEffectManager.TextingMiniDialog(this ,currentDialogData[1]);
 
     }
 }

@@ -8,29 +8,68 @@ public class MiniDialogue : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI text;
     
+    public void SetText (string _text)
+    {
+        text.text = _text;
+    }
 
-    public IEnumerator CoTextingDialog(string _dialog)
-    {   
-        for (int i = 0; i < _dialog.Length; i++)
-        {            
-            string dialogText  = _dialog.Substring(0, i);
-            string emptyDialog = string.Empty;
-            int count = _dialog.Length - i-1;
-            while(count!= 0)
+
+    public IEnumerator CoTextingDialog(string _text, Unit _target)
+    {
+        float timer = 0f;
+        int currentText = 0;
+        while (currentText != _text.Length)
+        {
+            yield return null;
+            transform.position = Camera.main.WorldToScreenPoint(_target.transform.position + new Vector3(0f, 3f, 0f));
+
+
+            timer += Time.deltaTime;
+
+            if (timer >= 0.1f)
             {
-                count--;
-                emptyDialog += "  ";
+                currentText++;
+                timer = timer - 0.1f;
+
+                string dialogText = _text.Substring(0, currentText);
+                string emptyText = string.Empty;
+                int count = _text.Length - currentText - 1;
+                while (count >= 0)
+                {
+                    count--;
+                    emptyText += "  ";
+                }
+                emptyText += '\r';
+                SetText(dialogText + emptyText);
             }
-            emptyDialog += '\r';
-            text.text = dialogText+emptyDialog;
-            
 
 
-            yield return new WaitForSeconds(0.1f);
         }
 
-        text.text = _dialog;
+        yield return new WaitForSeconds(1f);
 
-        yield return new WaitForSeconds(1f);       
+        
+        //for (int i = 0; i < _text.Length; i++)
+        //{
+        //    string dialogText = _text.Substring(0, i);
+        //    string emptyDialog = string.Empty;
+        //    int count = _text.Length - i - 1;
+        //    while (count != 0)
+        //    {
+        //        count--;
+        //        emptyDialog += "  ";
+        //    }
+        //    emptyDialog += '\r';
+        //    _dialog.SetText(dialogText + emptyDialog);
+
+
+
+        //    yield return new WaitForSeconds(0.1f);
+        //}
+
+        //_dialog.SetText(_text);
+
+        //yield return new WaitForSeconds(1f);
     }
+
 }

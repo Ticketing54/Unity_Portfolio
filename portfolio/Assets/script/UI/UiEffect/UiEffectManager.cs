@@ -47,29 +47,82 @@ public class UiEffectManager : MonoBehaviour
         imagePool.Add("HpBar", sampleHpBar);
         textPool.Add("LevelUp", sampleLevelup);
 
+
+
         GameManager.gameManager.moveSceneReset += MoveToNextScene;
     }
 
-    
-
-    public void TextingMiniDialog(string _text, Unit _target)
+  
+    public void TextingMiniDialog(Unit _target,string _text)
     {
         MiniDialogue dialog = miniDailog.GetData();
-        dialog.transform.SetParent(this.gameObject.transform);
-        dialog.transform.position = Camera.main.WorldToScreenPoint(_target.transform.position + new Vector3(0f, 3f, 0f));
+        dialog.transform.SetParent(this.gameObject.transform);        
         
         runningMiniDialog.Add(_target, dialog);
         _target.UsingDialog = true;
-        StartCoroutine(CoDialogControl(dialog, _text,_target));       
+        StartCoroutine(CoTextingDialog(dialog, _text,_target));       
     }
 
-    IEnumerator CoDialogControl(MiniDialogue _dialog,string _text,Unit _target)
+  
+    public IEnumerator CoTextingDialog(MiniDialogue _dialog,string _text,Unit _target)
     {
-        yield return StartCoroutine(_dialog.CoTextingDialog(_text));
+        float timer = 0f;
+        int currentText  = 0;        
+        while (currentText != _text.Length)
+        {
+            yield return null;
+            _dialog.transform.position = Camera.main.WorldToScreenPoint(_target.transform.position + new Vector3(0f, 3f, 0f));
+            
+
+            timer += Time.deltaTime;
+
+            if (timer >= 0.1f)
+            {
+                currentText++;
+                timer =  timer-0.1f;
+
+                string dialogText = _text.Substring(0, currentText);
+                string emptyText = string.Empty;
+                int count = _text.Length - currentText - 1;
+                while (count >= 0)
+                {
+                    count--;
+                    emptyText += "  ";
+                }
+                emptyText += '\r';
+                _dialog.SetText(dialogText + emptyText);
+            }
+
+
+        }
+
+        yield return new WaitForSeconds(1f);
+
         RemoveRunningDialog(_target);
-        _target.UsingDialog = false;        
-        
+        _target.UsingDialog = false;
+        //for (int i = 0; i < _text.Length; i++)
+        //{
+        //    string dialogText = _text.Substring(0, i);
+        //    string emptyDialog = string.Empty;
+        //    int count = _text.Length - i - 1;
+        //    while (count != 0)
+        //    {
+        //        count--;
+        //        emptyDialog += "  ";
+        //    }
+        //    emptyDialog += '\r';
+        //    _dialog.SetText(dialogText + emptyDialog);
+
+
+
+        //    yield return new WaitForSeconds(0.1f);
+        //}
+
+        //_dialog.SetText(_text);
+
+        //yield return new WaitForSeconds(1f);
     }
+
     private void Start()
     {
         UIManager.uimanager.uicontrol_On += OnUiControl;

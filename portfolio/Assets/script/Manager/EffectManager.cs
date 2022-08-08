@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class EffectManager : MonoBehaviour
 {
@@ -8,8 +9,8 @@ public class EffectManager : MonoBehaviour
     PoolingManager_Resource effectRes;
     PoolingManager<QuestMark> questMarkRes;
     Dictionary<GameObject, string> runningEffect;
-    Dictionary<Npc, QuestMark> runningQuestMark;    
-    
+    Dictionary<Npc, QuestMark> runningQuestMark;
+    PoolData<SpeechBubble> speechBubblePool;
 
     List<GameObject> clickList;
     Vector3 effectPreset = new Vector3(0f, 0.1f, 0f);
@@ -40,12 +41,36 @@ public class EffectManager : MonoBehaviour
     }
     private void Start()
     {
-        GameManager.gameManager.moveSceneReset += MoveToSceneReset;
+        GameManager.gameManager.moveSceneReset += ClickEffectReset;
     }
 
-    void MoveToSceneReset()
+    public void AddSpeechBubbleResource(GameObject _bubble, TextMeshPro _text)
     {
-        ClickEffectReset();
+        SpeechBubble speechBubble = new SpeechBubble(_bubble,_text);
+        speechBubblePool = new PoolData<SpeechBubble>(speechBubble,this.gameObject,"SpeechBubble");        
+
+    }
+    public void SpeechBubble(Unit _target, string _text)
+    {
+       
+        
+    }
+
+    IEnumerator CoTextingSpeedBubble(TextMeshPro _text,GameObject _bubble,string _dialog)
+    {
+        string textSize = string.Empty;
+
+        for (int i = 0; i < _dialog.Length; i++)
+        {
+            textSize += " ";
+        }
+        _text.text = textSize;
+
+        _bubble.transform.SetParent(_text.transform);
+        _bubble.transform.localScale =new Vector3(_text.preferredWidth, _text.preferredHeight + 0.3f, 0);
+        _bubble.transform.localPosition = Vector3.zero;
+        yield return null;
+
     }
 
     public void UpdateQuestMark(Npc _npc,QUESTSTATE _state)
