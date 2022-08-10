@@ -92,7 +92,7 @@ public class ResourceManager: MonoBehaviour
         yield return playercharacter;
         character = playercharacter.Result;
 
-        AsyncOperationHandle<TextMeshPro> dialogText = Addressables.LoadAssetAsync<TextMeshPro>("DialogText");
+        AsyncOperationHandle<GameObject> dialogText = Addressables.LoadAssetAsync<GameObject>("DialogText");
         yield return dialogText;        
 
         AsyncOperationHandle<GameObject> dialogBubble = Addressables.LoadAssetAsync<GameObject>("DialogBubble");
@@ -100,8 +100,8 @@ public class ResourceManager: MonoBehaviour
 
         AsyncOperation mainScene = SceneManager.LoadSceneAsync("Main");
         yield return mainScene;
-
-        EffectManager.effectManager.AddSpeechBubbleResource(dialogBubble.Result, dialogText.Result);
+        TextMeshPro pro = dialogText.Result.GetComponent<TextMeshPro>();
+        EffectManager.effectManager.AddSpeechBubbleResource(dialogBubble.Result, pro);
 
         AClosePatchUi();
     }

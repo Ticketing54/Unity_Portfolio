@@ -10,8 +10,9 @@ public class EffectManager : MonoBehaviour
     PoolingManager<QuestMark> questMarkRes;
     Dictionary<GameObject, string> runningEffect;
     Dictionary<Npc, QuestMark> runningQuestMark;
+    Dictionary<Unit, SpeechBubble> runningSpeechBubble;
     PoolData<SpeechBubble> speechBubblePool;
-
+    
     List<GameObject> clickList;
     Vector3 effectPreset = new Vector3(0f, 0.1f, 0f);
     Vector3 questMarkPreset = new Vector3(0f, 3f, 0f);
@@ -32,9 +33,9 @@ public class EffectManager : MonoBehaviour
         effectRes = new PoolingManager_Resource(this.gameObject);
         questMarkRes = new PoolingManager<QuestMark>(this.gameObject);
 
-        runningEffect = new Dictionary<GameObject, string>();
-        runningQuestMark = new Dictionary<Npc, QuestMark>();        
-        
+        runningEffect       = new Dictionary<GameObject, string>();
+        runningQuestMark    = new Dictionary<Npc, QuestMark>();
+        runningSpeechBubble = new Dictionary<Unit, SpeechBubble>();
         clickList = new List<GameObject>();
 
         
@@ -45,34 +46,29 @@ public class EffectManager : MonoBehaviour
     }
 
     public void AddSpeechBubbleResource(GameObject _bubble, TextMeshPro _text)
-    {
-        SpeechBubble speechBubble = new SpeechBubble(_bubble,_text);
-        speechBubblePool = new PoolData<SpeechBubble>(speechBubble,this.gameObject,"SpeechBubble");        
-
+    {   
+        SpeechBubble speechBubble = _text.gameObject.AddComponent<SpeechBubble>();
+        speechBubble.SetSpeechBubble(_bubble, _text);
+        speechBubblePool = new PoolData<SpeechBubble>(speechBubble,this.gameObject,"SpeechBubble");
     }
     public void SpeechBubble(Unit _target, string _text)
     {
-       
+        if (runningSpeechBubble.ContainsKey(_target))
+        {
+            speechBubblePool.Add(runningSpeechBubble[_target]);
+            runningSpeechBubble.Remove(_target);
+        }
+
+        SpeechBubble bubble = speechBubblePool.GetData();
+        bubble.TextingSpeechBubble(_target, _text, PushBubble);
         
     }
-
-    IEnumerator CoTextingSpeedBubble(TextMeshPro _text,GameObject _bubble,string _dialog)
+    void PushBubble(Unit _unit,SpeechBubble _bubble)
     {
-        string textSize = string.Empty;
-
-        for (int i = 0; i < _dialog.Length; i++)
-        {
-            textSize += " ";
-        }
-        _text.text = textSize;
-
-        _bubble.transform.SetParent(_text.transform);
-        _bubble.transform.localScale =new Vector3(_text.preferredWidth, _text.preferredHeight + 0.3f, 0);
-        _bubble.transform.localPosition = Vector3.zero;
-        yield return null;
-
+        runningSpeechBubble.Remove(_unit);
+        speechBubblePool.Add(_bubble);
     }
-
+    
     public void UpdateQuestMark(Npc _npc,QUESTSTATE _state)
     {
         QuestMark mark;
