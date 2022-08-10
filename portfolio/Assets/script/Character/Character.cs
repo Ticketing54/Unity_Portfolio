@@ -7,7 +7,7 @@ using UnityEngine.AI;
 using UnityEngine.EventSystems;
 
 
-public class Character : MonoBehaviour
+public class Character : Unit
 {
 
     public Character() { }
@@ -139,8 +139,15 @@ public class Character : MonoBehaviour
     {
         Click();
         LevelUpTest();
+        TestText();
     }
-
+    void TestText()
+    {
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            EffectManager.effectManager.SpeechBubble(this, "가나다라마");
+        }
+    }
     public List<Quest> GetQuestList(QUESTSTATE _state)
     {
         return quest.GetQuestList(_state);
