@@ -12,23 +12,20 @@ public class SpeechBubble : MonoBehaviour
 
     public delegate void ResetBubble(Unit _unit ,SpeechBubble _speechBubble);
 
+    private void OnEnable()
+    {
+        text.text = "";
+    }
     public void SetSpeechBubble(GameObject _bubble, TextMeshPro _text)
     {
-        text = _text;
+        text = _text;        
         bubble = _bubble;
         bubble.gameObject.transform.SetParent(_text.transform);
     }
     public void TextingSpeechBubble(Unit _unit,string _text,ResetBubble _resetBubble)
-    {
-        string textSize = string.Empty;
-
-        for (int i = 0; i < _text.Length; i++)
-        {
-            textSize += " ";
-        }
-        text.text = textSize;
+    {   
         bubble.transform.localScale = new Vector3(text.rectTransform.rect.width, text.rectTransform.rect.height+ 0.3f, 0);
-        bubble.transform.localPosition = Vector3.zero;
+        bubble.transform.localPosition = new Vector3(0,0,-0.2f);
 
         StartCoroutine(CoPositioningBubble(_unit));
         StartCoroutine(CoTextingSpeechBubble(_unit,_text, _resetBubble));
@@ -48,6 +45,7 @@ public class SpeechBubble : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
+        
         _resetBubble(_unit,this);
     }
     IEnumerator CoPositioningBubble(Unit _unit)
@@ -56,9 +54,8 @@ public class SpeechBubble : MonoBehaviour
         {
             yield return null;
 
-            Vector3 dir = (Camera.main.transform.position - transform.position).normalized;
-            
-            transform.position = _unit.transform.position;
+            Vector3 dir = (Camera.main.transform.position - transform.position).normalized;            
+            transform.position = new Vector3(_unit.transform.position.x,_unit.transform.position.y+_unit.Nick_YPos+0.5f,_unit.transform.position.z);
             transform.rotation = Quaternion.LookRotation(-dir);
         }
     }

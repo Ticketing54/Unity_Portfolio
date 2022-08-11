@@ -138,16 +138,9 @@ public class Character : Unit
     void Update()
     {
         Click();
-        LevelUpTest();
-        TestText();
+        LevelUpTest();        
     }
-    void TestText()
-    {
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            EffectManager.effectManager.SpeechBubble(this, "가나다라마");
-        }
-    }
+    
     public List<Quest> GetQuestList(QUESTSTATE _state)
     {
         return quest.GetQuestList(_state);

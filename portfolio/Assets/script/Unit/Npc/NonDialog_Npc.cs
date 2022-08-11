@@ -5,12 +5,13 @@ using UnityEngine;
 public class NonDialog_Npc : Npc
 {
 
-    List<List<string>> dialog;    
+    List<List<string>> dialog;
     
     private void Start()
     {
         dialog = new List<List<string>>();
         GetDialogData();
+        action = StartCoroutine(CoSpeechBubble());
     }
     void GetDialogData()
     {
@@ -41,5 +42,14 @@ public class NonDialog_Npc : Npc
 
         UIManager.uimanager.uiEffectManager.TextingMiniDialog(this ,currentDialogData[1]);
 
+    }
+
+    IEnumerator CoSpeechBubble()
+    {
+        int currentDialogNum = Random.Range(1, dialog.Count);
+        List<string> currentDialogData = dialog[currentDialogNum];
+        EffectManager.effectManager.SpeechBubble(this, currentDialogData[1]);
+        yield return new WaitForSeconds(5f);
+        action = StartCoroutine(CoSpeechBubble());
     }
 }
