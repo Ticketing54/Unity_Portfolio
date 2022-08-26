@@ -174,7 +174,7 @@ public class Status
             return (int)UnityEngine.Random.Range((float)(attackdamage * 0.8), (float)(attackdamage * 1.2));
         }        
     }
-    public DAMAGE DamageType()
+    public bool DamageType()
     {
         int count = CRI;
 
@@ -182,29 +182,17 @@ public class Status
 
         if (probabillity <= count)
         {
-            return DAMAGE.CRITICAL;
+            return true;
         }
         else
         {
-            return DAMAGE.NOMAL;
+            return false;
         }
     }
-    public void Damaged(DAMAGE _type, float _dmg)
-    {
-        switch (_type)
-        {
-            case DAMAGE.NOMAL:
-                {
-                    Hp -= _dmg;
-                }
-                break;
-            case DAMAGE.CRITICAL:
-                {
-                    Hp -= _dmg * 2;
-                }
-                break;
-        }        
-        UIManager.uimanager.uiEffectManager.LoadDamageEffect(_dmg, character.gameObject, _type);        
+    public void Damaged(bool _type, float _dmg)
+    {        
+        Hp -= _dmg;
+        UIManager.uimanager.uiEffectManager.LoadDamageEffect((int)_dmg, character.gameObject, _type);        
     }
     public void GetExp(int _exp)
     {
@@ -227,9 +215,9 @@ public class Status
     
     public void LevelSetting(int _Level)
     {
-        List<string> Table = ResourceManager.resource.GetTable_Index("LevelTable", _Level);            
-        
-        level = int.Parse(Table[0]);        
+        List<string> Table = ResourceManager.resource.GetTable_Index("LevelTable", _Level);
+
+        level = int.Parse(Table[0]);
         hp = float.Parse(Table[1]);
         mp = float.Parse(Table[2]);
         need_Exp = int.Parse(Table[3]);
@@ -238,7 +226,7 @@ public class Status
         cur_Hp = hp;
         cur_Mp = mp;
         // 
-    }  
+    }
     public void EquipStatus(Item _item)
     {
 

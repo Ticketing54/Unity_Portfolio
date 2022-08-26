@@ -2,51 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hostile_Monster : Monster
+public class Hostile_Monster : Nomal_Monster
 {
     bool contact = false;
     public override void OnEnable()
     {   
         base.OnEnable();
         StartCoroutine(CoCombat());
-    }
-    public override void OnDisable()
-    {
-        base.OnDisable();
-        ResetInfo();
-    }
-    public override void Damaged(DAMAGE _type, float _dmg)
-    {
-        if(Hp_Curent <= 0)
-        {
-            return;
-        }
-
-
-        if (action != null)
-        {
-            StopCoroutine(action);
-        }
-        action = StartCoroutine(CoDamaged());
-
-        float finalyDmg = 0;
-        switch (_type)
-        {
-            case DAMAGE.NOMAL:
-                {
-                    finalyDmg = _dmg;
-                    Hp_Curent -= finalyDmg;
-                }
-                break;
-            case DAMAGE.CRITICAL:
-                {
-                    finalyDmg = _dmg * 2;
-                    Hp_Curent -= finalyDmg;
-                }
-                break;
-        }
-        
-        UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);     
     }
     
     protected override IEnumerator CoCombat()
@@ -81,7 +43,7 @@ public class Hostile_Monster : Monster
                 if (agro <= 0)
                 {
                     contact = false;
-                    action = StartCoroutine(CoResetMob());
+                    action = StartCoroutine(CoResetMonster());
                     yield break;
                 }
 

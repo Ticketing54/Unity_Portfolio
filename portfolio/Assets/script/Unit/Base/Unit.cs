@@ -22,13 +22,20 @@ public class Unit : MonoBehaviour
     
     public virtual void OnEnable()
     {
-        StartCoroutine(CoApproachChracter());
+        if(uiUpdate != null)
+        {
+            StopCoroutine(uiUpdate);            
+        }
+
+        GameManager.gameManager.character.removeNearUnit(this);
+        uiUpdate =StartCoroutine(CoApproachChracter());
     }
     public virtual void OnDisable()
     {
-        StopCoroutine(CoApproachChracter());
         GameManager.gameManager.character.removeNearUnit(this);
+        StopCoroutine(CoApproachChracter());
     }
+
     public float DISTANCE
     {
         get

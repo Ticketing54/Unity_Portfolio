@@ -97,7 +97,7 @@ public class Option : MonoBehaviour
         Load_Message.SetActive(false);
         LoadSlot.SetActive(false);
         this.gameObject.SetActive(false);
-        LoadingSceneController.Instance.LoadScene(sData[1]);
+        //LoadingSceneController.Instance.LoadScene(sData[1]);
     }
     public void LoadNoMessage()
     {
@@ -137,7 +137,7 @@ public class Option : MonoBehaviour
         
         Main_Message.gameObject.SetActive(false);
         this.gameObject.SetActive(false);        
-        LoadingSceneController.Instance.LoadScene("Main");
+        LoadingSceneController.Instance.LoadScene("Main",MAPTYPE.NOMAL);
     }
     public void Main_Message_No()
     {

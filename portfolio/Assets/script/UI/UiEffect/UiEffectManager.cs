@@ -392,20 +392,20 @@ public class UiEffectManager : MonoBehaviour
     #endregion
     #region DamageEffect
 
-    public void LoadDamageEffect(float _Damage, GameObject _Target, DAMAGE _DamageState = DAMAGE.NOMAL)
+    public void LoadDamageEffect(int _damage, GameObject _target, bool _isCritical = false)
     {
         TextMeshProUGUI DmgEffect = textPool.GetData("DamageEffect");
         DmgEffect.gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
         DmgEffect.fontSize = 100;
-        DmgEffect.text = _Damage.ToString();
+        DmgEffect.text = _damage.ToString();
 
-        if (_DamageState == DAMAGE.CRITICAL)
+        if (_isCritical == true)
         {
             DmgEffect.color = Color.red;
             DmgEffect.fontSize = 200;
         }
 
-        StartCoroutine(DamageEffecting(DmgEffect, _Target.transform.position));
+        StartCoroutine(DamageEffecting(DmgEffect, _target.transform.position));
     }
 
     IEnumerator DamageEffecting(TextMeshProUGUI _text, Vector3 _target)

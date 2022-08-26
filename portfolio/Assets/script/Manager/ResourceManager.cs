@@ -257,10 +257,7 @@ public class ResourceManager: MonoBehaviour
             GameObject potalObj;
             yield return potalObj = Addressables.InstantiateAsync("Potal").Result;
             Potal potal = potalObj.AddComponent<Potal>();
-            potal.mapName = sInfo[0];
-            potal.pos = new Vector3(float.Parse(sInfo[4]), float.Parse(sInfo[5]), float.Parse(sInfo[6]));
-
-            // 포탈 정보 입력            
+            potal.SettingPotal(sInfo);               
         }
     }
     IEnumerator CoLoadWayPoint(string _mapName)
@@ -290,11 +287,7 @@ public class ResourceManager: MonoBehaviour
         yield return StartCoroutine(CoLoadPotal(_mapName));
         LoadingSceneController.instance.LoadingPercent(0.75f);
         yield return StartCoroutine(CoLoadWayPoint(_mapName));
-        LoadingSceneController.instance.LoadingPercent(1);
-
-        CameraManager.cameraManager.CameraTargetOnCharacter();        
-        GameManager.gameManager.character.SetPosition();
-        UIManager.uimanager.OnBaseUI();
+        LoadingSceneController.instance.LoadingPercent(1);       
     }
     public void LoadSceneResource(string _mapName)
     {
@@ -326,6 +319,11 @@ public class ResourceManager: MonoBehaviour
                     newMonster = (Monster)_mobObj.AddComponent<Mimic>();        //                    
                     break;
                 }
+            case "Boss":
+                {
+                    newMonster = (Monster)_mobObj.AddComponent<TutorialBoss>();
+                    break;
+                }                
             default:
                 {
                     return;

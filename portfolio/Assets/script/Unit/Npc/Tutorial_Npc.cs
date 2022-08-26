@@ -27,7 +27,7 @@ public class Tutorial_Npc : Npc
     }   
     IEnumerator CoTutorial_Recovery()
     {
-        GameManager.gameManager.character.stat.Damaged(DAMAGE.CRITICAL,10);
+        GameManager.gameManager.character.stat.Damaged(true,10);
         while (true)
         {
             if(GameManager.gameManager.character.stat.MaxHp == GameManager.gameManager.character.stat.Hp)

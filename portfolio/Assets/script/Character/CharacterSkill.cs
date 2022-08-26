@@ -41,7 +41,7 @@ public class CharacterSkill
         haveSkills       = new HashSet<int>();
         coolTimeSkill     = new HashSet<int>();
         skillQuick       = new Skill[4, 4];
-        
+
         UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Q, SkillSlot_Q);
         UIManager.uimanager.AddKeyBoardSortCut(KeyCode.W, SkillSlot_W);
         UIManager.uimanager.AddKeyBoardSortCut(KeyCode.E, SkillSlot_E);
@@ -245,7 +245,7 @@ public class CharacterSkill
             yield return null;
 
             timer += Time.deltaTime;
-            list.DamedMonster(5f, STATUSEFFECT.STURN, 1f);            
+            list.DamagedMonster(5f, STATUSEFFECT.STURN, 1f);            
             if(nav.remainingDistance <= 0.01 && nav.velocity.magnitude == 0f)
             {
                 break;

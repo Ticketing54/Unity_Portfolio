@@ -7,18 +7,22 @@ using UnityEngine.AI;
 using UnityEngine.EventSystems;
 
 
-public class Character : Unit
+public class Character : MonoBehaviour
 {
 
     public Character() { }
 
     public Vector3 StartPos { get; set; }
-
     public float HP_CURENT => stat.Hp;
     public float Hp_Max => stat.MaxHp;
     public string NICKNAME => stat.NAME;
 
-    public List<Collider> weapons;
+    Bounds hitBox;
+    public Bounds AttackBox { get => new Bounds(transform.position+transform.forward*0.5f, new Vector3(3f, 3f, 3f)); }
+    
+    
+
+    
     Coroutine action;
     Animator anim;
 
@@ -130,9 +134,11 @@ public class Character : Unit
         stat = new Status(this);
         equip = new Equipment(this);
         inven = new Inventory();
+        
+        
 
-        nav.updateRotation = false;
-        HitBoxSetting();
+
+        nav.updateRotation = false;        
     }
 
     void Update()
@@ -435,17 +441,17 @@ public class Character : Unit
 
 
 
-    void MoveToScene(string _sceneName, Vector3 _Pos)
+    void MoveToScene(string _sceneName, Vector3 _pos,MAPTYPE _type,string _cutScene = "")
     {
         if (waitForDoing != null)
         {
             return;
         }
 
-        waitForDoing = StartCoroutine(CoMoveToScene(5f, _sceneName, _Pos));
+        waitForDoing = StartCoroutine(CoMoveToScene(5f, _sceneName,_pos, _type,_cutScene));
     }
 
-    IEnumerator CoMoveToScene(float _timer, string _sceneName, Vector3 _pos)
+    IEnumerator CoMoveToScene(float _timer, string _sceneName, Vector3 _pos,MAPTYPE _type,string _cutScene)
     {
         string waitForDoingText = _sceneName + " 으로 이동 하는중 입니다.";
         yield return StartCoroutine(CoWaitForDoing(_timer, waitForDoingText));
@@ -453,7 +459,7 @@ public class Character : Unit
 
         if (InteractSuccess == true)
         {
-            GameManager.gameManager.MoveToScene(_sceneName, _pos);
+            GameManager.gameManager.MoveToScene(_sceneName, _pos,_type,_cutScene);
             InteractSuccess = false;
         }
         waitForDoing = null;
@@ -597,7 +603,7 @@ public class Character : Unit
                     if (potal.DISTANCE <= stat.ATK_RANGE)
                     {
                         nav.SetDestination(transform.position);
-                        MoveToScene(potal.mapName, potal.pos);
+                        MoveToScene(potal.MapName,potal.Pos, potal.MapType,potal.CutScene);
                         return;
                     }
                     else
@@ -674,7 +680,7 @@ public class Character : Unit
 
                     if (potal.DISTANCE <= stat.ATK_RANGE)
                     {   
-                        MoveToScene(potal.mapName, potal.pos);
+                        MoveToScene(potal.MapName, potal.Pos,potal.MapType,potal.CutScene);
                         break;
                     }
                     break;
@@ -738,19 +744,20 @@ public class Character : Unit
     public void meleeDamageMob(int _num)
     {
         List<Monster> mob = new List<Monster>(nearMonster);
-
+        Bounds hitbox = AttackBox;
         foreach (Monster one in mob)
         {
-            if (weapons[_num].bounds.Intersects(one.hitBox.bounds))
+            if (hitbox.Intersects(one.hitBox.bounds))
             {
-                one.Damaged(stat.DamageType(), stat.AttckDamage);
+                one.Damaged(stat.DamageType(), (int)stat.AttckDamage);
             }
         }
-
+        Debug.Log(transform.position);
+        Debug.Log(transform.forward * 0.5f);
     }
     public bool DamageMob(int _num, Monster _target)
     {
-        if (weapons[_num].bounds.Intersects(_target.hitBox.bounds))
+        if (AttackBox.Intersects(_target.hitBox.bounds))
         {
             return true;
         }
@@ -758,19 +765,7 @@ public class Character : Unit
         {
             return false;
         }
-    }
-    void HitBoxSetting()
-    {
-        List<Collider> weaponList = new();
-        GameObject[] obj = GameObject.FindGameObjectsWithTag("Weapon");
-        for (int i = 0; i < obj.Length; i++)
-        {
-            weaponList.Add(obj[i].GetComponent<Collider>());
-        }
-        weapons = weaponList;
-    }
-
-
+    }   
     public void RangeDamageMob()
     {
         foreach (Monster _mob in nearMonster)
@@ -779,7 +774,7 @@ public class Character : Unit
             {
                 _mob.StatusEffect(STATUSEFFECT.KNOCKBACK, 2f);
                 _mob.StatusEffect(STATUSEFFECT.STURN, 2f);
-                _mob.Damaged(stat.DamageType(), stat.AttckDamage);
+                _mob.Damaged(stat.DamageType(), (int)stat.AttckDamage);
             }
         }
     }
@@ -789,25 +784,10 @@ public class Character : Unit
 
 
 
-    public void Damaged(DAMAGE _type, float _dmg)
-    {
-        float finalyDmg = 0;
-        switch (_type)
-        {
-            case DAMAGE.NOMAL:
-                {
-                    finalyDmg = _dmg;
-                    stat.Hp -= finalyDmg;
-                }
-                break;
-            case DAMAGE.CRITICAL:
-                {
-                    finalyDmg = _dmg * 2;
-                    stat.Hp -= finalyDmg;
-                }
-                break;
-        }
-        UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
+    public void Damaged(bool _cri, int _dmg)
+    {   
+        stat.Hp -= _dmg;
+        UIManager.uimanager.uiEffectManager.LoadDamageEffect(_dmg, this.gameObject, _cri);
     }
 
     public void EffectEvent(string _name)

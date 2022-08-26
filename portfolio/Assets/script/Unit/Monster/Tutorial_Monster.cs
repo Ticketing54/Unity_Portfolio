@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-public class Tutorial_Monster : Monster
+public class Tutorial_Monster : Nomal_Monster
 {
     public override void Awake()
     {
@@ -138,31 +138,19 @@ public class Tutorial_Monster : Monster
     {
         StartCoroutine(CoApproachChracter());
     }
-    public override void OnDisable()
-    {
-        StopCoroutine(CoApproachChracter());
-    }
-    public override void Damaged(DAMAGE _type,float _dmg)
+    
+    public override void Damaged(bool _type,int _dmg)
     {
         if (GameManager.gameManager.character.quest.isQuestMonster(index))
         {
             GameManager.gameManager.character.quest.UpdateQuest_Etc(2);
         }
-        anim.SetTrigger("Damage");
-        float finalyDmg = 0;
-        switch (_type)
-        {
-            case DAMAGE.NOMAL:
-                {
-                    finalyDmg = _dmg;                    
-                }
-                break;
-            case DAMAGE.CRITICAL:
-                {
-                    finalyDmg = _dmg * 2;                    
-                }
-                break;
-        }
-        UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
+
+        base.Damaged(_type, _dmg);
+    }
+
+    public override void StatusEffect(STATUSEFFECT _state, float _duration)
+    {
+        return;
     }
 }

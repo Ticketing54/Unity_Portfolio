@@ -61,13 +61,12 @@ public class LoadingSceneController : MonoBehaviour
     float loadingPercent = 0f;
     Coroutine coUpdatePercent;
     
-    public void LoadScene(string _sceneName)
+    public void LoadScene(string _sceneName,MAPTYPE _type,string _cutScene = "")
     {        
-        gameObject.SetActive(true);
-
-        StartCoroutine(CoLoadScene(_sceneName));
+        gameObject.SetActive(true);          
+        StartCoroutine(CoLoadScene(_sceneName,_type,_cutScene));        
     }
-    IEnumerator CoLoadScene(string _sceneName)
+    IEnumerator CoLoadScene(string _sceneName,MAPTYPE _type,string _cutScene)
     {
         yield return Fade(true);
 
@@ -77,6 +76,20 @@ public class LoadingSceneController : MonoBehaviour
 
         yield return StartCoroutine(ResourceManager.resource.CoLoadSceneResource(_sceneName));
 
+        if (!string.IsNullOrEmpty(_cutScene))
+        {
+            yield return StartCoroutine(CoLoadCutScene(_cutScene));
+        }
+
+        if(_type == MAPTYPE.BOSS)
+        {
+            TutorialBoss boss = GameObject.FindGameObjectWithTag("Boss").GetComponent<TutorialBoss>();
+            boss.MoveStart();
+        }
+
+        CameraManager.cameraManager.CameraTargetOnCharacter();
+        GameManager.gameManager.character.SetPosition();
+        UIManager.uimanager.OnBaseUI();
         GameManager.gameManager.SetMapInfo(_sceneName);
     }   
 
@@ -132,7 +145,7 @@ public class LoadingSceneController : MonoBehaviour
         StartCoroutine(CoLoadCutScene(_cutName));
     }
     public IEnumerator CoLoadCutScene(string _cutName)
-    {
+    {   
         gameObject.SetActive(true);
         yield return StartCoroutine(Fade(true));
         CameraManager.cameraManager.enabled = false;

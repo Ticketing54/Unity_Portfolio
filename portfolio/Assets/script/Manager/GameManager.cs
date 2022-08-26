@@ -92,18 +92,18 @@ public class GameManager : MonoBehaviour
         character.transform.SetParent(this.transform);
         character.gameObject.layer = 8;
         New_C_Data(_nickName);        
-        LoadingSceneController.Instance.LoadScene("Village");        
+        LoadingSceneController.Instance.LoadScene("Village",MAPTYPE.NOMAL);        
     }
 
 
     public delegate void MoveSceneReset();
     public MoveSceneReset moveSceneReset;
-    public void MoveToScene(string _sceneName,Vector3 _Pos)
+    public void MoveToScene(string _sceneName,Vector3 _pos,MAPTYPE _type,string _cutScene)
     {
         UIManager.uimanager.OffBaseUI();
-        character.StartPos = _Pos;
+        character.StartPos = _pos;
         moveSceneReset();
-        LoadingSceneController.instance.LoadScene(_sceneName);
+        LoadingSceneController.instance.LoadScene(_sceneName,_type,_cutScene);
     }
    
     public void New_C_Data(string _nickName)

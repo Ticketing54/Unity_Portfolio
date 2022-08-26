@@ -206,7 +206,7 @@ public class MainManager : MonoBehaviour
         string[] Data = UserDataManager.instance.LoadData(_num).Split('\n');
         string[] sData = Data[0].Split(',');             
         
-        LoadingSceneController.Instance.LoadScene(sData[1]);
+        
     }
 
     

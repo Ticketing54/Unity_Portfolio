@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Mimic : Monster
+public class Mimic : Nomal_Monster
 {
     bool contact = false;
     
@@ -10,14 +10,11 @@ public class Mimic : Monster
     {   
         gameObject.tag = "Item";
     }
-    public override void OnDisable()
-    {
-        base.OnDisable();
-    }
+   
     public void SetContect()
     {
         gameObject.tag = "Monster";
-        GameManager.gameManager.character.Damaged(DAMAGE.NOMAL,10f);
+        GameManager.gameManager.character.Damaged(false,10);
         action = StartCoroutine(CoStartCombat());
         uiUpdate = StartCoroutine(CoApproachChracter());
     }
@@ -34,29 +31,7 @@ public class Mimic : Monster
         }
     }
 
-    public override void Damaged(DAMAGE _type, float _dmg)
-    { 
-        float finalyDmg = 0;
-        switch (_type)
-        {
-            case DAMAGE.NOMAL:
-                {
-                    finalyDmg = _dmg;
-                    Hp_Curent -= finalyDmg;
-                }
-                break;
-            case DAMAGE.CRITICAL:
-                {
-                    finalyDmg = _dmg * 2;
-                    Hp_Curent -= finalyDmg;
-                }
-                break;
-        }
-        UIManager.uimanager.uiEffectManager.LoadDamageEffect(finalyDmg, this.gameObject, _type);
-        anim.SetTrigger("Damage");
-        
-    }
-
+   
     IEnumerator CoStartCombat()
     {   
         anim.SetBool("IsContect", true);
@@ -94,7 +69,7 @@ public class Mimic : Monster
                 if (agro <= 0)
                 {
                     contact = false;
-                    action = StartCoroutine(CoResetMob());
+                    action = StartCoroutine(CoResetMonster());
                     yield break;
                 }
 
@@ -110,7 +85,7 @@ public class Mimic : Monster
             yield return null;
         }
     }
-    protected override IEnumerator CoResetMob()
+    protected override IEnumerator CoResetMonster()
     {
         gameObject.tag = "Item";
         anim.SetBool("IsMove", true);

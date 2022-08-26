@@ -1,3 +1,3 @@
-﻿MapName,x,y,z,MovePosx,MovePosy,MovePosz,Move.x(rotate),Move.y(rotate),Move.z(rotate)
-Village,23.04,0.33,42.61,33.56,0,58.72,1,1,1
-Boss,272,0,251,13,0,45,,,
+﻿MapName,Type,x,y,z,MovePosx,MovePosy,MovePosz,Move.x(rotate),Move.y(rotate),Move.z(rotate),CutScene
+Village,NOMAL,17,0.33,37,23.31,0,66.5,1,1,1,
+Boss,BOSS,270,0.33,244,13,0,57,1,1,1,
