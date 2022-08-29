@@ -43,8 +43,18 @@ public class EffectManager : MonoBehaviour
     private void Start()
     {
         GameManager.gameManager.moveSceneReset += ClickEffectReset;
+        GameManager.gameManager.moveSceneReset += ResetSpeechBubble;
     }
 
+    void ResetSpeechBubble()
+    {
+        List<Unit> runningSpeechList = new List<Unit>(runningSpeechBubble.Keys);
+        for (int i = 0; i < runningSpeechList.Count; i++)
+        {
+            speechBubblePool.Add(runningSpeechBubble[runningSpeechList[i]]);
+            runningSpeechBubble.Remove(runningSpeechList[i]);            
+        }
+    }
     public void AddSpeechBubbleResource(GameObject _bubble, TextMeshPro _text)
     {   
         SpeechBubble speechBubble = _text.gameObject.AddComponent<SpeechBubble>();

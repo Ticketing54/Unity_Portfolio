@@ -322,6 +322,7 @@ public class ResourceManager: MonoBehaviour
             case "Boss":
                 {
                     newMonster = (Monster)_mobObj.AddComponent<TutorialBoss>();
+                    _mobObj.gameObject.tag = "Boss";
                     break;
                 }                
             default:

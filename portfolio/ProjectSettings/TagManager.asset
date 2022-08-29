@@ -18,6 +18,7 @@ TagManager:
   - Timeline
   - Camera
   - CutScene
+  - Boss
   layers:
   - Default
   - TransparentFX

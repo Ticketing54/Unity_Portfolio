@@ -33,9 +33,9 @@ public class Potal : MonoBehaviour
         transform.position = new Vector3(float.Parse(_info[2]), float.Parse(_info[3]), float.Parse(_info[4]));
         pos = new Vector3(float.Parse(_info[5]), float.Parse(_info[6]), float.Parse(_info[7]));
 
-        if (!string.IsNullOrEmpty(_info[8]))
+        if (!string.IsNullOrEmpty(_info[11]))
         {
-            cutScene = _info[8];
+            cutScene = _info[11];
         }
     }
     public float DISTANCE

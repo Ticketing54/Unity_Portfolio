@@ -7,14 +7,15 @@ public class TutorialBoss : Monster
     [SerializeField]
     Character character;
     
-    int patternNum = 0;
+    
     bool combatPhase = false;
     GameObject breath;
     SkinnedMeshRenderer breathRange;
     GameObject gunfire;
-    bool isStart = false;
+
     void Start()
-    {   
+    {
+        character = GameManager.gameManager.character;
         breath = gameObject.transform.Find("breath").gameObject;
         breathRange = breath.GetComponent<SkinnedMeshRenderer>();
         gunfire = GameObject.FindGameObjectWithTag("MobWeapon");
@@ -42,71 +43,58 @@ public class TutorialBoss : Monster
             }
         }
     }
-    
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            if(isStart == false)
-            {
-                isStart = true;
-                MoveStart();
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            patternNum = 2;
-        }
-    }
+   
     public void MoveStart()
     {
         if(action != null)
         {
             StopCoroutine(action);
         }
-        action = StartCoroutine(CoStart());
+
+        StartCoroutine(CoMoveStart());
+        
     }
-    IEnumerator CoStart()
+    IEnumerator CoMoveStart()
     {
-        yield return CoMove(range);
+        yield return StartCoroutine(CoMove(range));
+
         action = StartCoroutine(CoNomalAttack());
     }
     protected IEnumerator CoMove(float _distance)
-    {   
-        nav.SetDestination(character.transform.position);
-        nav.stoppingDistance = _distance;
-        yield return null;
-
-        if (nav.remainingDistance > _distance)
+    {
+        if (DISTANCE > _distance)        
         {
-            anim.SetBool("Move", true);
-        }
-        while (true)
-        {
+            anim.SetBool("Move", true);            
             yield return null;
+            nav.stoppingDistance = _distance;
 
-            Vector3 dir = (nav.steeringTarget - transform.position).normalized;
-            dir.y = 0;
-            Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, Time.deltaTime * 30f, Time.deltaTime * 30f);
-            transform.rotation = Quaternion.LookRotation(newdir);
-
-            if (nav.remainingDistance <= _distance && nav.velocity.magnitude == 0f)
+            while (true)
             {
-                nav.SetDestination(transform.position);
-                nav.stoppingDistance = 0;                            
-                anim.SetBool("Move", false);
-                yield break;
+                yield return null;
+                nav.SetDestination(character.transform.position);                             
+                Vector3 dir = (nav.steeringTarget - transform.position).normalized;
+                dir.y = 0;
+                Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, Time.deltaTime * 30f, Time.deltaTime * 30f);
+                transform.rotation = Quaternion.LookRotation(newdir);
+                if (DISTANCE<= _distance && nav.velocity.magnitude == 0f)
+                {
+                    nav.SetDestination(transform.position);
+                    nav.stoppingDistance = 0;
+                    anim.SetBool("Move", false);
+                    break;
+                }
             }
         }
+        
+        yield break;      
     }
    
     IEnumerator CoStandBreath()
-    {
-        anim.SetTrigger("Attack");
+    {   
         float timer = 0f;
         float vr = 1;
         Vector3 dir;
-        float count = 0;
+        
         while (timer <= 2.2f)
         {
             timer += Time.deltaTime;
@@ -119,11 +107,7 @@ public class TutorialBoss : Monster
                 breath.transform.rotation = Quaternion.LookRotation(dir.normalized);
                 if (breathRange.bounds.Intersects(character.AttackBox))
                 {
-                    Debug.Log(count++);
-
-
                     //Character.Player.Stat.HP -= mob.Atk;
-
                     //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, mob.Atk, Color.red, 1);
                 }
 
@@ -134,8 +118,9 @@ public class TutorialBoss : Monster
             }
             yield return null;
         }
-        breath.gameObject.SetActive(false);
-        yield return new WaitForSeconds(2f);
+        breath.gameObject.SetActive(false);        
+        Debug.Log("ÇÔ¼ö²ö³²");
+        //action = StartCoroutine(CoMove(range));
     }
     Vector3 BressDir(GameObject tmp, float value)
     {
@@ -170,32 +155,35 @@ public class TutorialBoss : Monster
     #region phase 1   
     IEnumerator CoNomalAttack()
     {   
-        int pattern = patternNum++;
-        anim.SetFloat("Attack_num", pattern);              
-        if (pattern >= 2)
+        int patternNum = pattern++;
+        anim.SetFloat("Attack_num", patternNum);
+        anim.SetTrigger("Attack");
+        if (patternNum >= 2)
         {   
             yield return StartCoroutine(CoStandBreath());
-            patternNum = 0;
-            action = StartCoroutine(CoMove(range));
+            Debug.Log("Áö³ª°¬À½1");
+            Debug.Log("Áö³ª°¬À½");
+            yield return new WaitForSeconds(2f);
+            pattern = 0;
+            yield return StartCoroutine(CoMove(range));
         }
         else
         {
-            anim.SetTrigger("Attack");
-            yield return new WaitForSeconds(6f);
-            if (patternNum >= 2)
+            yield return new WaitForSeconds(5f);
+            if (pattern >= 2)
             {
+                Debug.Log("°ø°Ý");
                 yield return StartCoroutine(CoMove(5f));                
             }
             else
             {
+                Debug.Log("°ø°Ý");
                 yield return StartCoroutine(CoMove(range));                
             }
         }
 
-        
-        
-        action = StartCoroutine(CoNomalAttack());        
-        yield return null;        
+        action = StartCoroutine(CoNomalAttack());
+        yield break;
     }
     IEnumerator CoLading()
     {
