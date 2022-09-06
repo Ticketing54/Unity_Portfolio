@@ -77,14 +77,14 @@ public class Unit : MonoBehaviour
                 {
                     approachChracter = true;
                     GameManager.gameManager.character.addNearUnit(this);
-
+                    UIManager.uimanager.uicontrol_On(this);
                 }
 
                 if (this.DISTANCE >= 6f && approachChracter == true)
                 {
                     approachChracter = false;
                     GameManager.gameManager.character.removeNearUnit(this);
-
+                    UIManager.uimanager.uicontrol_Off(this);
                 }
             }
             yield return null;

@@ -13,13 +13,48 @@ public class TutorialBoss : Monster
     SkinnedMeshRenderer breathRange;
     GameObject gunfire;
 
-    void Start()
+    public override void OnEnable()
     {
+        uiUpdate = StartCoroutine(CoApproachChracter_boss());
+    }
+    public override void OnDisable()
+    {   
+        StopCoroutine(CoApproachChracter_boss());
+    }
+
+    protected IEnumerator CoApproachChracter_boss()
+    {
+        yield return null;
+        bool approachChracter = false;
+
+        while (true)
+        {
+            if (GameManager.gameManager.character != null)
+            {
+                if (this.DISTANCE < 6f && approachChracter == false)
+                {
+                    approachChracter = true;
+                    GameManager.gameManager.character.addNearUnit(this);                    
+                }
+
+                if (this.DISTANCE >= 6f && approachChracter == true)
+                {
+                    approachChracter = false;
+                    GameManager.gameManager.character.removeNearUnit(this);                    
+                }
+            }
+            yield return null;
+        }
+    }
+
+    public override void  Awake()
+    {
+        base.Awake();
         character = GameManager.gameManager.character;
         breath = gameObject.transform.Find("breath").gameObject;
         breathRange = breath.GetComponent<SkinnedMeshRenderer>();
         gunfire = GameObject.FindGameObjectWithTag("MobWeapon");
-        range = 1.5f;
+        range = 1.5f;                
     }
     public override float Hp_Curent
     {
@@ -30,7 +65,7 @@ public class TutorialBoss : Monster
         set
         {
             hp_Cur = value;
-
+            UIManager.uimanager.aUpdateTopinfo(this);
             if (hp_Cur <= 250 && combatPhase == false)
             {
                 combatPhase = true;
@@ -40,19 +75,15 @@ public class TutorialBoss : Monster
             else if (hp_Cur <= 0)
             {
                 // Á×À½ ¾Ö´Ï¸ÞÀÌ¼Ç
+                UIManager.uimanager.aCloseTopInfoUi();
             }
         }
     }
-   
+    
     public void MoveStart()
     {
-        if(action != null)
-        {
-            StopCoroutine(action);
-        }
-
-        StartCoroutine(CoMoveStart());
-        
+        anim.SetTrigger("Phase2");
+        anim.SetBool("isPhase2", true);
     }
     IEnumerator CoMoveStart()
     {
@@ -95,10 +126,10 @@ public class TutorialBoss : Monster
         float vr = 1;
         Vector3 dir;
         
-        while (timer <= 2.2f)
+        while (timer <= 3f)
         {
             timer += Time.deltaTime;
-            if (timer >= 1f)
+            if (timer >= 1.5f)
             {
                 breath.gameObject.SetActive(true);
                 breath.gameObject.transform.position = gunfire.transform.position;
@@ -119,8 +150,6 @@ public class TutorialBoss : Monster
             yield return null;
         }
         breath.gameObject.SetActive(false);        
-        Debug.Log("ÇÔ¼ö²ö³²");
-        //action = StartCoroutine(CoMove(range));
     }
     Vector3 BressDir(GameObject tmp, float value)
     {
@@ -161,8 +190,7 @@ public class TutorialBoss : Monster
         if (patternNum >= 2)
         {   
             yield return StartCoroutine(CoStandBreath());
-            Debug.Log("Áö³ª°¬À½1");
-            Debug.Log("Áö³ª°¬À½");
+            
             yield return new WaitForSeconds(2f);
             pattern = 0;
             yield return StartCoroutine(CoMove(range));
@@ -222,11 +250,6 @@ public class TutorialBoss : Monster
     }
 
     protected override IEnumerator CoIdle()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override void Damaged(bool _type, int _dmg)
     {
         throw new System.NotImplementedException();
     }

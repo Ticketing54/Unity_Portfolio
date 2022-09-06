@@ -189,10 +189,14 @@ public class Status
             return false;
         }
     }
-    public void Damaged(bool _type, float _dmg)
+    public void Damaged(bool _type, float _dmg,bool _isKnockBack=false)
     {        
         Hp -= _dmg;
         UIManager.uimanager.uiEffectManager.LoadDamageEffect((int)_dmg, character.gameObject, _type);        
+        if(_isKnockBack == true)
+        {
+            // 넉백 애니메이션 재생할 것!
+        }
     }
     public void GetExp(int _exp)
     {

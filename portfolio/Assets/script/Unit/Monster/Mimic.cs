@@ -14,7 +14,7 @@ public class Mimic : Nomal_Monster
     public void SetContect()
     {
         gameObject.tag = "Monster";
-        GameManager.gameManager.character.Damaged(false,10);
+        GameManager.gameManager.character.stat.Damaged(false,10);
         action = StartCoroutine(CoStartCombat());
         uiUpdate = StartCoroutine(CoApproachChracter());
     }

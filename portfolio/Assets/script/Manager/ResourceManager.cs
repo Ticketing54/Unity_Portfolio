@@ -322,8 +322,11 @@ public class ResourceManager: MonoBehaviour
             case "Boss":
                 {
                     newMonster = (Monster)_mobObj.AddComponent<TutorialBoss>();
+                    newMonster.SetMonster(_mobTableIndex, _startPos);
                     _mobObj.gameObject.tag = "Boss";
-                    break;
+                    UIManager.uimanager.aOpenTopInfoUi();
+                    UIManager.uimanager.aUpdateTopinfo(newMonster);                    
+                    return;
                 }                
             default:
                 {

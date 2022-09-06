@@ -186,7 +186,9 @@ public class UIManager : MonoBehaviour
     Action<int,QUESTSTATE> aQuestUpdateUi;
     Action<Quest> aAddQuickQuestUi;
     Action<Quest> aUpdateQuickQuestUi;
-
+    public Action aOpenTopInfoUi;
+    public Action aCloseTopInfoUi;
+    public Action<Monster> aUpdateTopinfo;
     public Action<int> AGetGoldUpdateUi
     {
         get
@@ -414,16 +416,6 @@ public class UIManager : MonoBehaviour
     #endregion
 
 
-
-    #region Middle_Top_HpBar    
-    [SerializeField]
-    TopEnermyInfoUi topEnermyInfoUi;
-    public void Open_Top_EnermyInfo(Monster _Monster)              // 상단 중앙 적정보 UI
-    {
-        topEnermyInfoUi.gameObject.SetActive(true);
-        topEnermyInfoUi.Top_EnermyInfoUi(_Monster);
-    }
-    #endregion
 
 
     #region DropBox

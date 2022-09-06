@@ -41,12 +41,12 @@ public abstract class Monster : Unit
         }
     }
     public float Hp_Max { get => hp_Max; }
+    public float Range { get => range; set => range = value; }
     #region State
 
     protected abstract IEnumerator CoIdle();
     protected abstract IEnumerator CoCombat();
-    protected abstract IEnumerator CoDie();    
-    public abstract void Damaged(bool _isCritical,int _damage);
+    protected abstract IEnumerator CoDie();        
     public abstract void StatusEffect(STATUSEFFECT _stat, float _duration);
     public abstract void DropItem();
     public virtual bool IsCri()
@@ -84,26 +84,22 @@ public abstract class Monster : Unit
         anim = GetComponent<Animator>();
         hitBox = GetComponent<Collider>();        
     }
-
-    public void Attack()
+    public bool IsCri(float _criPercentage)
     {
         float cri = Random.Range(0, 101);
-
-
-
-        if(cri <= 20)
+        if(cri < _criPercentage)
         {
-            GameManager.gameManager.character.Damaged(true, Damage(true));
+            return true;
         }
         else
         {
-            GameManager.gameManager.character.Damaged(false, Damage(false));
+            return false;
         }
-    }   
+    }
 
-    int Damage(bool _cri)
-    {   
-        if (_cri)
+    public int AttackDmg(bool _isCri)
+    {
+        if(_isCri == true)
         {
             float finallyDamage = atk * 2;
             return (int)Random.Range(finallyDamage * 0.8f, finallyDamage * 1.2f);
@@ -114,6 +110,12 @@ public abstract class Monster : Unit
             return (int)Random.Range(finallyDamage * 0.8f, finallyDamage * 1.2f);
         }
 
+    }   
+
+    public virtual void Damaged(bool _cri, int _dmg)
+    {
+        Hp_Curent -= _dmg;
+        UIManager.uimanager.uiEffectManager.LoadDamageEffect(_dmg, this.gameObject, _cri);        
     }
 
     public bool MightyEnermy()

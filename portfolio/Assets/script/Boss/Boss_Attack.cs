@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class Boss_Attack : StateMachineBehaviour
 {
-    
+    Character character;
     GameObject breath;
     GameObject Gunfire; // 입    
     SkinnedMeshRenderer breathrange;
-    Monster mob;
+    TutorialBoss boss;
     float atk_num = 0;    
     
     float Timer = 0;
-    float vr = 1;
+    float vr;
 
     bool Damage = false;
     Vector3 dir = Vector3.zero;
@@ -24,19 +24,19 @@ public class Boss_Attack : StateMachineBehaviour
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        atk_num = animator.GetFloat("Attack_num");
-
-        if (mob == null)
+        atk_num = animator.GetFloat("PhaseNumber");
+        character = GameManager.gameManager.character;
+        if (boss == null)
         {
-            mob = animator.GetComponent<Monster>();            
-            breath = mob.gameObject.transform.Find("breath").gameObject;
+            boss = animator.GetComponent<TutorialBoss>();            
+            breath = boss.gameObject.transform.Find("breath").gameObject;
             breathrange = breath.GetComponent<SkinnedMeshRenderer>();
             Gunfire = GameObject.FindGameObjectWithTag("MobWeapon");
         }
         if (screamsound == null)
         {
             screamsound = new GameObject("breath");
-            screamsound.transform.SetParent(mob.transform);
+            screamsound.transform.SetParent(boss.transform);
             audio = screamsound.AddComponent<AudioSource>();
             audio.clip = Resources.Load<AudioClip>("Sounds/Breath");
             audio.loop = true;
@@ -44,7 +44,19 @@ public class Boss_Attack : StateMachineBehaviour
             audio.gameObject.SetActive(false);
         }
 
+        switch (atk_num)
+        {
+            case 0:
 
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            default:
+                break;
+        }
+        vr = 1;
     }
 
 
@@ -59,28 +71,19 @@ public class Boss_Attack : StateMachineBehaviour
                 breath.gameObject.SetActive(true);
                 breath.gameObject.transform.position = Gunfire.transform.position;
                 vr -= (float)Time.deltaTime * 0.3f;
-                dir = BressDir(mob.gameObject, vr) - breath.transform.localPosition;
+                dir = BressDir(boss.gameObject, vr) - breath.transform.localPosition;
                 breath.transform.rotation = Quaternion.LookRotation(dir.normalized);
 
-                //if (breathrange.bounds.Intersects(Character.Player.Character_bounds.bounds) && Damage == false)
-                //{
-                //    Damage = true;
-                //    mob.StartCoroutine(DamageOn());
-                //    SoundManager.soundmanager.soundsPlay("Icestate", Character.Player.gameObject);
-                //    //Character.Player.Stat.HP -= mob.Atk;
-                //    Character.Player.icestateOn();
-                //    //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, mob.Atk, Color.red, 1);
-                //}
-
-
-
-
-
-
+                if (breathrange.bounds.Intersects(character.AttackBox) && Damage == false)
+                {
+                    Damage = true;
+                    boss.StartCoroutine(DamageOn());
+                    SoundManager.soundmanager.soundsPlay("Icestate", character.gameObject);
+                    //Character.Player.Stat.HP -= mob.Atk;
+                    //Character.Player.icestateOn();
+                    //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, mob.Atk, Color.red, 1);
+                }
             }
-
-
-
         }
         
 

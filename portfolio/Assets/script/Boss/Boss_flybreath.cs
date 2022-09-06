@@ -9,10 +9,10 @@ public class Boss_flybreath : StateMachineBehaviour
     GameObject Gunfire;
     SkinnedMeshRenderer breathrange;
     Vector3 dir = Vector3.zero;
-    float vr = 1;
-    float timer = 0;
+    float vr ;
+    float timer ;
     float Damage_count = 0;
-    bool Damage = false;
+    bool isHit = false;
 
 
 
@@ -42,6 +42,8 @@ public class Boss_flybreath : StateMachineBehaviour
             audio.gameObject.SetActive(false);
         }
 
+        timer = 0;
+        vr = 1;
     }
 
 
@@ -79,7 +81,7 @@ public class Boss_flybreath : StateMachineBehaviour
     IEnumerator DamageOn()
     {
         yield return new WaitForSeconds(0.5f);
-        Damage = false;
+        isHit = false;
     }
     public Vector3 BressDir(GameObject tmp, float value)
     {

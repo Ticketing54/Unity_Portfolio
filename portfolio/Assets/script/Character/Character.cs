@@ -195,11 +195,8 @@ public class Character : MonoBehaviour
             {
                 nearMonster.Add(unit);
             }
-
         }
-
         nearUnit.Add(_unit);
-        UIManager.uimanager.uicontrol_On(_unit);
     }
 
     void RemoveNearUnit(Unit _unit)
@@ -208,9 +205,7 @@ public class Character : MonoBehaviour
         {
             nearMonster.Remove((Monster)_unit);
         }
-
         nearUnit.Remove(_unit);
-        UIManager.uimanager.uicontrol_Off(_unit);
     }
 
     public Monster ClosestMonster()
@@ -782,13 +777,6 @@ public class Character : MonoBehaviour
 
 
 
-
-
-    public void Damaged(bool _cri, int _dmg)
-    {   
-        stat.Hp -= _dmg;
-        UIManager.uimanager.uiEffectManager.LoadDamageEffect(_dmg, this.gameObject, _cri);
-    }
 
     public void EffectEvent(string _name)
     {
