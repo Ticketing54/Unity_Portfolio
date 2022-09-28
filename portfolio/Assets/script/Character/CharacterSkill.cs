@@ -31,12 +31,13 @@ public class CharacterSkill
 
 
     HashSet<int> coolTimeSkill;
-
+    public bool isUsingSkill;
     public CharacterSkill(Character _character,NavMeshAgent _nav, Animator _anim)
     {
         character = _character;
         nav = _nav;
         anim = _anim;
+        isUsingSkill = false;
 
         haveSkills       = new HashSet<int>();
         coolTimeSkill     = new HashSet<int>();
@@ -112,6 +113,13 @@ public class CharacterSkill
 
     void UseSkill(int _slotNum)
     {
+        if(isUsingSkill == true && character.isPossableMove == false)
+        {
+
+            // "이 행동중엔 사용하실수 없습니다." 메세지 만들것
+            return;
+        }
+
         Skill skill = GetQuickSkill(_slotNum);
 
         if(skill == null)
@@ -134,40 +142,19 @@ public class CharacterSkill
         //}
 
 
-        switch (skill.index)
-        {
-            case 1:
-                {
-                    BuffSkill(skill.index);
-                }
-                break;
-            case 2:
-                {
-                    RushSkill();
-                }
-                break;
-            case 3:
-                {
-                    BuffSkill(skill.index);
-                }
-                break;
-            case 4:
-                {
-                    BuffSkill(skill.index);
-                }
-                break;
-            case 5:
-                {
-                    TakeDownSword();
-                }
-                break;
-            default:
-                return;
+        if(skill.skillType == SKILLTYPE.BUFF)           // buff is same animation
+        {   
+            anim.SetInteger("SKillNum", 0);
+            anim.SetBool("Skill", true);
+        }
+        else
+        {   
+            anim.SetInteger("SkillNum", skill.index);
+            anim.SetBool("Skill", true);
         }
 
         coolTimeSkill.Add(skill.index);
         character.StartCoroutine(CoCoolTimecheck_Skill(skill.index, skill.coolTime));
-
     }
 
     public void Add(int _skillIndex)
@@ -195,103 +182,14 @@ public class CharacterSkill
         }
     }
 
-
-    IEnumerator CoTakeDownSword()
-    {
-        yield return new WaitForSeconds(2f);
-        character.isPossableMove = true;
-    }
-
-    IEnumerator CoRushSkill()           // 스킬 끝나는 시간 조절하기
-    {
-        Vector3 curPosition = character.gameObject.transform.position;
-        Monster closestMob = character.ClosestMonster();
-        Vector3 targetPos;
-        if (closestMob == null)
-        {
-            nav.stoppingDistance = 0f;
-            nav.acceleration = 100;
-            targetPos = character.gameObject.transform.position + character.gameObject.transform.forward * 4f;
-        }
-        else
-        {
-            nav.stoppingDistance = 2f;            
-            targetPos = closestMob.transform.position;
-        }
-        yield return new WaitForSeconds(0.6f);
-        nav.speed = 20;
-        
-
-        NavMeshHit hitinfo;
-        if(nav.Raycast(targetPos, out hitinfo))
-        {
-            nav.SetDestination(hitinfo.position);
-        }
-        else
-        {
-            nav.SetDestination(targetPos);
-        }
-
-
-        float timer = 0f;
-        DamageList list = new DamageList();
-        foreach (Monster mob in character.nearMonster)
-        {
-            list.Add(mob);
-        }
-        Vector3 des = nav.transform.forward;
-        while (timer < 1.5f)
-        {
-            yield return null;
-
-            timer += Time.deltaTime;
-            list.DamagedMonster(5f, STATUSEFFECT.STURN, 1f);            
-            if(nav.remainingDistance <= 0.01 && nav.velocity.magnitude == 0f)
-            {
-                break;
-            }
-            
-        }
-
-        nav.speed = 7;
-        character.isPossableMove = true;
-    }
-
-
     
-    public void TakeDownSword() // 애니메이션 이벤트                                     //skill 0번
-    {
-        character.isPossableMove = false;
-        //이펙트 연출
-        character.StartCoroutine(CoTakeDownSword());
-        anim.SetFloat("SkillNum", 0);
-        anim.SetTrigger("Skill");
-
-    }
-    public void RushSkill()                                                              //skill 1번
-    {
-        // 이펙트 추가 할 것
-        anim.SetFloat("SkillNum", 1);
-        anim.SetTrigger("Skill");
-        Monster closestMob = character.ClosestMonster();
-        if (character.nearMonster.Count != 0)
-        {
-            character.transform.LookAt(closestMob.transform);
-        }
-        character.StartCoroutine(CoRushSkill());
-    }
-    public void BuffSkill(int _skillIndex)                                     //skill 2번
-    {
-        anim.SetFloat("SkillNum", 2);
-        anim.SetTrigger("Skill");
+    public void BuffSkill(int _skillIndex)                                     // buffSkill
+    {   
+        anim.SetTrigger("Buff");
         character.stat.ApplyBuffSkill(_skillIndex);
         //character.StartCoroutine(CoBuffSkill(_skillIndex));
     }
-    public void SkillEffectOn(string _effectName)
-    {
-
-    }
-
+    
     IEnumerator CoBuffSkill(int _skillindex)
     {
         yield return null;

@@ -38,6 +38,10 @@ public class SpeechBubble : MonoBehaviour
 
         while(checkDone < _text.Length)
         {
+            if(_unit == null)
+            {
+                Debug.Log("¾øÀ½");
+            }
             yield return new WaitForSeconds(0.1f);
             text.text = _text.Substring(0, checkDone);
             checkDone++;
@@ -55,7 +59,7 @@ public class SpeechBubble : MonoBehaviour
             yield return null;
 
             Vector3 dir = (Camera.main.transform.position - transform.position).normalized;            
-            transform.position = new Vector3(_unit.transform.position.x,_unit.transform.position.y+_unit.Nick_YPos+0.5f,_unit.transform.position.z);
+            transform.position = new Vector3(_unit.transform.position.x,_unit.transform.position.y+_unit.Nick_YPos()+0.5f,_unit.transform.position.z);
             transform.rotation = Quaternion.LookRotation(-dir);
         }
     }

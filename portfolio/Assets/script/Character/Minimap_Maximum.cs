@@ -20,9 +20,8 @@ public class Minimap_Maximum : MonoBehaviour
     string mapName = string.Empty;
 
 
-    PoolData<Image> dotsPool;
-    Dictionary<Unit, Coroutine> runningCo;
-    Dictionary<Unit, Image> runningDots;
+    PoolData<Image> dotsPool;    
+    List<Image>runningDots;
 
 
     Character character;
@@ -33,22 +32,17 @@ public class Minimap_Maximum : MonoBehaviour
     }
 
     private void Awake()
-    {
-        runningCo = new Dictionary<Unit, Coroutine>();
-        runningDots = new Dictionary<Unit, Image>();
+    {   
+        runningDots = new List<Image>();
         dotsPool = new PoolData<Image>(example, this.gameObject, "Dots");
     }
     private void OnEnable()
     {
-        SetMapInfo();
-        UIManager.uimanager.uicontrol_On += AddMiniDot;
-        UIManager.uimanager.uicontrol_Off += RemoveMiniDot;                
+        SetMapInfo();                
         OpenDotSetting();
     }
     private void OnDisable()
-    {
-        UIManager.uimanager.uicontrol_On -= AddMiniDot;
-        UIManager.uimanager.uicontrol_Off -= RemoveMiniDot;        
+    {   
         CloseDotSetting();
     }    
     void SetMapInfo()
@@ -82,63 +76,48 @@ public class Minimap_Maximum : MonoBehaviour
 
     void OpenDotSetting()
     {
-        HashSet<Unit> nearUnit = character.nearUnit;
-
-        foreach (Unit dot in nearUnit)
-        {
-            AddMiniDot(dot);
-        }
+        AddNpcMiniDot();
+        AddPotalMiniDot();
     }
     void CloseDotSetting()
     {
-        List<Unit> activeDots = new List<Unit>(runningCo.Keys);
-
-        foreach (Unit dot in activeDots)
+        StopAllCoroutines();
+        for (int i = 0; i < runningDots.Count; i++)
         {
-            RemoveMiniDot(dot);
+            dotsPool.Add(runningDots[i]);
         }
-
     }
 
-    void AddMiniDot(Unit _unit)
+    void AddNpcMiniDot()
     {
-        Image dot = dotsPool.GetData();
-        dot.transform.SetParent(activeDotParent.transform);
-        Coroutine co = StartCoroutine(CoMoveDots(_unit, dot));
-        runningDots.Add(_unit, dot);
-        runningCo.Add(_unit, co);
+        List<Npc> npcList = ObjectManager.objManager.GetNpcList();
+        for (int i = 0; i < npcList.Count; i++)
+        {
+            Image dot = dotsPool.GetData();
+            dot.sprite = ResourceManager.resource.GetImage("DotN");
+            dot.transform.SetParent(activeDotParent.transform);
+            StartCoroutine(CoMoveDots(npcList[i], dot));
+            runningDots.Add(dot);            
+        }
     }
-    void RemoveMiniDot(Unit _unit)
+    void AddPotalMiniDot()
     {
-        if (runningCo.ContainsKey(_unit))
+        List<Potal> potalList = ObjectManager.objManager.GetPotalList();
+        for (int i = 0; i < potalList.Count; i++)
         {
-            Coroutine co = runningCo[_unit];
-            StopCoroutine(co);
-            runningCo.Remove(_unit);
+            Image dot = dotsPool.GetData();
+            dot.transform.SetParent(activeDotParent.transform);
+            dot.rectTransform.anchoredPosition = MoveDotPosition(potalList[i].transform.position);
 
+            dot.sprite = ResourceManager.resource.GetImage("DotP");
+            runningDots.Add(dot);
+            
         }
-        else
-        {
-            Debug.LogError("없는 코루틴을 찾고있습니다. : Minimap_MiniMum");
-        }
-
-        if (runningDots.ContainsKey(_unit))
-        {
-            Image dot = runningDots[_unit];
-            dotsPool.Add(dot);
-            runningDots.Remove(_unit);
-        }
-        else
-        {
-            Debug.LogError("없는 Dot을 찾고있습니다. : Minimap_MiniMum");
-        }
-
+        
     }
-
+ 
     IEnumerator CoMoveDots(Unit _unit, Image _dot)
     {
-        _dot.sprite = UnitDotsSprite(_unit);
-
         while (true)
         {
             _dot.rectTransform.anchoredPosition = MoveDotPosition(_unit.transform.position);
@@ -147,11 +126,7 @@ public class Minimap_Maximum : MonoBehaviour
         }
     }
 
-    Sprite UnitDotsSprite(Unit _unit)
-    {
-        return null;
-    }
-
+   
 
     
 

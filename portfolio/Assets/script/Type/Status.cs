@@ -166,12 +166,17 @@ public class Status
 
     public int CRI { get; set; }
     public float ATK_RANGE { get { return attack_Range; } set { attack_Range = value; } }
-    public float AttckDamage
+    public int AttckDamage(bool _isCri)
     {
-        get
+        if (_isCri)
         {
             float attackdamage = atk + equip_Atk;
             return (int)UnityEngine.Random.Range((float)(attackdamage * 0.8), (float)(attackdamage * 1.2));
+        }
+        else
+        {
+            float attackdamage = atk + equip_Atk;
+            return 2*(int)UnityEngine.Random.Range((float)(attackdamage * 0.8), (float)(attackdamage * 1.2));
         }        
     }
     public bool DamageType()
@@ -189,14 +194,10 @@ public class Status
             return false;
         }
     }
-    public void Damaged(bool _type, float _dmg,bool _isKnockBack=false)
+    public void Damaged(bool _type, float _dmg)
     {        
         Hp -= _dmg;
-        UIManager.uimanager.uiEffectManager.LoadDamageEffect((int)_dmg, character.gameObject, _type);        
-        if(_isKnockBack == true)
-        {
-            // 넉백 애니메이션 재생할 것!
-        }
+        UIManager.uimanager.ALoadDamageEffect((int)_dmg, character.gameObject, _type);                
     }
     public void GetExp(int _exp)
     {
@@ -214,7 +215,7 @@ public class Status
         Level++;
         SkillPoint++;
         LevelSetting(level);        
-        UIManager.uimanager.uiEffectManager.LevelUpEffect(character.gameObject);
+        UIManager.uimanager.ALevelUpEffect(character.gameObject);
     }
     
     public void LevelSetting(int _Level)

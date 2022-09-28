@@ -24,22 +24,13 @@ public class TopEnermyInfoUi : MonoBehaviour
 
 
     void Top_EnermyInfoUi(Monster _Monster)
-    {        
-        if (_Monster.MightyEnermy())
-        {
-            enermy_Name.color = Color.red;
-        }
-        else
-        {
-            enermy_Name.color = Color.white;
-        }
+    {   
 
+        enermy_Name.text = _Monster.UnitName();                                                   // Name
 
-        enermy_Name.text = _Monster.NickName;                                                   // Name
+        enermy_Hp.fillAmount = (float)(_Monster.HpCur / _Monster.HpMax);                            // Hpbar
 
-        enermy_Hp.fillAmount = (float)(_Monster.Hp_Curent / _Monster.Hp_Max);                  // Hpbar
-
-        enermy_Hp_Text.text = _Monster.Hp_Curent.ToString() + " / " + _Monster.Hp_Max.ToString();     // Hpbar Text
+        enermy_Hp_Text.text = _Monster.HpCur.ToString() + " / " + _Monster.HpMax.ToString();     // Hpbar Text
     }
     
 }

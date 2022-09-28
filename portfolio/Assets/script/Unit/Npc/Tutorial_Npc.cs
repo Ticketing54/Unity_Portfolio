@@ -7,6 +7,9 @@ public class Tutorial_Npc : Npc
     Quest tutorial_hp;
     Quest tutorial_Attack;
 
+    public override float HpMax { get => -1; set { } }
+    public override float HpCur { get => -1; set { } }
+
     public override void Interact()
     {
         base.Interact();
@@ -38,4 +41,8 @@ public class Tutorial_Npc : Npc
             yield return null;
         }
     }
+
+    public override bool IsEnermy() { return false; }
+
+    
 }

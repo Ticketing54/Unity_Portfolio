@@ -42,17 +42,15 @@ public class EffectManager : MonoBehaviour
     }
     private void Start()
     {
-        GameManager.gameManager.moveSceneReset += ClickEffectReset;
-        GameManager.gameManager.moveSceneReset += ResetSpeechBubble;
+        GameManager.gameManager.moveSceneReset += ClickEffectReset;        
     }
 
-    void ResetSpeechBubble()
+    public void RemoveSpeechBubble(Unit _unit)
     {
-        List<Unit> runningSpeechList = new List<Unit>(runningSpeechBubble.Keys);
-        for (int i = 0; i < runningSpeechList.Count; i++)
+        if (runningSpeechBubble.ContainsKey(_unit))
         {
-            speechBubblePool.Add(runningSpeechBubble[runningSpeechList[i]]);
-            runningSpeechBubble.Remove(runningSpeechList[i]);            
+            speechBubblePool.Add(runningSpeechBubble[_unit]);
+            runningSpeechBubble.Remove(_unit);
         }
     }
     public void AddSpeechBubbleResource(GameObject _bubble, TextMeshPro _text)
@@ -71,7 +69,7 @@ public class EffectManager : MonoBehaviour
 
         SpeechBubble bubble = speechBubblePool.GetData();
         bubble.TextingSpeechBubble(_target, _text, PushBubble);
-        
+        runningSpeechBubble.Add(_target,bubble);
     }
     void PushBubble(Unit _unit,SpeechBubble _bubble)
     {
@@ -115,7 +113,7 @@ public class EffectManager : MonoBehaviour
                     questmark = questMarkRes.GetData("STARTABLE");
                     questmark.MarkType = QUESTMARKTYPE.STARTABLE;                    
                     questmark.gameObject.transform.SetParent(_npc.transform);                    
-                    questmark.gameObject.transform.localPosition = new Vector3(0,_npc.Nick_YPos + 0.2f, 0);
+                    questmark.gameObject.transform.localPosition = new Vector3(0,_npc.Nick_YPos() + 0.2f, 0);
                     runningQuestMark.Add(_npc, questmark);
                 }
                 break;
@@ -124,7 +122,7 @@ public class EffectManager : MonoBehaviour
                     questmark = questMarkRes.GetData("NOTCOMPLETE");
                     questmark.MarkType = QUESTMARKTYPE.NOTCOMPLETE;                    
                     questmark.gameObject.transform.SetParent(_npc.transform);
-                    questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos+0.2f, 0);
+                    questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos()+0.2f, 0);
                     runningQuestMark.Add(_npc, questmark);
                 }                
                 break;
@@ -132,7 +130,7 @@ public class EffectManager : MonoBehaviour
                 questmark = questMarkRes.GetData("COMPLETE");
                 questmark.MarkType = QUESTMARKTYPE.COMPLETE;
                 questmark.gameObject.transform.SetParent(_npc.transform);
-                questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos + 0.2f, 0);
+                questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos() + 0.2f, 0);
                 runningQuestMark.Add(_npc, questmark);
                 break;
             case QUESTSTATE.DONE:

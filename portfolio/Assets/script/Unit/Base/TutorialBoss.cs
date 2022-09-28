@@ -13,15 +13,17 @@ public class TutorialBoss : Monster
     SkinnedMeshRenderer breathRange;
     GameObject gunfire;
 
-    public override void OnEnable()
-    {
-        uiUpdate = StartCoroutine(CoApproachChracter_boss());
-    }
-    public override void OnDisable()
-    {   
-        StopCoroutine(CoApproachChracter_boss());
-    }
 
+    bool check = false;
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A) && check  == false)
+        {
+            check = true;
+            Phase2();
+        }
+    }
+ 
     protected IEnumerator CoApproachChracter_boss()
     {
         yield return null;
@@ -33,14 +35,12 @@ public class TutorialBoss : Monster
             {
                 if (this.DISTANCE < 6f && approachChracter == false)
                 {
-                    approachChracter = true;
-                    GameManager.gameManager.character.addNearUnit(this);                    
+                    approachChracter = true;                    
                 }
 
                 if (this.DISTANCE >= 6f && approachChracter == true)
                 {
-                    approachChracter = false;
-                    GameManager.gameManager.character.removeNearUnit(this);                    
+                    approachChracter = false;                    
                 }
             }
             yield return null;
@@ -55,8 +55,8 @@ public class TutorialBoss : Monster
         breathRange = breath.GetComponent<SkinnedMeshRenderer>();
         gunfire = GameObject.FindGameObjectWithTag("MobWeapon");
         range = 1.5f;                
-    }
-    public override float Hp_Curent
+    }    
+    public override float HpMax
     {
         get
         {
@@ -79,8 +79,13 @@ public class TutorialBoss : Monster
             }
         }
     }
-    
+    public override float HpCur { get => hp_Max; set { } }
+
     public void MoveStart()
+    {
+        anim.SetTrigger("Start");        
+    }
+    void Phase2()
     {
         anim.SetTrigger("Phase2");
         anim.SetBool("isPhase2", true);
@@ -220,13 +225,7 @@ public class TutorialBoss : Monster
 
 
     #endregion
-    #region phase 2
-    protected override IEnumerator CoCombat()
-    {
-        yield return null;
-    }
-    #endregion
-
+ 
     void Combat()
     {
         switch (pattern)
@@ -239,25 +238,39 @@ public class TutorialBoss : Monster
                 break;
         }
     }
-    protected override IEnumerator CoDie()
-    {
-        throw new System.NotImplementedException();
-    }
-
+    
     public override void DropItem()
     {
         throw new System.NotImplementedException();
     }
 
-    protected override IEnumerator CoIdle()
+    public override void Damaged(bool _cri, int _dmg)
     {
         throw new System.NotImplementedException();
     }
 
-    public override void StatusEffect(STATUSEFFECT _state, float _duration)
+    public override string MiniDotSpriteName()
     {
         throw new System.NotImplementedException();
     }
 
-  
+    public override bool IsEnermy()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void Respawn()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void Sturn(float _time)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void KnockBack()
+    {
+        throw new System.NotImplementedException();
+    }
 }

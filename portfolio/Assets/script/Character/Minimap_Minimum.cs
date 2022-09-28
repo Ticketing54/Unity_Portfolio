@@ -25,27 +25,27 @@ public class Minimap_Minimum : MonoBehaviour
     float mapSize_X = 0f;
     float mapSize_Y = 0f;
     PoolData<Image> dotsPool;
-    Dictionary<Unit, Coroutine> runningCo;
-    Dictionary<Unit, Image>     runningDots;
+    Dictionary<UnitUiInfo, Coroutine> runningCo;
+    Dictionary<UnitUiInfo, Image>     runningDots;
 
     private void Awake()
     {
-        runningCo = new Dictionary<Unit, Coroutine>();
-        runningDots = new Dictionary<Unit, Image>();
-        dotsPool = new PoolData<Image>(example, this.gameObject, "Dots");
+        runningCo   = new Dictionary<UnitUiInfo, Coroutine>();
+        runningDots = new Dictionary<UnitUiInfo, Image>();
+        dotsPool    = new PoolData<Image>(example, this.gameObject, "Dots");
     }
     private void OnEnable()
     {
-        SetMapInfo();
-        UIManager.uimanager.uicontrol_On   += AddMiniDot;
-        UIManager.uimanager.uicontrol_Off  += RemoveMiniDot;        
+        SetMapInfo();        
         OpenDotSetting();
+        UIManager.uimanager.AAddNearUnit += AddMiniDot;
+        UIManager.uimanager.ARemoveNearUnit+= RemoveMiniDot;
     }
     private void OnDisable()
-    {
-        UIManager.uimanager.uicontrol_On   -= AddMiniDot;
-        UIManager.uimanager.uicontrol_Off  -= RemoveMiniDot;        
+    {        
         CloseDotSetting();
+        UIManager.uimanager.AAddNearUnit -= AddMiniDot;
+        UIManager.uimanager.ARemoveNearUnit -= RemoveMiniDot;
     }
     private void Update()
     {
@@ -67,71 +67,60 @@ public class Minimap_Minimum : MonoBehaviour
 
     void OpenDotSetting()
     {
-        character = GameManager.gameManager.character;
-        HashSet<Unit> nearUnit = character.nearUnit;
+        List<UnitUiInfo> units = UIManager.uimanager.NearUnitList;
 
-        foreach(Unit dot in nearUnit)
+        for (int i = 0; i < units.Count; i++)
         {
-            AddMiniDot(dot);
+            AddMiniDot(units[i]);
         }
     }
+
     void CloseDotSetting()
     {
-        List<Unit> activeDots = new (runningCo.Keys);
+        StopAllCoroutines();
 
-        foreach(Unit dot in activeDots)
+        List<Image> activeDots = new (runningDots.Values);
+        for (int i = 0; i < activeDots.Count; i++)
         {
-            RemoveMiniDot(dot);
+            dotsPool.Add(activeDots[i]);
         }
-
+        runningCo.Clear();
+        runningDots.Clear();
     }
 
-    void AddMiniDot(Unit _unit)
-    {
+    void AddMiniDot(UnitUiInfo _unit)
+    {   
         Image dot = dotsPool.GetData();
-        dot.transform.SetParent(activeDotParent.transform);
+        dot.sprite = ResourceManager.resource.GetImage(_unit.MiniDotSpriteName());
+        dot.transform.SetParent(activeDotParent.transform);        
         Coroutine co = StartCoroutine(CoMoveDots(_unit, dot));
         runningDots.Add(_unit, dot);
         runningCo.Add(_unit, co);
     }
-    void RemoveMiniDot(Unit _unit)
+    void RemoveMiniDot(UnitUiInfo _unit)
     {
         if (runningCo.ContainsKey(_unit))
         {
-            Coroutine co = runningCo[_unit];
-            StopCoroutine(co);
-            runningCo.Remove(_unit);
-        }
-        else
-        {
-            Debug.Log("없는 코루틴을 찾고있습니다. : Minimap_MiniMum");
+            StopCoroutine(runningCo[_unit]);
         }
 
-        if (runningDots.ContainsKey(_unit))
+        if(runningDots.ContainsKey(_unit))
         {
             Image dot = runningDots[_unit];
-            dotsPool.Add(dot);
             runningDots.Remove(_unit);
+            dotsPool.Add(dot);
         }
-        else
-        {
-            Debug.Log("없는 Dot을 찾고있습니다. : Minimap_MiniMum");
-        }
-
     }
 
 
 
 
 
-    IEnumerator CoMoveDots(Unit _unit, Image _dot)
-    {
-        _dot.sprite = UnitDotsSprite(_unit);
-
+    IEnumerator CoMoveDots(UnitUiInfo _unit, Image _dot)
+    {   
         while (true)
         {
-            _dot.rectTransform.anchoredPosition = MoveDotPosition(_unit.transform.position);
-
+            _dot.rectTransform.anchoredPosition = MoveDotPosition(_unit.CurPostion());
             yield return null;
         }
     }

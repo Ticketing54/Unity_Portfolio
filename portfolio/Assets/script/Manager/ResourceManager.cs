@@ -257,7 +257,8 @@ public class ResourceManager: MonoBehaviour
             GameObject potalObj;
             yield return potalObj = Addressables.InstantiateAsync("Potal").Result;
             Potal potal = potalObj.AddComponent<Potal>();
-            potal.SettingPotal(sInfo);               
+            potal.SettingPotal(sInfo);
+            ObjectManager.objManager.AddRunningPotal(potal);
         }
     }
     IEnumerator CoLoadWayPoint(string _mapName)
@@ -303,20 +304,15 @@ public class ResourceManager: MonoBehaviour
                 {
                     newMonster= (Monster)_mobObj.AddComponent<Nomal_Monster>();
                     break;
-                }
-            case "Tutorial":
+                }          
+            case "Hide":
                 {
-                    newMonster = (Monster)_mobObj.AddComponent<Tutorial_Monster>();
+                    newMonster = (Monster)_mobObj.AddComponent<Hide_Monster>();        //                    
                     break;
                 }
-            case "Hostile":
+            case "NotMonster":
                 {
-                    newMonster = (Monster)_mobObj.AddComponent<Hostile_Monster>();        //
-                    break;
-                }
-            case "Mimic":
-                {
-                    newMonster = (Monster)_mobObj.AddComponent<Mimic>();        //                    
+                    newMonster = (Monster)_mobObj.AddComponent<NotMonster>();        //                    
                     break;
                 }
             case "Boss":
@@ -380,7 +376,7 @@ public class ResourceManager: MonoBehaviour
                 }
             case "Quest":
                 {
-                    newNpc = (Npc)_npc.AddComponent<QuestNpc>();            //
+                    newNpc = (Npc)_npc.AddComponent<MoveNpc>();            //
                     break;
                 }
             case "NoneDialog":

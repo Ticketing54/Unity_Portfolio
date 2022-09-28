@@ -18,24 +18,18 @@ public class Character : MonoBehaviour
     public string NICKNAME => stat.NAME;
 
     Bounds hitBox;
-    public Bounds AttackBox { get => new Bounds(transform.position+transform.forward*0.5f, new Vector3(3f, 3f, 3f)); }
-    
-    
 
+    public float actionTime;
+    public Bounds AttackBox { get => new Bounds(transform.position+transform.forward*0.5f, new Vector3(3f, 3f, 3f)); }
+
+
+    public HashSet<GameObject> hitMob;
     
     Coroutine action;
     Animator anim;
 
-    public HashSet<Unit> nearUnit;
-    public HashSet<Monster> nearMonster;
-    Rigidbody rig;
-
-
     NavMeshAgent nav;
 
-    public delegate void NearUnit(Unit _unit);
-    public NearUnit addNearUnit;
-    public NearUnit removeNearUnit;
 
     public List<Item> dropBox;
 
@@ -116,12 +110,9 @@ public class Character : MonoBehaviour
     }
 
     private void Awake()
-    {
-        nearUnit = new HashSet<Unit>();
-        nearMonster = new HashSet<Monster>();
-
-        addNearUnit += AddNearUnit;
-        removeNearUnit += RemoveNearUnit;
+    {   
+        hitMob = new HashSet<GameObject>();
+        
 
 
         nav = GetComponent<NavMeshAgent>();
@@ -134,19 +125,34 @@ public class Character : MonoBehaviour
         stat = new Status(this);
         equip = new Equipment(this);
         inven = new Inventory();
-        
-        
 
 
+        actionTime = 0f;
         nav.updateRotation = false;        
     }
 
     void Update()
     {
         Click();
-        LevelUpTest();        
+        LevelUpTest();
+        Test();
     }
     
+
+    void Test()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            anim.SetTrigger("KnockBackStart");
+        }
+        if(Input.GetKeyDown(KeyCode.S))
+        {
+            actionTime = 3f;
+            anim.SetBool("Sturn", true);
+        }
+
+        
+    }
     public List<Quest> GetQuestList(QUESTSTATE _state)
     {
         return quest.GetQuestList(_state);
@@ -184,47 +190,42 @@ public class Character : MonoBehaviour
         }
     }
 
-    #region ApproachUnit
-    void AddNearUnit(Unit _unit)
-    {
-        if (_unit is Monster == true)
-        {
-            Monster unit = (Monster)_unit;
-            Monster mob;
-            if (!nearMonster.TryGetValue(unit, out mob))
-            {
-                nearMonster.Add(unit);
-            }
-        }
-        nearUnit.Add(_unit);
-    }
+    
 
-    void RemoveNearUnit(Unit _unit)
+    public Monster ClosestMonster(float _distance)
     {
-        if (_unit is Monster == true)
-        {
-            nearMonster.Remove((Monster)_unit);
-        }
-        nearUnit.Remove(_unit);
-    }
-
-    public Monster ClosestMonster()
-    {
-        if (nearMonster.Count == 0)
+        Collider[] mobs = Physics.OverlapSphere(transform.position,_distance);
+        if(mobs == null)
         {
             return null;
         }
-        List<Monster> mobList = new List<Monster>(nearMonster);
-        Monster nearMob = mobList[0];
-
-        foreach (Monster one in mobList)
+        else
         {
-            if (one.DISTANCE < nearMob.DISTANCE)
-                nearMob = one;
-        }
-        return nearMob;
+            Monster mob = null;
+            for (int i = 0; i < mobs.Length; i++)
+            {
+                if(mobs[i].tag == "Monster")
+                {
+                    Monster otherMonster = mobs[i].GetComponent<Monster>();
+                    if(mob == null)
+                    {
+                        mob = otherMonster;
+                    }
+                    else
+                    {
+                        if (mob.DISTANCE > otherMonster.DISTANCE)
+                        {
+                            mob = otherMonster;
+                        }
+                    }
+
+                }
+            }
+
+            return mob;
+        }        
     }
-    #endregion
+    
 
     #region UiControl
 
@@ -397,7 +398,28 @@ public class Character : MonoBehaviour
         }
 
         action = StartCoroutine(CoMove(_targetPos,isTarget));
-    }   
+    }  
+
+    public void CanMove()
+    {
+        nav.Warp(transform.position);
+        nav.updatePosition = true;
+        isPossableMove = true;
+    }
+    public void StopMove()
+    {
+        if(action != null)
+        {
+            StopCoroutine(action);
+            action = null;
+        }
+        
+        
+        anim.SetBool("IsMove", false);        
+        nav.ResetPath();
+        nav.stoppingDistance = 0;
+        nav.updatePosition = false;
+    }
     IEnumerator CoMove(Vector3 _targetPos,bool isTarget = false)
     {
         isMove = true;
@@ -416,7 +438,7 @@ public class Character : MonoBehaviour
         while (true)
         {
             yield return null;
-
+            
             Vector3 dir = (nav.steeringTarget - transform.position).normalized;
             dir.y = 0;
             Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, Time.deltaTime * 30f, Time.deltaTime * 30f);
@@ -483,17 +505,13 @@ public class Character : MonoBehaviour
 
     #endregion
     #region Click / interact
-    void Click()
+    public void Click()
     {
         if (!EventSystem.current.IsPointerOverGameObject())
         {
             if (Input.GetMouseButtonDown(1))
             {
-                if (isPossableMove == false)
-                {
-                    return;
-                }
-
+              
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hitinfo;
                 if (Physics.Raycast(ray, out hitinfo))
@@ -686,12 +704,7 @@ public class Character : MonoBehaviour
     }
     #endregion
 
-    #region Attack 
-    public void KnockBack()
-    {
-        StartCoroutine(CoKnockBack());
-    }
-
+    #region Attack    
     bool isPossableAttack = true;
     Coroutine delayAttack;
     public void Attack()
@@ -725,54 +738,7 @@ public class Character : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         isPossableMove   = true;
     }
-    IEnumerator CoKnockBack()
-    {
-        float timer = 0f;
-        nav.ResetPath();
-        while (timer <= 4)
-        {
-            timer += Time.deltaTime;
-            nav.velocity = -transform.forward * 8;
-            yield return null;
-        }
-    }
-    public void meleeDamageMob(int _num)
-    {
-        List<Monster> mob = new List<Monster>(nearMonster);
-        Bounds hitbox = AttackBox;
-        foreach (Monster one in mob)
-        {
-            if (hitbox.Intersects(one.hitBox.bounds))
-            {
-                one.Damaged(stat.DamageType(), (int)stat.AttckDamage);
-            }
-        }
-        Debug.Log(transform.position);
-        Debug.Log(transform.forward * 0.5f);
-    }
-    public bool DamageMob(int _num, Monster _target)
-    {
-        if (AttackBox.Intersects(_target.hitBox.bounds))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }   
-    public void RangeDamageMob()
-    {
-        foreach (Monster _mob in nearMonster)
-        {
-            if (_mob.DISTANCE <= 2f)
-            {
-                _mob.StatusEffect(STATUSEFFECT.KNOCKBACK, 2f);
-                _mob.StatusEffect(STATUSEFFECT.STURN, 2f);
-                _mob.Damaged(stat.DamageType(), (int)stat.AttckDamage);
-            }
-        }
-    }
+   
     #endregion
 
 
@@ -916,5 +882,10 @@ public class Character : MonoBehaviour
         //SoundManager.soundmanager.soundsPlay(_Name, Character.Player.gameObject);    
     }
 
+    public void UseSKill(int _skillNum)
+    {
+        anim.SetFloat("SkillNum", _skillNum);
+        anim.SetBool("Skill", true);
+    }
 
 }

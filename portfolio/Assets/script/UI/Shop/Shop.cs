@@ -60,7 +60,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
     int             count;
 
     Character character;
-    NpcUnit npc;    
+    Npc npc;    
 
     private void Start()
     {
@@ -519,7 +519,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
 
 
 
-    void OpenShop(NpcUnit _npc)
+    void OpenShop(Npc _npc)
     {
         gameObject.SetActive(true);
         npc = _npc;

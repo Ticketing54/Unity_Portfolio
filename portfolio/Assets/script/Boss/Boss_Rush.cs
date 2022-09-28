@@ -44,12 +44,9 @@ public class Boss_Rush : StateMachineBehaviour
             targetPos = tempPos;
         }
         isEnd = false;
-        isHit = false;
-        nav.isStopped = true;
+        isHit = false;        
         timer = 0f;
-
-
-        
+        nav.updatePosition = false;
     }
 
 
@@ -70,7 +67,7 @@ public class Boss_Rush : StateMachineBehaviour
             isHit = true;
             boss.StartCoroutine(CoHitControl());
             bool isCri = boss.IsCri();
-            character.stat.Damaged(isCri, boss.AttackDmg(isCri),true);
+            character.stat.Damaged(isCri, boss.AttackDmg(isCri));
             Debug.Log("È÷Æ® :" + HitCount++);
 
         }
@@ -84,7 +81,8 @@ public class Boss_Rush : StateMachineBehaviour
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        nav.isStopped = false;        
+        nav.Warp(targetPos);
+        nav.updatePosition = true;
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

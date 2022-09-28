@@ -7,8 +7,7 @@ public abstract class Monster : Unit
 {
     protected NavMeshAgent nav;
     protected Animator anim;
-    protected Coroutine action;   
-    public Collider hitBox;
+    protected Coroutine action;       
 
     protected int index = -1;
     protected float hp_Max;
@@ -19,35 +18,13 @@ public abstract class Monster : Unit
     protected int gold;
     protected int exp;
     protected List<List<int>> itemDropInfo;
-
-    public virtual float Hp_Curent
-    {
-        get
-        {
-            return hp_Cur;
-        }
-
-        set
-        {
-            hp_Cur = value;     
-            if(hp_Cur <= 0)
-            {
-                if(action != null)
-                {
-                    StopCoroutine(action);
-                    action = StartCoroutine(CoDie());
-                }
-            }
-        }
-    }
-    public float Hp_Max { get => hp_Max; }
+    public bool dropItem = false;
     public float Range { get => range; set => range = value; }
+    public float stateTime;
     #region State
-
-    protected abstract IEnumerator CoIdle();
-    protected abstract IEnumerator CoCombat();
-    protected abstract IEnumerator CoDie();        
-    public abstract void StatusEffect(STATUSEFFECT _stat, float _duration);
+    public int Index { get => index; }
+    
+    public abstract void Respawn();    
     public abstract void DropItem();
     public virtual bool IsCri()
     {
@@ -66,23 +43,10 @@ public abstract class Monster : Unit
 
     #endregion
 
-
-
-
-
-
-
-
-
-
-    
-    
-    
     public virtual void Awake()
     {
         nav = GetComponent<NavMeshAgent>();
-        anim = GetComponent<Animator>();
-        hitBox = GetComponent<Collider>();        
+        anim = GetComponent<Animator>();            
     }
     public bool IsCri(float _criPercentage)
     {
@@ -110,30 +74,11 @@ public abstract class Monster : Unit
             return (int)Random.Range(finallyDamage * 0.8f, finallyDamage * 1.2f);
         }
 
-    }   
-
-    public virtual void Damaged(bool _cri, int _dmg)
-    {
-        Hp_Curent -= _dmg;
-        UIManager.uimanager.uiEffectManager.LoadDamageEffect(_dmg, this.gameObject, _cri);        
     }
 
-    public bool MightyEnermy()
-    {
-        if (GameManager.gameManager.character == null)
-            return false;
-
-        if (GameManager.gameManager.character.stat.Level < this.lev)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-
+    public abstract void Damaged(bool _cri, int _dmg);
+    public abstract void Sturn(float _time);
+    public abstract void KnockBack();
 
     public virtual void SetMonster(int _index, Vector3 _startPos)
     {
@@ -268,7 +213,7 @@ public abstract class Monster : Unit
                 Debug.LogError("Exp 변환 오류");
             }
         }
-
+        stateTime = 0f;
         startPos = _startPos;
         nav.Warp(_startPos);
     }

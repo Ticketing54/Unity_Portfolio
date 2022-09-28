@@ -1,9 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 public class UIManager : MonoBehaviour
 {
     public static UIManager uimanager;
@@ -24,7 +23,12 @@ public class UIManager : MonoBehaviour
         }
 
         KeyboardSortCut = new Dictionary<KeyCode, Action>();
+        nearUnit = new HashSet<UnitUiInfo>();
         mainCanvas = GetComponent<Canvas>();
+        AAddNearUnit += AddNearUnitHashSet;
+        ARemoveNearUnit += RemoveNearUnitHashSet;
+        OnBaseUI += () => { baseUi.gameObject.SetActive(true); };
+        OffBaseUI += () => { baseUi.gameObject.SetActive(false); };
     }
     public void CanvasEnabled(bool _state)
     {
@@ -36,9 +40,6 @@ public class UIManager : MonoBehaviour
     }
     #region KeyboardSortCut
     Dictionary<KeyCode, Action> KeyboardSortCut;
-
-
-
 
     public void AddKeyBoardSortCut(KeyCode _keycode, Action _action)
     {
@@ -122,16 +123,9 @@ public class UIManager : MonoBehaviour
     Action closeQuickQuest;
 
 
-
-    public void OnBaseUI()
-    {
-        baseUi.SetActive(true);        
-    }
-    public void OffBaseUI()
-    {
-        baseUi.SetActive(false);        
-    }
-
+    public Action OnBaseUI;
+    public Action OffBaseUI;
+    
 
     public Action<int,float> AQuickSlotItemCooltime
     {
@@ -777,8 +771,8 @@ public class UIManager : MonoBehaviour
     #endregion
 
     
-    Action<NpcUnit> aOpenShop;
-    public Action<NpcUnit> AOpenShop
+    Action<Npc> aOpenShop;
+    public Action<Npc> AOpenShop
     {
         get
         {
@@ -812,19 +806,66 @@ public class UIManager : MonoBehaviour
     public UI_Skill skillmanager;
     public GameObject skill;     
     public bool QuestActive = false;
-    #endregion    
-   
-  
-    #region Option
-    public Option option;
     #endregion
 
-    public UiEffectManager uiEffectManager;
-    public delegate void OnUiControl(Unit _unit);
-    public OnUiControl uicontrol_On;
-    public OnUiControl uicontrol_Off;
-   
+    #region UiEffect
+    public Action<int, GameObject, bool> ALoadDamageEffect;
+    public Action<GameObject> ALevelUpEffect;
+    #endregion
+
+
+    #region Option
+    public Option option;
+    #endregion    
+
+    #region nearUnitUi
+
+    HashSet<UnitUiInfo> nearUnit;
+    public Action<UnitUiInfo> AAddNearUnit
+    {
+        get
+        {
+            return aAddNearUnit;
+            
+        }
+        set
+        {
+            aAddNearUnit = value;
+        }
+    }
     
+    public Action<UnitUiInfo> ARemoveNearUnit
+    {
+        get
+        {
+            return aReMoveNearUnit;
+        }
+        set
+        {
+            aReMoveNearUnit = value;
+        }
+    }
+    Action<UnitUiInfo> aReMoveNearUnit;
+    Action<UnitUiInfo> aAddNearUnit;
+    public List<UnitUiInfo> NearUnitList => new List<UnitUiInfo>(nearUnit);
+
+    void AddNearUnitHashSet(UnitUiInfo _unit)
+    {
+        if(!nearUnit.Contains(_unit))
+        {
+            nearUnit.Add(_unit);
+        }
+    }
+    
+    void RemoveNearUnitHashSet(UnitUiInfo _unit)
+    {
+        if(nearUnit.Contains(_unit))
+        {
+            nearUnit.Remove(_unit);
+        }
+    }
+
+    #endregion
 
     public void OpenOtion()
     {

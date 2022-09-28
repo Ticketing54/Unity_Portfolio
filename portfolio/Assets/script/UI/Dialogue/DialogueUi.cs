@@ -126,7 +126,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
   
   
-    public void StartDialogue(NpcUnit _npc)
+    public void StartDialogue(Npc _npc)
     {   
         if (_npc.ITEMS != null)
         {            
@@ -149,11 +149,11 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
             dialogData.Add(subdialog);
         }
         npc_DialogData = dialogData;
-        npc_name.text = _npc.NickName;
+        npc_name.text = _npc.UnitName();
         FirstDialog(_npc);
     }
 
-    void CheckQuest(NpcUnit _npc)
+    void CheckQuest(Npc _npc)
     {
         if (questList == null)
         {
@@ -223,7 +223,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
     }
 
-    void FirstDialog(NpcUnit _npc)
+    void FirstDialog(Npc _npc)
     {
         if (reward.gameObject.activeSelf == true)
         {

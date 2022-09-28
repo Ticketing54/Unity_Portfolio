@@ -27,15 +27,11 @@ public class Bottom_Character_Info : MonoBehaviour
         UIManager.uimanager.AUpdateMp    += SetMp;
         UIManager.uimanager.AUpdateLevel += SetLev;
         UIManager.uimanager.AUpdateExp   += SetExp;
-
-    }
-    private void OnEnable()
-    {
-        character = GameManager.gameManager.character;
-        UpdateBottom();
+        UIManager.uimanager.OnBaseUI += UpdateBottom;
     }
     void UpdateBottom()
-    {   
+    {
+        character = GameManager.gameManager.character;
         SetHp();
         SetMp();
         SetLev();

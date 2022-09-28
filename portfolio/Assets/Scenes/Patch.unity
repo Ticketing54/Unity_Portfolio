@@ -30709,7 +30709,7 @@ Transform:
   - {fileID: 7328282717993150054}
   - {fileID: 1316178857}
   m_Father: {fileID: 8428538723949332334}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3493660214650843589
 GameObject:
@@ -51777,7 +51777,6 @@ MonoBehaviour:
   skill: {fileID: 0}
   QuestActive: 0
   option: {fileID: 0}
-  uiEffectManager: {fileID: 6102058873636419212}
 --- !u!222 &7376374231187648944
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -52343,7 +52342,7 @@ Transform:
   - {fileID: 1158511325844403754}
   - {fileID: 1908994468}
   m_Father: {fileID: 8428538723949332334}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!222 &7436992068939851475
 CanvasRenderer:
@@ -58069,8 +58068,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3493460693187958786}
   - {fileID: 7430172480767815114}
+  - {fileID: 3493460693187958786}
   - {fileID: 3757147107211480459}
   - {fileID: 7797565363219078483}
   - {fileID: 6027873550916906306}
