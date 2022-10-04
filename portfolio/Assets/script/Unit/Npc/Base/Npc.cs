@@ -32,7 +32,16 @@ public abstract class Npc :Unit
         return miniDotName;
     }
 
-
+    public override  void interact()
+    {
+        GameManager.gameManager.character.IsPossableControl = false;
+        UIManager.uimanager.AOpenDialog(this);
+        if (action != null)
+        {
+            StopCoroutine(action);
+        }
+        action = StartCoroutine(CoLookCharacter());
+    }
     public virtual void OnEnable()
     {
         StartCoroutine(CoApproachChracter());
@@ -40,7 +49,7 @@ public abstract class Npc :Unit
     public virtual void OnDisable()
     {
         StopAllCoroutines();
-        UIManager.uimanager.ARemoveNearUnit(this);
+        UIManager.uimanager.ARemoveNearUnitUi(this);        
     }
     public void SetNpc(int _index,string _npcName, float _nickYPos,List<int> _quests,List<int> _items,string _dialogue)
     {
@@ -154,16 +163,6 @@ public abstract class Npc :Unit
         }            
     }
    
-    public virtual void Interact()
-    {
-        GameManager.gameManager.character.isPossableMove = false;
-        UIManager.uimanager.AOpenDialog(this);
-        if(action != null)
-        {
-            StopCoroutine(action);
-        }
-        action = StartCoroutine(CoLookCharacter());
-    }
     public virtual void EtcQuest(int _questIndex)
     {
         Debug.Log("기타 퀘스트");
@@ -178,16 +177,18 @@ public abstract class Npc :Unit
         {
             if (GameManager.gameManager.character != null)
             {
-                if (this.DISTANCE < 6f && approachChracter == false)
+                if (this.Distance < 6f && approachChracter == false)
                 {
                     approachChracter = true;
-                    UIManager.uimanager.AAddNearUnit(this);
+                    UIManager.uimanager.AAddNearUnitOnUi(this);
+                    GameManager.gameManager.character.AddNearInteract(this);
                 }
 
-                if (this.DISTANCE >= 6f && approachChracter == true)
+                if (this.Distance >= 6f && approachChracter == true)
                 {
                     approachChracter = false;
-                    UIManager.uimanager.ARemoveNearUnit(this);
+                    UIManager.uimanager.ARemoveNearUnitUi(this);
+                    GameManager.gameManager.character.RemoveInteract(this);
                 }
             }
             yield return null;

@@ -29,7 +29,7 @@ public abstract class Monster : Unit
     public virtual bool IsCri()
     {
         float cri = Random.Range(0, 101f);
-        if (cri >= 20)
+        if (cri >= 10)
         {
             return true;
         }
@@ -38,15 +38,33 @@ public abstract class Monster : Unit
             return false;
         }
     }
-
-
+   
+    public virtual void OnEnable()
+    {
+        StartCoroutine(CoApproachChracter());
+    }
+    
+    public virtual void OnDisable()
+    {
+        StopAllCoroutines();
+        UIManager.uimanager.ARemoveNearUnitUi(this);        
+    }
+    public override void interact()
+    {
+        DropItem();
+    }
 
     #endregion
+    public virtual void UiOff()
+    {
+        UIManager.uimanager.ARemoveNearUnitUi(this);
 
+    }
     public virtual void Awake()
     {
         nav = GetComponent<NavMeshAgent>();
-        anim = GetComponent<Animator>();            
+        anim = GetComponent<Animator>();
+        nav.stoppingDistance = range;
     }
     public bool IsCri(float _criPercentage)
     {
@@ -218,7 +236,41 @@ public abstract class Monster : Unit
         nav.Warp(_startPos);
     }
 
+    protected IEnumerator CoApproachChracter()
+    {
+        yield return null;
 
+        bool approachChracter = false;
+        while (true)
+        {
+            if (GameManager.gameManager.character != null)
+            {
+                if (this.Distance < 6f && approachChracter == false)
+                {
+                    approachChracter = true;
+                    UIManager.uimanager.AAddNearUnitOnUi(this);
+                    
+                    if(gameObject.tag == "item")
+                    {
+                        GameManager.gameManager.character.AddNearInteract(this);
+                    }
+                }
+
+                if (this.Distance >= 6f && approachChracter == true)
+                {
+                    approachChracter = false;
+                    UIManager.uimanager.ARemoveNearUnitUi(this);
+
+                    if (gameObject.tag == "item")
+                    {
+                        GameManager.gameManager.character.RemoveInteract(this);
+                    }
+                    
+                }
+            }
+            yield return null;
+        }
+    }
 }
 
 

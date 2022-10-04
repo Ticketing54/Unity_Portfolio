@@ -51,6 +51,7 @@ public class MainManager : MonoBehaviour
     private void Start()
     {
         CameraManager.cameraManager.enabled = false;
+        SoundManager.soundmanager.BgmPlay("MainBGM");
         subCamera.enabled = true;
         director.Play();        
     }

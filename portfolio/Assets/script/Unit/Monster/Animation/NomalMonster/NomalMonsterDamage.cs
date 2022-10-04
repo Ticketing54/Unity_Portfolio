@@ -8,7 +8,7 @@ public class NomalMonsterDamage : StateMachineBehaviour
     NavMeshAgent nav;
     Character character;
     float timer;
-    Vector3 targetPos;
+    Vector3 targetPos;    
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if(mob == null||nav == null|| character==null)
@@ -16,6 +16,7 @@ public class NomalMonsterDamage : StateMachineBehaviour
             mob = animator.GetComponent<Monster>();
             nav = animator.GetComponent<NavMeshAgent>();
             character = GameManager.gameManager.character;
+          
         }
         timer = 0f;
 
@@ -31,7 +32,7 @@ public class NomalMonsterDamage : StateMachineBehaviour
             targetPos = tempPos;
         }        
         
-        nav.updatePosition = false;
+        nav.updatePosition = false;        
     }
 
     

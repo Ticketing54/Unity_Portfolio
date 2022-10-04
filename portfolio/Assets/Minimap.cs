@@ -24,9 +24,9 @@ public class MiniMap : MonoBehaviour
     bool miniMin_Active = false;
     private void Awake()
     {
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.M, TryOpenMinimap_Maximum);
+        UIManager.uimanager.ATryOpenMinimap_Max += TryOpenMinimap_Maximum;
+        UIManager.uimanager.ATryOpenMinimap_Min += TryOpenMinimap_Minimum;
         miniMax.gameObject.SetActive(false);
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.N, TryOpenMinimap_Minimum);
         miniMin.gameObject.SetActive(false);
     }
 

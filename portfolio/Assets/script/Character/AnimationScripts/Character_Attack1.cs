@@ -8,9 +8,11 @@ public class Character_Attack1 : StateMachineBehaviour
     Character character;        
     float timer;
     HashSet<GameObject> hitmob;
+    AudioSource sound;
+    bool isDone = false;
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(character == null || effect == null|| hitmob == null)
+        if(character == null || effect == null|| hitmob == null|| sound == null)
         {
             character = animator.GetComponent<Character>();            
             GameObject effectObj = ResourceManager.resource.GetEffect("attack01");
@@ -20,11 +22,14 @@ public class Character_Attack1 : StateMachineBehaviour
             effect = effectObj.GetComponent<ParticleSystem>();
             effect.gameObject.SetActive(false);
             hitmob = character.hitMob;
+            sound = SoundManager.soundmanager.GetSounds("swordsounds");            
+            sound.gameObject.transform.SetParent(character.transform);
+            sound.gameObject.transform.localPosition = new Vector3(0, 0.914f, 0.79f);
         }
         
         timer = 0f;
 
-
+        character.isPossableMove = false;        
     }
 
     
@@ -35,6 +40,7 @@ public class Character_Attack1 : StateMachineBehaviour
 
         if (timer>=0.3f && effect.gameObject.activeSelf == false)
         {
+            sound.Play();
             Collider[] mobs = Physics.OverlapBox(character.transform.position + character.transform.forward * 0.6f + character.transform.up, new Vector3(1f, 1f, 1f));
             if(mobs != null)
             {
@@ -45,20 +51,27 @@ public class Character_Attack1 : StateMachineBehaviour
                         Monster mob = mobs[i].gameObject.GetComponent<Monster>();
                         bool iscri = character.stat.DamageType();
                         mob.Damaged(iscri, character.stat.AttckDamage(iscri));
+                        SoundManager.soundmanager.soundsPlay(mob.Sound, mob.gameObject);
                         hitmob.Add(mobs[i].gameObject);
                     }
                 }
             }
-            
-
             effect.gameObject.SetActive(true);
             effect.Play();
+        }
+
+        if (timer >= 0.6f && isDone == false)
+        {
+            isDone = true;
+            character.isPossableAttack = true;            
         }
     }
 
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {   
+        character.isPossableMove = true;
+        isDone = false;
         effect.gameObject.SetActive(false);
         hitmob.Clear();
     }

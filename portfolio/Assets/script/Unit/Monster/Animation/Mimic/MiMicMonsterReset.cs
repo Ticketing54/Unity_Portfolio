@@ -17,6 +17,7 @@ public class MiMicMonsterReset : StateMachineBehaviour
             nav = animator.GetComponent<NavMeshAgent>();
         }
 
+        animator.SetBool("Move", false);
         nav.SetDestination(mob.startPos);
         recoveryHp = mob.HpMax / 5;
         timer = 0f;
@@ -32,7 +33,7 @@ public class MiMicMonsterReset : StateMachineBehaviour
             timer -= 1;
         }
 
-        if(mob.transform.position == mob.startPos && mob.HpCur == mob.HpMax)
+        if(mob.transform.position.x == mob.startPos.x&& mob.transform.position.z == mob.startPos.z && mob.HpCur == mob.HpMax)
         {
             animator.SetBool("Reset", false);
             mob.gameObject.tag = "Item";
@@ -40,10 +41,10 @@ public class MiMicMonsterReset : StateMachineBehaviour
         }
     }
 
-    // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
+    
     //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     //{
-    //    
+        
     //}
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

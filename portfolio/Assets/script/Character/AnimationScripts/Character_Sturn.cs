@@ -21,7 +21,7 @@ public class Character_Sturn : StateMachineBehaviour
         }
         nav.ResetPath();
         timer = character.actionTime;
-        character.isPossableMove = false;
+        character.IsPossableControl = false;
         sturnEffect.gameObject.SetActive(true);
     }
 
@@ -43,7 +43,7 @@ public class Character_Sturn : StateMachineBehaviour
     {
         sturnEffect.gameObject.SetActive(false);
         character.actionTime = 0f;
-        character.isPossableMove = true;
+        character.IsPossableControl = true;
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

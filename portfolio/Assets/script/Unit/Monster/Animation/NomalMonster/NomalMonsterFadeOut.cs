@@ -10,9 +10,10 @@ public class NomalMonsterFadeOut : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if(mater == null || mob == null)
-        {
-            mater = animator.GetComponent<Material>();
+        {   
             mob = animator.GetComponent<Monster>();
+            Transform render = mob.gameObject.transform.Find("Render");
+            mater = render.gameObject.GetComponent<SkinnedMeshRenderer>().material;
         }
 
         fade = mater.color;
@@ -27,8 +28,7 @@ public class NomalMonsterFadeOut : StateMachineBehaviour
 
         if (fade.a <= 0)
         {
-            mob.dropItem = false;            
-            mob.HpCur = mob.HpMax;
+            mob.dropItem = false;                        
             ObjectManager.objManager.StartRespawnMob(mob);
         }
     }

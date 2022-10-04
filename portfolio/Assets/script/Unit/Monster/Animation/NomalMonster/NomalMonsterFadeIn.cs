@@ -10,9 +10,10 @@ public class NomalMonsterFadeIn : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (mater == null || mob == null)
-        {
-            mater = animator.GetComponent<Material>();
+        {   
             mob = animator.GetComponent<Monster>();
+            Transform render = mob.gameObject.transform.Find("Render");
+            mater = render.gameObject.GetComponent<SkinnedMeshRenderer>().material;
         }
 
         fade = mater.color;

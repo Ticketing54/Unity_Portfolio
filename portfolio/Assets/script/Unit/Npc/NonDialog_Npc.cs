@@ -38,12 +38,10 @@ public class NonDialog_Npc : Npc
         }
         dialog = dialogData;
     }
-    public override void Interact()
+    public override void interact()
     {
-        
 
     }
-
     IEnumerator CoSpeechBubble()
     {
         int currentDialogNum = Random.Range(1, dialog.Count);

@@ -5,12 +5,10 @@ using UnityEngine;
 public class Character_Idle : StateMachineBehaviour
 {
     
-    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        animator.SetBool("KnockBack", false);
-        animator.SetBool("Sturn", false);
-        animator.SetBool("Focus", false);
-    }
+    //override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    //{
+      
+    //}
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     //override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

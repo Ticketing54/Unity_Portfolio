@@ -42,13 +42,27 @@ public class CharacterSkill
         haveSkills       = new HashSet<int>();
         coolTimeSkill     = new HashSet<int>();
         skillQuick       = new Skill[4, 4];
-
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Q, SkillSlot_Q);
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.W, SkillSlot_W);
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.E, SkillSlot_E);
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.R, SkillSlot_R);
+        character.AddKeyBoardSortCut(KeyCode.K, TryOpenEquipment);
+        character.AddKeyBoardSortCut(KeyCode.Q, SkillSlot_Q);
+        character.AddKeyBoardSortCut(KeyCode.W, SkillSlot_W);
+        character.AddKeyBoardSortCut(KeyCode.E, SkillSlot_E);
+        character.AddKeyBoardSortCut(KeyCode.R, SkillSlot_R);
     }
-    #region KeyboardShorcut   
+    #region KeyboardShorcut
+    bool skillActive = false;
+    void TryOpenEquipment()
+    {
+        skillActive = !skillActive;
+        if (skillActive)
+        {
+            UIManager.uimanager.AOpenSKill();
+        }
+        else
+        {
+            UIManager.uimanager.ACloseSKill();
+        }
+    }
+
     public void SkillSlot_Q()
     {
         UseSkill(0);
@@ -113,6 +127,8 @@ public class CharacterSkill
 
     void UseSkill(int _slotNum)
     {
+        nav.ResetPath();
+
         if(isUsingSkill == true && character.isPossableMove == false)
         {
 
@@ -131,21 +147,23 @@ public class CharacterSkill
         {
             return;
         }
-        //if (skill.mana > character.stat.Mp)               // 마나 소모
-        //{
-        //    Debug.Log("마나가 부족합니다.");
-        //    return;
-        //}
-        //else
-        //{
-        //    character.stat.Mp -= skill.mana;
-        //}
+
+        if (skill.mana > character.stat.Mp)               // 마나 소모
+        {
+            Debug.Log("마나가 부족합니다.");
+            return;
+        }
+        else
+        {
+            character.stat.Mp -= skill.mana;
+        }
 
 
-        if(skill.skillType == SKILLTYPE.BUFF)           // buff is same animation
+        if (skill.skillType == SKILLTYPE.BUFF)           // buff is same animation
         {   
-            anim.SetInteger("SKillNum", 0);
+            anim.SetInteger("SkillNum", 0);
             anim.SetBool("Skill", true);
+            BuffSkill(skill.index);
         }
         else
         {   
@@ -185,38 +203,75 @@ public class CharacterSkill
     
     public void BuffSkill(int _skillIndex)                                     // buffSkill
     {   
-        anim.SetTrigger("Buff");
-        character.stat.ApplyBuffSkill(_skillIndex);
-        //character.StartCoroutine(CoBuffSkill(_skillIndex));
+        if (_skillIndex == 3)
+        {
+            character.StartCoroutine(CoFireField());            
+        }
+        else
+        {
+            character.stat.ApplyBuffSkill(_skillIndex);
+        }
     }
     
     IEnumerator CoBuffSkill(int _skillindex)
     {
         yield return null;
-        //Skill skill = new Skill(_skillindex);
+        Skill skill = new Skill(_skillindex);
         
-        //GameObject effect = EffectManager.effectManager.GetBuffEffect(skill.effectName);
-        //effect.transform.SetParent(character.transform);
-        //effect.transform.localPosition = Vector3.zero;
+        
+        character.stat.ApplyBuffSkill(skill.index);
+        GameObject effect = EffectManager.effectManager.GetBuffEffect(skill.effectName);
+        effect.transform.SetParent(character.transform);
+        effect.transform.localPosition = Vector3.zero;
 
-        //string abilityList = skill.ability;
-        //string[] ability = abilityList.Split("#");
-        //for (int i = 0; i < ability.Length; i++)
-        //{
-        //    string[] abilityData = ability[i].Split('/');
-        //    ApplybufSkill(abilityData[0], float.Parse(abilityData[1]));
-        //}
+        string abilityList = skill.ability;
+        string[] ability = abilityList.Split("#");
+        for (int i = 0; i < ability.Length; i++)
+        {
+            string[] abilityData = ability[i].Split('/');
+            
+        }
+        yield return new WaitForSeconds(skill.holdTime);
+        
+        EffectManager.effectManager.PushBuffEffect(skill.effectName, effect);
+    }
+    IEnumerator CoFireField()
+    {
+        HashSet<Monster> hitmob = new HashSet<Monster>();
+        GameObject skillEffect = EffectManager.effectManager.GetBuffEffect("skill2");
+        skillEffect.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        
 
-        //yield return new WaitForSeconds(skill.holdTime);
+        float timer = 0f;
+        while (timer <= 5)
+        {
+            yield return null;
+            timer += Time.deltaTime;
+            skillEffect.transform.position = character.transform.position;
+            Collider[] hitMonsters = Physics.OverlapSphere(character.transform.position, 1f);
+            for (int i = 0; i < hitMonsters.Length; i++)
+            {
+                if(hitMonsters[i].tag == "Monster")
+                {
+                    Monster mob = hitMonsters[i].GetComponent<Monster>();
+                    if (!hitmob.Contains(mob))
+                    {
+                        mob.Damaged(false, 20);
+                        hitmob.Add(mob);
+                        character.StartCoroutine(ExitHit(hitmob, mob));
+                    }
+                }
+            }
 
-        //for (int i = 0; i < ability.Length; i++)
-        //{
-        //    string[] abilityData = ability[i].Split('/');
-        //    ApplybufSkill(abilityData[0], -float.Parse(abilityData[1]));
-        //}
-        //EffectManager.effectManager.PushBuffEffect(skill.effectName, effect);
+        }
+        EffectManager.effectManager.PushBuffEffect("skill2", skillEffect);
     }
 
+    IEnumerator ExitHit(HashSet<Monster> _hitmonster,Monster _mob)
+    {
+        yield return new WaitForSeconds(1f);
+        _hitmonster.Remove(_mob);
+    }
     IEnumerator CoBuffUIControl(Skill _skill)
     {
         float timer = 0f;

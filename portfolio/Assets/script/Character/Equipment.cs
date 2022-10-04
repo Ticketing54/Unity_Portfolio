@@ -19,7 +19,25 @@ public class Equipment : ItemMove
     {
         character = _character;        
         Stat = character.stat;
+        _character.AddKeyBoardSortCut(KeyCode.P, TryOpenEquipment);
     }
+
+    #region Open/Close
+    bool equipmentActive = false;
+    void TryOpenEquipment()
+    {
+        equipmentActive = !equipmentActive;
+        if (equipmentActive)
+        {
+            UIManager.uimanager.AOpenEquipment();
+        }
+        else
+        {
+            UIManager.uimanager.ACloseEquipment();
+        }
+    }
+    
+    #endregion
     public Item GetItem(int _equipType)
     {
         return  Equip[_equipType];

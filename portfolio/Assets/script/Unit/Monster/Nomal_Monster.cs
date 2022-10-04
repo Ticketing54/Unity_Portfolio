@@ -29,10 +29,15 @@ public class Nomal_Monster : Monster
             hp_Cur = value;
             if (hp_Cur <= 0)
             {
-                if (action != null)
+                Die();
+                GameManager.gameManager.character.AddNearInteract(this);
+            }
+            else
+            {
+                if(hp_Cur >= hp_Max)
                 {
-                    Die();
-                }
+                    hp_Cur = hp_Max;
+                }   
             }
         }
     }
@@ -85,6 +90,7 @@ public class Nomal_Monster : Monster
     {
         dropItem = true;
         GameManager.gameManager.character.OpenDropBox(dropItemList);
+        GameManager.gameManager.character.RemoveInteract(this);
     }
 
     #endregion
@@ -92,9 +98,12 @@ public class Nomal_Monster : Monster
 
     #region State
 
+    
     public override void Respawn()
     {
         nav.Warp(startPos);
+        hp_Cur = hp_Max;
+        // Ui ¿©±â¼­
         anim.SetBool("Respawn", true);
     }
 
@@ -106,16 +115,24 @@ public class Nomal_Monster : Monster
 
     void Die()
     {
-        anim.SetBool("Die", true);
-        SetItem();
-        gameObject.tag = "Item";
+        anim.SetBool("Die", true);        
 
         GameManager.gameManager.character.GetReward_Monster(gold, exp);
         GameManager.gameManager.character.quest.UpdateQuest_Monster(index);
-        
-        if(dropItemList == null)
+
+        SetItem();
+        if (dropItemList == null)
         {
             dropItem = true;
+        }
+        else
+        {
+            gameObject.tag = "Item";
+
+            if (Distance < 6f)
+            {
+                GameManager.gameManager.character.AddNearInteract(this);
+            }
         }
     }
     

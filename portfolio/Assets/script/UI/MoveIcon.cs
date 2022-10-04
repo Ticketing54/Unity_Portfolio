@@ -15,6 +15,10 @@ public class MoveIcon : MonoBehaviour
 
     private void Start()
     {
+        type = ITEMLISTTYPE.NONE;
+        slotNum = -1;
+        skillIndex = -1;
+
         UIManager.uimanager.MoveItemIcon += SetMoveIcon_item;
         UIManager.uimanager.AMoveSkillIcon += SetMoveIcon_Skill;
         gameObject.SetActive(false);

@@ -52,7 +52,7 @@ public class Boss_Rush : StateMachineBehaviour
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        boss.transform.position = Vector3.MoveTowards(boss.transform.position, targetPos, 0.05f);
+        boss.transform.position = Vector3.MoveTowards(boss.transform.position, targetPos, 0.1f);
         timer += Time.deltaTime;
         if(boss.transform.position == targetPos&& isEnd == false&& timer>=3f)
         {
@@ -62,7 +62,7 @@ public class Boss_Rush : StateMachineBehaviour
 
 
 
-        if(isHit == false && boss.DISTANCE <=1)
+        if(isHit == false && boss.Distance <=1)
         {
             isHit = true;
             boss.StartCoroutine(CoHitControl());

@@ -51,8 +51,8 @@ public class UiEffectManager : MonoBehaviour
         GameManager.gameManager.moveSceneReset += MoveToNextScene;
         UIManager.uimanager.ALevelUpEffect += LevelUpEffect;
         UIManager.uimanager.ALoadDamageEffect += LoadDamageEffect;
-        UIManager.uimanager.AAddNearUnit += OnUiControl;
-        UIManager.uimanager.ARemoveNearUnit += OffUiControl;
+        UIManager.uimanager.AAddNearUnitOnUi += OnUiControl;
+        UIManager.uimanager.ARemoveNearUnitUi += OffUiControl;
     }
 
     #region NickName

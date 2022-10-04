@@ -3108,7 +3108,7 @@ MonoBehaviour:
       - m_Target: {fileID: 6102058874458706844}
         m_TargetAssemblyTypeName: Shop, Assembly-CSharp
         m_MethodName: OpenBusinessWindow
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3256,6 +3256,53 @@ MonoBehaviour:
   itemCount: 0
   itemName: 
   itemPrice: 0
+--- !u!1 &524741348
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 524741350}
+  - component: {fileID: 524741349}
+  m_Layer: 0
+  m_Name: SoundsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &524741349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 524741348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b6ce9a13a891e54d9cd4b78de303252, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AudioMixer: {fileID: 24100000, guid: 02c84e8e34645be459c52a7a5188fe0f, type: 2}
+  mainListener: {fileID: 1387051665}
+  bgm: {fileID: 0}
+--- !u!4 &524741350
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 524741348}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 26.337513, y: 5.446308, z: 24.249237}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &537334344
 GameObject:
   m_ObjectHideFlags: 0
@@ -37888,7 +37935,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 00:00:00
+  m_text: enqueueNode
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d506241096181924d9d63100b865ecde, type: 2}
   m_sharedMaterial: {fileID: 837024355157023174, guid: d506241096181924d9d63100b865ecde,
@@ -43920,6 +43967,7 @@ MonoBehaviour:
   finally_Price: {fileID: 6102058874149051657}
   finally_Text: {fileID: 3107289740859516712}
   dragImage: {fileID: 6765624214321015610}
+  invenGold: {fileID: 844638947}
 --- !u!114 &6102058874654924015
 MonoBehaviour:
   m_ObjectHideFlags: 0

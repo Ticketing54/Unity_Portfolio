@@ -10,10 +10,6 @@ public class Tutorial_Npc : Npc
     public override float HpMax { get => -1; set { } }
     public override float HpCur { get => -1; set { } }
 
-    public override void Interact()
-    {
-        base.Interact();
-    }
     public override void EtcQuest(int _questIndex)
     {
         switch (_questIndex)

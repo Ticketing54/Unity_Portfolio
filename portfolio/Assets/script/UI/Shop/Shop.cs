@@ -51,7 +51,8 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
     [Header("드래그 관련")]
     [SerializeField]
     Image dragImage;
-
+    [SerializeField]
+    TextMeshProUGUI invenGold;
     // 클릭정보
     BUSINESSTYPE    businessType;
     bool            activeMessage;
@@ -78,7 +79,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
                 UIManager.uimanager.ACloseDialog();
                 UIManager.uimanager.OnBaseUI();
                 gameObject.SetActive(true);
-                GameManager.gameManager.character.isPossableMove = false;
+                GameManager.gameManager.character.IsPossableControl = true;
                 OpenShop(npc);
             });
             
@@ -223,6 +224,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
         countMessage.gameObject.SetActive(false);
         businessMessage.gameObject.SetActive(false);
         activeMessage = false;
+        BusinessReset();
     }
 
     public void CountUp()
@@ -329,7 +331,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
         switch (businessType)
         {
             case BUSINESSTYPE.BUY:
-                GameManager.gameManager.character.inven.BuyItem(shop_List[activeIndex].itemPrice * count,count);
+                GameManager.gameManager.character.inven.BuyItem(shop_List[activeIndex].itemPrice * count,npc.ITEMS[activeIndex],count);
                 BusinessReset();
                 updateInven();
                 
@@ -462,7 +464,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
 
         for (int shopIndex = 0; shopIndex < shop_List.Count; shopIndex++)
         {
-            if (shop_List[shopIndex].isInRect(_clickPos) && shopIndex>= npc.ITEMS.Count)
+            if (shop_List[shopIndex].isInRect(_clickPos))
             {
 
                 clickIndex = shopIndex;
@@ -586,6 +588,7 @@ public class Shop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler , IDra
             }
             getitem = null;
         }
+        invenGold.text = character.inven.Gold.ToString();
     }
     void ResetShop()
     {

@@ -1,19 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using System;
 public class Status
 {
 
     Character character;            // 설정 시 지정
-
+    NavMeshAgent nav;
 
     public Status(Character _character)
     {
         LevelSetting(1);
         character = _character;
-        stateControlDic     = new Dictionary<string, Coroutine>();
+        nav = character.GetComponent<NavMeshAgent>();
+        stateControlDic     = new Dictionary<string, Coroutine>();        
         buffEffectControl   = new Dictionary<Coroutine, GameObject>();
+        
     }
 
     Dictionary<string, Coroutine> stateControlDic;
@@ -197,7 +200,8 @@ public class Status
     public void Damaged(bool _type, float _dmg)
     {        
         Hp -= _dmg;
-        UIManager.uimanager.ALoadDamageEffect((int)_dmg, character.gameObject, _type);                
+        UIManager.uimanager.ALoadDamageEffect((int)_dmg, character.gameObject, _type);
+        SoundManager.soundmanager.soundsPlay("Damaged", character.gameObject);
     }
     public void GetExp(int _exp)
     {
@@ -225,12 +229,11 @@ public class Status
         level = int.Parse(Table[0]);
         hp = float.Parse(Table[1]);
         mp = float.Parse(Table[2]);
-        need_Exp = int.Parse(Table[3]);
-        // 임시
-        //
+        Exp = 0;
+        need_Exp = int.Parse(Table[3]);        
         cur_Hp = hp;
         cur_Mp = mp;
-        // 
+        
     }
     public void EquipStatus(Item _item)
     {
@@ -353,22 +356,14 @@ public class Status
         UIManager.uimanager.ARemoveBuf(_skill.spriteName);
         EffectManager.effectManager.PushBuffEffect(_skill.effectName, _effect);
     }
-    void ApplyBufStat(string _ability,bool _isFinish)
-    {
-        string[] ability = _ability.Split("#");
-        for (int i = 0; i < ability.Length; i++)
-        {
-            string[] abilityData = ability[i].Split('/');
-            StatDivide(abilityData[0], float.Parse(abilityData[1]));
-        }
-    }
+    
     void StatDivide(string _stat, float _bufIncrease)
     {
         switch (_stat)
         {
             case "Spd":
                 {
-                    
+                    nav.speed += _bufIncrease;
                 }
                 break;
             case "Atk":

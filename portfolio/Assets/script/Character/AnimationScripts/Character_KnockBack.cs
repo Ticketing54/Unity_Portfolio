@@ -30,7 +30,7 @@ public class Character_KnockBack : StateMachineBehaviour
         {
             targetPos = tempPos;
         }
-        character.isPossableMove = false;        
+        character.IsPossableControl = false;    
         nav.updatePosition = false;
     }
 
@@ -54,7 +54,7 @@ public class Character_KnockBack : StateMachineBehaviour
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        character.isPossableMove = true;
+        character.IsPossableControl = true;
         nav.updatePosition = true;
         nav.Warp(nav.gameObject.transform.position);
     }

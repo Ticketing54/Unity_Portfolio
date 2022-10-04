@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
 
-public class Potal : MonoBehaviour
+public class Potal : MonoBehaviour,InteractInterface
 {
     MAPTYPE mapType;
     string mapName;
@@ -16,7 +16,12 @@ public class Potal : MonoBehaviour
     public  Vector3 Pos { get => pos; }
     
     public string CutScene { get => cutScene; }
-    public MAPTYPE MapType { get => mapType; }  
+    public MAPTYPE MapType { get => mapType; }
+
+    bool interactSuccess;
+    bool nearUnit;
+    Coroutine waitForDoing;
+
     public void SettingPotal(string[] _info)
     {
         mapName = _info[0];
@@ -37,7 +42,37 @@ public class Potal : MonoBehaviour
         {
             cutScene = _info[11];
         }
+        interactSuccess = false;
+        nearUnit = false;
+
     }
+
+    private void OnDisable()
+    {
+        GameManager.gameManager.character.RemoveInteract(this);
+    }
+    private void Update()
+    {
+        if (Distance < 6 &&nearUnit == false)
+        {
+            nearUnit = true;
+            GameManager.gameManager.character.AddNearInteract(this);
+        }
+        else if(Distance>=6 && nearUnit == true)
+        {
+            nearUnit = false;
+            GameManager.gameManager.character.RemoveInteract(this);
+        }
+    }
+    public void interact()
+    {
+        if(interactSuccess == true)
+        {
+            return;
+        }
+        MoveToScene();
+    }
+
     public float DISTANCE
     {
         get
@@ -52,5 +87,67 @@ public class Potal : MonoBehaviour
                 return 100;
             }   
         }
+    }
+
+    public float Distance
+    {
+        get
+        {
+            if (GameManager.gameManager.character != null)
+            {
+
+                return Vector3.Distance(transform.position, GameManager.gameManager.character.transform.position);
+            }
+            else
+            {
+                return 100;
+            }
+        }
+    }
+
+    void MoveToScene()
+    {
+        if (waitForDoing != null)
+        {
+            return;
+        }
+
+        waitForDoing = StartCoroutine(CoMoveToScene());
+    }
+
+    IEnumerator CoMoveToScene()
+    {
+        string waitForDoingText = mapName + " 으로 이동 하는중 입니다.";
+        yield return StartCoroutine(CoWaitForDoing(5f, waitForDoingText));
+
+
+        if (interactSuccess == true)
+        {
+            GameManager.gameManager.MoveToScene(mapName, pos, MapType, CutScene);
+            interactSuccess = false;
+        }
+        waitForDoing = null;
+    }
+
+    IEnumerator CoWaitForDoing(float _timerMax, string _text)
+    {
+        UIManager.uimanager.OpenWaitForDoing(_text);
+        interactSuccess = true;
+        float timer = 0.01f;
+        while (timer <= _timerMax)
+        {
+            yield return null;
+            if (Input.anyKeyDown)
+            {
+                interactSuccess = false;
+                UIManager.uimanager.ExitWaitForDoing();
+                yield break;
+            }
+            UIManager.uimanager.RunningWaitForDoing(timer / _timerMax);
+            timer += Time.deltaTime;
+            
+        }
+        
+        UIManager.uimanager.ExitWaitForDoing();
     }
 }

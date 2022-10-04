@@ -38,14 +38,14 @@ public class Minimap_Minimum : MonoBehaviour
     {
         SetMapInfo();        
         OpenDotSetting();
-        UIManager.uimanager.AAddNearUnit += AddMiniDot;
-        UIManager.uimanager.ARemoveNearUnit+= RemoveMiniDot;
+        UIManager.uimanager.AAddNearUnitOnUi += AddMiniDot;
+        UIManager.uimanager.ARemoveNearUnitUi+= RemoveMiniDot;
     }
     private void OnDisable()
     {        
         CloseDotSetting();
-        UIManager.uimanager.AAddNearUnit -= AddMiniDot;
-        UIManager.uimanager.ARemoveNearUnit -= RemoveMiniDot;
+        UIManager.uimanager.AAddNearUnitOnUi -= AddMiniDot;
+        UIManager.uimanager.ARemoveNearUnitUi -= RemoveMiniDot;
     }
     private void Update()
     {
@@ -101,7 +101,9 @@ public class Minimap_Minimum : MonoBehaviour
     {
         if (runningCo.ContainsKey(_unit))
         {
-            StopCoroutine(runningCo[_unit]);
+            Coroutine co = runningCo[_unit];
+            StopCoroutine(co);
+            runningCo.Remove(_unit);
         }
 
         if(runningDots.ContainsKey(_unit))

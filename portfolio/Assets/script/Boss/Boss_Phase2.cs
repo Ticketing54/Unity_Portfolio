@@ -27,7 +27,7 @@ public class Boss_Phase2 : StateMachineBehaviour
         delay += Time.deltaTime;
         if (delay >= 1f)
         {
-            if (boss.DISTANCE < boss.Range)
+            if (boss.Distance < boss.Range)
             {
                 if (isAttack == false)
                 {

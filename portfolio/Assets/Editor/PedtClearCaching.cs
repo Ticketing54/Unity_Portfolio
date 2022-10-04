@@ -8,13 +8,13 @@ public class PedtClearCaching
     [MenuItem("Util/CleanCache")]
     public static void CleanCache()
     {
-        if (Caching.CleanCache())
+        if (Caching.ClearCache())
         {
-            EditorUtility.DisplayDialog("¾Ë¸²", "Ä³½Ã°¡ »èÁ¦µÇ¾ú½À´Ï´Ù.", "È®ÀÎ");
+            EditorUtility.DisplayDialog("ï¿½Ë¸ï¿½", "Ä³ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.", "È®ï¿½ï¿½");
         }
         else
         {
-            EditorUtility.DisplayDialog("¿À·ù", "Ä³½Ã »èÁ¦¿¡ ½ÇÆÐÇß½À´Ï´Ù.", "È®ÀÎ");
+            EditorUtility.DisplayDialog("ï¿½ï¿½ï¿½ï¿½", "Ä³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.", "È®ï¿½ï¿½");
         }
     }
     

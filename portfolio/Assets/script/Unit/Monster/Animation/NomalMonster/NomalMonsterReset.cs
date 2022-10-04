@@ -20,6 +20,7 @@ public class NomalMonsterReset : StateMachineBehaviour
         nav.SetDestination(mob.startPos);
         recoveryHp = mob.HpMax / 5;
         timer = 0f;
+        animator.SetBool("Move", false);
     }
 
     
@@ -32,17 +33,17 @@ public class NomalMonsterReset : StateMachineBehaviour
             timer -= 1;
         }
 
-        if(mob.transform.position == mob.startPos && mob.HpCur == mob.HpMax)
+        if(mob.transform.position.x == mob.startPos.x && mob.transform.position.z == mob.startPos.z&&mob.HpCur == mob.HpMax)
         {
             animator.SetBool("Reset", false);
         }
     }
 
-    // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    
-    //}
+    
+    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        
+    }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
     //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Unit : MonoBehaviour, UnitUiInfo
+public abstract class Unit : MonoBehaviour, UnitUiInfo,InteractInterface
 {
     protected string    unitName;
     protected string    sound;
@@ -12,11 +12,11 @@ public abstract class Unit : MonoBehaviour, UnitUiInfo
     protected bool      usingDialog = false;
     
     public bool UsingDialog { get => usingDialog; set => usingDialog = value; }
-
+    public string Sound { get => sound; }
     public Vector3 startPos { get; set; }
     public List<string> wayPoint { get; set; }
     
-    public float DISTANCE
+    public float Distance
     {
         get
         {
@@ -30,7 +30,8 @@ public abstract class Unit : MonoBehaviour, UnitUiInfo
             }
         }
     }
-
+    public abstract void interact();
+    
     public abstract float HpMax { get; set; }
     public abstract float HpCur { get; set; }
     
@@ -44,5 +45,7 @@ public abstract class Unit : MonoBehaviour, UnitUiInfo
     public Vector3 CurPostion() { return this.gameObject.transform.position; }
 
     public float Nick_YPos()  { return nick_YPos; }
+
+    
 }
 

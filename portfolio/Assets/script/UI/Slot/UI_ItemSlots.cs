@@ -141,7 +141,7 @@ public abstract class UI_ItemSlots : MonoBehaviour, IPointerDownHandler, IPointe
 
     public virtual void OnDrag(PointerEventData _dragdata)
     {
-        if(0 < leftClickIndex)
+        if(0 <= leftClickIndex)
         {
             UIManager.uimanager.MoveItemIcon(itemListType, leftClickIndex, _dragdata.position);
         }

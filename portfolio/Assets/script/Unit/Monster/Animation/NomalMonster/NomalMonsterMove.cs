@@ -9,7 +9,8 @@ public class NomalMonsterMove : StateMachineBehaviour
     Monster mob;
     float agro = 5f;
     float agroWait;
-    bool move;
+    bool reset = false;
+
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if(character == null||mob==null||nav == null)
@@ -18,15 +19,19 @@ public class NomalMonsterMove : StateMachineBehaviour
             nav = animator.GetComponent<NavMeshAgent>();
             mob = animator.GetComponent<Monster>();
         }
-        agroWait = 5f;
-        move = false;
+        agroWait = 5f;        
     }
 
     
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        
-        if (mob.DISTANCE <= mob.Range)
+     
+        if(reset == true)
+        {
+            return;
+        }
+
+        if (mob.Distance <= mob.Range)
         {
             animator.SetBool("Move", false);
             nav.ResetPath();
@@ -39,6 +44,7 @@ public class NomalMonsterMove : StateMachineBehaviour
                 agro -= Time.deltaTime;
                 if (agro <= 0)
                 {
+                    reset = true;
                     agro = 5f;
                     animator.SetBool("Reset", true);
                 }
@@ -51,10 +57,11 @@ public class NomalMonsterMove : StateMachineBehaviour
     }
 
     
-    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
+    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        reset = false;
         
-    //}
+    }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
     //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

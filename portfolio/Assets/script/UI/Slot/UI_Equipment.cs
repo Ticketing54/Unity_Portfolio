@@ -22,33 +22,11 @@ public class UI_Equipment : UI_ItemSlots
     private void Awake()
     {
         itemListType = ITEMLISTTYPE.EQUIP;
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.U, TryOpenEquipment);
+        UIManager.uimanager.AOpenEquipment += () => gameObject.SetActive(true);
+        UIManager.uimanager.ACloseEquipment += () => gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
-    #region Open/Close
-    bool equipmentActive = false;    
-    void TryOpenEquipment()
-    {
-        equipmentActive = !equipmentActive;
-        if (equipmentActive)
-        {
-            OpenEquipment();
-        }
-        else
-        {
-            CloseEquipment();
-        }
-    }
-    public void OpenEquipment()
-    {
-        gameObject.SetActive(true);
-    }
-    public void CloseEquipment()
-    {
-        gameObject.SetActive(false);
-
-    }
-    #endregion
+ 
 
     public override void UpdateAllSlot()
     {

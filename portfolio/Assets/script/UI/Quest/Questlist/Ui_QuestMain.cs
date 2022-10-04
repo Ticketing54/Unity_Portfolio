@@ -35,10 +35,11 @@ public class Ui_QuestMain : MonoBehaviour,IPointerDownHandler, IPointerUpHandler
     Character character;
     private void Start()
     {
-        mainState = QUESTSTATE.PLAYING;
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.L, TryOpenQuest);
+        mainState = QUESTSTATE.PLAYING;        
         questSlotPool = new PoolData<QuestSlot>(questslot, this.gameObject, "QuestSlot");
-        runningSlotDic = new Dictionary<int, QuestSlot>();        
+        runningSlotDic = new Dictionary<int, QuestSlot>();
+        UIManager.uimanager.AOpenQuestMain += () => gameObject.SetActive(true);
+        UIManager.uimanager.ACloseQuestMain += () => gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
     private void OnEnable()
@@ -117,28 +118,7 @@ public class Ui_QuestMain : MonoBehaviour,IPointerDownHandler, IPointerUpHandler
         }
     }
 
-    #region KeyboardShortCut
-    bool questActive = false;
-    void TryOpenQuest()
-    {
-        questActive = !questActive;
-        if (questActive)
-        {
-            OpenQuest();
-        }
-        else
-            CloseQuest();
-    }
-    void OpenQuest()
-    {
-        gameObject.SetActive(true);        
-    }
-    void CloseQuest()
-    {   
-        gameObject.SetActive(false);
-    }
-    #endregion
-
+   
     public void OnPointerDown(PointerEventData data)
     {
         if (moveWindow.isInRect(data.position))

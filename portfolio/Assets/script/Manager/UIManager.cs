@@ -21,12 +21,11 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        KeyboardSortCut = new Dictionary<KeyCode, Action>();
+        
         nearUnit = new HashSet<UnitUiInfo>();
         mainCanvas = GetComponent<Canvas>();
-        AAddNearUnit += AddNearUnitHashSet;
-        ARemoveNearUnit += RemoveNearUnitHashSet;
+        AAddNearUnitOnUi += AddNearUnitHashSet;
+        ARemoveNearUnitUi += RemoveNearUnitHashSet;
         OnBaseUI += () => { baseUi.gameObject.SetActive(true); };
         OffBaseUI += () => { baseUi.gameObject.SetActive(false); };
     }
@@ -34,52 +33,37 @@ public class UIManager : MonoBehaviour
     {
         mainCanvas.enabled = _state;
     }
-    private void Update()
-    {
-        Inputkeyboard();
-    }
+    
     #region KeyboardSortCut
     Dictionary<KeyCode, Action> KeyboardSortCut;
 
-    public void AddKeyBoardSortCut(KeyCode _keycode, Action _action)
-    {
-        if (KeyboardSortCut.ContainsKey(_keycode))
-        {
-            KeyboardSortCut.Remove(_keycode);
-            KeyboardSortCut.Add(_keycode, _action);
-        }
-        else
-        {
-            KeyboardSortCut.Add(_keycode, _action);
-        }
-    }
-    public void RemoveKeyBoardSortCut(KeyCode _keycode)
-    {
-        if (KeyboardSortCut.ContainsKey(_keycode))
-        {
-            KeyboardSortCut.Remove(_keycode);
-        }
-        else
-        {
-            Debug.Log("없는 단축키를 없애려 합니다.");
-        }
-    }
 
-    void Inputkeyboard()
-    {
-        if (Input.anyKey)
-        {
-            foreach (KeyValuePair<KeyCode, Action> input in KeyboardSortCut)
-            {
-                if (Input.GetKeyDown(input.Key))
-                {
-                    input.Value();
-                }
-            }           
-        }
-    }
     #endregion
 
+
+    public void TryOpenMinimap_Max()
+    {
+        if(ATryOpenMinimap_Max != null)
+        {
+            ATryOpenMinimap_Max();
+        }
+    }    
+    public void TryOpenMinimap_Min()
+    {
+        if (ATryOpenMinimap_Min != null)
+        {
+            ATryOpenMinimap_Min();
+        }
+    }
+    public Action ATryOpenMinimap_Max;
+    public Action ATryOpenMinimap_Min;
+    
+    public Action AOpenQuestMain;
+    public Action ACloseQuestMain;
+    public Action AOpenEquipment;
+    public Action ACloseEquipment;
+    public Action AOpenSKill;
+    public Action ACloseSKill;
 
     public Action OpenQuickQuest
     {
@@ -791,7 +775,8 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    
+    public Action AOpenInventoryUi;
+    public Action ACloseInventoryUi;
   
     #region Quest
     public MiniQuestSlot questSlot;
@@ -821,7 +806,7 @@ public class UIManager : MonoBehaviour
     #region nearUnitUi
 
     HashSet<UnitUiInfo> nearUnit;
-    public Action<UnitUiInfo> AAddNearUnit
+    public Action<UnitUiInfo> AAddNearUnitOnUi
     {
         get
         {
@@ -834,7 +819,7 @@ public class UIManager : MonoBehaviour
         }
     }
     
-    public Action<UnitUiInfo> ARemoveNearUnit
+    public Action<UnitUiInfo> ARemoveNearUnitUi
     {
         get
         {

@@ -23,7 +23,7 @@ public class Boss_Move : StateMachineBehaviour
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
 
-        if(boss.DISTANCE< boss.Range)
+        if(boss.Distance< boss.Range)
         {
             nav.destination = boss.transform.position;
             animator.SetBool("Move", false);

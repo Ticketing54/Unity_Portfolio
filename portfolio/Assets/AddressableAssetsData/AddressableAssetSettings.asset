@@ -123,6 +123,7 @@ MonoBehaviour:
     - Player
     - Dialogue
     - CutScene
+    - SoundsControl
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 567860cb0a76ff24495c8b78a9f9e212, type: 2}

@@ -11,7 +11,7 @@ public class Boss_Attack : StateMachineBehaviour
     TutorialBoss boss;
     float atk_num = 0;    
     
-    float Timer = 0;
+    float timer = 0;
     float vr;
 
     bool Damage = false;
@@ -38,34 +38,25 @@ public class Boss_Attack : StateMachineBehaviour
             screamsound = new GameObject("breath");
             screamsound.transform.SetParent(boss.transform);
             audio = screamsound.AddComponent<AudioSource>();
-            audio.clip = Resources.Load<AudioClip>("Sounds/Breath");
+            audio.clip = ResourceManager.resource.GetSound("Breath");
             audio.loop = true;
             audio.Play();
             audio.gameObject.SetActive(false);
         }
-
-        switch (atk_num)
-        {
-            case 0:
-
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            default:
-                break;
-        }
+      
         vr = 1;
     }
 
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(atk_num == 2)
+        
+        
+        if (atk_num == 2)
         {
-            Timer += Time.deltaTime;
-            if(Timer >= 0.9f)
+            timer += Time.deltaTime;
+
+            if (timer >= 0.9f)
             {
                 audio.gameObject.SetActive(true);
                 breath.gameObject.SetActive(true);
@@ -77,11 +68,9 @@ public class Boss_Attack : StateMachineBehaviour
                 if (breathrange.bounds.Intersects(character.AttackBox) && Damage == false)
                 {
                     Damage = true;
-                    boss.StartCoroutine(DamageOn());
+                    boss.StartCoroutine(DamageOn(0.5f));
                     SoundManager.soundmanager.soundsPlay("Icestate", character.gameObject);
-                    //Character.Player.Stat.HP -= mob.Atk;
-                    //Character.Player.icestateOn();
-                    //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, mob.Atk, Color.red, 1);
+                    character.stat.Damaged(false, boss.AttackDmg(false));                    
                 }
             }
         }
@@ -95,9 +84,9 @@ public class Boss_Attack : StateMachineBehaviour
 
     }
 
-    IEnumerator DamageOn()
+    IEnumerator DamageOn(float _time)
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(_time);
         Damage = false;
     }
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -106,7 +95,7 @@ public class Boss_Attack : StateMachineBehaviour
         if (breath.gameObject.activeSelf == true)
             breath.gameObject.SetActive(false);
         audio.gameObject.SetActive(false);
-        Timer = 0;
+        timer = 0;
         vr = 1;                
     }
 
@@ -137,6 +126,7 @@ public class Boss_Attack : StateMachineBehaviour
         return F;
     }
 
+   
     // OnStateMove is called right after Animator.OnAnimatorMove()
     //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     //{

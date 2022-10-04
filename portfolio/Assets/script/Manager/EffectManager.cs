@@ -41,8 +41,8 @@ public class EffectManager : MonoBehaviour
         
     }
     private void Start()
-    {
-        GameManager.gameManager.moveSceneReset += ClickEffectReset;        
+    {        
+        GameManager.gameManager.moveSceneReset += EffectReset;        
     }
 
     public void RemoveSpeechBubble(Unit _unit)
@@ -169,9 +169,11 @@ public class EffectManager : MonoBehaviour
         questMarkRes.Add("COMPLETE", questMarkQu);        
         questMarkRes.Add("NOTCOMPLETE", questMarkNotQu);        
     }
-    public void ClickEffectReset()               // 맵 이동 시 리셋
+    public void EffectReset()               // 맵 이동 시 리셋
     {
-        foreach(GameObject click in clickList)
+        StopAllCoroutines();
+
+        foreach (GameObject click in clickList)
         {
             if (click.gameObject.activeSelf == true)
             {
@@ -193,6 +195,23 @@ public class EffectManager : MonoBehaviour
             }
             runningQuestMark.Remove(npcList[i]);
         }
+
+
+        List<GameObject> runningEffectobj = new List<GameObject>(runningEffect.Keys);
+        for (int i = 0; i < runningEffectobj.Count; i++)
+        {
+            effectRes.Add(runningEffect[runningEffectobj[i]], runningEffectobj[i]);
+        }
+        runningEffect.Clear();
+
+        List<Unit> runningSpeechUnits = new List<Unit>(runningSpeechBubble.Keys);
+
+        for (int i = 0; i < runningSpeechUnits.Count; i++)
+        {
+            speechBubblePool.Add(runningSpeechBubble[runningSpeechUnits[i]]);
+        }
+
+        runningSpeechBubble.Clear();
     }
 
     public void ClickEffectOn(CLICKEFFECT _ClickEffect, Transform _Target)                      // 대상이 있음

@@ -26,12 +26,13 @@ public class NomalMonsterAttack : StateMachineBehaviour
         timer += Time.deltaTime;
         if(timer >= 0.15f && timer <=0.22f&& hit == false)
         {
-            Collider[] hit = Physics.OverlapBox(mob.transform.position + mob.transform.forward  + mob.transform.up, new Vector3(0.5f, 0.5f, 2f));
+            Collider[] hitcharacter = Physics.OverlapBox(mob.transform.position + mob.transform.forward  + mob.transform.up, new Vector3(0.5f, 0.5f, 2f));
 
-            for (int i = 0; i < hit.Length; i++)
+            for (int i = 0; i < hitcharacter.Length; i++)
             {
-                if(hit[i].tag == "Player")
+                if(hitcharacter[i].tag == "Player")
                 {
+                    hit = true;
                     bool isCri = mob.IsCri();
                     character.stat.Damaged(isCri, mob.AttackDmg(isCri));
                 }

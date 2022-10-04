@@ -8,9 +8,10 @@ public class Character_Attack2 : StateMachineBehaviour
     Character character;
     float timer;
     HashSet<GameObject> hitmob;
+    AudioSource sound;
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (character == null || effect == null)
+        if (character == null || effect == null||sound == null)
         {
             character = animator.GetComponent<Character>();
             GameObject effectObj = ResourceManager.resource.GetEffect("attack02");
@@ -20,8 +21,13 @@ public class Character_Attack2 : StateMachineBehaviour
             effect = effectObj.GetComponent<ParticleSystem>();
             effect.gameObject.SetActive(false);
             hitmob = character.hitMob;
+            sound = SoundManager.soundmanager.GetSounds("Shieldhit");
+            sound.gameObject.transform.SetParent(character.transform);
+            sound.gameObject.transform.localPosition = new Vector3(0, 1.118f, 1.109f);
         }
         timer = 0f;
+        character.isPossableMove = false;
+
     }
 
 
@@ -30,6 +36,7 @@ public class Character_Attack2 : StateMachineBehaviour
         timer += Time.deltaTime;
         if (timer >= 0.4f && effect.gameObject.activeSelf == false)
         {
+            sound.Play();
             Collider[] mobs = Physics.OverlapBox(character.transform.position + character.transform.forward * 0.6f + character.transform.up, new Vector3(1f, 1f, 1f));
             if (mobs != null)
             {
@@ -40,6 +47,7 @@ public class Character_Attack2 : StateMachineBehaviour
                         Monster mob = mobs[i].gameObject.GetComponent<Monster>();
                         bool iscri = character.stat.DamageType();
                         mob.Damaged(iscri, character.stat.AttckDamage(iscri));
+                        SoundManager.soundmanager.soundsPlay(mob.Sound, mob.gameObject);
                         hitmob.Add(mobs[i].gameObject);
                     }
                 }
@@ -52,6 +60,8 @@ public class Character_Attack2 : StateMachineBehaviour
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        character.isPossableMove = true;
+        character.isPossableAttack = true;
         effect.gameObject.SetActive(false);
         hitmob.Clear();
     }

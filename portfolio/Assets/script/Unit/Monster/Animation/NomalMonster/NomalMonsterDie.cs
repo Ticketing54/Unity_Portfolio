@@ -26,6 +26,7 @@ public class NomalMonsterDie : StateMachineBehaviour
         if(timer <=0 || mob.dropItem == true)
         {
             animator.SetBool("Die", false);
+            mob.UiOff();
         }
     }
 

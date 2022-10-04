@@ -33,12 +33,12 @@ public class TutorialBoss : Monster
         {
             if (GameManager.gameManager.character != null)
             {
-                if (this.DISTANCE < 6f && approachChracter == false)
+                if (this.Distance < 6f && approachChracter == false)
                 {
                     approachChracter = true;                    
                 }
 
-                if (this.DISTANCE >= 6f && approachChracter == true)
+                if (this.Distance >= 6f && approachChracter == true)
                 {
                     approachChracter = false;                    
                 }
@@ -56,7 +56,9 @@ public class TutorialBoss : Monster
         gunfire = GameObject.FindGameObjectWithTag("MobWeapon");
         range = 1.5f;                
     }    
-    public override float HpMax
+    public override float HpMax { get => hp_Max; set { } }
+   
+    public override float HpCur
     {
         get
         {
@@ -66,11 +68,10 @@ public class TutorialBoss : Monster
         {
             hp_Cur = value;
             UIManager.uimanager.aUpdateTopinfo(this);
-            if (hp_Cur <= 250 && combatPhase == false)
+            if (hp_Cur <= 500 && combatPhase == false)
             {
-                combatPhase = true;
-                StopCoroutine(action);
-                //action = startcouroutine(±¤ÆøÈ­);
+                combatPhase = true;                
+                Phase2();
             }
             else if (hp_Cur <= 0)
             {
@@ -79,8 +80,14 @@ public class TutorialBoss : Monster
             }
         }
     }
-    public override float HpCur { get => hp_Max; set { } }
-
+    public override void OnEnable()
+    {
+        
+    }
+    public override void OnDisable()
+    {
+        
+    }
     public void MoveStart()
     {
         anim.SetTrigger("Start");        
@@ -90,15 +97,22 @@ public class TutorialBoss : Monster
         anim.SetTrigger("Phase2");
         anim.SetBool("isPhase2", true);
     }
-    IEnumerator CoMoveStart()
+   
+    void Attack()
     {
-        yield return StartCoroutine(CoMove(range));
-
-        action = StartCoroutine(CoNomalAttack());
+        Collider[] hit = Physics.OverlapBox(transform.position + transform.forward*1.5f + transform.up, new Vector3(1.5f, 1.5f, 1.5f));
+        for (int i = 0; i < hit.Length; i++)
+        {
+            if (hit[i].tag == "Player")
+            {   
+                bool isCri = IsCri();
+                character.stat.Damaged(isCri, AttackDmg(isCri));                
+            }
+        }
     }
     protected IEnumerator CoMove(float _distance)
     {
-        if (DISTANCE > _distance)        
+        if (Distance > _distance)        
         {
             anim.SetBool("Move", true);            
             yield return null;
@@ -112,7 +126,7 @@ public class TutorialBoss : Monster
                 dir.y = 0;
                 Vector3 newdir = Vector3.RotateTowards(transform.forward, dir, Time.deltaTime * 30f, Time.deltaTime * 30f);
                 transform.rotation = Quaternion.LookRotation(newdir);
-                if (DISTANCE<= _distance && nav.velocity.magnitude == 0f)
+                if (Distance<= _distance && nav.velocity.magnitude == 0f)
                 {
                     nav.SetDestination(transform.position);
                     nav.stoppingDistance = 0;
@@ -246,31 +260,36 @@ public class TutorialBoss : Monster
 
     public override void Damaged(bool _cri, int _dmg)
     {
-        throw new System.NotImplementedException();
+        if (hp_Cur <= 0)
+        {
+            return;
+        }
+        HpCur -= _dmg;        
+        UIManager.uimanager.ALoadDamageEffect(_dmg, this.gameObject, _cri);
     }
 
     public override string MiniDotSpriteName()
     {
-        throw new System.NotImplementedException();
+        return "MiniBoss";
     }
 
     public override bool IsEnermy()
     {
-        throw new System.NotImplementedException();
+        return true;
     }
 
     public override void Respawn()
     {
-        throw new System.NotImplementedException();
+        
     }
 
     public override void Sturn(float _time)
     {
-        throw new System.NotImplementedException();
+        
     }
 
     public override void KnockBack()
     {
-        throw new System.NotImplementedException();
+        
     }
 }

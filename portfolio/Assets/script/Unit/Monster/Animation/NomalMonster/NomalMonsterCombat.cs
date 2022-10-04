@@ -29,7 +29,7 @@ public class NomalMonsterCombat : StateMachineBehaviour
         }
 
         timer += Time.deltaTime;
-        if(mob.DISTANCE<=mob.Range)
+        if(mob.Distance<=mob.Range)
         {
             mob.transform.LookAt(character.transform);
             if (timer >= 1f)

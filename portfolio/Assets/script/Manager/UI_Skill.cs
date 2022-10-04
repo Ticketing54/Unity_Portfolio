@@ -43,8 +43,9 @@ public class UI_Skill : MonoBehaviour , IPointerUpHandler,IPointerDownHandler,ID
         left_SkillIndex      = -1;
         right_WorkingSlot    = -1;
         clickWindow     = false;
-        ismovePossable  = false;
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.K, TryOpenSkill);        
+        ismovePossable  = false;        
+        UIManager.uimanager.AOpenSKill += () => gameObject.SetActive(true);
+        UIManager.uimanager.ACloseSKill += () => gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
 
