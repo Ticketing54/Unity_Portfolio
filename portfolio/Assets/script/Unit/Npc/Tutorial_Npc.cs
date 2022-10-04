@@ -7,10 +7,9 @@ public class Tutorial_Npc : Npc
     Quest tutorial_hp;
     Quest tutorial_Attack;
 
-    public override void Interact()
-    {
-        base.Interact();
-    }
+    public override float HpMax { get => -1; set { } }
+    public override float HpCur { get => -1; set { } }
+
     public override void EtcQuest(int _questIndex)
     {
         switch (_questIndex)
@@ -27,7 +26,7 @@ public class Tutorial_Npc : Npc
     }   
     IEnumerator CoTutorial_Recovery()
     {
-        GameManager.gameManager.character.stat.Damaged(DAMAGE.CRITICAL,10);
+        GameManager.gameManager.character.stat.Damaged(true,10);
         while (true)
         {
             if(GameManager.gameManager.character.stat.MaxHp == GameManager.gameManager.character.stat.Hp)
@@ -38,4 +37,8 @@ public class Tutorial_Npc : Npc
             yield return null;
         }
     }
+
+    public override bool IsEnermy() { return false; }
+
+    
 }

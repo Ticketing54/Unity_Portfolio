@@ -9,26 +9,26 @@ public class Boss_flybreath : StateMachineBehaviour
     GameObject Gunfire;
     SkinnedMeshRenderer breathrange;
     Vector3 dir = Vector3.zero;
-    float vr = 1;
-    float timer = 0;
-    float Damage_count = 0;
-    bool Damage = false;
+    float vr ;
+    float timer ;    
+    bool isHit = false;
 
 
 
-
+    Character character;
 
     AudioSource audio;
     GameObject screamsound;
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (mob == null)
+        if (mob == null || character==null)
         {
             mob = animator.GetComponent<Monster>();
             breath = mob.gameObject.transform.Find("breath").gameObject;
             breathrange = breath.GetComponent<SkinnedMeshRenderer>();
             Gunfire = GameObject.FindGameObjectWithTag("MobWeapon");
+            character = GameManager.gameManager.character;
 
         }
         if (screamsound == null)
@@ -36,12 +36,14 @@ public class Boss_flybreath : StateMachineBehaviour
             screamsound = new GameObject("breath");
             screamsound.transform.SetParent(mob.transform);
             audio = screamsound.AddComponent<AudioSource>();
-            audio.clip = Resources.Load<AudioClip>("Sounds/Breath");
+            audio.clip = ResourceManager.resource.GetSound("Breath");
             audio.loop = true;
             audio.Play();
             audio.gameObject.SetActive(false);
         }
 
+        timer = 0;
+        vr = 1;
     }
 
 
@@ -58,16 +60,13 @@ public class Boss_flybreath : StateMachineBehaviour
             breath.transform.rotation = Quaternion.LookRotation(dir.normalized);
 
 
-            //if (breathrange.bounds.Intersects(Character.Player.Character_bounds.bounds) && Damage == false)
-            //{
-            //    Damage = true;
-            //    mob.StartCoroutine(DamageOn());
-            //    SoundManager.soundmanager.soundsPlay("Icestate", Character.Player.gameObject);
-            //    Damage_count++;
-            //    //Character.Player.Stat.HP-= mob.Atk;
-            //    Character.Player.icestateOn();
-            //    //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, mob.Atk, Color.red, 1);
-            //}
+            if (breathrange.bounds.Intersects(character.AttackBox) && isHit== false)
+            {
+                isHit = true;
+                mob.StartCoroutine(DamageOn());
+                character.stat.Damaged(false, mob.AttackDmg(false));                
+                
+            }
 
         }
 
@@ -78,8 +77,8 @@ public class Boss_flybreath : StateMachineBehaviour
     }
     IEnumerator DamageOn()
     {
-        yield return new WaitForSeconds(0.5f);
-        Damage = false;
+        yield return new WaitForSeconds(1f);
+        isHit = false;
     }
     public Vector3 BressDir(GameObject tmp, float value)
     {
@@ -115,8 +114,6 @@ public class Boss_flybreath : StateMachineBehaviour
 
         vr = 1;
         timer = 0;
-        Damage_count = 0;
-
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

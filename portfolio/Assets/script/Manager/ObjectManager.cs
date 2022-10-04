@@ -7,6 +7,7 @@ public class ObjectManager : MonoBehaviour
     public static ObjectManager objManager;    
     Dictionary<int, Npc> npcDic;
     Dictionary<Monster, Coroutine> respawnMob;
+    HashSet<Potal> runningPotal;
 
 
     private void Awake()
@@ -23,6 +24,7 @@ public class ObjectManager : MonoBehaviour
         
         npcDic = new Dictionary<int, Npc>();
         respawnMob = new Dictionary<Monster, Coroutine>();
+        runningPotal = new HashSet<Potal>();
 
     }
 
@@ -30,8 +32,21 @@ public class ObjectManager : MonoBehaviour
     {
         GameManager.gameManager.moveSceneReset += MoveOtherMap;
     }
-
-
+    public List<Potal> GetPotalList()
+    {
+        return new List<Potal>(runningPotal);
+    }
+    public void AddRunningPotal(Potal _potal)
+    {
+        if(!runningPotal.Contains(_potal))
+        {
+            runningPotal.Add(_potal);
+        }       
+    }
+    public List<Npc> GetNpcList()
+    {
+        return new List<Npc>(npcDic.Values);
+    }
     public void StartRespawnMob(Monster _mob)
     {
         Coroutine coRespawn = StartCoroutine(CoRespawn(_mob));
@@ -45,7 +60,7 @@ public class ObjectManager : MonoBehaviour
         yield return new WaitForSeconds(5f);
         respawnMob.Remove(_mob);
         _mob.gameObject.SetActive(true);
-        
+        _mob.Respawn();
     }
     
     public void AddnpcDic(int _index, Npc _npc)
@@ -94,6 +109,7 @@ public class ObjectManager : MonoBehaviour
     public void MoveOtherMap()
     {
         respawnMob.Clear();
+        runningPotal.Clear();
         npcDic.Clear();
     }
 }

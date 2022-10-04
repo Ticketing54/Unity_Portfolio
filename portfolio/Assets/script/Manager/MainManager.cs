@@ -51,6 +51,7 @@ public class MainManager : MonoBehaviour
     private void Start()
     {
         CameraManager.cameraManager.enabled = false;
+        SoundManager.soundmanager.BgmPlay("MainBGM");
         subCamera.enabled = true;
         director.Play();        
     }
@@ -206,7 +207,7 @@ public class MainManager : MonoBehaviour
         string[] Data = UserDataManager.instance.LoadData(_num).Split('\n');
         string[] sData = Data[0].Split(',');             
         
-        LoadingSceneController.Instance.LoadScene(sData[1]);
+        
     }
 
     

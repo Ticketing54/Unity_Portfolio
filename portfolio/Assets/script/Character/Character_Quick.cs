@@ -27,13 +27,13 @@ public class Character_Quick : ItemMove
     {
         character           = _character;
         runningUseItem      = new HashSet<int>();
-        runningUseSkill     = new HashSet<int>();        
-        
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha1, ItemSlot_First);
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha2, ItemSlot_Second);
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha3, ItemSlot_Third);
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.Alpha4, ItemSlot_Fourth);
-        
+        runningUseSkill     = new HashSet<int>();
+
+        _character.AddKeyBoardSortCut(KeyCode.Alpha1, ItemSlot_First);
+        _character.AddKeyBoardSortCut(KeyCode.Alpha2, ItemSlot_Second);
+        _character.AddKeyBoardSortCut(KeyCode.Alpha3, ItemSlot_Third);
+        _character.AddKeyBoardSortCut(KeyCode.Alpha4, ItemSlot_Fourth);
+
         itemSlots = new Dictionary<int, List<Item>>()
         {
             {0, new List<Item>()

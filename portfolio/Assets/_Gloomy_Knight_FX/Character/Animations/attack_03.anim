@@ -96862,12 +96862,4 @@ AnimationClip:
     script: {fileID: 0}
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events:
-  - time: 1
-    functionName: OnEventFx
-    data: 
-    objectReferenceParameter: {fileID: 1807376157030844, guid: 9d5ee01cbd2bf1d4180c0d71bfa17c09,
-      type: 3}
-    floatParameter: 0
-    intParameter: 2
-    messageOptions: 0
+  m_Events: []

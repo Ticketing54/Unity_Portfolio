@@ -41,10 +41,18 @@ public class EffectManager : MonoBehaviour
         
     }
     private void Start()
-    {
-        GameManager.gameManager.moveSceneReset += ClickEffectReset;
+    {        
+        GameManager.gameManager.moveSceneReset += EffectReset;        
     }
 
+    public void RemoveSpeechBubble(Unit _unit)
+    {
+        if (runningSpeechBubble.ContainsKey(_unit))
+        {
+            speechBubblePool.Add(runningSpeechBubble[_unit]);
+            runningSpeechBubble.Remove(_unit);
+        }
+    }
     public void AddSpeechBubbleResource(GameObject _bubble, TextMeshPro _text)
     {   
         SpeechBubble speechBubble = _text.gameObject.AddComponent<SpeechBubble>();
@@ -61,7 +69,7 @@ public class EffectManager : MonoBehaviour
 
         SpeechBubble bubble = speechBubblePool.GetData();
         bubble.TextingSpeechBubble(_target, _text, PushBubble);
-        
+        runningSpeechBubble.Add(_target,bubble);
     }
     void PushBubble(Unit _unit,SpeechBubble _bubble)
     {
@@ -105,7 +113,7 @@ public class EffectManager : MonoBehaviour
                     questmark = questMarkRes.GetData("STARTABLE");
                     questmark.MarkType = QUESTMARKTYPE.STARTABLE;                    
                     questmark.gameObject.transform.SetParent(_npc.transform);                    
-                    questmark.gameObject.transform.localPosition = new Vector3(0,_npc.Nick_YPos + 0.2f, 0);
+                    questmark.gameObject.transform.localPosition = new Vector3(0,_npc.Nick_YPos() + 0.2f, 0);
                     runningQuestMark.Add(_npc, questmark);
                 }
                 break;
@@ -114,7 +122,7 @@ public class EffectManager : MonoBehaviour
                     questmark = questMarkRes.GetData("NOTCOMPLETE");
                     questmark.MarkType = QUESTMARKTYPE.NOTCOMPLETE;                    
                     questmark.gameObject.transform.SetParent(_npc.transform);
-                    questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos+0.2f, 0);
+                    questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos()+0.2f, 0);
                     runningQuestMark.Add(_npc, questmark);
                 }                
                 break;
@@ -122,7 +130,7 @@ public class EffectManager : MonoBehaviour
                 questmark = questMarkRes.GetData("COMPLETE");
                 questmark.MarkType = QUESTMARKTYPE.COMPLETE;
                 questmark.gameObject.transform.SetParent(_npc.transform);
-                questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos + 0.2f, 0);
+                questmark.gameObject.transform.localPosition = new Vector3(0, _npc.Nick_YPos() + 0.2f, 0);
                 runningQuestMark.Add(_npc, questmark);
                 break;
             case QUESTSTATE.DONE:
@@ -161,9 +169,11 @@ public class EffectManager : MonoBehaviour
         questMarkRes.Add("COMPLETE", questMarkQu);        
         questMarkRes.Add("NOTCOMPLETE", questMarkNotQu);        
     }
-    public void ClickEffectReset()               // 맵 이동 시 리셋
+    public void EffectReset()               // 맵 이동 시 리셋
     {
-        foreach(GameObject click in clickList)
+        StopAllCoroutines();
+
+        foreach (GameObject click in clickList)
         {
             if (click.gameObject.activeSelf == true)
             {
@@ -185,6 +195,23 @@ public class EffectManager : MonoBehaviour
             }
             runningQuestMark.Remove(npcList[i]);
         }
+
+
+        List<GameObject> runningEffectobj = new List<GameObject>(runningEffect.Keys);
+        for (int i = 0; i < runningEffectobj.Count; i++)
+        {
+            effectRes.Add(runningEffect[runningEffectobj[i]], runningEffectobj[i]);
+        }
+        runningEffect.Clear();
+
+        List<Unit> runningSpeechUnits = new List<Unit>(runningSpeechBubble.Keys);
+
+        for (int i = 0; i < runningSpeechUnits.Count; i++)
+        {
+            speechBubblePool.Add(runningSpeechBubble[runningSpeechUnits[i]]);
+        }
+
+        runningSpeechBubble.Clear();
     }
 
     public void ClickEffectOn(CLICKEFFECT _ClickEffect, Transform _Target)                      // 대상이 있음

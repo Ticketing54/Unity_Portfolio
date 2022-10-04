@@ -61,13 +61,12 @@ public class LoadingSceneController : MonoBehaviour
     float loadingPercent = 0f;
     Coroutine coUpdatePercent;
     
-    public void LoadScene(string _sceneName)
+    public void LoadScene(string _sceneName,MAPTYPE _type,string _cutScene = "")
     {        
-        gameObject.SetActive(true);
-
-        StartCoroutine(CoLoadScene(_sceneName));
+        gameObject.SetActive(true);          
+        StartCoroutine(CoLoadScene(_sceneName,_type,_cutScene));        
     }
-    IEnumerator CoLoadScene(string _sceneName)
+    IEnumerator CoLoadScene(string _sceneName,MAPTYPE _type,string _cutScene)
     {
         yield return Fade(true);
 
@@ -77,7 +76,24 @@ public class LoadingSceneController : MonoBehaviour
 
         yield return StartCoroutine(ResourceManager.resource.CoLoadSceneResource(_sceneName));
 
+        if (!string.IsNullOrEmpty(_cutScene))
+        {
+            yield return StartCoroutine(CoLoadCutScene(_cutScene));
+        }
+
+        if(_type == MAPTYPE.BOSS)
+        {
+            TutorialBoss boss = GameObject.FindGameObjectWithTag("Monster").GetComponent<TutorialBoss>();
+            boss.MoveStart();
+        }
+
+        CameraManager.cameraManager.CameraTargetOnCharacter();
+        SoundManager.soundmanager.BgmPlay(_sceneName + "BGM");
+        GameManager.gameManager.character.SetPosition();
+        UIManager.uimanager.OnBaseUI();
         GameManager.gameManager.SetMapInfo(_sceneName);
+        yield return Fade(false);
+        gameObject.SetActive(false);
     }   
 
     public void LoadingPercent(float _percent)
@@ -105,14 +121,6 @@ public class LoadingSceneController : MonoBehaviour
 
             yield return null;
         }                
-
-        if(_Percent == 1)
-        {
-            coUpdatePercent = null;
-
-            yield return Fade(false);
-            gameObject.SetActive(false);
-        }
     }
     
   
@@ -121,7 +129,7 @@ public class LoadingSceneController : MonoBehaviour
         float timer = 0f;
         while (timer <= 1f)
         {   
-            timer += Time.unscaledDeltaTime ;
+            timer += Time.deltaTime ;
             canvasGroup.alpha = isFadeIn ? Mathf.Lerp(0f, 1f, timer) : Mathf.Lerp(1f, 0f, timer);
             yield return null;
         }        
@@ -129,34 +137,65 @@ public class LoadingSceneController : MonoBehaviour
     public void LoadCutScene(string _cutName)
     {
         gameObject.SetActive(true);
-        StartCoroutine(CoLoadCutScene(_cutName));
+        StartCoroutine(CoLoadCutScene_dialog(_cutName));
     }
     public IEnumerator CoLoadCutScene(string _cutName)
-    {
+    {   
         gameObject.SetActive(true);
         yield return StartCoroutine(Fade(true));
         CameraManager.cameraManager.enabled = false;
         UIManager.uimanager.CanvasEnabled(false);
-        
+        yield return StartCoroutine(Fade(false));
+
         AsyncOperationHandle<SceneInstance> cutScene = Addressables.LoadSceneAsync(_cutName, LoadSceneMode.Additive);
         yield return cutScene;        
         
         GameObject timelineObj = GameObject.Find("Timeline");
         PlayableDirector director = timelineObj.GetComponent<PlayableDirector>();
         director.playOnAwake = false;
+        yield return StartCoroutine(Fade(false));
 
-        StartCoroutine(Fade(false));
+
         yield return CheckDone(director);
-        yield return Fade(true);
-
+        yield return StartCoroutine(Fade(true));
         AsyncOperationHandle<SceneInstance> quitCutScene =Addressables.UnloadSceneAsync(cutScene);
         yield return quitCutScene;
 
+
+        
+        CameraManager.cameraManager.enabled = true;
+        UIManager.uimanager.CanvasEnabled(true);        
+    }
+    public IEnumerator CoLoadCutScene_dialog(string _cutName)
+    {
+        gameObject.SetActive(true);
+        yield return StartCoroutine(Fade(true));
+        CameraManager.cameraManager.enabled = false;
+        UIManager.uimanager.CanvasEnabled(false);
+        
+
+        AsyncOperationHandle<SceneInstance> cutScene = Addressables.LoadSceneAsync(_cutName, LoadSceneMode.Additive);
+        yield return cutScene;
+
+        GameObject timelineObj = GameObject.Find("Timeline");
+        PlayableDirector director = timelineObj.GetComponent<PlayableDirector>();
+        director.playOnAwake = false;
+        yield return StartCoroutine(Fade(false));
+
+
+        yield return CheckDone(director);
+        yield return StartCoroutine(Fade(true));
+        AsyncOperationHandle<SceneInstance> quitCutScene = Addressables.UnloadSceneAsync(cutScene);
+        yield return quitCutScene;
+
+
+        
         CameraManager.cameraManager.enabled = true;
         UIManager.uimanager.CanvasEnabled(true);
-        yield return Fade(false);
+
+        yield return StartCoroutine(Fade(false));
         gameObject.SetActive(false);
-        
+
     }
     IEnumerator CheckDone(PlayableDirector _director)
     {

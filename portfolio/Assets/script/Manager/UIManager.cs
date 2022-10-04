@@ -1,9 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 public class UIManager : MonoBehaviour
 {
     public static UIManager uimanager;
@@ -22,63 +21,49 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        KeyboardSortCut = new Dictionary<KeyCode, Action>();
+        
+        nearUnit = new HashSet<UnitUiInfo>();
         mainCanvas = GetComponent<Canvas>();
+        AAddNearUnitOnUi += AddNearUnitHashSet;
+        ARemoveNearUnitUi += RemoveNearUnitHashSet;
+        OnBaseUI += () => { baseUi.gameObject.SetActive(true); };
+        OffBaseUI += () => { baseUi.gameObject.SetActive(false); };
     }
     public void CanvasEnabled(bool _state)
     {
         mainCanvas.enabled = _state;
     }
-    private void Update()
-    {
-        Inputkeyboard();
-    }
+    
     #region KeyboardSortCut
     Dictionary<KeyCode, Action> KeyboardSortCut;
 
 
-
-
-    public void AddKeyBoardSortCut(KeyCode _keycode, Action _action)
-    {
-        if (KeyboardSortCut.ContainsKey(_keycode))
-        {
-            KeyboardSortCut.Remove(_keycode);
-            KeyboardSortCut.Add(_keycode, _action);
-        }
-        else
-        {
-            KeyboardSortCut.Add(_keycode, _action);
-        }
-    }
-    public void RemoveKeyBoardSortCut(KeyCode _keycode)
-    {
-        if (KeyboardSortCut.ContainsKey(_keycode))
-        {
-            KeyboardSortCut.Remove(_keycode);
-        }
-        else
-        {
-            Debug.Log("없는 단축키를 없애려 합니다.");
-        }
-    }
-
-    void Inputkeyboard()
-    {
-        if (Input.anyKey)
-        {
-            foreach (KeyValuePair<KeyCode, Action> input in KeyboardSortCut)
-            {
-                if (Input.GetKeyDown(input.Key))
-                {
-                    input.Value();
-                }
-            }           
-        }
-    }
     #endregion
 
+
+    public void TryOpenMinimap_Max()
+    {
+        if(ATryOpenMinimap_Max != null)
+        {
+            ATryOpenMinimap_Max();
+        }
+    }    
+    public void TryOpenMinimap_Min()
+    {
+        if (ATryOpenMinimap_Min != null)
+        {
+            ATryOpenMinimap_Min();
+        }
+    }
+    public Action ATryOpenMinimap_Max;
+    public Action ATryOpenMinimap_Min;
+    
+    public Action AOpenQuestMain;
+    public Action ACloseQuestMain;
+    public Action AOpenEquipment;
+    public Action ACloseEquipment;
+    public Action AOpenSKill;
+    public Action ACloseSKill;
 
     public Action OpenQuickQuest
     {
@@ -122,16 +107,9 @@ public class UIManager : MonoBehaviour
     Action closeQuickQuest;
 
 
-
-    public void OnBaseUI()
-    {
-        baseUi.SetActive(true);        
-    }
-    public void OffBaseUI()
-    {
-        baseUi.SetActive(false);        
-    }
-
+    public Action OnBaseUI;
+    public Action OffBaseUI;
+    
 
     public Action<int,float> AQuickSlotItemCooltime
     {
@@ -186,7 +164,9 @@ public class UIManager : MonoBehaviour
     Action<int,QUESTSTATE> aQuestUpdateUi;
     Action<Quest> aAddQuickQuestUi;
     Action<Quest> aUpdateQuickQuestUi;
-
+    public Action aOpenTopInfoUi;
+    public Action aCloseTopInfoUi;
+    public Action<Monster> aUpdateTopinfo;
     public Action<int> AGetGoldUpdateUi
     {
         get
@@ -414,16 +394,6 @@ public class UIManager : MonoBehaviour
     #endregion
 
 
-
-    #region Middle_Top_HpBar    
-    [SerializeField]
-    TopEnermyInfoUi topEnermyInfoUi;
-    public void Open_Top_EnermyInfo(Monster _Monster)              // 상단 중앙 적정보 UI
-    {
-        topEnermyInfoUi.gameObject.SetActive(true);
-        topEnermyInfoUi.Top_EnermyInfoUi(_Monster);
-    }
-    #endregion
 
 
     #region DropBox
@@ -785,8 +755,8 @@ public class UIManager : MonoBehaviour
     #endregion
 
     
-    Action<NpcUnit> aOpenShop;
-    public Action<NpcUnit> AOpenShop
+    Action<Npc> aOpenShop;
+    public Action<Npc> AOpenShop
     {
         get
         {
@@ -805,7 +775,8 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    
+    public Action AOpenInventoryUi;
+    public Action ACloseInventoryUi;
   
     #region Quest
     public MiniQuestSlot questSlot;
@@ -820,19 +791,66 @@ public class UIManager : MonoBehaviour
     public UI_Skill skillmanager;
     public GameObject skill;     
     public bool QuestActive = false;
-    #endregion    
-   
-  
-    #region Option
-    public Option option;
     #endregion
 
-    public UiEffectManager uiEffectManager;
-    public delegate void OnUiControl(Unit _unit);
-    public OnUiControl uicontrol_On;
-    public OnUiControl uicontrol_Off;
-   
+    #region UiEffect
+    public Action<int, GameObject, bool> ALoadDamageEffect;
+    public Action<GameObject> ALevelUpEffect;
+    #endregion
+
+
+    #region Option
+    public Option option;
+    #endregion    
+
+    #region nearUnitUi
+
+    HashSet<UnitUiInfo> nearUnit;
+    public Action<UnitUiInfo> AAddNearUnitOnUi
+    {
+        get
+        {
+            return aAddNearUnit;
+            
+        }
+        set
+        {
+            aAddNearUnit = value;
+        }
+    }
     
+    public Action<UnitUiInfo> ARemoveNearUnitUi
+    {
+        get
+        {
+            return aReMoveNearUnit;
+        }
+        set
+        {
+            aReMoveNearUnit = value;
+        }
+    }
+    Action<UnitUiInfo> aReMoveNearUnit;
+    Action<UnitUiInfo> aAddNearUnit;
+    public List<UnitUiInfo> NearUnitList => new List<UnitUiInfo>(nearUnit);
+
+    void AddNearUnitHashSet(UnitUiInfo _unit)
+    {
+        if(!nearUnit.Contains(_unit))
+        {
+            nearUnit.Add(_unit);
+        }
+    }
+    
+    void RemoveNearUnitHashSet(UnitUiInfo _unit)
+    {
+        if(nearUnit.Contains(_unit))
+        {
+            nearUnit.Remove(_unit);
+        }
+    }
+
+    #endregion
 
     public void OpenOtion()
     {

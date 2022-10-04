@@ -42,7 +42,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
     int nextDilogNum = -3;
     Npc npc;
 
-
+    
     private void Start()
     {
         choicePool = new PoolData<Choice>(clickChoiceBar, choice_NotUsed, "Choice");
@@ -50,7 +50,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         {
             UIManager.uimanager.FadeinFucout(
                 () =>
-                {
+                {   
                     UIManager.uimanager.OffBaseUI();                    
                 },
                 () =>
@@ -63,8 +63,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
         };
         UIManager.uimanager.ACloseDialog += () => 
-        {
-            GameManager.gameManager.character.isPossableMove = true;
+        {   
             gameObject.SetActive(false);
         };
         
@@ -80,7 +79,12 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
         npc_DialogData = null;
         questList = null;
         npc = null;
-        DialogTextReset();        
+        DialogTextReset();
+        if(GameManager.gameManager.character != null)
+        {
+            GameManager.gameManager.character.IsPossableControl = true;
+        }
+        
     }
     
    
@@ -126,7 +130,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
   
   
-    public void StartDialogue(NpcUnit _npc)
+    public void StartDialogue(Npc _npc)
     {   
         if (_npc.ITEMS != null)
         {            
@@ -149,11 +153,11 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
             dialogData.Add(subdialog);
         }
         npc_DialogData = dialogData;
-        npc_name.text = _npc.NickName;
+        npc_name.text = _npc.UnitName();
         FirstDialog(_npc);
     }
 
-    void CheckQuest(NpcUnit _npc)
+    void CheckQuest(Npc _npc)
     {
         if (questList == null)
         {
@@ -223,7 +227,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
     }
 
-    void FirstDialog(NpcUnit _npc)
+    void FirstDialog(Npc _npc)
     {
         if (reward.gameObject.activeSelf == true)
         {
@@ -324,7 +328,7 @@ public class DialogueUi : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
         if (!string.IsNullOrEmpty(cutScene))
         {
-            yield return LoadingSceneController.instance.CoLoadCutScene(cutScene);
+            yield return LoadingSceneController.instance.CoLoadCutScene_dialog(cutScene);
         }
 
 

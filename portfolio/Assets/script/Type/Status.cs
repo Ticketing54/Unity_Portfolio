@@ -1,19 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using System;
 public class Status
 {
 
     Character character;            // 설정 시 지정
-
+    NavMeshAgent nav;
 
     public Status(Character _character)
     {
         LevelSetting(1);
         character = _character;
-        stateControlDic     = new Dictionary<string, Coroutine>();
+        nav = character.GetComponent<NavMeshAgent>();
+        stateControlDic     = new Dictionary<string, Coroutine>();        
         buffEffectControl   = new Dictionary<Coroutine, GameObject>();
+        
     }
 
     Dictionary<string, Coroutine> stateControlDic;
@@ -166,15 +169,20 @@ public class Status
 
     public int CRI { get; set; }
     public float ATK_RANGE { get { return attack_Range; } set { attack_Range = value; } }
-    public float AttckDamage
+    public int AttckDamage(bool _isCri)
     {
-        get
+        if (_isCri)
         {
             float attackdamage = atk + equip_Atk;
             return (int)UnityEngine.Random.Range((float)(attackdamage * 0.8), (float)(attackdamage * 1.2));
+        }
+        else
+        {
+            float attackdamage = atk + equip_Atk;
+            return 2*(int)UnityEngine.Random.Range((float)(attackdamage * 0.8), (float)(attackdamage * 1.2));
         }        
     }
-    public DAMAGE DamageType()
+    public bool DamageType()
     {
         int count = CRI;
 
@@ -182,29 +190,18 @@ public class Status
 
         if (probabillity <= count)
         {
-            return DAMAGE.CRITICAL;
+            return true;
         }
         else
         {
-            return DAMAGE.NOMAL;
+            return false;
         }
     }
-    public void Damaged(DAMAGE _type, float _dmg)
-    {
-        switch (_type)
-        {
-            case DAMAGE.NOMAL:
-                {
-                    Hp -= _dmg;
-                }
-                break;
-            case DAMAGE.CRITICAL:
-                {
-                    Hp -= _dmg * 2;
-                }
-                break;
-        }        
-        UIManager.uimanager.uiEffectManager.LoadDamageEffect(_dmg, character.gameObject, _type);        
+    public void Damaged(bool _type, float _dmg)
+    {        
+        Hp -= _dmg;
+        UIManager.uimanager.ALoadDamageEffect((int)_dmg, character.gameObject, _type);
+        SoundManager.soundmanager.soundsPlay("Damaged", character.gameObject);
     }
     public void GetExp(int _exp)
     {
@@ -222,23 +219,22 @@ public class Status
         Level++;
         SkillPoint++;
         LevelSetting(level);        
-        UIManager.uimanager.uiEffectManager.LevelUpEffect(character.gameObject);
+        UIManager.uimanager.ALevelUpEffect(character.gameObject);
     }
     
     public void LevelSetting(int _Level)
     {
-        List<string> Table = ResourceManager.resource.GetTable_Index("LevelTable", _Level);            
-        
-        level = int.Parse(Table[0]);        
+        List<string> Table = ResourceManager.resource.GetTable_Index("LevelTable", _Level);
+
+        level = int.Parse(Table[0]);
         hp = float.Parse(Table[1]);
         mp = float.Parse(Table[2]);
-        need_Exp = int.Parse(Table[3]);
-        // 임시
-        //
+        Exp = 0;
+        need_Exp = int.Parse(Table[3]);        
         cur_Hp = hp;
         cur_Mp = mp;
-        // 
-    }  
+        
+    }
     public void EquipStatus(Item _item)
     {
 
@@ -360,22 +356,14 @@ public class Status
         UIManager.uimanager.ARemoveBuf(_skill.spriteName);
         EffectManager.effectManager.PushBuffEffect(_skill.effectName, _effect);
     }
-    void ApplyBufStat(string _ability,bool _isFinish)
-    {
-        string[] ability = _ability.Split("#");
-        for (int i = 0; i < ability.Length; i++)
-        {
-            string[] abilityData = ability[i].Split('/');
-            StatDivide(abilityData[0], float.Parse(abilityData[1]));
-        }
-    }
+    
     void StatDivide(string _stat, float _bufIncrease)
     {
         switch (_stat)
         {
             case "Spd":
                 {
-                    
+                    nav.speed += _bufIncrease;
                 }
                 break;
             case "Atk":

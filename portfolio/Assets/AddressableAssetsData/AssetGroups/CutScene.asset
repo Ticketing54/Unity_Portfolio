@@ -28,6 +28,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - CutScene
+  - m_GUID: eeecbae1d2fb49046a3fa691af3e2dbd
+    m_Address: BossCutScene
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CutScene
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6defd24f3161a494192e121d10f7c432, type: 2}
   m_SchemaSet:

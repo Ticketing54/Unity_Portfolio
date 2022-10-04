@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+public enum MAPTYPE
+{
+    NOMAL,
+    BOSS,
+    EVENT,
+}
 public enum MONSTERSTATE
 {    
     IDLE,
@@ -44,7 +50,8 @@ public enum STATUSEFFECT
 {
     NOMAL,
     STURN,
-    KNOCKBACK
+    KNOCKBACK,
+    SLOW,
 }
 public enum STATUS
 {
@@ -53,11 +60,6 @@ public enum STATUS
     ATK,
 }
 
-public enum DAMAGE
-{
-    NOMAL,
-    CRITICAL
-}
 public enum CLICKEFFECT
 {
     NORMAL,

@@ -88,51 +88,34 @@ public class GameManager : MonoBehaviour
             Destroy(character);
             character = null;
         }
+        SoundManager.soundmanager.OffMainAudio();
         character = Instantiate(ResourceManager.resource.character).AddComponent<Character>();
         character.transform.SetParent(this.transform);
         character.gameObject.layer = 8;
         New_C_Data(_nickName);        
-        LoadingSceneController.Instance.LoadScene("Village");        
+        LoadingSceneController.Instance.LoadScene("Village",MAPTYPE.NOMAL);        
     }
 
 
     public delegate void MoveSceneReset();
     public MoveSceneReset moveSceneReset;
-    public void MoveToScene(string _sceneName,Vector3 _Pos)
+    public void MoveToScene(string _sceneName,Vector3 _pos,MAPTYPE _type,string _cutScene)
     {
         UIManager.uimanager.OffBaseUI();
-        character.StartPos = _Pos;
+        character.StartPos = _pos;
         moveSceneReset();
-        LoadingSceneController.instance.LoadScene(_sceneName);
+        LoadingSceneController.instance.LoadScene(_sceneName,_type,_cutScene);
     }
    
     public void New_C_Data(string _nickName)
-    {
-
+    {   
         character.stat.LevelSetting(5);
         character.tag = "Player";         
-        character.name = _nickName;                
+        character.name = _nickName;
+        character.stat.Level = 1;
         mapName = "Village";                
         character.inven.Gold = 5000;
         character.StartPos = new Vector3(32f,0f,20f);
-
-        // Test
-       
-        Item test1 = new (1,1);
-        Item test2 = new (1,3);
-        Item test3 = new (1,2);
-        Item test4 = new (2,1);
-        Item test5 = new (2,2);
-        Item test6 = new (3,1);
-        character.inven.PushItem(test1);
-        character.inven.PushItem(test2);
-        character.inven.PushItem(test3);
-        character.inven.PushItem(test4);
-        character.inven.PushItem(test5);
-        character.inven.PushItem(test6);
-        
-        
-        
     }
     
 

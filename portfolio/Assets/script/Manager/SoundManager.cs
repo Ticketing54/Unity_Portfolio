@@ -7,10 +7,12 @@ using UnityEngine.Audio;
 
 public class SoundManager : MonoBehaviour
 {
-    public AudioSource bgm;
-    public List<AudioClip> bgmlist = new List<AudioClip>();
+    
     public AudioMixer AudioMixer;
-
+    [SerializeField]
+    AudioListener mainListener;
+    [SerializeField]
+    AudioSource bgm;
 
 
     public static SoundManager soundmanager;
@@ -19,46 +21,22 @@ public class SoundManager : MonoBehaviour
         if (soundmanager == null)
         {
             soundmanager = this;
-            DontDestroyOnLoad(gameObject);
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            DontDestroyOnLoad(gameObject);            
         }
         else
         {
             Destroy(gameObject);
         }
-        bgmListUpdate();
-        
-
-
-
-
-
-
     }
-
-    public void bgmListUpdate()
+    public void OffMainAudio()
     {
-        AudioClip[] one = Resources.LoadAll<AudioClip>("Sounds/Bgm");
-        for(int i = 0; i < one.Length; i++)
-        {
-            
-            bgmlist.Add(one[i]);
-        }
+        mainListener.enabled = false;
     }
-    private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+    public void soundsPlay(string _name , GameObject obj =null)
     {
-        for(int i = 0; i < bgmlist.Count; i++)
-        {
-            if (arg0.name == bgmlist[i].name)
-                BgmPlay(bgmlist[i]);
-        }
-    }
-
-    public void soundsPlay(string _Name , GameObject obj =null)
-    {
-        GameObject sounds = new GameObject(_Name + "Sounds");        
-        AudioSource audiosource = sounds.AddComponent<AudioSource>();        
-        AudioClip _clip = Resources.Load<AudioClip>("Sounds/" + _Name);        
+        GameObject sounds = new GameObject(_name + "Sounds");        
+        AudioSource audiosource = sounds.AddComponent<AudioSource>();
+        AudioClip _clip = ResourceManager.resource.GetSound(_name);
         audiosource.clip = _clip;
         audiosource.Play();
         audiosource.outputAudioMixerGroup = AudioMixer.FindMatchingGroups("SFX")[0];
@@ -70,6 +48,25 @@ public class SoundManager : MonoBehaviour
         
         Destroy(audiosource.gameObject, audiosource.clip.length);
         
+    }
+
+    public AudioSource GetSounds(string _name)
+    {
+        GameObject obj = new GameObject(_name);
+        AudioSource audiosource = obj.AddComponent<AudioSource>();
+        AudioClip _clip = ResourceManager.resource.GetSound(_name);
+
+        if(_clip == null)
+        {
+            return null;
+        }
+
+
+        audiosource.clip = _clip;
+        audiosource.outputAudioMixerGroup = AudioMixer.FindMatchingGroups("SFX")[0];
+        audiosource.spatialBlend = 1;
+        audiosource.Stop();
+        return audiosource;
     }
     public void ControlBGMVolume(float val)
     {
@@ -83,13 +80,20 @@ public class SoundManager : MonoBehaviour
     {
         AudioMixer.SetFloat("SFX", Mathf.Log10(val)*20);
     }
-    public void BgmPlay(AudioClip clip)
+    public void BgmPlay(string _mapName)
     {
-        bgm.outputAudioMixerGroup = AudioMixer.FindMatchingGroups("BGM")[0];
-        bgm.clip = clip;
+        if(bgm != null)
+        {
+            Destroy(bgm);
+        }
+
+        GameObject obj = new GameObject(_mapName);
+        AudioSource source = obj.AddComponent<AudioSource>();
+        source.clip = ResourceManager.resource.GetSound(_mapName);
+        bgm = source;
+        bgm.outputAudioMixerGroup = AudioMixer.FindMatchingGroups("BGM")[0];        
         bgm.loop = true;
         bgm.volume = 0.1f;
         bgm.Play();
-
     }
 }

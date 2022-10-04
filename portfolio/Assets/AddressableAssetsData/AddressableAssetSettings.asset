@@ -51,6 +51,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5612088694590ff4e99121ff362e45db, type: 2}
   - {fileID: 11400000, guid: 6e53b3b6f1effb940b27dc787e3eae21, type: 2}
   - {fileID: 11400000, guid: b926d40e06559d245b7647cc102494d6, type: 2}
+  - {fileID: 11400000, guid: 5e822cd68360efe41b7e1870e8838d3d, type: 2}
   - {fileID: 11400000, guid: 709324f2c59d66a4ea60269488c0df8c, type: 2}
   - {fileID: 11400000, guid: 16c8b1589e59d864681f76d43674d6c2, type: 2}
   - {fileID: 11400000, guid: 72bcad785fb0de54da7a9141fda4fbb3, type: 2}
@@ -122,6 +123,7 @@ MonoBehaviour:
     - Player
     - Dialogue
     - CutScene
+    - SoundsControl
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 567860cb0a76ff24495c8b78a9f9e212, type: 2}

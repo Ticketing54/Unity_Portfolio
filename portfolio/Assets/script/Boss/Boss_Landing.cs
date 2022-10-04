@@ -7,6 +7,7 @@ public class Boss_Landing : StateMachineBehaviour
     AudioSource audio;
     GameObject screamsound;
     
+    
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (screamsound == null)
@@ -33,8 +34,6 @@ public class Boss_Landing : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         audio.gameObject.SetActive(false);
-        animator.SetBool("flyAttack", false);
-        
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

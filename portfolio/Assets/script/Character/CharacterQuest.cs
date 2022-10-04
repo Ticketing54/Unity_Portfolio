@@ -23,7 +23,7 @@ public class CharacterQuest
         questItem       = new Dictionary<int, int>();
         questMonster    = new Dictionary<int, int>();
         quickQuests     = new Dictionary<int, Quest>();
-
+        _character.AddKeyBoardSortCut(KeyCode.J, TryOpenQuest);
     }
     [SerializeField]
     QuestStateDic allQuestDic;
@@ -36,8 +36,21 @@ public class CharacterQuest
     // 몬스터 인덱스 / 퀘스트 인덱스 
     Dictionary<int, int> questMonster;
 
-
-
+    bool questActive = false;
+    void TryOpenQuest()
+    {
+        questActive = !questActive;
+        if (questActive)
+        {
+            UIManager.uimanager.AOpenQuestMain();
+        }
+        else
+        {
+            UIManager.uimanager.ACloseQuestMain();
+        }
+            
+    }
+    
     #region QuickQuest
 
     void AddQuickQuest(int _index, Quest _quest)
@@ -249,7 +262,7 @@ public class CharacterQuest
         Quest popQuest;
         if (playingQuest.TryGetValue(_index,out popQuest))
         {
-            character.inven.GetGold(popQuest.Reward_Gold); 
+            character.inven.AddGold(popQuest.Reward_Gold); 
             character.stat.GetExp(popQuest.Reward_Exp);
             character.inven.GetRewards(popQuest.Reward_Item);
 

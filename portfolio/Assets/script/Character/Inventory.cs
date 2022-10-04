@@ -8,18 +8,55 @@ public class Inventory : ItemMove
 {
     [SerializeField]
     Item[] inven;
+
     int maxCount;
     int currentCount;
-    public Inventory()
+    bool inventoryActive = false;
+    Character character;
+    public Inventory(Character _character)
     {
+        character = _character;
         inven =new Item[18];
         maxCount = 18;
         currentCount = 0;
+        _character.AddKeyBoardSortCut(KeyCode.I, TryOpenInventory);
     }
     int gold;
     public int Gold { get => gold; set => gold = value; }
-    
-    public void GetGold(int _gold)
+
+    void TryOpenInventory()
+    {
+        inventoryActive = !inventoryActive;
+        if (inventoryActive)
+        {
+            OpenInventory();
+        }
+        else
+        {
+            CloseInventory();
+        }
+    }
+    void OpenInventory()
+    {
+        if (inventoryActive == false)
+        {
+            inventoryActive = true;
+        }
+        UIManager.uimanager.AOpenInventoryUi();
+    }
+    void CloseInventory()
+    {
+        if (inventoryActive == true)
+        {
+            inventoryActive = false;
+        }
+        UIManager.uimanager.ACloseInventoryUi();
+    }
+
+
+
+
+    public void AddGold(int _gold)
     {
         gold += _gold;
         UIManager.uimanager.AGetGoldUpdateUi(_gold);

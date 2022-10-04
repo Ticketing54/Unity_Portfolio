@@ -48,11 +48,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Monster
-  - m_GUID: ccd3bb096cfe8604bb5626f6c6b7e53f
-    m_Address: skill2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Monster
   - m_GUID: d1d12cb5876b24b54b24e92e0d93fede
     m_Address: Durmmyb
     m_ReadOnly: 0

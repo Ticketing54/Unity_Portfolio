@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Boss
+  m_EditorClassIdentifier: 
+  m_GroupName: Boss
+  m_Data:
+    m_SerializedData: []
+  m_GUID: fd9ec8cd659e98e42a214bf68f92bed4
+  m_SerializeEntries:
+  - m_GUID: 343741c2cf3ca554d88a9bfa6b74c2f5
+    m_Address: BossScene
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Scene
+    - Patch
+  - m_GUID: f903e19faa7717b429ed24933cf3df00
+    m_Address: BossWayPoint
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: d3bf9aa62d010ab4fa47a634fcba4d61
+    m_Address: BossPotal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: 2b48f9cada9d2374baac6214bb1b2eae
+    m_Address: BossMonster
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  - m_GUID: 6da61ee6f0d1dfa4296d9d66655f89f0
+    m_Address: BossNpc
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Table
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 6defd24f3161a494192e121d10f7c432, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 802ca9aa86fd97a4d8a46ef916041375, type: 2}
+    - {fileID: 11400000, guid: 0ef9914e279a0f544b184a978730af37, type: 2}

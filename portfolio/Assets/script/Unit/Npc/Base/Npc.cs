@@ -6,13 +6,51 @@ using UnityEngine.UI;
 using TMPro;
 
 
-public class Npc :NpcUnit
-{   
-    
+public abstract class Npc :Unit
+{
+
+    [SerializeField]
+    protected List<int> quests;
+    [SerializeField]
+    protected List<int> items;
+    [SerializeField]
+    protected string dialogue;
+    protected int npcIndex;
+    public int NpcIndex { get => npcIndex; }
+
+    public List<int> QUEST { get => quests; }
+    public List<int> ITEMS { get => items; }
+    public string DIALOGUE { get => dialogue; }
+
     protected NavMeshAgent nav;
     protected Quaternion startDir;
     protected Coroutine action;
+    string miniDotName;
     
+    public override string MiniDotSpriteName()
+    {
+        return miniDotName;
+    }
+
+    public override  void interact()
+    {
+        GameManager.gameManager.character.IsPossableControl = false;
+        UIManager.uimanager.AOpenDialog(this);
+        if (action != null)
+        {
+            StopCoroutine(action);
+        }
+        action = StartCoroutine(CoLookCharacter());
+    }
+    public virtual void OnEnable()
+    {
+        StartCoroutine(CoApproachChracter());
+    }
+    public virtual void OnDisable()
+    {
+        StopAllCoroutines();
+        UIManager.uimanager.ARemoveNearUnitUi(this);        
+    }
     public void SetNpc(int _index,string _npcName, float _nickYPos,List<int> _quests,List<int> _items,string _dialogue)
     {
         npcIndex = _index;
@@ -24,6 +62,7 @@ public class Npc :NpcUnit
         SetQuestMark();
         startPos = transform.position;
         startDir = transform.rotation;
+        miniDotName = "DotN";
     }
 
     public void LookIdle()
@@ -82,6 +121,7 @@ public class Npc :NpcUnit
                         if (GameManager.gameManager.character.quest.ClearPrecedQuest(quests[i]) && startNpcIndex == npcIndex)
                         {
                             EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.NONE);
+                            miniDotName = "Exclamation";
                             return;
                         }
                     }
@@ -99,10 +139,12 @@ public class Npc :NpcUnit
                                 if(quest.Start_Npc == NpcIndex && quest.Type == QUESTTYPE.DIALOG)
                                 {
                                     EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.PLAYING);
+                                    miniDotName = "QuestionWhite";
                                 }
                                 else
                                 {
                                     EffectManager.effectManager.UpdateQuestMark(this, QUESTSTATE.COMPLETE);
+                                    miniDotName = "QuestionGreen";
                                 }
                             }
                             
@@ -117,62 +159,42 @@ public class Npc :NpcUnit
                 
             }
             EffectManager.effectManager.RemoveQuestMark(this);
+            miniDotName = "DotN";
         }            
     }
-    public override void OnEnable()
-    {
-        base.OnEnable();
-    }
-    public virtual void Interact()
-    {
-        GameManager.gameManager.character.isPossableMove = false;
-        UIManager.uimanager.AOpenDialog(this);
-        if(action != null)
-        {
-            StopCoroutine(action);
-        }
-        action = StartCoroutine(CoLookCharacter());
-    }
+   
     public virtual void EtcQuest(int _questIndex)
     {
         Debug.Log("기타 퀘스트");
     }
 
-  
+    protected IEnumerator CoApproachChracter()
+    {
+        yield return null;
+
+        bool approachChracter = false;
+        while (true)
+        {
+            if (GameManager.gameManager.character != null)
+            {
+                if (this.Distance < 6f && approachChracter == false)
+                {
+                    approachChracter = true;
+                    UIManager.uimanager.AAddNearUnitOnUi(this);
+                    GameManager.gameManager.character.AddNearInteract(this);
+                }
+
+                if (this.Distance >= 6f && approachChracter == true)
+                {
+                    approachChracter = false;
+                    UIManager.uimanager.ARemoveNearUnitUi(this);
+                    GameManager.gameManager.character.RemoveInteract(this);
+                }
+            }
+            yield return null;
+        }
+    }
 
 
-    //IEnumerator Mini_DotMove()
-    //{
-    //    while (true)
-    //    {
-    //        if (UIManager.uimanager.minimap.Minimap_n.gameObject.activeSelf == true && Character.Player != null)
-    //        {
-    //            if (DISTANCE <= 20f && MiniMap_Dot == null )
-    //            {
-
-    //                MiniMap_Dot = ObjectPoolManager.objManager.PoolingMiniDot_n();
-    //                MiniMap_Dot.sprite = ResourceManager.resource.GetImage("Dot_N");
-
-    //            }
-    //            else if (DISTANCE <= 20f && MiniMap_Dot != null)
-    //            {
-
-    //                MiniMap_Dot.rectTransform.anchoredPosition = UIManager.uimanager.minimap.MoveDotPosition(transform.position);
-
-    //            }
-    //            else if ((DISTANCE > 20f && MiniMap_Dot != null) )
-    //            {
-    //                MiniMap_Dot.gameObject.SetActive(false);
-    //                MiniMap_Dot = null;
-    //            }
-
-
-
-
-    //        }
-
-    //        yield return null;
-    //    }
-    //}
 
 }

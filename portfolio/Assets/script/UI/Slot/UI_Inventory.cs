@@ -19,8 +19,8 @@ public class UI_Inventory : UI_ItemSlots
     private void Awake()
     {
         itemListType = ITEMLISTTYPE.INVEN;
-        UIManager.uimanager.AddKeyBoardSortCut(KeyCode.I, TryOpenInventory);
-        UIManager.uimanager.AOpenDropBox += OpenInventory;
+        UIManager.uimanager.AOpenInventoryUi += () => gameObject.SetActive(true);
+        UIManager.uimanager.ACloseInventoryUi += () => gameObject.SetActive(false);                
         gameObject.SetActive(false);
     }
     public override void UpdateAllSlot()
@@ -42,39 +42,6 @@ public class UI_Inventory : UI_ItemSlots
         }
     }
 
-
-    bool inventoryActive = false;    
-    void TryOpenInventory()
-    {
-        inventoryActive = !inventoryActive;
-        if (inventoryActive)
-        {
-            OpenInventory();
-        }
-        else
-        {
-            CloseInventory();
-        }
-    }
-    void OpenInventory()
-    {
-        if (inventoryActive == false)
-        {
-            inventoryActive = true;
-        }
-
-        gameObject.SetActive(true);
-    }
-    void CloseInventory()
-    {
-        if (inventoryActive == true)
-        {
-            inventoryActive = false;
-        }
-
-        gameObject.SetActive(false);
-
-    }
 
 
 }

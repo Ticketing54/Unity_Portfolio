@@ -133,6 +133,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Effect
+  - m_GUID: ccd3bb096cfe8604bb5626f6c6b7e53f
+    m_Address: skill2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Effect
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6defd24f3161a494192e121d10f7c432, type: 2}
   m_SchemaSet:

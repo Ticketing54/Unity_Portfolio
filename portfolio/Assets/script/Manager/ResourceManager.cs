@@ -28,16 +28,23 @@ public class ResourceManager: MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        imageRes    = new();
+        tableRes    = new();
+        dialogueRes = new();
+        effectRes   = new();
+        soundRes    = new();
     }
 
 
 
     #region StartResource[Table/Image]
     public Action AClosePatchUi;
-    Dictionary<string, Sprite> imageRes = new ();
-    Dictionary<string, List<string>> tableRes = new ();          // 배열 인덱스가 각각의 인덱스
-    Dictionary<string, List<string>> dialogueRes = new ();
-    Dictionary<string, GameObject> effectRes = new ();    
+    Dictionary<string, Sprite> imageRes;
+    Dictionary<string, List<string>> tableRes;          // 배열 인덱스가 각각의 인덱스
+    Dictionary<string, List<string>> dialogueRes;
+    Dictionary<string, GameObject> effectRes;
+    Dictionary<string, AudioClip> soundRes ;
     public void StartResourceSetting()
     {
         StartCoroutine(CoStartResourceSetting());
@@ -50,7 +57,7 @@ public class ResourceManager: MonoBehaviour
         IList<IResourceLocation> imageList;                                                    // 
         IList<IResourceLocation> dialogList;                // 이미지 주소
         IList<IResourceLocation> effectList;                // 이펙트 주소
-
+        IList<IResourceLocation> soundsList;
 
         AsyncOperationHandle<IList<IResourceLocation>> tableHandle = Addressables.LoadResourceLocationsAsync("Table");
         yield return tableHandle;
@@ -68,6 +75,9 @@ public class ResourceManager: MonoBehaviour
         yield return effectHandle;
         effectList = effectHandle.Result;
 
+        AsyncOperationHandle<IList<IResourceLocation>> soundsHandle = Addressables.LoadResourceLocationsAsync("Sounds");
+        yield return soundsHandle;
+        soundsList = soundsHandle.Result;
 
         AsyncOperationHandle<IList<TextAsset>> tableAssetHandle = Addressables.LoadAssetsAsync<TextAsset>(tableList, SaveTextAsset);
         yield return tableAssetHandle;
@@ -86,7 +96,11 @@ public class ResourceManager: MonoBehaviour
         AsyncOperationHandle<IList<GameObject>> effectAssetHandle = Addressables.LoadAssetsAsync<GameObject>(effectList, SaveEffectAsset);
         yield return effectAssetHandle;
         Addressables.Release<IList<IResourceLocation>>(effectList);
-        EffectManager.effectManager.BasicEffectAdd();     
+        EffectManager.effectManager.BasicEffectAdd();
+
+        AsyncOperationHandle<IList<AudioClip>> soundAssetHandle = Addressables.LoadAssetsAsync<AudioClip>(soundsList, SaveSoundsAsset);
+        yield return soundAssetHandle;
+        Addressables.Release<IList<IResourceLocation>>(soundsList);
 
         AsyncOperationHandle<GameObject> playercharacter = Addressables.LoadAssetAsync<GameObject>("PlayerCharacter");        
         yield return playercharacter;
@@ -158,7 +172,13 @@ public class ResourceManager: MonoBehaviour
         }
     }
 
-
+    void SaveSoundsAsset(AudioClip _sound)
+    {
+        if (!soundRes.ContainsKey(_sound.name))
+        {
+            soundRes.Add(_sound.name, _sound);
+        }
+    }
 
     #endregion
 
@@ -257,10 +277,8 @@ public class ResourceManager: MonoBehaviour
             GameObject potalObj;
             yield return potalObj = Addressables.InstantiateAsync("Potal").Result;
             Potal potal = potalObj.AddComponent<Potal>();
-            potal.mapName = sInfo[0];
-            potal.pos = new Vector3(float.Parse(sInfo[4]), float.Parse(sInfo[5]), float.Parse(sInfo[6]));
-
-            // 포탈 정보 입력            
+            potal.SettingPotal(sInfo);
+            ObjectManager.objManager.AddRunningPotal(potal);
         }
     }
     IEnumerator CoLoadWayPoint(string _mapName)
@@ -290,11 +308,7 @@ public class ResourceManager: MonoBehaviour
         yield return StartCoroutine(CoLoadPotal(_mapName));
         LoadingSceneController.instance.LoadingPercent(0.75f);
         yield return StartCoroutine(CoLoadWayPoint(_mapName));
-        LoadingSceneController.instance.LoadingPercent(1);
-
-        CameraManager.cameraManager.CameraTargetOnCharacter();        
-        GameManager.gameManager.character.SetPosition();
-        UIManager.uimanager.OnBaseUI();
+        LoadingSceneController.instance.LoadingPercent(1);       
     }
     public void LoadSceneResource(string _mapName)
     {
@@ -310,22 +324,25 @@ public class ResourceManager: MonoBehaviour
                 {
                     newMonster= (Monster)_mobObj.AddComponent<Nomal_Monster>();
                     break;
-                }
-            case "Tutorial":
+                }          
+            case "Hide":
                 {
-                    newMonster = (Monster)_mobObj.AddComponent<Tutorial_Monster>();
+                    newMonster = (Monster)_mobObj.AddComponent<Hide_Monster>();        //                    
                     break;
                 }
-            case "Hostile":
+            case "NotMonster":
                 {
-                    newMonster = (Monster)_mobObj.AddComponent<Hostile_Monster>();        //
+                    newMonster = (Monster)_mobObj.AddComponent<NotMonster>();        //                    
                     break;
                 }
-            case "Mimic":
+            case "Boss":
                 {
-                    newMonster = (Monster)_mobObj.AddComponent<Mimic>();        //                    
-                    break;
-                }
+                    newMonster = (Monster)_mobObj.AddComponent<TutorialBoss>();
+                    newMonster.SetMonster(_mobTableIndex, _startPos);                    
+                    UIManager.uimanager.aOpenTopInfoUi();
+                    UIManager.uimanager.aUpdateTopinfo(newMonster);                    
+                    return;
+                }                
             default:
                 {
                     return;
@@ -378,7 +395,7 @@ public class ResourceManager: MonoBehaviour
                 }
             case "Quest":
                 {
-                    newNpc = (Npc)_npc.AddComponent<QuestNpc>();            //
+                    newNpc = (Npc)_npc.AddComponent<MoveNpc>();            //
                     break;
                 }
             case "NoneDialog":
@@ -433,7 +450,18 @@ public class ResourceManager: MonoBehaviour
     #endregion
 
 
-    
+    public AudioClip GetSound(string _name)
+    {
+        AudioClip sound = null;
+
+        if (!soundRes.TryGetValue(_name, out sound))
+        {
+            Debug.Log(_name +"Sound is null");
+        }
+
+        return sound;
+        
+    }
     public Sprite GetImage(string _name)
     {
         Sprite getImage;
@@ -443,7 +471,7 @@ public class ResourceManager: MonoBehaviour
         }
         else
         {
-            Debug.Log("이미지가 존재하지 않습니다.");
+            Debug.Log(_name+"Image is null");
             return null;
         }
     }

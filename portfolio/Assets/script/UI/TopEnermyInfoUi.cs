@@ -13,29 +13,24 @@ public class TopEnermyInfoUi : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI enermy_Hp_Text;
 
-    public void Top_EnermyInfoUi(Monster _Monster)
-    {        
-
-        if (_Monster.MightyEnermy())
-        {
-            enermy_Name.color = Color.red;
-        }
-        else
-        {
-            enermy_Name.color = Color.white;
-        }
-
-        enermy_Name.text = _Monster.NickName;                                                   // Name
-
-        enermy_Hp.fillAmount = (float)(_Monster.Hp_Curent / _Monster.Hp_Max);                  // Hpbar
-
-        enermy_Hp_Text.text = _Monster.Hp_Curent.ToString() + " / " + _Monster.ToString();     // Hpbar Text
-
-        StartCoroutine(Close_Top_EnermyInfoUi(_Monster));                                        // Ui On / Off 관리
-    }
-    IEnumerator Close_Top_EnermyInfoUi(Monster _Monster)
+    private void Start()
     {
-        this.gameObject.SetActive(false);
-        yield break;
+        UIManager.uimanager.aOpenTopInfoUi += () => { gameObject.SetActive(true); };
+        UIManager.uimanager.aCloseTopInfoUi += () => { gameObject.SetActive(false); };
+        UIManager.uimanager.aUpdateTopinfo += Top_EnermyInfoUi;
+        gameObject.SetActive(false);
     }
+
+
+
+    void Top_EnermyInfoUi(Monster _Monster)
+    {   
+
+        enermy_Name.text = _Monster.UnitName();                                                   // Name
+
+        enermy_Hp.fillAmount = (float)(_Monster.HpCur / _Monster.HpMax);                            // Hpbar
+
+        enermy_Hp_Text.text = _Monster.HpCur.ToString() + " / " + _Monster.HpMax.ToString();     // Hpbar Text
+    }
+    
 }

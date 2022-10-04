@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class Boss_Attack : StateMachineBehaviour
 {
-    
+    Character character;
     GameObject breath;
     GameObject Gunfire; // 입    
     SkinnedMeshRenderer breathrange;
-    Monster mob;
+    TutorialBoss boss;
     float atk_num = 0;    
     
-    float Timer = 0;
-    float vr = 1;
+    float timer = 0;
+    float vr;
 
     bool Damage = false;
     Vector3 dir = Vector3.zero;
@@ -24,63 +24,55 @@ public class Boss_Attack : StateMachineBehaviour
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        atk_num = animator.GetFloat("Attack_num");
-
-        if (mob == null)
+        atk_num = animator.GetFloat("PhaseNumber");
+        character = GameManager.gameManager.character;
+        if (boss == null)
         {
-            mob = animator.GetComponent<Monster>();            
-            breath = mob.gameObject.transform.Find("breath").gameObject;
+            boss = animator.GetComponent<TutorialBoss>();            
+            breath = boss.gameObject.transform.Find("breath").gameObject;
             breathrange = breath.GetComponent<SkinnedMeshRenderer>();
             Gunfire = GameObject.FindGameObjectWithTag("MobWeapon");
         }
         if (screamsound == null)
         {
             screamsound = new GameObject("breath");
-            screamsound.transform.SetParent(mob.transform);
+            screamsound.transform.SetParent(boss.transform);
             audio = screamsound.AddComponent<AudioSource>();
-            audio.clip = Resources.Load<AudioClip>("Sounds/Breath");
+            audio.clip = ResourceManager.resource.GetSound("Breath");
             audio.loop = true;
             audio.Play();
             audio.gameObject.SetActive(false);
         }
-
-
+      
+        vr = 1;
     }
 
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(atk_num == 2)
+        
+        
+        if (atk_num == 2)
         {
-            Timer += Time.deltaTime;
-            if(Timer >= 0.9f)
+            timer += Time.deltaTime;
+
+            if (timer >= 0.9f)
             {
                 audio.gameObject.SetActive(true);
                 breath.gameObject.SetActive(true);
                 breath.gameObject.transform.position = Gunfire.transform.position;
                 vr -= (float)Time.deltaTime * 0.3f;
-                dir = BressDir(mob.gameObject, vr) - breath.transform.localPosition;
+                dir = BressDir(boss.gameObject, vr) - breath.transform.localPosition;
                 breath.transform.rotation = Quaternion.LookRotation(dir.normalized);
 
-                //if (breathrange.bounds.Intersects(Character.Player.Character_bounds.bounds) && Damage == false)
-                //{
-                //    Damage = true;
-                //    mob.StartCoroutine(DamageOn());
-                //    SoundManager.soundmanager.soundsPlay("Icestate", Character.Player.gameObject);
-                //    //Character.Player.Stat.HP -= mob.Atk;
-                //    Character.Player.icestateOn();
-                //    //ObjectPoolManager.objManager.LoadDamage(Character.Player.gameObject, mob.Atk, Color.red, 1);
-                //}
-
-
-
-
-
-
+                if (breathrange.bounds.Intersects(character.AttackBox) && Damage == false)
+                {
+                    Damage = true;
+                    boss.StartCoroutine(DamageOn(0.5f));
+                    SoundManager.soundmanager.soundsPlay("Icestate", character.gameObject);
+                    character.stat.Damaged(false, boss.AttackDmg(false));                    
+                }
             }
-
-
-
         }
         
 
@@ -92,9 +84,9 @@ public class Boss_Attack : StateMachineBehaviour
 
     }
 
-    IEnumerator DamageOn()
+    IEnumerator DamageOn(float _time)
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(_time);
         Damage = false;
     }
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -103,7 +95,7 @@ public class Boss_Attack : StateMachineBehaviour
         if (breath.gameObject.activeSelf == true)
             breath.gameObject.SetActive(false);
         audio.gameObject.SetActive(false);
-        Timer = 0;
+        timer = 0;
         vr = 1;                
     }
 
@@ -134,6 +126,7 @@ public class Boss_Attack : StateMachineBehaviour
         return F;
     }
 
+   
     // OnStateMove is called right after Animator.OnAnimatorMove()
     //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     //{
